@@ -1,9 +1,18 @@
 # Ringkasan Planning: Adaptive IDE Extension — Eye Tracking Module
 
-> Dokumen ini merupakan ringkasan hasil planning awal untuk modul eye tracking pada proyek penelitian Adaptive IDE Extension berbasis VS Code.
-> **Versi: Planning v2** — diperbarui berdasarkan feedback dosen pembimbing.
+> Dokumen ini merupakan ringkasan hasil planning untuk modul eye tracking pada proyek penelitian Adaptive IDE Extension berbasis VS Code.
+> **Versi: Planning v3** — diperbarui berdasarkan analisis 4 paper akademik.
 
----
+> 📄 **Dokumen Terkait (dibuat berdasarkan analisis paper):**
+> - [`analisis_paper_vs_rencana.md`](./analisis_paper_vs_rencana.md) — Ringkasan poin kunci tiap paper + gap analisis rencana vs paper
+> - [`adaptive_features_paper_based.md`](./adaptive_features_paper_based.md) — Katalog lengkap fitur adaptif dengan sitasi paper
+
+> 📚 **Paper yang Dianalisis** (tersedia di folder `/papers`):
+> - **[P1]** *Adaptive IDEs and Developer Cognitive Load* — neuroergonomics, load shedding, FlowLight, adaptive scaffolding
+> - **[P2]** *Biometrics, Cognitive Load, and DX* — DX 3 pilar, eye-mind hypothesis, Expertise Reversal Effect, CognitIDE
+> - **[P3]** *Predicting Cognitive Load in Software Engineering* — NRevisit metric, XGBoost, AOI mapping, research gaps
+> - **[P4]** *Towards Decoding Developer Cognition in the Age of AI Assistants* — CUPS taxonomy, vibecoding empiris, VS Code setup standar
+
 
 ## 1. Konteks Proyek
 
@@ -324,5 +333,110 @@ Tiap orang punya baseline berbeda. Perlu **baseline recording** di awal sesi:
 
 ---
 
+## 12. Update dari Analisis Paper (Planning v3)
+
+> Bagian ini menambahkan temuan dari analisis 4 paper akademik.
+> Detail lengkap lihat [`analisis_paper.md`](./analisis_paper.md).
+
+### 12.1 Metric Eye Tracking yang Ditambahkan
+
+Berdasarkan **[P3]** — *"NRevisit showed a near-perfect correlation (0.78–0.91) with EEG-measured cognitive load"* dan **[P1]** — *"Task-Evoked Pupillary Response (TEPR)"*:
+
+| Metric Baru | Cara Dapat | Justifikasi Paper |
+|------------|-----------|-----------------|
+| **NRevisit count** per section | Counter kembali ke section yang sudah dikunjungi | [P3] korelasi 0.78–0.91 dengan EEG load |
+| **Gaze transition rate** | Jumlah perpindahan section per detik | [P1][P2] saccade analog |
+| **Iris size delta** (approx pupil) | Iris landmark distance dari MediaPipe | [P1][P2][P3] pupil = top predictor |
+
+### Pipeline Eye Tracking (Diperbarui)
+
+```
+Webcam (30/60fps)
+    ↓
+[Python Service]
+    MediaPipe — deteksi iris + iris size
+    Gaze Estimation — iris → screen (x, y)
+    Iris Size Delta — estimasi pupil dilation   ← BARU [P1][P3]
+    Smoothing Filter — pilihan filter dari config
+    Grid Classifier — (x, y) → section IDE
+    NRevisit Counter — track section revisits    ← BARU [P3]
+    Transition Rate — hitung perpindahan/detik   ← BARU [P1][P2]
+    WebSocket Server @ localhost:8765
+    ↓ JSON: {section, confidence, fps, dwellTime, nrevisit, transitionRate, irisDelta}
+[VS Code Extension — Node.js]
+    WebSocket Client — terima gaze data
+    State Detection — gabung eye + heart rate (diperkuat signal baru)
+    Adaptive Logic — decide aksi per section
+    VS Code API — apply font, layout, highlight
+```
+
+### 12.2 State Detection Diperkuat
+
+Berdasarkan sinyal baru dari paper, state detection menjadi lebih robust:
+
+```
+FOCUSED 🟢   = dwell_main > 2s + nrevisit rendah + transition_rate rendah + iris stabil + HR normal
+CONFUSED 🟡  = nrevisit_section > 3 + iris_delta naik + HR naik
+SCANNING 🔵  = transition_rate > 1.5/s + avg_dwell < 800ms + HR normal
+OVERLOADED 🔴 = semua sinyal semrawut + iris_delta sangat naik + HR sangat tinggi
+VIBECODING 🟣 = alternating ai_agent ↔ main_file ≥ 3 siklus + nrevisit ke AI setelah accept
+```
+
+### 12.3 Fitur Adaptif IDE (Ringkasan dari Paper)
+
+> Detail lengkap + sitasi paper lihat [`adaptive_features_paper_based.md`](./adaptive_features_paper_based.md)
+
+7 kategori fitur yang bisa di-adaptasi berdasarkan state developer:
+
+| Kategori | Contoh Aksi | Basis Paper |
+|---------|------------|------------|
+| **Visual/Typography** | Font size, line height, color theme | [P1][P2] |
+| **Layout/Panel** | Sidebar, minimap, zen mode, outline | [P1][P2] |
+| **Editor Behavior** | Code folding, hover doc, inline hints | [P1][P2][P3] |
+| **Notifikasi** | FlowLight pattern suppression, break reminder | [P1][P2] |
+| **AI Integration** | Suggestion rate, vibecoding mode, diff highlight | [P1][P4] |
+| **Gaze-Driven** | Section glow, research dashboard | [P1][P3][P4] |
+| **Adaptive Scaffolding** | Novice vs expert profiling, instructional fading | [P1][P2] |
+
+### 12.4 Ethical Framework (Wajib Ditambahkan)
+
+Berdasarkan **[P1]** — *"Brain data cannot be treated as a standard corporate analytics asset"* dan **[P3]** — *"Critical ethical research gap: neglecting governance frameworks"*:
+
+| Prinsip | Implementasi |
+|---------|------------|
+| **Informed consent** | Consent dialog saat extension pertama aktif |
+| **Local data only** | Log disimpan di mesin lokal, tidak ke cloud |
+| **User control** | Pause/stop kapanpun dari status bar |
+| **Data anonymization** | Session ID (bukan nama) dalam semua log |
+| **Transparency** | User tahu metric apa yang diukur |
+
+### 12.5 Kontribusi Orisinal yang Bisa Diklaim
+
+| Kontribusi | Mengapa Novel |
+|-----------|--------------|
+| **Vibecoding State** | Belum ada implementasi real-time di IDE nyata [P4][P1] |
+| **NRevisit-triggered intervention** | Trigger dari pola kembali, bukan hanya dwell time [P3] |
+| **Section-based research dashboard** | Per zone IDE, bukan per pixel/baris [P3][P4] |
+| **AI usage ratio tracking** | Proxy comprehension debt secara real-time [P1][P4] |
+
+---
+
+## 13. Hal yang Masih Perlu Dikonfirmasi ke Dospem (Updated)
+
+- [ ] Jumlah subjek penelitian (estimasi: 15–30 orang)
+- [ ] Research question final
+- [ ] Grid size default yang dipakai untuk penelitian (3x3 atau lain?)
+- [ ] Section mana saja yang wajib ada vs opsional
+- [ ] Metode analisis data gaze (heatmap per section? fixation count? dwell time per section?)
+- [ ] Standar validasi data yang diharapkan
+- [ ] Format log data untuk keperluan analisis
+- [ ] **[BARU]** Apakah NRevisit counter perlu masuk sebagai metric utama penelitian?
+- [ ] **[BARU]** Apakah iris size delta dari MediaPipe cukup akurat untuk penelitian atau hanya fitur tambahan?
+- [ ] **[BARU]** Perlu ethical framework formal (IRB approval) atau cukup consent form sederhana?
+- [ ] **[BARU]** Vibecoding state — apakah ini masuk sebagai research question tersendiri?
+
+---
+
 *Dokumen ini dibuat sebagai bahan diskusi dengan dosen pembimbing.*
-*Versi: Planning v2 — diperbarui setelah feedback dospem.*
+*Versi: Planning v3 — diperbarui berdasarkan analisis 4 paper akademik.*
+*Lihat juga: `analisis_paper_vs_rencana.md` dan `adaptive_features_paper_based.md`*
