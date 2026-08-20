@@ -4,291 +4,15 @@ import csv
 import json
 import uuid
 import time
-import yaml
 import math
-import argparse
 import numpy as np
 from datetime import datetime
-from collections import deque
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
-try:
-    from filterpy.kalman import KalmanFilter
-    KALMAN_AVAILABLE = True
-except ImportError:
-    KALMAN_AVAILABLE = False
+from modules import Config, WebcamStream, GazeFilter, MetricsEngine, GazeMapper
 
-# -------------------------------------------------------------------------
-# Core Config
-# -------------------------------------------------------------------------
-class Config:
-    def __init__(self, path):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        if not os.path.isabs(path):
-            path = os.path.join(script_dir, path)
-            
-        with open(path, 'r') as f:
-            self.data = yaml.safe_load(f)
-        
-        self.webcam_idx = self.data['webcam']['device_index']
-        self.webcam_fps = self.data['webcam']['fps_target']
-        self.webcam_w = self.data['webcam']['width']
-        self.webcam_h = self.data['webcam']['height']
-        self.flip_horizontal = self.data['webcam'].get('flip_horizontal', True)
-        
-        self.grid_rows = self.data['grid']['rows']
-        self.grid_cols = self.data['grid']['cols']
-        self.section_map = self.data['grid']['section_map']
-        self.section_colors = self.data['grid']['section_colors']
-        
-        self.filter_type = self.data['filter']['type']
-        self.ema_alpha = self.data['filter']['ema_alpha']
-        self.median_window = self.data['filter']['median_window']
-        self.kalman_p_noise = self.data['filter'].get('kalman_process_noise', 0.1)
-        self.kalman_m_noise = self.data['filter'].get('kalman_measurement_noise', 4.0)
-        
-        self.dwell_threshold = self.data['dwell']['threshold_ms']
-        self.transition_window_sec = self.data.get('metrics', {}).get('transition_window_sec', 5.0)
-        
-        self.calib_samples = self.data['calibration']['n_samples_per_point']
-        self.calib_move_delay_sec = self.data['calibration'].get('move_delay_sec', 2.0)
-        self.calib_radius = self.data['calibration']['dot_radius']
-        self.calib_color = self.data['calibration']['dot_color_bgr']
-        self.calib_stability_thresh = self.data['calibration'].get('stability_threshold', 0.015)
-        self.calib_stability_frames = self.data['calibration'].get('stability_required_frames', 6)
-        self.calib_mapping_method = self.data['calibration'].get('mapping_method', 'polynomial')
-        
-        self.iris_baseline_frames = self.data['iris']['baseline_frames']
-        
-        self.session_dir = self.data['output']['session_dir']
-        if not os.path.isabs(self.session_dir):
-            self.session_dir = os.path.join(script_dir, self.session_dir)
-            
-        self.csv_buffer_size = self.data['output']['csv_buffer_size']
-        self.save_video = self.data['output']['save_video']
-        
-        self.model_path = self.data['mediapipe']['model_path']
-        if not os.path.isabs(self.model_path):
-            self.model_path = os.path.join(script_dir, self.model_path)
-            
-        lm_cfg = self.data['mediapipe'].get('landmarks', {})
-        self.left_iris_indices = lm_cfg.get('left_iris', [468, 469, 470, 471, 472])
-        self.right_iris_indices = lm_cfg.get('right_iris', [473, 474, 475, 476, 477])
-        self.left_eye_corners = lm_cfg.get('left_eye_corners', [33, 133])
-        self.right_eye_corners = lm_cfg.get('right_eye_corners', [362, 263])
-
-# -------------------------------------------------------------------------
-# Gaze Filter
-# -------------------------------------------------------------------------
-class GazeFilter:
-    def __init__(self, cfg):
-        self.type = cfg.filter_type
-        if self.type == "kalman" and not KALMAN_AVAILABLE:
-            print("[WARN] filterpy not found. Falling back to EMA.")
-            self.type = "ema"
-            
-        self.ema_alpha = cfg.ema_alpha
-        self.median_window = cfg.median_window
-        
-        self.last_val = None
-        self.history = deque(maxlen=self.median_window)
-        
-        if self.type == "kalman":
-            self.kf = KalmanFilter(dim_x=4, dim_z=2) # state: [x, y, dx, dy]
-            self.kf.x = np.array([0., 0., 0., 0.])
-            self.kf.F = np.array([[1., 0., 1., 0.],
-                                  [0., 1., 0., 1.],
-                                  [0., 0., 1., 0.],
-                                  [0., 0., 0., 1.]])
-            self.kf.H = np.array([[1., 0., 0., 0.],
-                                  [0., 1., 0., 0.]])
-            self.kf.P *= 1000.
-            self.kf.R = np.eye(2) * cfg.kalman_m_noise
-            self.kf.Q = np.eye(4) * cfg.kalman_p_noise
-
-    def update(self, x, y):
-        if self.type == "none":
-            return x, y
-            
-        elif self.type == "ema":
-            if self.last_val is None:
-                self.last_val = (x, y)
-            else:
-                lx, ly = self.last_val
-                a = self.ema_alpha
-                self.last_val = (lx * (1-a) + x * a, ly * (1-a) + y * a)
-            return self.last_val
-            
-        elif self.type == "median":
-            self.history.append((x, y))
-            xs = [v[0] for v in self.history]
-            ys = [v[1] for v in self.history]
-            return float(np.median(xs)), float(np.median(ys))
-            
-        elif self.type == "kalman":
-            if self.last_val is None:
-                self.kf.x = np.array([x, y, 0., 0.])
-                self.last_val = (x, y)
-                return x, y
-            
-            self.kf.predict()
-            self.kf.update(np.array([x, y]))
-            self.last_val = (float(self.kf.x[0]), float(self.kf.x[1]))
-            return self.last_val
-            
-        return x, y
-
-    def reset(self):
-        self.last_val = None
-        self.history.clear()
-
-# -------------------------------------------------------------------------
-# Metrics Engine
-# -------------------------------------------------------------------------
-class MetricsEngine:
-    def __init__(self, cfg):
-        self.dwell_threshold = cfg.dwell_threshold / 1000.0 # to seconds
-        self.transition_window_sec = cfg.transition_window_sec
-        self.iris_baseline_frames = cfg.iris_baseline_frames
-        
-        self.current_section = None
-        self.section_enter_time = 0
-        self.dwell_time_ms = 0
-        
-        self.nrevisit_counts = {}
-        self.transition_history = deque() # tuples of (timestamp, section_name)
-        
-        self.iris_history = []
-        self.iris_baseline = None
-        self.iris_delta = 0.0
-        
-        self.session_sections_summary = {}
-
-    def update(self, timestamp_ms, section, iris_size):
-        ts_sec = timestamp_ms / 1000.0
-        
-        # 1. Update Iris Baseline & Delta
-        if self.iris_baseline is None:
-            if iris_size > 0:
-                self.iris_history.append(iris_size)
-                if len(self.iris_history) >= self.iris_baseline_frames:
-                    self.iris_baseline = np.mean(self.iris_history)
-                    self.iris_delta = 0.0
-        else:
-            if iris_size > 0:
-                self.iris_delta = iris_size - self.iris_baseline
-            
-        # 2. Section Dwell & Transition
-        if section != self.current_section:
-            if self.current_section is not None:
-                if self.current_section not in self.session_sections_summary:
-                    self.session_sections_summary[self.current_section] = {
-                        "total_dwell_ms": 0, "visit_count": 0, "nrevisit_count": 0, "max_continuous_dwell_ms": 0
-                    }
-                ss = self.session_sections_summary[self.current_section]
-                ss["total_dwell_ms"] += self.dwell_time_ms
-                ss["visit_count"] += 1
-                if self.dwell_time_ms > ss["max_continuous_dwell_ms"]:
-                    ss["max_continuous_dwell_ms"] = self.dwell_time_ms
-            
-            if section is not None:
-                self.transition_history.append((ts_sec, section))
-                if section in self.nrevisit_counts:
-                    self.nrevisit_counts[section] += 1
-                else:
-                    self.nrevisit_counts[section] = 0
-                
-            self.current_section = section
-            self.section_enter_time = ts_sec
-            self.dwell_time_ms = 0
-        else:
-            if section is not None:
-                self.dwell_time_ms = int((ts_sec - self.section_enter_time) * 1000)
-                
-        # Clean up transition history (rolling window)
-        while self.transition_history and (ts_sec - self.transition_history[0][0]) > self.transition_window_sec:
-            self.transition_history.popleft()
-            
-    def get_transition_rate(self):
-        return len(self.transition_history) / self.transition_window_sec
-
-    def get_nrevisit(self, section):
-        return self.nrevisit_counts.get(section, 0)
-
-# -------------------------------------------------------------------------
-# Mapper Models (Polynomial & Affine)
-# -------------------------------------------------------------------------
-class GazeMapper:
-    def __init__(self, method="polynomial"):
-        self.method = method
-        self.model_x = None
-        self.model_y = None
-        self.affine_M = None
-
-    def fit(self, iris_pts, screen_pts):
-        """
-        iris_pts: Nx2 array of normalized eye features [norm_x, norm_y]
-        screen_pts: Nx2 array of target screen coordinates [x, y]
-        """
-        iris_pts = np.array(iris_pts, dtype=np.float32)
-        screen_pts = np.array(screen_pts, dtype=np.float32)
-
-        if self.method == "polynomial":
-            # 2nd degree polynomial terms: [1, x, y, x^2, y^2, x*y]
-            X = np.column_stack([
-                np.ones(len(iris_pts)),
-                iris_pts[:, 0],
-                iris_pts[:, 1],
-                iris_pts[:, 0]**2,
-                iris_pts[:, 1]**2,
-                iris_pts[:, 0] * iris_pts[:, 1]
-            ])
-            # Ridge regression pseudo-inverse for stability
-            ridge = 1e-4 * np.eye(X.shape[1])
-            self.model_x, _, _, _ = np.linalg.lstsq(X.T @ X + ridge, X.T @ screen_pts[:, 0], rcond=None)
-            self.model_y, _, _, _ = np.linalg.lstsq(X.T @ X + ridge, X.T @ screen_pts[:, 1], rcond=None)
-            
-            pred_x = X @ self.model_x
-            pred_y = X @ self.model_y
-            errors = np.hypot(pred_x - screen_pts[:, 0], pred_y - screen_pts[:, 1])
-            quality = max(0.0, 1.0 - (np.mean(errors) / 300.0))
-            return quality
-
-        elif self.method == "homography":
-            H, mask = cv2.findHomography(iris_pts, screen_pts, cv2.RANSAC, 5.0)
-            self.affine_M = H
-            return float(np.sum(mask)) / len(mask) if mask is not None else 0.0
-
-        else: # "affine"
-            M, inliers = cv2.estimateAffinePartial2D(iris_pts, screen_pts)
-            self.affine_M = M
-            return float(np.sum(inliers)) / len(inliers) if inliers is not None else 0.0
-
-    def predict(self, norm_x, norm_y):
-        if self.method == "polynomial" and self.model_x is not None:
-            feat = np.array([1.0, norm_x, norm_y, norm_x**2, norm_y**2, norm_x * norm_y])
-            sx = np.dot(feat, self.model_x)
-            sy = np.dot(feat, self.model_y)
-            return float(sx), float(sy)
-
-        elif self.method == "homography" and self.affine_M is not None:
-            pt = np.array([norm_x, norm_y, 1.0], dtype=np.float32)
-            dst = self.affine_M @ pt
-            if dst[2] != 0:
-                return float(dst[0] / dst[2]), float(dst[1] / dst[2])
-
-        elif self.affine_M is not None:
-            src = np.array([[[norm_x, norm_y]]], dtype=np.float32)
-            dst = cv2.transform(src, self.affine_M)
-            return float(dst[0][0][0]), float(dst[0][0][1])
-
-        return 0.0, 0.0
-
-# -------------------------------------------------------------------------
-# Main App
-# -------------------------------------------------------------------------
 class EyeTrackerApp:
     def __init__(self, config_path):
         self.cfg = Config(config_path)
@@ -299,10 +23,18 @@ class EyeTrackerApp:
         self.csv_path = os.path.join(self.cfg.session_dir, f"session_{self.session_id}_{timestamp}.csv")
         self.json_path = os.path.join(self.cfg.session_dir, f"session_{self.session_id}_{timestamp}_summary.json")
         
-        self.cap = cv2.VideoCapture(self.cfg.webcam_idx)
-        self.cap.set(cv2.CAP_PROP_FPS, self.cfg.webcam_fps)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.cfg.webcam_w)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.cfg.webcam_h)
+        if self.cfg.async_capture:
+            print("[EyeTrack] Initializing Async Multithreaded Camera Stream...")
+            self.stream = WebcamStream(
+                self.cfg.webcam_idx, self.cfg.webcam_w, self.cfg.webcam_h, 
+                self.cfg.webcam_fps, self.cfg.flip_horizontal
+            ).start()
+        else:
+            self.stream = None
+            self.cap = cv2.VideoCapture(self.cfg.webcam_idx)
+            self.cap.set(cv2.CAP_PROP_FPS, self.cfg.webcam_fps)
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.cfg.webcam_w)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.cfg.webcam_h)
         
         base_options = python.BaseOptions(model_asset_path=self.cfg.model_path)
         options = vision.FaceLandmarkerOptions(
@@ -349,37 +81,53 @@ class EyeTrackerApp:
             self.screen_h = 1080
         print(f"[EyeTrack] Detected screen resolution: {self.screen_w}x{self.screen_h}")
 
+    def read_frame(self):
+        if self.stream is not None:
+            return self.stream.read()
+        else:
+            ret, frame = self.cap.read()
+            if ret and self.cfg.flip_horizontal:
+                frame = cv2.flip(frame, 1)
+            return ret, frame
+
+    def calculate_ear(self, landmarks):
+        l_top = landmarks[self.cfg.left_eyelid[0]]
+        l_bot = landmarks[self.cfg.left_eyelid[1]]
+        l_in = landmarks[self.cfg.left_eyelid[2]]
+        l_out = landmarks[self.cfg.left_eyelid[3]]
+
+        r_top = landmarks[self.cfg.right_eyelid[0]]
+        r_bot = landmarks[self.cfg.right_eyelid[1]]
+        r_out = landmarks[self.cfg.right_eyelid[2]]
+        r_in = landmarks[self.cfg.right_eyelid[3]]
+
+        l_ear = math.hypot(l_top.x - l_bot.x, l_top.y - l_bot.y) / (math.hypot(l_in.x - l_out.x, l_in.y - l_out.y) + 1e-6)
+        r_ear = math.hypot(r_top.x - r_bot.x, r_top.y - r_bot.y) / (math.hypot(r_in.x - r_out.x, r_in.y - r_out.y) + 1e-6)
+
+        return (l_ear + r_ear) / 2.0
+
     def get_normalized_eye_vector(self, landmarks):
-        """
-        Extracts iris positions normalized relative to eye corners (Head-movement invariant).
-        Returns: (norm_x, norm_y), iris_size
-        """
-        # Left eye landmarks
         left_corner_outer = landmarks[self.cfg.left_eye_corners[0]]
         left_corner_inner = landmarks[self.cfg.left_eye_corners[1]]
         left_iris_pts = [landmarks[i] for i in self.cfg.left_iris_indices if i < len(landmarks)]
         
-        # Right eye landmarks
         right_corner_inner = landmarks[self.cfg.right_eye_corners[0]]
         right_corner_outer = landmarks[self.cfg.right_eye_corners[1]]
         right_iris_pts = [landmarks[i] for i in self.cfg.right_iris_indices if i < len(landmarks)]
 
         if not left_iris_pts or not right_iris_pts:
-            return (0.5, 0.5), 0.0
+            return (0.5, 0.5, 0.2), 0.0
 
-        # Centers
         l_iris_x = sum(p.x for p in left_iris_pts) / len(left_iris_pts)
         l_iris_y = sum(p.y for p in left_iris_pts) / len(left_iris_pts)
         
         r_iris_x = sum(p.x for p in right_iris_pts) / len(right_iris_pts)
         r_iris_y = sum(p.y for p in right_iris_pts) / len(right_iris_pts)
 
-        # Normalize Left Eye (x: 0 outer to 1 inner)
         l_eye_w = math.hypot(left_corner_inner.x - left_corner_outer.x, left_corner_inner.y - left_corner_outer.y)
         l_norm_x = (l_iris_x - left_corner_outer.x) / l_eye_w if l_eye_w > 0 else 0.5
         l_norm_y = (l_iris_y - left_corner_outer.y) / l_eye_w if l_eye_w > 0 else 0.5
 
-        # Normalize Right Eye (x: 0 inner to 1 outer)
         r_eye_w = math.hypot(right_corner_outer.x - right_corner_inner.x, right_corner_outer.y - right_corner_inner.y)
         r_norm_x = (r_iris_x - right_corner_inner.x) / r_eye_w if r_eye_w > 0 else 0.5
         r_norm_y = (r_iris_y - right_corner_inner.y) / r_eye_w if r_eye_w > 0 else 0.5
@@ -387,12 +135,13 @@ class EyeTrackerApp:
         norm_x = (l_norm_x + r_norm_x) / 2.0
         norm_y = (l_norm_y + r_norm_y) / 2.0
 
-        # Iris size relative to face width
+        ear = self.calculate_ear(landmarks)
+
         l_size = math.hypot(left_iris_pts[0].x - left_iris_pts[2].x, left_iris_pts[0].y - left_iris_pts[2].y) if len(left_iris_pts) >= 3 else 0.01
         r_size = math.hypot(right_iris_pts[0].x - right_iris_pts[2].x, right_iris_pts[0].y - right_iris_pts[2].y) if len(right_iris_pts) >= 3 else 0.01
         iris_size = (l_size + r_size) / 2.0
 
-        return (norm_x, norm_y), iris_size
+        return (norm_x, norm_y, ear), iris_size
 
     def _next_ts(self):
         ts = int(time.time() * 1000)
@@ -408,7 +157,7 @@ class EyeTrackerApp:
         grid_r = self.cfg.grid_rows
         grid_c = self.cfg.grid_cols
         
-        iris_pts = []
+        eye_features = []
         screen_pts = []
         
         cv2.namedWindow("Calibration", cv2.WINDOW_NORMAL)
@@ -426,7 +175,6 @@ class EyeTrackerApp:
                 dot_num = r * grid_c + c + 1
                 total_dots = grid_r * grid_c
                 
-                # Phase 1: Countdown to move eyes
                 move_start = time.time()
                 while time.time() - move_start < MOVE_TIME:
                     elapsed = time.time() - move_start
@@ -440,18 +188,14 @@ class EyeTrackerApp:
                     cv2.imshow("Calibration", bg)
                     cv2.waitKey(30)
                 
-                # Phase 2: Collect samples with stability gate
                 samples_collected = 0
-                collected_x, collected_y = [], []
+                collected_feats = []
                 stable_streak = 0
                 prev_ix, prev_iy = None, None
                 
                 while samples_collected < self.cfg.calib_samples:
-                    ret, frame = self.cap.read()
-                    if not ret: continue
-                    
-                    if self.cfg.flip_horizontal:
-                        frame = cv2.flip(frame, 1)
+                    ret, frame = self.read_frame()
+                    if not ret or frame is None: continue
                     
                     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
@@ -464,7 +208,7 @@ class EyeTrackerApp:
                             cv2.waitKey(1)
                             continue
                         
-                        (ix, iy), _ = self.get_normalized_eye_vector(res.face_landmarks[0])
+                        (ix, iy, ear), _ = self.get_normalized_eye_vector(res.face_landmarks[0])
                         
                         if prev_ix is not None:
                             drift = math.hypot(ix - prev_ix, iy - prev_iy)
@@ -475,8 +219,7 @@ class EyeTrackerApp:
                         prev_ix, prev_iy = ix, iy
                         
                         if stable_streak >= self.cfg.calib_stability_frames:
-                            collected_x.append(ix)
-                            collected_y.append(iy)
+                            collected_feats.append([ix, iy, ear])
                             samples_collected += 1
                         
                         copy_bg = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
@@ -495,15 +238,13 @@ class EyeTrackerApp:
                     except Exception as e:
                         stable_streak = 0
                 
-                avg_ix = float(np.mean(collected_x))
-                avg_iy = float(np.mean(collected_y))
-                iris_pts.append([avg_ix, avg_iy])
+                avg_feat = np.mean(collected_feats, axis=0).tolist()
+                eye_features.append(avg_feat)
                 screen_pts.append([dot_x, dot_y])
                 
         cv2.destroyWindow("Calibration")
         
-        # Train Mapper
-        self.calibration_quality = self.mapper.fit(iris_pts, screen_pts)
+        self.calibration_quality = self.mapper.fit(eye_features, screen_pts)
         print(f"[EyeTrack] Calibration complete! Quality ({self.mapper.method}): {self.calibration_quality:.2f}")
         if self.calibration_quality < 0.6:
             print("[EyeTrack] WARNING: Low quality (<0.6). Consider recalibrating with 'C'.")
@@ -563,11 +304,8 @@ class EyeTrackerApp:
         
         while True:
             iter_start = time.time()
-            ret, frame = self.cap.read()
-            if not ret: break
-            
-            if self.cfg.flip_horizontal:
-                frame = cv2.flip(frame, 1)
+            ret, frame = self.read_frame()
+            if not ret or frame is None: continue
             
             if self.is_paused:
                 cv2.putText(frame, "PAUSED", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
@@ -602,7 +340,7 @@ class EyeTrackerApp:
                 self.total_face_frames += 1
                 
                 lm = res.face_landmarks[0]
-                (norm_x, norm_y), iris_size = self.get_normalized_eye_vector(lm)
+                (norm_x, norm_y, ear), iris_size = self.get_normalized_eye_vector(lm)
                 
                 if self.debug_mode:
                     for p in lm:
@@ -610,8 +348,7 @@ class EyeTrackerApp:
                         py = int(p.y * frame.shape[0])
                         cv2.circle(frame, (px, py), 1, (255, 255, 255), -1)
                 
-                # Transform via mapper model & filter
-                raw_x, raw_y = self.mapper.predict(norm_x, norm_y)
+                raw_x, raw_y = self.mapper.predict(norm_x, norm_y, ear)
                 sm_x, sm_y = self.gaze_filter.update(raw_x, raw_y)
                 
                 grid_r, grid_c, section, conf = self.get_grid_cell(sm_x, sm_y)
@@ -677,7 +414,11 @@ class EyeTrackerApp:
 
     def cleanup(self):
         print("\n[EyeTrack] Cleaning up...")
-        self.cap.release()
+        if self.stream is not None:
+            self.stream.stop()
+        else:
+            self.cap.release()
+            
         cv2.destroyAllWindows()
         self.csv_file.flush()
         self.csv_file.close()
@@ -693,6 +434,7 @@ class EyeTrackerApp:
                 "grid_cols": self.cfg.grid_cols,
                 "filter_type": self.cfg.filter_type,
                 "mapping_method": self.cfg.calib_mapping_method,
+                "async_capture": self.cfg.async_capture
             },
             "summary": {
                 "total_frames": self.frame_count,
@@ -711,6 +453,7 @@ class EyeTrackerApp:
         print(f"[EyeTrack] Session saved to {self.csv_path} and {self.json_path}")
 
 if __name__ == "__main__":
+    import argparse
     parser = argparse.ArgumentParser(description="Adaptive IDE - Eye Tracking Prototype")
     parser.add_argument("--config", default="config.yaml", help="Path to config file")
     args = parser.parse_args()

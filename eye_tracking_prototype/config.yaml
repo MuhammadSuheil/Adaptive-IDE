@@ -6,10 +6,11 @@
 # ─────────────────────────────────────────────
 webcam:
   device_index: 1          # 0 = default webcam; try 1 for external cam
-  fps_target: 30           # 30 or 60
+  fps_target: 60           # Target FPS: 30 or 60
   width: 640
   height: 480
   flip_horizontal: true    # Mirror camera feed so movement matches screen
+  async_capture: true      # Enable multithreaded capture buffer for high FPS
 
 # ─────────────────────────────────────────────
 # Grid settings
@@ -64,7 +65,7 @@ metrics:
   transition_window_sec: 5.0 # rolling window for gaze transition rate
 
 # ─────────────────────────────────────────────
-# Calibration
+# Calibration & Gaze Mapping
 # ─────────────────────────────────────────────
 calibration:
   n_samples_per_point: 30  # frames to collect per calibration dot
@@ -73,7 +74,7 @@ calibration:
   dot_color_bgr: [0, 0, 255]  # red dot
   stability_threshold: 0.015  # max normalized drift allowed during gaze hold
   stability_required_frames: 6 # frames gaze must remain still before collecting
-  mapping_method: "polynomial" # Options: "polynomial" (2nd degree) | "affine" | "homography"
+  mapping_method: "hybrid" # Options: "hybrid" (Poly X + Ridge Y w/ EAR) | "polynomial" | "affine" | "homography"
 
 # ─────────────────────────────────────────────
 # Iris baseline (for pupil-dilation proxy)
@@ -103,5 +104,7 @@ mediapipe:
   landmarks:
     left_iris: [468, 469, 470, 471, 472]
     right_iris: [473, 474, 475, 476, 477]
-    left_eye_corners: [33, 133]    # outer (33), inner (133)
-    right_eye_corners: [362, 263]  # inner (362), outer (263)
+    left_eye_corners: [33, 133]      # outer (33), inner (133)
+    right_eye_corners: [362, 263]    # inner (362), outer (263)
+    left_eyelid: [159, 145, 133, 33]  # top (159), bottom (145), inner (133), outer (33)
+    right_eyelid: [386, 374, 263, 362] # top (386), bottom (374), outer (263), inner (362)
