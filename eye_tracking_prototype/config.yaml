@@ -5,10 +5,11 @@
 # Webcam settings
 # ─────────────────────────────────────────────
 webcam:
-  device_index: 0          # 0 = default webcam; try 1 for external cam
+  device_index: 1          # 0 = default webcam; try 1 for external cam
   fps_target: 30           # 30 or 60
   width: 640
   height: 480
+  flip_horizontal: true    # Mirror camera feed so movement matches screen
 
 # ─────────────────────────────────────────────
 # Grid settings
@@ -54,19 +55,25 @@ filter:
   median_window: 5
 
 # ─────────────────────────────────────────────
-# Dwell time
+# Dwell time & Metrics
 # ─────────────────────────────────────────────
 dwell:
   threshold_ms: 300        # min ms before gaze counts as intentional
+
+metrics:
+  transition_window_sec: 5.0 # rolling window for gaze transition rate
 
 # ─────────────────────────────────────────────
 # Calibration
 # ─────────────────────────────────────────────
 calibration:
   n_samples_per_point: 30  # frames to collect per calibration dot
-  dot_display_time_ms: 500 # wait before recording starts (ms)
+  move_delay_sec: 2.0      # countdown time before collecting samples for a dot
   dot_radius: 20           # pixels
   dot_color_bgr: [0, 0, 255]  # red dot
+  stability_threshold: 0.015  # max normalized drift allowed during gaze hold
+  stability_required_frames: 6 # frames gaze must remain still before collecting
+  mapping_method: "polynomial" # Options: "polynomial" (2nd degree) | "affine" | "homography"
 
 # ─────────────────────────────────────────────
 # Iris baseline (for pupil-dilation proxy)
@@ -83,7 +90,7 @@ output:
   save_video: false        # set true to save annotated mp4 (adds CPU + storage)
 
 # ─────────────────────────────────────────────
-# MediaPipe model
+# MediaPipe model & Landmarks
 # ─────────────────────────────────────────────
 mediapipe:
   model_path: "./models/face_landmarker.task"
@@ -91,3 +98,10 @@ mediapipe:
   min_face_detection_confidence: 0.5
   min_face_presence_confidence: 0.5
   min_tracking_confidence: 0.5
+
+  # Landmark Indices (MediaPipe Face Mesh Standard)
+  landmarks:
+    left_iris: [468, 469, 470, 471, 472]
+    right_iris: [473, 474, 475, 476, 477]
+    left_eye_corners: [33, 133]    # outer (33), inner (133)
+    right_eye_corners: [362, 263]  # inner (362), outer (263)
