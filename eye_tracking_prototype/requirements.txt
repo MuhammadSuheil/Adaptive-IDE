@@ -1,0 +1,5 @@
+mediapipe>=0.10.14
+opencv-python>=4.8.0
+numpy>=1.24.0
+PyYAML>=6.0
+filterpy>=1.4.5
