@@ -165,6 +165,9 @@ class EyeTrackerApp:
         
         cell_w = self.screen_w / grid_c
         cell_h = self.screen_h / grid_r
+        
+        pad_x = int(self.screen_w * self.cfg.gaze_boundary_pad_x) if self.cfg.gaze_boundary_enabled else 0
+        pad_y = int(self.screen_h * self.cfg.gaze_boundary_pad_y) if self.cfg.gaze_boundary_enabled else 0
 
         MOVE_TIME = self.cfg.calib_move_delay_sec
         
@@ -172,6 +175,7 @@ class EyeTrackerApp:
             for c in range(grid_c):
                 dot_x = int((c + 0.5) * cell_w)
                 dot_y = int((r + 0.5) * cell_h)
+
                 dot_num = r * grid_c + c + 1
                 total_dots = grid_r * grid_c
                 
@@ -180,6 +184,13 @@ class EyeTrackerApp:
                     elapsed = time.time() - move_start
                     remaining = MOVE_TIME - elapsed
                     bg = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
+                    if self.cfg.gaze_boundary_enabled:
+                        bg[:] = (100, 0, 100)
+                        cv2.rectangle(bg, (pad_x, pad_y), (self.screen_w - pad_x, self.screen_h - pad_y), (0, 0, 0), -1)
+                        cv2.rectangle(bg, (pad_x, pad_y), (self.screen_w - pad_x, self.screen_h - pad_y), (255, 255, 255), 2)
+                        cv2.putText(bg, "off screen", (self.screen_w // 2 - 45, self.screen_h - 15),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
+
                     cv2.circle(bg, (dot_x, dot_y), self.cfg.calib_radius, self.cfg.calib_color, -1)
                     cv2.putText(bg, f"Focus your eyes on the RED DOT ({dot_num}/{total_dots})",
                                 (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2)
@@ -223,6 +234,13 @@ class EyeTrackerApp:
                             samples_collected += 1
                         
                         copy_bg = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
+                        if self.cfg.gaze_boundary_enabled:
+                            copy_bg[:] = (100, 0, 100)
+                            cv2.rectangle(copy_bg, (pad_x, pad_y), (self.screen_w - pad_x, self.screen_h - pad_y), (0, 0, 0), -1)
+                            cv2.rectangle(copy_bg, (pad_x, pad_y), (self.screen_w - pad_x, self.screen_h - pad_y), (255, 255, 255), 2)
+                            cv2.putText(copy_bg, "off screen", (self.screen_w // 2 - 45, self.screen_h - 15),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
+
                         dot_color = (0, 255, 0) if stable_streak >= self.cfg.calib_stability_frames else self.cfg.calib_color
                         cv2.circle(copy_bg, (dot_x, dot_y), self.cfg.calib_radius, dot_color, -1)
                         ring_r = self.cfg.calib_radius + 20 - int(20 * samples_collected / self.cfg.calib_samples)
@@ -249,52 +267,128 @@ class EyeTrackerApp:
         if self.calibration_quality < 0.6:
             print("[EyeTrack] WARNING: Low quality (<0.6). Consider recalibrating with 'C'.")
 
+    def is_gaze_on_screen(self, screen_x, screen_y):
+        if not self.cfg.gaze_boundary_enabled:
+            return True
+        pad_x = int(self.screen_w * self.cfg.gaze_boundary_pad_x)
+        pad_y = int(self.screen_h * self.cfg.gaze_boundary_pad_y)
+        return (pad_x <= screen_x <= self.screen_w - pad_x) and (pad_y <= screen_y <= self.screen_h - pad_y)
+
     def get_grid_cell(self, screen_x, screen_y):
-        col = int(screen_x / (self.screen_w / self.cfg.grid_cols))
-        row = int(screen_y / (self.screen_h / self.cfg.grid_rows))
+        if self.cfg.gaze_boundary_enabled and not self.is_gaze_on_screen(screen_x, screen_y):
+            return -1, -1, self.cfg.off_screen_label, 0.0
+
+        if self.cfg.gaze_boundary_enabled:
+            pad_x = int(self.screen_w * self.cfg.gaze_boundary_pad_x)
+            pad_y = int(self.screen_h * self.cfg.gaze_boundary_pad_y)
+            active_w = max(1, self.screen_w - 2 * pad_x)
+            active_h = max(1, self.screen_h - 2 * pad_y)
+            col = int((screen_x - pad_x) / (active_w / self.cfg.grid_cols))
+            row = int((screen_y - pad_y) / (active_h / self.cfg.grid_rows))
+        else:
+            col = int(screen_x / (self.screen_w / self.cfg.grid_cols))
+            row = int(screen_y / (self.screen_h / self.cfg.grid_rows))
         
         col = max(0, min(col, self.cfg.grid_cols - 1))
         row = max(0, min(row, self.cfg.grid_rows - 1))
         
         section = self.cfg.section_map[row][col]
         
-        cx = (col + 0.5) * (self.screen_w / self.cfg.grid_cols)
-        cy = (row + 0.5) * (self.screen_h / self.cfg.grid_rows)
+        if self.cfg.gaze_boundary_enabled:
+            pad_x = int(self.screen_w * self.cfg.gaze_boundary_pad_x)
+            pad_y = int(self.screen_h * self.cfg.gaze_boundary_pad_y)
+            active_w = max(1, self.screen_w - 2 * pad_x)
+            active_h = max(1, self.screen_h - 2 * pad_y)
+            cx = pad_x + (col + 0.5) * (active_w / self.cfg.grid_cols)
+            cy = pad_y + (row + 0.5) * (active_h / self.cfg.grid_rows)
+            max_dist = math.hypot(active_w / self.cfg.grid_cols / 2, active_h / self.cfg.grid_rows / 2)
+        else:
+            cx = (col + 0.5) * (self.screen_w / self.cfg.grid_cols)
+            cy = (row + 0.5) * (self.screen_h / self.cfg.grid_rows)
+            max_dist = math.hypot(self.screen_w / self.cfg.grid_cols / 2, self.screen_h / self.cfg.grid_rows / 2)
+            
         dist = math.hypot(screen_x - cx, screen_y - cy)
-        max_dist = math.hypot(self.screen_w / self.cfg.grid_cols / 2, self.screen_h / self.cfg.grid_rows / 2)
         conf = max(0.0, 1.0 - (dist / max_dist))
         
         return row, col, section, float(conf)
 
     def draw_grid_overlay(self, sx, sy, row, col, section):
         grid_img = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
-        
-        cell_w = int(self.screen_w / self.cfg.grid_cols)
-        cell_h = int(self.screen_h / self.cfg.grid_rows)
-        
-        if section is not None:
-            color = self.cfg.section_colors.get(section, [128, 128, 128])
-            tl = (col * cell_w, row * cell_h)
-            br = ((col + 1) * cell_w, (row + 1) * cell_h)
-            cv2.rectangle(grid_img, tl, br, color, -1)
-        
-        for r in range(self.cfg.grid_rows):
-            for c in range(self.cfg.grid_cols):
-                tl = (c * cell_w, r * cell_h)
-                br = ((c + 1) * cell_w, (r + 1) * cell_h)
-                cv2.rectangle(grid_img, tl, br, (255, 255, 255), 1)
-                
-                sec_lbl = self.cfg.section_map[r][c]
-                if sec_lbl:
-                    cv2.putText(grid_img, sec_lbl, (tl[0] + 10, tl[1] + 30), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1)
-                    
-        cv2.circle(grid_img, (int(sx), int(sy)), 15, (0, 0, 255), -1)
-        
+        is_off_screen = (section == self.cfg.off_screen_label)
+
+        if self.cfg.gaze_boundary_enabled:
+            pad_x = int(self.screen_w * self.cfg.gaze_boundary_pad_x)
+            pad_y = int(self.screen_h * self.cfg.gaze_boundary_pad_y)
+            active_w = self.screen_w - 2 * pad_x
+            active_h = self.screen_h - 2 * pad_y
+
+            # Subdued red background tint if off-screen, purple padding if on-screen
+            pad_color = (25, 25, 100) if is_off_screen else (128, 0, 128)
+            grid_img[:] = pad_color
+
+            # Draw central active screen area
+            cv2.rectangle(grid_img, (pad_x, pad_y), (pad_x + active_w, pad_y + active_h), (0, 0, 0), -1)
+
+            cell_w = int(active_w / self.cfg.grid_cols)
+            cell_h = int(active_h / self.cfg.grid_rows)
+
+            if not is_off_screen and section is not None and row >= 0 and col >= 0:
+                color = self.cfg.section_colors.get(section, [128, 128, 128])
+                tl = (pad_x + col * cell_w, pad_y + row * cell_h)
+                br = (pad_x + (col + 1) * cell_w, pad_y + (row + 1) * cell_h)
+                cv2.rectangle(grid_img, tl, br, color, -1)
+
+            for r in range(self.cfg.grid_rows):
+                for c in range(self.cfg.grid_cols):
+                    tl = (pad_x + c * cell_w, pad_y + r * cell_h)
+                    br = (pad_x + (c + 1) * cell_w, pad_y + (r + 1) * cell_h)
+                    cv2.rectangle(grid_img, tl, br, (255, 255, 255), 1)
+
+                    sec_lbl = self.cfg.section_map[r][c]
+                    if sec_lbl:
+                        cv2.putText(grid_img, sec_lbl, (tl[0] + 10, tl[1] + 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1)
+
+            border_color = (40, 40, 200) if is_off_screen else (0, 255, 255)
+            cv2.rectangle(grid_img, (pad_x, pad_y), (pad_x + active_w, pad_y + active_h), border_color, 2)
+            cv2.putText(grid_img, "off screen", (self.screen_w // 2 - 45, self.screen_h - 15),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
+        else:
+            cell_w = int(self.screen_w / self.cfg.grid_cols)
+            cell_h = int(self.screen_h / self.cfg.grid_rows)
+
+            if section is not None:
+                color = self.cfg.section_colors.get(section, [128, 128, 128])
+                tl = (col * cell_w, row * cell_h)
+                br = ((col + 1) * cell_w, (row + 1) * cell_h)
+                cv2.rectangle(grid_img, tl, br, color, -1)
+
+            for r in range(self.cfg.grid_rows):
+                for c in range(self.cfg.grid_cols):
+                    tl = (c * cell_w, r * cell_h)
+                    br = ((c + 1) * cell_w, (r + 1) * cell_h)
+                    cv2.rectangle(grid_img, tl, br, (255, 255, 255), 1)
+
+                    sec_lbl = self.cfg.section_map[r][c]
+                    if sec_lbl:
+                        cv2.putText(grid_img, sec_lbl, (tl[0] + 10, tl[1] + 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 1)
+
+        if is_off_screen:
+            cx, cy = int(np.clip(sx, 10, self.screen_w - 10)), int(np.clip(sy, 10, self.screen_h - 10))
+            cv2.circle(grid_img, (cx, cy), 12, (30, 30, 160), -1)
+            cv2.circle(grid_img, (cx, cy), 16, (40, 40, 220), 2)
+            cv2.putText(grid_img, "GAZE: OFF SCREEN", (20, 50),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (50, 50, 220), 2)
+        else:
+            cv2.circle(grid_img, (int(sx), int(sy)), 15, (0, 0, 255), -1)
+
         cv2.putText(grid_img, "[Q] Quit  [C] Recalibrate  [S] Snapshot  [P] Pause  [G] Toggle Grid",
-                    (20, self.screen_h - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
-                    
+                    (20, self.screen_h - 20 if not self.cfg.gaze_boundary_enabled else 30),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
+
         cv2.imshow("Eye Tracking - Gaze Grid", grid_img)
+
 
     def run(self):
         self.run_calibration()
@@ -374,10 +468,12 @@ class EyeTrackerApp:
                 self.csv_file.flush()
                 
             hud_y = 30
-            hud_color = (0, 255, 0)
+            is_off_screen = (section == self.cfg.off_screen_label)
+            hud_color = (40, 40, 200) if is_off_screen else (0, 255, 0)
+            status_text = "Section: [OFF-SCREEN]" if is_off_screen else f"Section: {section}"
             lines = [
                 f"FPS: {fps:.1f}",
-                f"Section: {section}",
+                status_text,
                 f"Dwell: {self.metrics.dwell_time_ms / 1000.0:.1f}s",
                 f"NRevisit: {self.metrics.get_nrevisit(section)}",
                 f"Trans Rate: {self.metrics.get_transition_rate():.2f}/s",
@@ -386,6 +482,7 @@ class EyeTrackerApp:
             for l in lines:
                 cv2.putText(frame, l, (10, hud_y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, hud_color, 2)
                 hud_y += 25
+
                 
             cv2.imshow("Eye Tracking - Camera Feed", frame)
             

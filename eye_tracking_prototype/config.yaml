@@ -35,6 +35,15 @@ grid:
     terminal:     [ 50, 140, 200]   # orange-ish
 
 # ─────────────────────────────────────────────
+# Gaze Boundary & Padding Settings (off-screen detection)
+# ─────────────────────────────────────────────
+gaze_boundary:
+  enabled: true
+  padding_x: 0.15          # 0.15 = 15% margin left & right (30% total horizontal padding)
+  padding_y: 0.15          # 0.15 = 15% margin top & bottom (30% total vertical padding)
+  off_screen_label: "off_screen"
+
+# ─────────────────────────────────────────────
 # Smoothing filter
 # Options: "ema" | "kalman" | "median" | "none"
 # ─────────────────────────────────────────────

@@ -25,7 +25,14 @@ class Config:
         self.section_map = self.data['grid']['section_map']
         self.section_colors = self.data['grid']['section_colors']
         
+        boundary_cfg = self.data.get('gaze_boundary', {})
+        self.gaze_boundary_enabled = boundary_cfg.get('enabled', True)
+        self.gaze_boundary_pad_x = boundary_cfg.get('padding_x', 0.15)
+        self.gaze_boundary_pad_y = boundary_cfg.get('padding_y', 0.15)
+        self.off_screen_label = boundary_cfg.get('off_screen_label', 'off_screen')
+        
         self.filter_type = self.data['filter']['type']
+
         self.ema_alpha = self.data['filter']['ema_alpha']
         self.median_window = self.data['filter']['median_window']
         self.kalman_p_noise = self.data['filter'].get('kalman_process_noise', 0.1)
