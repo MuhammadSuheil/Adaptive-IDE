@@ -17,6 +17,8 @@ class Config:
         self.webcam_fps = self.data['webcam']['fps_target']
         self.webcam_w = self.data['webcam']['width']
         self.webcam_h = self.data['webcam']['height']
+        self.inference_w = self.data['webcam'].get('inference_width', self.webcam_w)
+        self.inference_h = self.data['webcam'].get('inference_height', self.webcam_h)
         self.flip_horizontal = self.data['webcam'].get('flip_horizontal', True)
         self.async_capture = self.data['webcam'].get('async_capture', True)
         
@@ -43,11 +45,22 @@ class Config:
         
         self.calib_samples = self.data['calibration']['n_samples_per_point']
         self.calib_move_delay_sec = self.data['calibration'].get('move_delay_sec', 2.0)
+        self.calib_target_margin = self.data['calibration'].get('target_margin', 0.12)
         self.calib_radius = self.data['calibration']['dot_radius']
         self.calib_color = self.data['calibration']['dot_color_bgr']
         self.calib_stability_thresh = self.data['calibration'].get('stability_threshold', 0.015)
         self.calib_stability_frames = self.data['calibration'].get('stability_required_frames', 6)
         self.calib_mapping_method = self.data['calibration'].get('mapping_method', 'hybrid')
+        self.calib_point_timeout_sec = self.data['calibration'].get('point_timeout_sec', 12.0)
+        self.calib_max_sample_std = self.data['calibration'].get('max_sample_std', 0.025)
+        self.calib_outlier_mad_scale = self.data['calibration'].get('outlier_mad_scale', 3.5)
+        self.calib_min_feature_span_x = self.data['calibration'].get('min_feature_span_x', 0.025)
+        self.calib_min_feature_span_y = self.data['calibration'].get('min_feature_span_y', 0.015)
+        self.calib_min_quality = self.data['calibration'].get('min_quality', 0.6)
+
+        eye_validity = self.data.get('eye_validity', {})
+        self.min_ear = eye_validity.get('min_ear', 0.08)
+        self.max_ear = eye_validity.get('max_ear', 0.65)
         
         self.iris_baseline_frames = self.data['iris']['baseline_frames']
         

@@ -5,12 +5,14 @@
 # Webcam settings
 # ─────────────────────────────────────────────
 webcam:
-  device_index: 1          # 0 = default webcam; try 1 for external cam
-  fps_target: 60           # Target FPS: 30 or 60
+  device_index: 1 # 0 = default webcam; try 1 for external cam
+  fps_target: 60 # Target FPS: 30 or 60
   width: 640
   height: 480
-  flip_horizontal: true    # Mirror camera feed so movement matches screen
-  async_capture: true      # Enable multithreaded capture buffer for high FPS
+  inference_width: 320 # lower-resolution copy used only for MediaPipe inference
+  inference_height: 240
+  flip_horizontal: true # Mirror camera feed so movement matches screen
+  async_capture: true # Enable multithreaded capture buffer for high FPS
 
 # ─────────────────────────────────────────────
 # Grid settings
@@ -22,25 +24,25 @@ grid:
   # Section label for each cell [row][col]
   # Use null for untracked / outside IDE cells
   section_map:
-    - ["sidebar",  "main_file", "ai_agent"   ]
-    - ["sidebar",  "main_file", "second_file"]
-    - ["terminal", "terminal",  "terminal"   ]
+    - ["sidebar", "main_file", "ai_agent"]
+    - ["sidebar", "main_file", "second_file"]
+    - ["terminal", "terminal", "terminal"]
 
   # Colours for each section in the grid overlay (BGR format)
   section_colors:
-    sidebar:      [200, 100,  50]   # blue-ish
-    main_file:    [ 50, 180,  50]   # green
-    ai_agent:     [180,  50, 180]   # purple
-    second_file:  [180, 180,  50]   # cyan-ish
-    terminal:     [ 50, 140, 200]   # orange-ish
+    sidebar: [200, 100, 50] # blue-ish
+    main_file: [50, 180, 50] # green
+    ai_agent: [180, 50, 180] # purple
+    second_file: [180, 180, 50] # cyan-ish
+    terminal: [50, 140, 200] # orange-ish
 
 # ─────────────────────────────────────────────
 # Gaze Boundary & Padding Settings (off-screen detection)
 # ─────────────────────────────────────────────
 gaze_boundary:
   enabled: true
-  padding_x: 0.15          # 0.15 = 15% margin left & right (30% total horizontal padding)
-  padding_y: 0.15          # 0.15 = 15% margin top & bottom (30% total vertical padding)
+  padding_x: 0.05 # 0.05 = 5% classification margin on each horizontal edge
+  padding_y: 0.05 # independent from calibration target positions
   off_screen_label: "off_screen"
 
 # ─────────────────────────────────────────────
@@ -48,7 +50,7 @@ gaze_boundary:
 # Options: "ema" | "kalman" | "median" | "none"
 # ─────────────────────────────────────────────
 filter:
-  type: "ema"              # <── change this to switch filter
+  type: "ema" # <── change this to switch filter
 
   # EMA — Exponential Moving Average
   # Low latency, slight jitter. Good default for 30/60 fps.
@@ -68,7 +70,7 @@ filter:
 # Dwell time & Metrics
 # ─────────────────────────────────────────────
 dwell:
-  threshold_ms: 300        # min ms before gaze counts as intentional
+  threshold_ms: 300 # min ms before gaze counts as intentional
 
 metrics:
   transition_window_sec: 5.0 # rolling window for gaze transition rate
@@ -77,27 +79,39 @@ metrics:
 # Calibration & Gaze Mapping
 # ─────────────────────────────────────────────
 calibration:
-  n_samples_per_point: 30  # frames to collect per calibration dot
-  move_delay_sec: 2.0      # countdown time before collecting samples for a dot
-  dot_radius: 20           # pixels
-  dot_color_bgr: [0, 0, 255]  # red dot
-  stability_threshold: 0.015  # max normalized drift allowed during gaze hold
+  n_samples_per_point: 30 # frames to collect per calibration dot
+  move_delay_sec: 2.0 # countdown time before collecting samples for a dot
+  target_margin: 0.12 # minimum edge distance; auto-clears padding by another 2%
+  dot_radius: 20 # pixels
+  dot_color_bgr: [0, 0, 255] # red dot
+  stability_threshold: 0.015 # max normalized drift allowed during gaze hold
   stability_required_frames: 6 # frames gaze must remain still before collecting
   mapping_method: "hybrid" # Options: "hybrid" (Poly X + Ridge Y w/ EAR) | "polynomial" | "affine" | "homography"
+  point_timeout_sec: 12.0 # retry a point if valid samples cannot be collected in time
+  max_sample_std: 0.025 # reject a noisy point (normalized eye-coordinate standard deviation)
+  outlier_mad_scale: 3.5 # robust per-point sample outlier rejection
+  min_feature_span_x: 0.025 # required eye-feature separation across all horizontal targets
+  min_feature_span_y: 0.015 # required eye-feature separation across all vertical targets
+  min_quality: 0.60 # tracking will not start below this leave-one-point-out score
+
+# Eye/landmark validity. Invalid frames are never used for calibration or gaze mapping.
+eye_validity:
+  min_ear: 0.08 # reject closed/mostly occluded eyes
+  max_ear: 0.65 # reject implausible landmark geometry
 
 # ─────────────────────────────────────────────
 # Iris baseline (for pupil-dilation proxy)
 # ─────────────────────────────────────────────
 iris:
-  baseline_frames: 60      # frames to average for baseline iris size
+  baseline_frames: 60 # frames to average for baseline iris size
 
 # ─────────────────────────────────────────────
 # Output / data recording
 # ─────────────────────────────────────────────
 output:
   session_dir: "./sessions"
-  csv_buffer_size: 60      # flush CSV every N frames (lower = safer, more I/O)
-  save_video: false        # set true to save annotated mp4 (adds CPU + storage)
+  csv_buffer_size: 60 # flush CSV every N frames (lower = safer, more I/O)
+  save_video: false # set true to save annotated mp4 (adds CPU + storage)
 
 # ─────────────────────────────────────────────
 # MediaPipe model & Landmarks
@@ -113,7 +127,7 @@ mediapipe:
   landmarks:
     left_iris: [468, 469, 470, 471, 472]
     right_iris: [473, 474, 475, 476, 477]
-    left_eye_corners: [33, 133]      # outer (33), inner (133)
-    right_eye_corners: [362, 263]    # inner (362), outer (263)
-    left_eyelid: [159, 145, 133, 33]  # top (159), bottom (145), inner (133), outer (33)
+    left_eye_corners: [33, 133] # outer (33), inner (133)
+    right_eye_corners: [362, 263] # inner (362), outer (263)
+    left_eyelid: [159, 145, 133, 33] # top (159), bottom (145), inner (133), outer (33)
     right_eyelid: [386, 374, 263, 362] # top (386), bottom (374), outer (263), inner (362)

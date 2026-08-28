@@ -58,7 +58,8 @@ class EyeTrackerApp:
             "gaze_x_raw", "gaze_y_raw", "gaze_x_smooth", "gaze_y_smooth",
             "grid_row", "grid_col", "section", "confidence",
             "dwell_time_ms", "nrevisit_count", "transition_rate",
-            "iris_size_delta", "fps_actual", "face_detected", "calibration_quality"
+            "iris_size_delta", "fps_actual", "capture_fps", "inference_ms",
+            "face_detected", "gaze_status", "calibration_quality"
         ])
         
         self.calibration_quality = 0.0
@@ -69,6 +70,11 @@ class EyeTrackerApp:
         self.show_grid = True
         self.debug_mode = False
         self._last_ts_ms = 0
+        self.tracking_start_time = None
+        self.last_frame_time = None
+        self.fps_ema = 0.0
+        self.exit_requested = False
+        self.calibration_diagnostics = {}
         
         try:
             import ctypes
@@ -89,6 +95,29 @@ class EyeTrackerApp:
             if ret and self.cfg.flip_horizontal:
                 frame = cv2.flip(frame, 1)
             return ret, frame
+
+    def camera_diagnostics(self):
+        if self.stream is not None:
+            return self.stream.diagnostics()
+        return {
+            "width": int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+            "height": int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+            "fps_reported": float(self.cap.get(cv2.CAP_PROP_FPS)),
+            "capture_fps_observed": None,
+            "backend": self.cap.getBackendName() if self.cap.isOpened() else "closed",
+        }
+
+    def make_mediapipe_image(self, frame):
+        inference_frame = frame
+        if frame.shape[1] != self.cfg.inference_w or frame.shape[0] != self.cfg.inference_h:
+            inference_frame = cv2.resize(
+                frame, (self.cfg.inference_w, self.cfg.inference_h), interpolation=cv2.INTER_AREA
+            )
+        rgb = cv2.cvtColor(inference_frame, cv2.COLOR_BGR2RGB)
+        return mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+
+    def observed_capture_fps(self):
+        return self.stream.observed_fps() if self.stream is not None else None
 
     def calculate_ear(self, landmarks):
         l_top = landmarks[self.cfg.left_eyelid[0]]
@@ -124,13 +153,28 @@ class EyeTrackerApp:
         r_iris_x = sum(p.x for p in right_iris_pts) / len(right_iris_pts)
         r_iris_y = sum(p.y for p in right_iris_pts) / len(right_iris_pts)
 
-        l_eye_w = math.hypot(left_corner_inner.x - left_corner_outer.x, left_corner_inner.y - left_corner_outer.y)
-        l_norm_x = (l_iris_x - left_corner_outer.x) / l_eye_w if l_eye_w > 0 else 0.5
-        l_norm_y = (l_iris_y - left_corner_outer.y) / l_eye_w if l_eye_w > 0 else 0.5
+        def eye_local(iris_x, iris_y, corner_a, corner_b):
+            # Always orient the local X axis toward image-right, then project Y onto
+            # a perpendicular axis that points image-down. This compensates head roll.
+            left, right = sorted((corner_a, corner_b), key=lambda p: p.x)
+            ax, ay = right.x - left.x, right.y - left.y
+            length_sq = ax * ax + ay * ay
+            if length_sq < 1e-9:
+                return 0.5, 0.0
+            vx, vy = iris_x - left.x, iris_y - left.y
+            local_x = (vx * ax + vy * ay) / length_sq
+            nx, ny = -ay, ax
+            if ny < 0:
+                nx, ny = -nx, -ny
+            local_y = (vx * nx + vy * ny) / length_sq
+            return local_x, local_y
 
-        r_eye_w = math.hypot(right_corner_outer.x - right_corner_inner.x, right_corner_outer.y - right_corner_inner.y)
-        r_norm_x = (r_iris_x - right_corner_inner.x) / r_eye_w if r_eye_w > 0 else 0.5
-        r_norm_y = (r_iris_y - right_corner_inner.y) / r_eye_w if r_eye_w > 0 else 0.5
+        l_norm_x, l_norm_y = eye_local(
+            l_iris_x, l_iris_y, left_corner_outer, left_corner_inner
+        )
+        r_norm_x, r_norm_y = eye_local(
+            r_iris_x, r_iris_y, right_corner_inner, right_corner_outer
+        )
 
         norm_x = (l_norm_x + r_norm_x) / 2.0
         norm_y = (l_norm_y + r_norm_y) / 2.0
@@ -142,6 +186,35 @@ class EyeTrackerApp:
         iris_size = (l_size + r_size) / 2.0
 
         return (norm_x, norm_y, ear), iris_size
+
+    def wait_for_calibration_retry(self):
+        cv2.namedWindow("Calibration Required", cv2.WINDOW_NORMAL)
+        cv2.setWindowProperty("Calibration Required", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        panel = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
+        cv2.putText(panel, "CALIBRATION WAS REJECTED", (80, self.screen_h // 2 - 60),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1.4, (60, 60, 255), 3)
+        cv2.putText(panel, "Press R to retry, or Q to quit.", (80, self.screen_h // 2 + 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1.0, (230, 230, 230), 2)
+        cv2.putText(panel, "Keep your head still and stare at the center of each dot.",
+                    (80, self.screen_h // 2 + 70), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (180, 180, 180), 2)
+        while True:
+            cv2.imshow("Calibration Required", panel)
+            key = cv2.waitKey(30) & 0xFF
+            if key == ord('r'):
+                cv2.destroyWindow("Calibration Required")
+                return True
+            if key == ord('q'):
+                cv2.destroyWindow("Calibration Required")
+                self.exit_requested = True
+                return False
+
+    def calibrate_until_ready(self):
+        while not self.exit_requested:
+            if self.run_calibration():
+                return True
+            if self.exit_requested or not self.wait_for_calibration_retry():
+                return False
+        return False
 
     def _next_ts(self):
         ts = int(time.time() * 1000)
@@ -163,8 +236,14 @@ class EyeTrackerApp:
         cv2.namedWindow("Calibration", cv2.WINDOW_NORMAL)
         cv2.setWindowProperty("Calibration", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         
-        cell_w = self.screen_w / grid_c
-        cell_h = self.screen_h / grid_r
+        boundary_clearance = 0.0
+        if self.cfg.gaze_boundary_enabled:
+            boundary_clearance = max(
+                self.cfg.gaze_boundary_pad_x, self.cfg.gaze_boundary_pad_y
+            ) + 0.02
+        margin = min(max(self.cfg.calib_target_margin, boundary_clearance, 0.05), 0.30)
+        target_xs = np.linspace(self.screen_w * margin, self.screen_w * (1.0 - margin), grid_c)
+        target_ys = np.linspace(self.screen_h * margin, self.screen_h * (1.0 - margin), grid_r)
         
         pad_x = int(self.screen_w * self.cfg.gaze_boundary_pad_x) if self.cfg.gaze_boundary_enabled else 0
         pad_y = int(self.screen_h * self.cfg.gaze_boundary_pad_y) if self.cfg.gaze_boundary_enabled else 0
@@ -173,8 +252,8 @@ class EyeTrackerApp:
         
         for r in range(grid_r):
             for c in range(grid_c):
-                dot_x = int((c + 0.5) * cell_w)
-                dot_y = int((r + 0.5) * cell_h)
+                dot_x = int(target_xs[c])
+                dot_y = int(target_ys[r])
 
                 dot_num = r * grid_c + c + 1
                 total_dots = grid_r * grid_c
@@ -192,9 +271,9 @@ class EyeTrackerApp:
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 1)
 
                     cv2.circle(bg, (dot_x, dot_y), self.cfg.calib_radius, self.cfg.calib_color, -1)
-                    cv2.putText(bg, f"Focus your eyes on the RED DOT ({dot_num}/{total_dots})",
+                    cv2.putText(bg, f"LOOK AT THE CENTER OF THE RED DOT ({dot_num}/{total_dots})",
                                 (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2)
-                    cv2.putText(bg, f"Hold gaze still in {remaining:.1f}s...",
+                    cv2.putText(bg, f"Keep your head still; move only your eyes. Recording in {remaining:.1f}s...",
                                 (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (180, 180, 180), 2)
                     cv2.imshow("Calibration", bg)
                     cv2.waitKey(30)
@@ -203,13 +282,15 @@ class EyeTrackerApp:
                 collected_feats = []
                 stable_streak = 0
                 prev_ix, prev_iy = None, None
+                point_started = time.time()
                 
                 while samples_collected < self.cfg.calib_samples:
+                    if time.time() - point_started > self.cfg.calib_point_timeout_sec:
+                        break
                     ret, frame = self.read_frame()
                     if not ret or frame is None: continue
                     
-                    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+                    mp_img = self.make_mediapipe_image(frame)
                     ts_ms = self._next_ts()
                     
                     try:
@@ -220,6 +301,10 @@ class EyeTrackerApp:
                             continue
                         
                         (ix, iy, ear), _ = self.get_normalized_eye_vector(res.face_landmarks[0])
+                        if not (self.cfg.min_ear <= ear <= self.cfg.max_ear):
+                            stable_streak = 0
+                            cv2.waitKey(1)
+                            continue
                         
                         if prev_ix is not None:
                             drift = math.hypot(ix - prev_ix, iy - prev_iy)
@@ -251,21 +336,66 @@ class EyeTrackerApp:
                             cv2.putText(copy_bg, "KEEP EYES FIXED ON THE DOT...",
                                         (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (100, 100, 255), 2)
                         cv2.imshow("Calibration", copy_bg)
-                        cv2.waitKey(1)
+                        key = cv2.waitKey(1) & 0xFF
+                        if key == ord('q'):
+                            self.exit_requested = True
+                            cv2.destroyWindow("Calibration")
+                            return False
                         
                     except Exception as e:
                         stable_streak = 0
                 
-                avg_feat = np.mean(collected_feats, axis=0).tolist()
+                if len(collected_feats) < self.cfg.calib_samples:
+                    print(f"[EyeTrack] Calibration point {dot_num} timed out; restarting calibration.")
+                    cv2.destroyWindow("Calibration")
+                    return False
+
+                samples = np.asarray(collected_feats, dtype=np.float64)
+                median = np.median(samples, axis=0)
+                mad = np.median(np.abs(samples - median), axis=0) + 1e-6
+                robust_z = np.max(np.abs(samples - median) / (1.4826 * mad), axis=1)
+                kept = samples[robust_z <= self.cfg.calib_outlier_mad_scale]
+                if len(kept) < max(10, self.cfg.calib_samples // 2):
+                    kept = samples
+                point_std = float(np.max(np.std(kept[:, :2], axis=0)))
+                if point_std > self.cfg.calib_max_sample_std:
+                    print(f"[EyeTrack] Calibration point {dot_num} was noisy (std={point_std:.4f}); restarting.")
+                    cv2.destroyWindow("Calibration")
+                    return False
+
+                avg_feat = np.median(kept, axis=0).tolist()
                 eye_features.append(avg_feat)
                 screen_pts.append([dot_x, dot_y])
                 
         cv2.destroyWindow("Calibration")
         
-        self.calibration_quality = self.mapper.fit(eye_features, screen_pts)
+        feature_array = np.asarray(eye_features)
+        span_x = float(np.ptp(feature_array[:, 0]))
+        span_y = float(np.ptp(feature_array[:, 1]))
+        if span_x < self.cfg.calib_min_feature_span_x or span_y < self.cfg.calib_min_feature_span_y:
+            self.calibration_quality = 0.0
+            self.calibration_diagnostics = {"feature_span_x": span_x, "feature_span_y": span_y}
+            print(f"[EyeTrack] Calibration rejected: insufficient feature separation X={span_x:.4f}, Y={span_y:.4f}")
+            return False
+
+        try:
+            self.calibration_quality = self.mapper.fit(
+                eye_features, screen_pts, screen_size=(self.screen_w, self.screen_h)
+            )
+        except (ValueError, np.linalg.LinAlgError) as exc:
+            self.calibration_quality = 0.0
+            self.calibration_diagnostics = {"fit_error": str(exc)}
+            print(f"[EyeTrack] Calibration model failed: {exc}")
+            return False
+        self.calibration_diagnostics = {
+            **self.mapper.diagnostics, "feature_span_x": span_x, "feature_span_y": span_y
+        }
         print(f"[EyeTrack] Calibration complete! Quality ({self.mapper.method}): {self.calibration_quality:.2f}")
-        if self.calibration_quality < 0.6:
-            print("[EyeTrack] WARNING: Low quality (<0.6). Consider recalibrating with 'C'.")
+        print(f"[EyeTrack] Validation: {self.mapper.diagnostics}")
+        if self.calibration_quality < self.cfg.calib_min_quality:
+            print(f"[EyeTrack] REJECTED: quality is below {self.cfg.calib_min_quality:.2f}.")
+            return False
+        return True
 
     def is_gaze_on_screen(self, screen_x, screen_y):
         if not self.cfg.gaze_boundary_enabled:
@@ -391,7 +521,13 @@ class EyeTrackerApp:
 
 
     def run(self):
-        self.run_calibration()
+        if not self.calibrate_until_ready():
+            self.cleanup()
+            return
+
+        self.tracking_start_time = time.time()
+        self.last_frame_time = None
+        print(f"[EyeTrack] Camera diagnostics: {self.camera_diagnostics()}")
         
         cv2.namedWindow("Eye Tracking - Gaze Grid", cv2.WINDOW_NORMAL)
         print("[EyeTrack] Starting tracking loop...")
@@ -411,9 +547,12 @@ class EyeTrackerApp:
                 
             self.frame_count += 1
             ts_ms = int(iter_start * 1000)
+            if self.last_frame_time is not None:
+                instantaneous_fps = 1.0 / max(iter_start - self.last_frame_time, 1e-6)
+                self.fps_ema = instantaneous_fps if self.fps_ema == 0 else 0.9 * self.fps_ema + 0.1 * instantaneous_fps
+            self.last_frame_time = iter_start
             
-            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            mp_img = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
+            mp_img = self.make_mediapipe_image(frame)
             
             face_detected = False
             raw_x, raw_y = 0.0, 0.0
@@ -422,12 +561,15 @@ class EyeTrackerApp:
             section = None
             conf = 0.0
             iris_size = 0.0
+            gaze_status = "face_missing"
             
             res = None
+            inference_started = time.perf_counter()
             try:
                 res = self.landmarker.detect_for_video(mp_img, self._next_ts())
             except Exception as e:
                 print(f"[Warn] MediaPipe error: {e}")
+            inference_ms = (time.perf_counter() - inference_started) * 1000.0
                 
             if res and res.face_landmarks:
                 face_detected = True
@@ -442,15 +584,18 @@ class EyeTrackerApp:
                         py = int(p.y * frame.shape[0])
                         cv2.circle(frame, (px, py), 1, (255, 255, 255), -1)
                 
-                raw_x, raw_y = self.mapper.predict(norm_x, norm_y, ear)
-                sm_x, sm_y = self.gaze_filter.update(raw_x, raw_y)
-                
-                grid_r, grid_c, section, conf = self.get_grid_cell(sm_x, sm_y)
+                if not (self.cfg.min_ear <= ear <= self.cfg.max_ear):
+                    gaze_status = "eyes_invalid_or_blink"
+                else:
+                    raw_x, raw_y = self.mapper.predict(norm_x, norm_y, ear)
+                    sm_x, sm_y = self.gaze_filter.update(raw_x, raw_y)
+                    grid_r, grid_c, section, conf = self.get_grid_cell(sm_x, sm_y)
+                    gaze_status = "gaze_outside_screen" if section == self.cfg.off_screen_label else "on_screen"
                 
             self.metrics.update(ts_ms, section, iris_size)
             
-            elapsed = time.time() - self.start_time
-            fps = self.frame_count / elapsed if elapsed > 0 else 0.0
+            fps = self.fps_ema
+            capture_fps = self.observed_capture_fps()
             
             row = [
                 ts_ms, self.frame_count,
@@ -459,8 +604,8 @@ class EyeTrackerApp:
                 self.metrics.dwell_time_ms,
                 self.metrics.get_nrevisit(section),
                 self.metrics.get_transition_rate(),
-                self.metrics.iris_delta,
-                fps, face_detected, self.calibration_quality
+                self.metrics.iris_delta, fps, capture_fps if capture_fps is not None else "",
+                inference_ms, face_detected, gaze_status, self.calibration_quality
             ]
             self.csv_writer.writerow(row)
             
@@ -470,9 +615,10 @@ class EyeTrackerApp:
             hud_y = 30
             is_off_screen = (section == self.cfg.off_screen_label)
             hud_color = (40, 40, 200) if is_off_screen else (0, 255, 0)
-            status_text = "Section: [OFF-SCREEN]" if is_off_screen else f"Section: {section}"
+            status_text = f"Status: {gaze_status}" if gaze_status != "on_screen" else f"Section: {section}"
             lines = [
-                f"FPS: {fps:.1f}",
+                f"Processing FPS: {fps:.1f}",
+                f"Inference: {inference_ms:.1f}ms",
                 status_text,
                 f"Dwell: {self.metrics.dwell_time_ms / 1000.0:.1f}s",
                 f"NRevisit: {self.metrics.get_nrevisit(section)}",
@@ -496,7 +642,10 @@ class EyeTrackerApp:
             if key == ord('q'):
                 break
             elif key == ord('c'):
-                self.run_calibration()
+                if not self.calibrate_until_ready():
+                    break
+                self.gaze_filter.reset()
+                self.last_frame_time = None
             elif key == ord('p'):
                 self.is_paused = True
             elif key == ord('g'):
@@ -511,6 +660,7 @@ class EyeTrackerApp:
 
     def cleanup(self):
         print("\n[EyeTrack] Cleaning up...")
+        camera_stats = self.camera_diagnostics()
         if self.stream is not None:
             self.stream.stop()
         else:
@@ -519,13 +669,16 @@ class EyeTrackerApp:
         cv2.destroyAllWindows()
         self.csv_file.flush()
         self.csv_file.close()
+        self.metrics.finalize()
         
         duration = time.time() - self.start_time
+        tracking_duration = (time.time() - self.tracking_start_time) if self.tracking_start_time else 0.0
         summary = {
             "session_id": self.session_id,
             "start_time_iso": datetime.fromtimestamp(self.start_time).isoformat(),
             "end_time_iso": datetime.now().isoformat(),
             "duration_seconds": duration,
+            "tracking_duration_seconds": tracking_duration,
             "config": {
                 "grid_rows": self.cfg.grid_rows,
                 "grid_cols": self.cfg.grid_cols,
@@ -537,9 +690,12 @@ class EyeTrackerApp:
                 "total_frames": self.frame_count,
                 "frames_with_face": self.total_face_frames,
                 "face_detection_rate": self.total_face_frames / self.frame_count if self.frame_count > 0 else 0,
-                "avg_fps": self.frame_count / duration if duration > 0 else 0,
+                "avg_fps": self.frame_count / tracking_duration if tracking_duration > 0 else 0,
+                "processing_fps_ema_final": self.fps_ema,
+                "camera": camera_stats,
                 "sections": self.metrics.session_sections_summary,
-                "calibration_quality": self.calibration_quality
+                "calibration_quality": self.calibration_quality,
+                "calibration_diagnostics": self.calibration_diagnostics
             },
             "csv_path": self.csv_path
         }

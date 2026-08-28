@@ -31,10 +31,12 @@ python eye_tracking_prototype.py --config custom_config.yaml
 
 ### 1. Calibration Phase
 When you launch the script, it will first enter the calibration phase.
-- The screen will turn black and display a red dot in each grid cell sequentially.
-- Look directly at the red dot and hold your gaze steady.
-- The system collects 30 frames (by default) of your iris position per dot.
-- Once all dots are completed, it computes an affine transformation to map your specific eye geometry to screen coordinates.
+- The screen displays nine red dots sequentially, kept safely inside the physical screen edges.
+- **Look at the center of the visible red dot itself.** Do not look at the purple padding border.
+- Keep your head still and move only your eyes. Blink normally between points where possible.
+- The purple padding is only a tracking classification margin; it does not control dot placement.
+- Closed-eye, unstable, and noisy samples are rejected. A timed-out point or weak overall calibration must be retried.
+- The final score uses leave-one-point-out validation. Tracking cannot start below `calibration.min_quality`.
 
 ### 2. Tracking Phase
 After successful calibration, two windows will open:
@@ -57,10 +59,16 @@ All parameters are tunable without touching the Python code. You can adjust:
 - **Grid Size**: Number of rows and columns, and the label mapped to each cell.
 - **Smoothing Filter**: Choose between `ema`, `kalman`, `median`, or `none`.
 - **Webcam Options**: Target FPS, resolution, and device index.
+- **Inference Resolution**: MediaPipe can process a smaller frame than the displayed camera feed.
+- **Calibration Validation**: Target margin, point timeout, noise limits, feature separation, and minimum quality.
 - **Dwell Threshold**: The minimum time (in ms) before a gaze is counted as intentional.
 
 ## Data Output
 
 All session data is saved into the `sessions/` directory. For each session, two files are created:
-1. `session_<uuid>_<timestamp>.csv`: Contains per-frame raw data (gaze coordinates, grid section, metrics, confidence, etc.).
-2. `session_<uuid>_<timestamp>_summary.json`: An aggregated summary of the entire session including average FPS, dwell times per section, total visit counts, and calibration quality.
+1. `session_<uuid>_<timestamp>.csv`: Contains per-frame gaze data plus processing FPS, capture FPS, inference time, and an explicit gaze-validity state.
+2. `session_<uuid>_<timestamp>_summary.json`: Includes camera diagnostics, held-out calibration errors, average processing FPS, dwell times, and visit counts.
+
+Possible gaze states are `on_screen`, `gaze_outside_screen`, `face_missing`, and
+`eyes_invalid_or_blink`. The padding-based state does not by itself prove that a
+person looked away; missing/invalid landmark states are recorded separately.
