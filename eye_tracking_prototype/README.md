@@ -34,7 +34,8 @@ When you launch the script, it will first enter the calibration phase.
 - The screen displays nine red dots sequentially, kept safely inside the physical screen edges.
 - **Look at the center of the visible red dot itself.** Do not look at the purple padding border.
 - Keep your head still and move only your eyes. Blink normally between points where possible.
-- The purple padding is only a tracking classification margin; it does not control dot placement.
+- The colored padding is visualization-only; it does not control calibration or grid classification.
+- Calibration uses only unique camera frames; repeated reads of the latest frame do not count as new samples.
 - Closed-eye, unstable, and noisy samples are rejected. A timed-out point or weak overall calibration must be retried.
 - The final score uses leave-one-point-out validation. Tracking cannot start below `calibration.min_quality`.
 
@@ -70,5 +71,31 @@ All session data is saved into the `sessions/` directory. For each session, two 
 2. `session_<uuid>_<timestamp>_summary.json`: Includes camera diagnostics, held-out calibration errors, average processing FPS, dwell times, and visit counts.
 
 Possible gaze states are `on_screen`, `gaze_outside_screen`, `face_missing`, and
-`eyes_invalid_or_blink`. The padding-based state does not by itself prove that a
-person looked away; missing/invalid landmark states are recorded separately.
+`eyes_invalid_or_blink`. `gaze_outside_screen` now requires a predicted coordinate
+outside the full physical screen; missing/invalid landmark states are recorded separately.
+
+The black grid is a scaled representation of the **entire physical screen**.
+Colored padding remains visible around that representation, but it is not removed
+from logical screen coordinates and never changes grid-cell classification.
+
+`webcam.width` and `webcam.height` are requested capture settings rather than
+code constants; the negotiated values are recorded under `summary.camera`.
+`inference_width` and `inference_height` intentionally control a separate
+MediaPipe input copy so accuracy/performance can be tuned without changing the
+screen-coordinate mapping, which uses normalized landmarks.
+
+## Performance Pipeline
+
+Tracking uses three decoupled stages: webcam capture, MediaPipe inference, and
+OpenCV display. The inference worker always consumes the newest unique camera
+frame, so a slow fullscreen window cannot build a stale-frame queue or reduce
+the gaze-processing rate. The camera preview and grid default to 15 FPS while
+tracking runs at the maximum rate supplied by the camera and processor.
+
+Performance values have distinct meanings:
+
+- `capture_fps`: frames delivered by the camera backend.
+- `fps_actual`: unique frames processed by the gaze worker.
+- `ui_fps`: display refresh rate, recorded in the JSON summary.
+- `dropped_frame_ratio`: camera frames intentionally skipped to keep latency low.
+- `stage_timings_ms`: mean, P50, and P95 timings for every processing stage.

@@ -14,6 +14,14 @@ webcam:
   flip_horizontal: true # Mirror camera feed so movement matches screen
   async_capture: true # Enable multithreaded capture buffer for high FPS
 
+# Display is intentionally slower than gaze processing so OpenCV UI cannot
+# throttle MediaPipe. Tracking still runs at the maximum unique-frame rate.
+display:
+  refresh_fps: 15
+
+performance:
+  latest_frame_only: true
+
 # ─────────────────────────────────────────────
 # Grid settings
 # ─────────────────────────────────────────────
@@ -41,8 +49,8 @@ grid:
 # ─────────────────────────────────────────────
 gaze_boundary:
   enabled: true
-  padding_x: 0.05 # 0.05 = 5% classification margin on each horizontal edge
-  padding_y: 0.05 # independent from calibration target positions
+  padding_x: 0.05 # visualization-only frame outside the black screen representation
+  padding_y: 0.05 # never removes pixels from logical on-screen classification
   off_screen_label: "off_screen"
 
 # ─────────────────────────────────────────────
@@ -81,7 +89,7 @@ metrics:
 calibration:
   n_samples_per_point: 30 # frames to collect per calibration dot
   move_delay_sec: 2.0 # countdown time before collecting samples for a dot
-  target_margin: 0.12 # minimum edge distance; auto-clears padding by another 2%
+  target_margin: 0.07 # dots cover 7%..93% of the full physical screen
   dot_radius: 20 # pixels
   dot_color_bgr: [0, 0, 255] # red dot
   stability_threshold: 0.015 # max normalized drift allowed during gaze hold

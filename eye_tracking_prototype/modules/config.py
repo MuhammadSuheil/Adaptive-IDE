@@ -21,6 +21,8 @@ class Config:
         self.inference_h = self.data['webcam'].get('inference_height', self.webcam_h)
         self.flip_horizontal = self.data['webcam'].get('flip_horizontal', True)
         self.async_capture = self.data['webcam'].get('async_capture', True)
+        self.display_refresh_fps = self.data.get('display', {}).get('refresh_fps', 15)
+        self.latest_frame_only = self.data.get('performance', {}).get('latest_frame_only', True)
         
         self.grid_rows = self.data['grid']['rows']
         self.grid_cols = self.data['grid']['cols']

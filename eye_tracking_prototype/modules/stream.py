@@ -17,7 +17,10 @@ class WebcamStream:
             
         self.stopped = False
         self.lock = threading.Lock()
+        self.frame_ready = threading.Condition(self.lock)
         self.capture_count = 1 if self.ret else 0
+        self.frame_id = 1 if self.ret else 0
+        self.capture_timestamp = time.perf_counter() if self.ret else 0.0
         self.capture_started = time.perf_counter()
 
     def start(self):
@@ -33,16 +36,31 @@ class WebcamStream:
                 continue
             if self.flip:
                 frame = cv2.flip(frame, 1)
-            with self.lock:
+            with self.frame_ready:
                 self.ret = ret
                 self.frame = frame
                 self.capture_count += 1
+                self.frame_id += 1
+                self.capture_timestamp = time.perf_counter()
+                self.frame_ready.notify_all()
 
     def read(self):
         with self.lock:
             if not self.ret or self.frame is None:
                 return False, None
             return True, self.frame.copy()
+
+    def read_latest(self, after_frame_id=0, timeout=0.1):
+        """Wait for and return a frame newer than ``after_frame_id``."""
+        with self.frame_ready:
+            if self.frame_id <= after_frame_id and not self.stopped:
+                self.frame_ready.wait_for(
+                    lambda: self.frame_id > after_frame_id or self.stopped,
+                    timeout=timeout,
+                )
+            if self.stopped or not self.ret or self.frame is None or self.frame_id <= after_frame_id:
+                return False, None, after_frame_id, 0.0
+            return True, self.frame.copy(), self.frame_id, self.capture_timestamp
 
     def diagnostics(self):
         elapsed = max(time.perf_counter() - self.capture_started, 1e-6)
@@ -59,6 +77,8 @@ class WebcamStream:
         return self.capture_count / elapsed
 
     def stop(self):
-        self.stopped = True
+        with self.frame_ready:
+            self.stopped = True
+            self.frame_ready.notify_all()
         time.sleep(0.1)
         self.cap.release()
