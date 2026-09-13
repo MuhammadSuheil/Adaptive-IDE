@@ -42,6 +42,7 @@ class MetricsEngine:
                 ss = self.session_sections_summary[self.current_section]
                 ss["total_dwell_ms"] += self.dwell_time_ms
                 ss["visit_count"] += 1
+                ss["nrevisit_count"] = self.nrevisit_counts.get(self.current_section, 0)
                 if self.dwell_time_ms > ss["max_continuous_dwell_ms"]:
                     ss["max_continuous_dwell_ms"] = self.dwell_time_ms
             
@@ -67,3 +68,17 @@ class MetricsEngine:
 
     def get_nrevisit(self, section):
         return self.nrevisit_counts.get(section, 0)
+
+    def finalize(self):
+        """Commit the active visit before writing the session summary."""
+        if self.current_section is None:
+            return
+        ss = self.session_sections_summary.setdefault(self.current_section, {
+            "total_dwell_ms": 0, "visit_count": 0, "nrevisit_count": 0,
+            "max_continuous_dwell_ms": 0
+        })
+        ss["total_dwell_ms"] += self.dwell_time_ms
+        ss["visit_count"] += 1
+        ss["nrevisit_count"] = self.nrevisit_counts.get(self.current_section, 0)
+        ss["max_continuous_dwell_ms"] = max(ss["max_continuous_dwell_ms"], self.dwell_time_ms)
+        self.current_section = None
