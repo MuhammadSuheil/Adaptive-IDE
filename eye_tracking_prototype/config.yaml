@@ -107,6 +107,8 @@ blink:
 head_positioning:
   enabled: true
   fullscreen: true
+  guide_height_ratio: 0.42 # Oval height relative to preview height; previously 0.64
+  guide_width_to_height: 0.72 # Portrait oval pixel aspect ratio
   target_face_width_ratio: 0.20  # Comfortable normal seating distance (~50-70cm)
   target_center_x_ratio: 0.5
   target_center_y_ratio: 0.45
@@ -134,7 +136,7 @@ calibration:
   layout_mode: "3x3" # Nine targets: four corners, four side midpoints, center
   n_samples_per_point: 20 # frames to collect per calibration dot
   move_delay_sec: 1.5 # 1.5s fixation delay to allow eyes to settle smoothly (was 0.8s)
-  target_margin: 0.0 # Exact pixel boundaries; corner targets intentionally clipped
+  target_margin: 0.0 # Minimum inset is automatically dot_radius + 2 px so dots remain whole
   dot_radius: 20 # pixels
   dot_color_bgr: [0, 0, 255] # red dot
   stability_threshold: 0.020 # STABLE threshold

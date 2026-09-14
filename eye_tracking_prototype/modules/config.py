@@ -61,6 +61,11 @@ class Config:
         hp_cfg = self.data.get('head_positioning', {})
         self.hp_enabled = hp_cfg.get('enabled', True)
         self.hp_fullscreen = hp_cfg.get('fullscreen', True)
+        self.hp_guide_height_ratio = float(hp_cfg.get('guide_height_ratio', 0.42))
+        self.hp_guide_width_to_height = float(hp_cfg.get('guide_width_to_height', 0.72))
+        if not (0.15 <= self.hp_guide_height_ratio <= 0.8 and
+                0.5 <= self.hp_guide_width_to_height <= 1.0):
+            raise ValueError("Head guide height must be 0.15..0.8 and width/height 0.5..1.0")
         self.hp_target_face_width_ratio = hp_cfg.get('target_face_width_ratio', 0.35)
         self.hp_target_center_x_ratio = hp_cfg.get('target_center_x_ratio', 0.5)
         self.hp_target_center_y_ratio = hp_cfg.get('target_center_y_ratio', 0.45)
