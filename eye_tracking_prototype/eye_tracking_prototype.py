@@ -336,7 +336,7 @@ class EyeTrackerApp:
         frame_id = 0
 
         target_cx = int(self.screen_w * self.cfg.hp_target_center_x_ratio)
-        target_cy = int(self.screen_h * self.cfg.hp_target_center_y_ratio)
+        target_cy = self.screen_h // 2
         target_w = int(self.screen_w * self.cfg.hp_target_face_width_ratio)
         target_h = int(target_w * 1.3)
 
@@ -392,21 +392,32 @@ class EyeTrackerApp:
                 ret, frame = self.read_frame()
 
             if not ret or frame is None:
+                stable_count = 0
+                countdown_start = None
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    self.exit_requested = True
+                    cv2.destroyWindow("Head Alignment Gate")
+                    return False
                 continue
 
             mp_img = self.make_mediapipe_image(frame)
-            res = self.landmarker.detect_for_video(mp_img, self._next_ts())
+            try:
+                res = self.landmarker.detect_for_video(mp_img, self._next_ts())
+            except Exception as exc:
+                print(f"[EyeTrack] Face guide inference failed: {exc}")
+                res = None
 
             canvas = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
 
-            # Camera Preview Inset (top right)
-            cam_h, cam_w = 210, 280
-            small_cam = cv2.resize(frame, (cam_w, cam_h))
-            canvas[30:30+cam_h, self.screen_w - cam_w - 30:self.screen_w - 30] = small_cam
-            cv2.rectangle(canvas, (self.screen_w - cam_w - 30, 30),
-                          (self.screen_w - 30, 30 + cam_h), (255, 255, 255), 2)
-            cv2.putText(canvas, "LIVE CAMERA", (self.screen_w - cam_w - 20, 55),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+            # Aspect-preserving live camera beneath the central circular guide.
+            fh, fw = frame.shape[:2]
+            scale = min(self.screen_w / fw, self.screen_h / fh)
+            pw, ph = int(fw * scale), int(fh * scale)
+            ox, oy = (self.screen_w - pw) // 2, (self.screen_h - ph) // 2
+            canvas[oy:oy+ph, ox:ox+pw] = cv2.resize(frame, (pw, ph))
+            radius = int(min(pw, ph) * 0.32)
+            target_cx, target_cy = self.screen_w // 2, self.screen_h // 2
+            target_w = target_h = radius * 2
 
             # Draw target bounding box
             box_left = target_cx - target_w // 2
@@ -422,7 +433,7 @@ class EyeTrackerApp:
             is_aligned = False
             face_w_ratio_live = 0.0
 
-            status_msg = "POSITION YOUR FACE IN THE BOX"
+            status_msg = "POSITION YOUR FACE IN THE CIRCLE"
             msg_color = (0, 165, 255)
 
             if res and res.face_landmarks:
@@ -447,20 +458,28 @@ class EyeTrackerApp:
                 dist_tol = self.cfg.hp_size_tolerance_ratio * self.cfg.hp_target_face_width_ratio
 
                 ck_face = True
-                ck_dist = dist_diff <= dist_tol
-                ck_center = (dx <= self.cfg.hp_alignment_tolerance_ratio and
-                             dy <= self.cfg.hp_alignment_tolerance_ratio)
+                anchors = np.array([[ox + lm[i].x * pw, oy + lm[i].y * ph]
+                                    for i in (10, 152, 234, 454)])
+                guide_center = np.array([target_cx, target_cy])
+                distances = np.linalg.norm(anchors - guide_center, axis=1) / radius
+                ck_dist = bool(np.all(distances <= 1.05) and
+                               np.all(distances[:2] >= 0.75) and
+                               np.all(distances[2:] >= 0.40))
+                ck_center = np.linalg.norm(anchors.mean(axis=0)-guide_center) <= radius * 0.18
+                for anchor in anchors:
+                    cv2.circle(canvas, tuple(anchor.astype(int)), 5, (0,255,255), -1)
                 ck_angle = (abs(yaw) <= self.cfg.hp_max_yaw_deg and
-                            abs(pitch) <= self.cfg.hp_max_pitch_deg)
+                            abs(pitch) <= self.cfg.hp_max_pitch_deg and abs(roll) <= 10.0)
 
                 # Face marker
-                cv2.circle(canvas, (face_cx, face_cy), 8, (255, 255, 0), -1)
+                # Guide checks use the same transformed pixels as the live preview.
 
                 if not ck_dist:
-                    status_msg = "ADJUST YOUR DISTANCE FROM CAMERA"
+                    status_msg = ("MOVE BACK - KEEP FACE INSIDE CIRCLE" if np.any(distances > 1.05)
+                                  else "MOVE CLOSER - FILL CIRCLE WITH YOUR FACE")
                     msg_color = (0, 165, 255)
                 elif not ck_center:
-                    status_msg = "CENTER YOUR FACE IN THE BOX"
+                    status_msg = "CENTER FOREHEAD, CHIN AND CHEEKS IN THE CIRCLE"
                     msg_color = (0, 165, 255)
                 elif not ck_angle:
                     status_msg = f"LOOK STRAIGHT AT SCREEN  (Yaw {yaw:.1f}°  Pitch {pitch:.1f}°)"
@@ -470,7 +489,7 @@ class EyeTrackerApp:
                     status_msg = "POSTURE CONFIRMED — HOLD STILL!"
                     msg_color = (0, 255, 0)
 
-                draw_distance_indicator(canvas, face_w_ratio)
+                # Distance is evaluated against the circle rather than a separate width target.
 
             checklist_states = [ck_face, ck_dist, ck_center, ck_angle, is_aligned]
 
@@ -484,7 +503,7 @@ class EyeTrackerApp:
             checklist_states[4] = stable_count >= self.cfg.hp_stability_frames_required
 
             box_color = (0, 255, 0) if is_aligned else msg_color
-            cv2.rectangle(canvas, (box_left, box_top), (box_right, box_bottom), box_color, 3)
+            cv2.circle(canvas, (target_cx, target_cy), radius, box_color, 4)
             cv2.line(canvas, (target_cx - 20, target_cy), (target_cx + 20, target_cy), box_color, 2)
             cv2.line(canvas, (target_cx, target_cy - 20), (target_cx, target_cy + 20), box_color, 2)
 
@@ -493,15 +512,18 @@ class EyeTrackerApp:
                         cv2.FONT_HERSHEY_SIMPLEX, 1.1, (255, 255, 255), 2)
             cv2.putText(canvas, status_msg, (50, 95), cv2.FONT_HERSHEY_SIMPLEX, 0.9, msg_color, 2)
             cv2.putText(canvas,
-                        "Press [SPACE] or [ENTER] anytime to confirm posture and start immediately",
+                        "Fill the circle with your face and hold for 5 seconds. [Q] Quit",
                         (50, 140), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 255), 1)
 
             # Countdown bar
             if stable_count >= self.cfg.hp_stability_frames_required:
                 if countdown_start is None:
-                    countdown_start = time.time()
-                elapsed = time.time() - countdown_start
+                    countdown_start = time.perf_counter()
+                elapsed = time.perf_counter() - countdown_start
                 remaining = self.cfg.hp_countdown_seconds - elapsed
+                cv2.ellipse(canvas, (target_cx, target_cy), (radius+10, radius+10),
+                            -90, 0, 360 * min(elapsed / max(self.cfg.hp_countdown_seconds, 0.1), 1),
+                            (0,255,0), 6)
                 if remaining <= 0:
                     cv2.destroyWindow("Head Alignment Gate")
                     print(f"[EyeTrack] Gate passed! Baseline pose locked: {self.baseline_pose}")
@@ -514,10 +536,6 @@ class EyeTrackerApp:
 
             cv2.imshow("Head Alignment Gate", canvas)
             key = cv2.waitKey(30) & 0xFF
-            if key == ord(' ') or key == 13 or key == 10:
-                cv2.destroyWindow("Head Alignment Gate")
-                print(f"[EyeTrack] Gate confirmed manually! Baseline pose locked: {self.baseline_pose}")
-                return True
             if key == ord('q'):
                 self.exit_requested = True
                 cv2.destroyWindow("Head Alignment Gate")
@@ -530,11 +548,11 @@ class EyeTrackerApp:
     # Phase 1: Modular N-Point Calibration Engine
     # ─────────────────────────────────────────────
     def generate_calibration_points(self):
-        margin = min(max(self.cfg.calib_target_margin, 0.05), 0.30)
+        margin = min(max(self.cfg.calib_target_margin, 0.0), 0.30)
         min_x = self.screen_w * margin
-        max_x = self.screen_w * (1.0 - margin)
+        max_x = (self.screen_w - 1) * (1.0 - margin)
         min_y = self.screen_h * margin
-        max_y = self.screen_h * (1.0 - margin)
+        max_y = (self.screen_h - 1) * (1.0 - margin)
 
         mode = self.cfg.calib_layout_mode
 

@@ -5,7 +5,7 @@
 # Webcam settings
 # ─────────────────────────────────────────────
 webcam:
-  device_index: 1 # 0 = default webcam; try 1 for external cam
+  device_index: 0 # 0 = default webcam; try 1 for external cam
   fps_target: 60 # Target FPS: 30 or 60
   width: 640
   height: 480
@@ -115,7 +115,7 @@ head_positioning:
   max_yaw_deg: 30.0                # Relaxed yaw angle tolerance
   max_pitch_deg: 30.0              # Relaxed pitch angle tolerance
   stability_frames_required: 4     # Fast confirmation (4 frames)
-  countdown_seconds: 1             # Fast 1s countdown
+  countdown_seconds: 5             # Continuous valid face fit before eye calibration
 
 # ─────────────────────────────────────────────
 # Head Pose Monitoring (Phase 3)
@@ -131,10 +131,10 @@ head_pose:
 # Calibration & Gaze Mapping
 # ─────────────────────────────────────────────
 calibration:
-  layout_mode: "13_point" # Options: "13_point" | "3x3" | "4x4" | "custom"
+  layout_mode: "3x3" # Nine targets: four corners, four side midpoints, center
   n_samples_per_point: 20 # frames to collect per calibration dot
   move_delay_sec: 1.5 # 1.5s fixation delay to allow eyes to settle smoothly (was 0.8s)
-  target_margin: 0.08 # dots cover 8%..92% of the full physical screen
+  target_margin: 0.0 # Exact pixel boundaries; corner targets intentionally clipped
   dot_radius: 20 # pixels
   dot_color_bgr: [0, 0, 255] # red dot
   stability_threshold: 0.020 # STABLE threshold

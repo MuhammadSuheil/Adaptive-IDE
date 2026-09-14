@@ -69,7 +69,7 @@ class Config:
         self.hp_max_yaw_deg = hp_cfg.get('max_yaw_deg', 10.0)
         self.hp_max_pitch_deg = hp_cfg.get('max_pitch_deg', 8.0)
         self.hp_stability_frames_required = hp_cfg.get('stability_frames_required', 15)
-        self.hp_countdown_seconds = hp_cfg.get('countdown_seconds', 3)
+        self.hp_countdown_seconds = max(0.1, float(hp_cfg.get('countdown_seconds', 5)))
 
         # Head Pose Monitoring (Phase 3)
         pose_cfg = self.data.get('head_pose', {})
@@ -79,10 +79,10 @@ class Config:
         self.pose_tracking_warn_pitch_deg = pose_cfg.get('tracking_warn_pitch_deg', 12.0)
         self.pose_show_text_warning = pose_cfg.get('show_text_warning', True)
 
-        self.calib_layout_mode = self.data['calibration'].get('layout_mode', '13_point')
+        self.calib_layout_mode = self.data['calibration'].get('layout_mode', '3x3')
         self.calib_samples = self.data['calibration']['n_samples_per_point']
         self.calib_move_delay_sec = self.data['calibration'].get('move_delay_sec', 0.8)
-        self.calib_target_margin = self.data['calibration'].get('target_margin', 0.08)
+        self.calib_target_margin = self.data['calibration'].get('target_margin', 0.0)
         self.calib_radius = self.data['calibration']['dot_radius']
         self.calib_color = self.data['calibration']['dot_color_bgr']
         self.calib_stability_thresh = self.data['calibration'].get('stability_threshold', 0.025)
