@@ -1,6 +1,12 @@
 # config.yaml — Eye Tracking Prototype Configuration
 # Edit values here to tune the prototype without touching any code.
 
+# Manual screen coordinate dimensions in pixels (independent of webcam resolution).
+# Match the monitor used for fullscreen calibration; restart after editing.
+screen:
+  width: 2880
+  height: 1800
+
 # ─────────────────────────────────────────────
 # Webcam settings
 # ─────────────────────────────────────────────

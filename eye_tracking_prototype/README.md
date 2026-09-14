@@ -1,5 +1,19 @@
 # Eye Tracking Prototype
 
+Set the calibration/tracking screen dimensions manually in `config.yaml`:
+
+```yaml
+screen:
+  width: 2880
+  height: 1800
+```
+
+These required positive integer values define the screen coordinate system;
+they are independent of webcam capture resolution. Match the fullscreen monitor
+resolution to avoid display scaling affecting target positions. Restart the
+application and recalibrate after changing them. Custom config files must also
+include this section. Automatic screen-size detection is no longer used.
+
 The head alignment step displays a live camera preview with a circle centered on
 the screen. Forehead, chin and cheek landmarks must fit and fill that circle,
 with the face centered and upright. A continuous five-second green countdown

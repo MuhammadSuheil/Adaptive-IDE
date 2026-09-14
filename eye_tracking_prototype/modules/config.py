@@ -14,6 +14,13 @@ class Config:
             self.data = yaml.safe_load(f)
         
         self.webcam_idx = self.data['webcam']['device_index']
+        screen = self.data.get('screen', {})
+        for name in ('width', 'height'):
+            value = screen.get(name)
+            if type(value) is not int or value <= 0:
+                raise ValueError(f"config.yaml: screen.{name} must be a positive integer in pixels")
+        self.screen_w = screen['width']
+        self.screen_h = screen['height']
         self.webcam_fps = self.data['webcam']['fps_target']
         self.webcam_w = self.data['webcam']['width']
         self.webcam_h = self.data['webcam']['height']

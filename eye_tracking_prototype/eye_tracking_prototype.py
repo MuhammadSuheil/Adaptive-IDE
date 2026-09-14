@@ -185,7 +185,7 @@ class EyeTrackerApp:
             "pitch": 0.0,
             "yaw": 0.0,
             "roll": 0.0,
-            "face_width_ratio": 0.35,
+            "face_width_ratio": 0.40,
             "center_x_ratio": 0.5,
             "center_y_ratio": 0.45
         }
@@ -194,12 +194,11 @@ class EyeTrackerApp:
             import ctypes
             user32 = ctypes.windll.user32
             user32.SetProcessDPIAware()
-            self.screen_w = user32.GetSystemMetrics(0)
-            self.screen_h = user32.GetSystemMetrics(1)
         except Exception:
-            self.screen_w = 1920
-            self.screen_h = 1080
-        print(f"[EyeTrack] Detected screen resolution: {self.screen_w}x{self.screen_h}")
+            pass
+        self.screen_w = self.cfg.screen_w
+        self.screen_h = self.cfg.screen_h
+        print(f"[EyeTrack] Configured screen resolution: {self.screen_w}x{self.screen_h}")
 
     def read_frame(self):
         if self.stream is not None:
@@ -1481,6 +1480,8 @@ class EyeTrackerApp:
             "tracking_duration_seconds": tracking_duration,
             "config": {
                 "grid_rows": self.cfg.grid_rows,
+                "screen_width": self.screen_w,
+                "screen_height": self.screen_h,
                 "grid_cols": self.cfg.grid_cols,
                 "filter_type": self.cfg.filter_type,
                 "mapping_method": self.cfg.calib_mapping_method,
