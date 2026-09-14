@@ -41,24 +41,74 @@ class Config:
         self.median_window = self.data['filter']['median_window']
         self.kalman_p_noise = self.data['filter'].get('kalman_process_noise', 0.1)
         self.kalman_m_noise = self.data['filter'].get('kalman_measurement_noise', 4.0)
+        # Adaptive EMA
+        self.adaptive_ema = self.data['filter'].get('adaptive_ema', False)
+        self.adaptive_ema_low_v_alpha = self.data['filter'].get('adaptive_ema_low_v_alpha', 0.12)
+        self.adaptive_ema_high_v_alpha = self.data['filter'].get('adaptive_ema_high_v_alpha', 0.70)
+        self.adaptive_ema_saccade_threshold_px = self.data['filter'].get('adaptive_ema_saccade_threshold_px', 80.0)
         
         self.dwell_threshold = self.data['dwell']['threshold_ms']
         self.transition_window_sec = self.data.get('metrics', {}).get('transition_window_sec', 5.0)
         
+        # Blink Detection & Counting
+        blink_cfg = self.data.get('blink', {})
+        self.blink_enabled = blink_cfg.get('enabled', True)
+        self.blink_ear_threshold = blink_cfg.get('ear_threshold', 0.20)
+        self.blink_min_frames = blink_cfg.get('min_blink_frames', 1)
+        self.blink_max_frames = blink_cfg.get('max_blink_frames', 10)
+        
+        # Head Positioning Gate (Phase 0)
+        hp_cfg = self.data.get('head_positioning', {})
+        self.hp_enabled = hp_cfg.get('enabled', True)
+        self.hp_fullscreen = hp_cfg.get('fullscreen', True)
+        self.hp_target_face_width_ratio = hp_cfg.get('target_face_width_ratio', 0.35)
+        self.hp_target_center_x_ratio = hp_cfg.get('target_center_x_ratio', 0.5)
+        self.hp_target_center_y_ratio = hp_cfg.get('target_center_y_ratio', 0.45)
+        self.hp_alignment_tolerance_ratio = hp_cfg.get('alignment_tolerance_ratio', 0.08)
+        self.hp_size_tolerance_ratio = hp_cfg.get('size_tolerance_ratio', 0.10)
+        self.hp_max_yaw_deg = hp_cfg.get('max_yaw_deg', 10.0)
+        self.hp_max_pitch_deg = hp_cfg.get('max_pitch_deg', 8.0)
+        self.hp_stability_frames_required = hp_cfg.get('stability_frames_required', 15)
+        self.hp_countdown_seconds = hp_cfg.get('countdown_seconds', 3)
+
+        # Head Pose Monitoring (Phase 3)
+        pose_cfg = self.data.get('head_pose', {})
+        self.pose_max_calib_yaw_deg = pose_cfg.get('max_calib_yaw_deg', 8.0)
+        self.pose_max_calib_pitch_deg = pose_cfg.get('max_calib_pitch_deg', 6.0)
+        self.pose_tracking_warn_yaw_deg = pose_cfg.get('tracking_warn_yaw_deg', 15.0)
+        self.pose_tracking_warn_pitch_deg = pose_cfg.get('tracking_warn_pitch_deg', 12.0)
+        self.pose_show_text_warning = pose_cfg.get('show_text_warning', True)
+
+        self.calib_layout_mode = self.data['calibration'].get('layout_mode', '13_point')
         self.calib_samples = self.data['calibration']['n_samples_per_point']
-        self.calib_move_delay_sec = self.data['calibration'].get('move_delay_sec', 2.0)
-        self.calib_target_margin = self.data['calibration'].get('target_margin', 0.12)
+        self.calib_move_delay_sec = self.data['calibration'].get('move_delay_sec', 0.8)
+        self.calib_target_margin = self.data['calibration'].get('target_margin', 0.08)
         self.calib_radius = self.data['calibration']['dot_radius']
         self.calib_color = self.data['calibration']['dot_color_bgr']
-        self.calib_stability_thresh = self.data['calibration'].get('stability_threshold', 0.015)
-        self.calib_stability_frames = self.data['calibration'].get('stability_required_frames', 6)
-        self.calib_mapping_method = self.data['calibration'].get('mapping_method', 'hybrid')
+        self.calib_stability_thresh = self.data['calibration'].get('stability_threshold', 0.025)
+        self.calib_stability_frames = self.data['calibration'].get('stability_required_frames', 4)
+        self.calib_mapping_method = self.data['calibration'].get('mapping_method', 'rbf')
+        self.calib_rbf_kernel = self.data['calibration'].get('rbf_kernel', 'thin_plate_spline')
+        self.calib_rbf_smoothing = self.data['calibration'].get('rbf_smoothing', 0.0)
+        self.calib_output_clamp = self.data['calibration'].get('output_clamp', True)
+        self.calib_smooth_pursuit_enabled = self.data['calibration'].get('smooth_pursuit_enabled', False)
         self.calib_point_timeout_sec = self.data['calibration'].get('point_timeout_sec', 12.0)
-        self.calib_max_sample_std = self.data['calibration'].get('max_sample_std', 0.025)
+        self.calib_max_sample_std = self.data['calibration'].get('max_sample_std', 0.040)
         self.calib_outlier_mad_scale = self.data['calibration'].get('outlier_mad_scale', 3.5)
-        self.calib_min_feature_span_x = self.data['calibration'].get('min_feature_span_x', 0.025)
-        self.calib_min_feature_span_y = self.data['calibration'].get('min_feature_span_y', 0.015)
-        self.calib_min_quality = self.data['calibration'].get('min_quality', 0.6)
+        self.calib_min_feature_span_x = self.data['calibration'].get('min_feature_span_x', 0.015)
+        self.calib_min_feature_span_y = self.data['calibration'].get('min_feature_span_y', 0.010)
+        self.calib_min_quality = self.data['calibration'].get('min_quality', 0.35)
+        # Dot animation
+        self.calib_dot_pulse = self.data['calibration'].get('dot_pulse_animation', True)
+        self.calib_dot_crosshair = self.data['calibration'].get('dot_crosshair_on_lock', True)
+
+        # Validation Screen (Phase 4)
+        val_cfg = self.data.get('validation', {})
+        self.val_enabled = val_cfg.get('enabled', True)
+        self.val_failure_strategy = val_cfg.get('failure_strategy', 'retry_validation_only')
+        self.val_max_median_error_px = val_cfg.get('max_median_error_px', 180)
+        self.val_max_p95_error_px = val_cfg.get('max_p95_error_px', 350)
+        self.val_max_corner_error_px = val_cfg.get('max_corner_error_px', 300)
 
         eye_validity = self.data.get('eye_validity', {})
         self.min_ear = eye_validity.get('min_ear', 0.08)

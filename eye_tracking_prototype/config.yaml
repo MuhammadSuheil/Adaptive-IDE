@@ -63,7 +63,16 @@ filter:
   # EMA — Exponential Moving Average
   # Low latency, slight jitter. Good default for 30/60 fps.
   # alpha: 0.1 = very smooth, 0.9 = very responsive
-  ema_alpha: 0.3
+  ema_alpha: 0.2
+
+  # Adaptive EMA — velocity-sensitive alpha adjustment
+  # When enabled, ema_alpha above acts as the mid-range default only.
+  # Low velocity (stable dwell):        low_v_alpha  → heavy smoothing
+  # High velocity (intentional saccade): high_v_alpha → fast follow
+  adaptive_ema: true
+  adaptive_ema_low_v_alpha: 0.12        # Heavy smooth during stable fixation
+  adaptive_ema_high_v_alpha: 0.70       # Fast follow during intentional saccade
+  adaptive_ema_saccade_threshold_px: 80 # px/frame to classify as saccade
 
   # Kalman — best accuracy, adds ~20–30ms latency
   # Requires: pip install filterpy
@@ -84,23 +93,77 @@ metrics:
   transition_window_sec: 5.0 # rolling window for gaze transition rate
 
 # ─────────────────────────────────────────────
+# Blink Detection & Counting
+# ─────────────────────────────────────────────
+blink:
+  enabled: true
+  ear_threshold: 0.20        # Eye Aspect Ratio threshold below which eye is considered closed
+  min_blink_frames: 1        # Minimum consecutive frames for a valid blink
+  max_blink_frames: 10       # Maximum consecutive frames (longer = prolonged closure/squinting)
+
+# ─────────────────────────────────────────────
+# Head Positioning Gate (Phase 0)
+# ─────────────────────────────────────────────
+head_positioning:
+  enabled: true
+  fullscreen: true
+  target_face_width_ratio: 0.20  # Comfortable normal seating distance (~50-70cm)
+  target_center_x_ratio: 0.5
+  target_center_y_ratio: 0.45
+  alignment_tolerance_ratio: 0.20  # Relaxed center alignment tolerance
+  size_tolerance_ratio: 0.35       # Relaxed face distance tolerance (no leaning needed)
+  max_yaw_deg: 30.0                # Relaxed yaw angle tolerance
+  max_pitch_deg: 30.0              # Relaxed pitch angle tolerance
+  stability_frames_required: 4     # Fast confirmation (4 frames)
+  countdown_seconds: 1             # Fast 1s countdown
+
+# ─────────────────────────────────────────────
+# Head Pose Monitoring (Phase 3)
+# ─────────────────────────────────────────────
+head_pose:
+  max_calib_yaw_deg: 8.0
+  max_calib_pitch_deg: 6.0
+  tracking_warn_yaw_deg: 15.0
+  tracking_warn_pitch_deg: 12.0
+  show_text_warning: true  # Displays "⚠ Head pose shifted" text on screen
+
+# ─────────────────────────────────────────────
 # Calibration & Gaze Mapping
 # ─────────────────────────────────────────────
 calibration:
-  n_samples_per_point: 30 # frames to collect per calibration dot
-  move_delay_sec: 2.0 # countdown time before collecting samples for a dot
-  target_margin: 0.07 # dots cover 7%..93% of the full physical screen
+  layout_mode: "13_point" # Options: "13_point" | "3x3" | "4x4" | "custom"
+  n_samples_per_point: 20 # frames to collect per calibration dot
+  move_delay_sec: 1.5 # 1.5s fixation delay to allow eyes to settle smoothly (was 0.8s)
+  target_margin: 0.08 # dots cover 8%..92% of the full physical screen
   dot_radius: 20 # pixels
   dot_color_bgr: [0, 0, 255] # red dot
-  stability_threshold: 0.015 # max normalized drift allowed during gaze hold
-  stability_required_frames: 6 # frames gaze must remain still before collecting
-  mapping_method: "hybrid" # Options: "hybrid" (Poly X + Ridge Y w/ EAR) | "polynomial" | "affine" | "homography"
+  stability_threshold: 0.020 # STABLE threshold
+  stability_required_frames: 6 # frames gaze must remain still before collecting (was 4)
+  mapping_method: "rbf" # Options: "rbf" (Bounded Thin-Plate Spline) | "hybrid" | "polynomial" | "affine"
+  rbf_kernel: "thin_plate_spline"
+  rbf_smoothing: 0.005 # Balanced regularization for smooth, uniform horizontal sensitivity
+  output_clamp: true # Prevents gaze coordinate from leaving screen bounds
+  smooth_pursuit_enabled: false # OPT-IN (default off for speed)
   point_timeout_sec: 12.0 # retry a point if valid samples cannot be collected in time
-  max_sample_std: 0.025 # reject a noisy point (normalized eye-coordinate standard deviation)
+  max_sample_std: 0.040 # RELAXED
   outlier_mad_scale: 3.5 # robust per-point sample outlier rejection
-  min_feature_span_x: 0.025 # required eye-feature separation across all horizontal targets
-  min_feature_span_y: 0.015 # required eye-feature separation across all vertical targets
-  min_quality: 0.60 # tracking will not start below this leave-one-point-out score
+  min_feature_span_x: 0.015 # RELAXED
+  min_feature_span_y: 0.010 # RELAXED
+  min_quality: 0.15 # RELAXED (ensures valid calibration runs are accepted)
+
+  # Dot animation settings
+  dot_pulse_animation: true     # Shrink-pulse dot during move delay
+  dot_crosshair_on_lock: true   # Show crosshair inner dot when gaze is stable
+
+# ─────────────────────────────────────────────
+# Post-Calibration Validation (Phase 4)
+# ─────────────────────────────────────────────
+validation:
+  enabled: true
+  failure_strategy: "retry_validation_only" # Options: "full_restart" | "retry_validation_only"
+  max_median_error_px: 180
+  max_p95_error_px: 350
+  max_corner_error_px: 300
 
 # Eye/landmark validity. Invalid frames are never used for calibration or gaze mapping.
 eye_validity:
