@@ -1457,6 +1457,17 @@ class EyeTrackerApp:
         self.csv_file.flush()
         self.csv_file.close()
         self.metrics.finalize()
+
+        # If no tracking data was collected (failed calibration, user quit early, etc.),
+        # remove the empty CSV and skip JSON summary to keep sessions/ folder clean.
+        if self.frame_count == 0:
+            try:
+                os.remove(self.csv_path)
+                print(f"[EyeTrack] No tracking data recorded. Removed empty CSV: {os.path.basename(self.csv_path)}")
+            except OSError:
+                pass
+            print("[EyeTrack] Session ended without tracking data. No summary file saved.")
+            return
         
         duration = time.time() - self.start_time
         tracking_duration = (time.time() - self.tracking_start_time) if self.tracking_start_time else 0.0
@@ -1472,7 +1483,13 @@ class EyeTrackerApp:
                 "p50": float(np.percentile(samples, 50)) if samples else 0.0,
                 "p95": float(np.percentile(samples, 95)) if samples else 0.0,
             }
+
+        csv_path_clean = os.path.abspath(self.csv_path)
+
         summary = {
+            "schema_version": "2.0",
+            "sensor_type": "eye_tracking",
+            "prototype_version": "2.0",
             "session_id": self.session_id,
             "start_time_iso": datetime.fromtimestamp(self.start_time).isoformat(),
             "end_time_iso": datetime.now().isoformat(),
@@ -1509,13 +1526,13 @@ class EyeTrackerApp:
                 "calibration_diagnostics": self.calibration_diagnostics,
                 "baseline_head_pose": self.baseline_pose
             },
-            "csv_path": self.csv_path
+            "csv_path": csv_path_clean
         }
         
         with open(self.json_path, 'w') as f:
             json.dump(summary, f, indent=2)
             
-        print(f"[EyeTrack] Session saved to {self.csv_path} and {self.json_path}")
+        print(f"[EyeTrack] Session saved to {csv_path_clean} and {self.json_path}")
 
 if __name__ == "__main__":
     import argparse
