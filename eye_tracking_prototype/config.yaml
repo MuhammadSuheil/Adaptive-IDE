@@ -1,16 +1,32 @@
 # config.yaml — Eye Tracking Prototype Configuration
 # Edit values here to tune the prototype without touching any code.
 
+# Manual screen coordinate dimensions in pixels (independent of webcam resolution).
+# Match the monitor used for fullscreen calibration; restart after editing.
+screen:
+  width: 2880
+  height: 1800
+
 # ─────────────────────────────────────────────
 # Webcam settings
 # ─────────────────────────────────────────────
 webcam:
-  device_index: 1          # 0 = default webcam; try 1 for external cam
-  fps_target: 60           # Target FPS: 30 or 60
+  device_index: 0 # 0 = default webcam; try 1 for external cam
+  fps_target: 60 # Target FPS: 30 or 60
   width: 640
   height: 480
-  flip_horizontal: true    # Mirror camera feed so movement matches screen
-  async_capture: true      # Enable multithreaded capture buffer for high FPS
+  inference_width: 320 # lower-resolution copy used only for MediaPipe inference
+  inference_height: 240
+  flip_horizontal: true # Mirror camera feed so movement matches screen
+  async_capture: true # Enable multithreaded capture buffer for high FPS
+
+# Display is intentionally slower than gaze processing so OpenCV UI cannot
+# throttle MediaPipe. Tracking still runs at the maximum unique-frame rate.
+display:
+  refresh_fps: 15
+
+performance:
+  latest_frame_only: true
 
 # ─────────────────────────────────────────────
 # Grid settings
@@ -22,25 +38,25 @@ grid:
   # Section label for each cell [row][col]
   # Use null for untracked / outside IDE cells
   section_map:
-    - ["sidebar",  "main_file", "ai_agent"   ]
-    - ["sidebar",  "main_file", "second_file"]
-    - ["terminal", "terminal",  "terminal"   ]
+    - ["sidebar", "main_file", "ai_agent"]
+    - ["sidebar", "main_file", "second_file"]
+    - ["terminal", "terminal", "terminal"]
 
   # Colours for each section in the grid overlay (BGR format)
   section_colors:
-    sidebar:      [200, 100,  50]   # blue-ish
-    main_file:    [ 50, 180,  50]   # green
-    ai_agent:     [180,  50, 180]   # purple
-    second_file:  [180, 180,  50]   # cyan-ish
-    terminal:     [ 50, 140, 200]   # orange-ish
+    sidebar: [200, 100, 50] # blue-ish
+    main_file: [50, 180, 50] # green
+    ai_agent: [180, 50, 180] # purple
+    second_file: [180, 180, 50] # cyan-ish
+    terminal: [50, 140, 200] # orange-ish
 
 # ─────────────────────────────────────────────
 # Gaze Boundary & Padding Settings (off-screen detection)
 # ─────────────────────────────────────────────
 gaze_boundary:
   enabled: true
-  padding_x: 0.15          # 0.15 = 15% margin left & right (30% total horizontal padding)
-  padding_y: 0.15          # 0.15 = 15% margin top & bottom (30% total vertical padding)
+  padding_x: 0.05 # visualization-only frame outside the black screen representation
+  padding_y: 0.05 # never removes pixels from logical on-screen classification
   off_screen_label: "off_screen"
 
 # ─────────────────────────────────────────────
@@ -48,12 +64,21 @@ gaze_boundary:
 # Options: "ema" | "kalman" | "median" | "none"
 # ─────────────────────────────────────────────
 filter:
-  type: "ema"              # <── change this to switch filter
+  type: "ema" # <── change this to switch filter
 
   # EMA — Exponential Moving Average
   # Low latency, slight jitter. Good default for 30/60 fps.
   # alpha: 0.1 = very smooth, 0.9 = very responsive
-  ema_alpha: 0.3
+  ema_alpha: 0.2
+
+  # Adaptive EMA — velocity-sensitive alpha adjustment
+  # When enabled, ema_alpha above acts as the mid-range default only.
+  # Low velocity (stable dwell):        low_v_alpha  → heavy smoothing
+  # High velocity (intentional saccade): high_v_alpha → fast follow
+  adaptive_ema: true
+  adaptive_ema_low_v_alpha: 0.12        # Heavy smooth during stable fixation
+  adaptive_ema_high_v_alpha: 0.70       # Fast follow during intentional saccade
+  adaptive_ema_saccade_threshold_px: 80 # px/frame to classify as saccade
 
   # Kalman — best accuracy, adds ~20–30ms latency
   # Requires: pip install filterpy
@@ -68,36 +93,104 @@ filter:
 # Dwell time & Metrics
 # ─────────────────────────────────────────────
 dwell:
-  threshold_ms: 300        # min ms before gaze counts as intentional
+  threshold_ms: 300 # min ms before gaze counts as intentional
 
 metrics:
   transition_window_sec: 5.0 # rolling window for gaze transition rate
 
 # ─────────────────────────────────────────────
+# Blink Detection & Counting
+# ─────────────────────────────────────────────
+blink:
+  enabled: true
+  ear_threshold: 0.20        # Eye Aspect Ratio threshold below which eye is considered closed
+  min_blink_frames: 1        # Minimum consecutive frames for a valid blink
+  max_blink_frames: 10       # Maximum consecutive frames (longer = prolonged closure/squinting)
+
+# ─────────────────────────────────────────────
+# Head Positioning Gate (Phase 0)
+# ─────────────────────────────────────────────
+head_positioning:
+  enabled: true
+  fullscreen: true
+  guide_height_ratio: 0.42 # Oval height relative to preview height; previously 0.64
+  guide_width_to_height: 0.72 # Portrait oval pixel aspect ratio
+  target_face_width_ratio: 0.20  # Comfortable normal seating distance (~50-70cm)
+  target_center_x_ratio: 0.5
+  target_center_y_ratio: 0.45
+  alignment_tolerance_ratio: 0.20  # Relaxed center alignment tolerance
+  size_tolerance_ratio: 0.35       # Relaxed face distance tolerance (no leaning needed)
+  max_yaw_deg: 30.0                # Relaxed yaw angle tolerance
+  max_pitch_deg: 30.0              # Relaxed pitch angle tolerance
+  stability_frames_required: 4     # Fast confirmation (4 frames)
+  countdown_seconds: 5             # Continuous valid face fit before eye calibration
+
+# ─────────────────────────────────────────────
+# Head Pose Monitoring (Phase 3)
+# ─────────────────────────────────────────────
+head_pose:
+  max_calib_yaw_deg: 8.0
+  max_calib_pitch_deg: 6.0
+  tracking_warn_yaw_deg: 15.0
+  tracking_warn_pitch_deg: 12.0
+  show_text_warning: true  # Displays "⚠ Head pose shifted" text on screen
+
+# ─────────────────────────────────────────────
 # Calibration & Gaze Mapping
 # ─────────────────────────────────────────────
 calibration:
-  n_samples_per_point: 30  # frames to collect per calibration dot
-  move_delay_sec: 2.0      # countdown time before collecting samples for a dot
-  dot_radius: 20           # pixels
-  dot_color_bgr: [0, 0, 255]  # red dot
-  stability_threshold: 0.015  # max normalized drift allowed during gaze hold
-  stability_required_frames: 6 # frames gaze must remain still before collecting
-  mapping_method: "hybrid" # Options: "hybrid" (Poly X + Ridge Y w/ EAR) | "polynomial" | "affine" | "homography"
+  layout_mode: "3x3" # Nine targets: four corners, four side midpoints, center
+  n_samples_per_point: 20 # frames to collect per calibration dot
+  move_delay_sec: 1.5 # 1.5s fixation delay to allow eyes to settle smoothly (was 0.8s)
+  target_margin: 0.0 # Minimum inset is automatically dot_radius + 2 px so dots remain whole
+  dot_radius: 20 # pixels
+  dot_color_bgr: [0, 0, 255] # red dot
+  stability_threshold: 0.020 # STABLE threshold
+  stability_required_frames: 6 # frames gaze must remain still before collecting (was 4)
+  mapping_method: "rbf" # Options: "rbf" (Bounded Thin-Plate Spline) | "hybrid" | "polynomial" | "affine"
+  rbf_kernel: "thin_plate_spline"
+  rbf_smoothing: 0.005 # Balanced regularization for smooth, uniform horizontal sensitivity
+  output_clamp: true # Prevents gaze coordinate from leaving screen bounds
+  smooth_pursuit_enabled: false # OPT-IN (default off for speed)
+  point_timeout_sec: 12.0 # retry a point if valid samples cannot be collected in time
+  max_sample_std: 0.040 # RELAXED
+  outlier_mad_scale: 3.5 # robust per-point sample outlier rejection
+  min_feature_span_x: 0.015 # RELAXED
+  min_feature_span_y: 0.010 # RELAXED
+  min_quality: 0.15 # RELAXED (ensures valid calibration runs are accepted)
+
+  # Dot animation settings
+  dot_pulse_animation: true     # Shrink-pulse dot during move delay
+  dot_crosshair_on_lock: true   # Show crosshair inner dot when gaze is stable
+
+# ─────────────────────────────────────────────
+# Post-Calibration Validation (Phase 4)
+# ─────────────────────────────────────────────
+validation:
+  enabled: true
+  failure_strategy: "retry_validation_only" # Options: "full_restart" | "retry_validation_only"
+  max_median_error_px: 180
+  max_p95_error_px: 350
+  max_corner_error_px: 300
+
+# Eye/landmark validity. Invalid frames are never used for calibration or gaze mapping.
+eye_validity:
+  min_ear: 0.08 # reject closed/mostly occluded eyes
+  max_ear: 0.65 # reject implausible landmark geometry
 
 # ─────────────────────────────────────────────
 # Iris baseline (for pupil-dilation proxy)
 # ─────────────────────────────────────────────
 iris:
-  baseline_frames: 60      # frames to average for baseline iris size
+  baseline_frames: 60 # frames to average for baseline iris size
 
 # ─────────────────────────────────────────────
 # Output / data recording
 # ─────────────────────────────────────────────
 output:
   session_dir: "./sessions"
-  csv_buffer_size: 60      # flush CSV every N frames (lower = safer, more I/O)
-  save_video: false        # set true to save annotated mp4 (adds CPU + storage)
+  csv_buffer_size: 60 # flush CSV every N frames (lower = safer, more I/O)
+  save_video: false # set true to save annotated mp4 (adds CPU + storage)
 
 # ─────────────────────────────────────────────
 # MediaPipe model & Landmarks
@@ -113,7 +206,7 @@ mediapipe:
   landmarks:
     left_iris: [468, 469, 470, 471, 472]
     right_iris: [473, 474, 475, 476, 477]
-    left_eye_corners: [33, 133]      # outer (33), inner (133)
-    right_eye_corners: [362, 263]    # inner (362), outer (263)
-    left_eyelid: [159, 145, 133, 33]  # top (159), bottom (145), inner (133), outer (33)
+    left_eye_corners: [33, 133] # outer (33), inner (133)
+    right_eye_corners: [362, 263] # inner (362), outer (263)
+    left_eyelid: [159, 145, 133, 33] # top (159), bottom (145), inner (133), outer (33)
     right_eyelid: [386, 374, 263, 362] # top (386), bottom (374), outer (263), inner (362)

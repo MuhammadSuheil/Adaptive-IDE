@@ -1,5 +1,30 @@
 # Eye Tracking Prototype
 
+Set the calibration/tracking screen dimensions manually in `config.yaml`:
+
+```yaml
+screen:
+  width: 2880
+  height: 1800
+```
+
+These required positive integer values define the screen coordinate system;
+they are independent of webcam capture resolution. Match the fullscreen monitor
+resolution to avoid display scaling affecting target positions. Restart the
+application and recalibrate after changing them. Custom config files must also
+include this section. Automatic screen-size detection is no longer used.
+
+The head alignment step displays a live camera preview with a circle centered on
+the screen. Forehead, chin and cheek landmarks must fit and fill that circle,
+with the face centered and upright. A continuous five-second green countdown
+is required; losing alignment or the camera resets it. Space/Enter cannot skip it.
+
+Eye calibration defaults to nine targets (`layout_mode: "3x3"`,
+`target_margin: 0.0`): four physical screen corners, four side midpoints, and
+the center. Targets on the pixel boundary are intentionally clipped; look at
+the point where the target meets the screen edge. Calibration has no padding.
+The tracking display retains its visual off-screen padding.
+
 This is the standalone Python prototype for the Eye Tracking Module of the Adaptive IDE Extension. It uses MediaPipe to extract facial landmarks (specifically the iris) and an OpenCV grid to map your gaze to different sections of the IDE.
 
 ## Requirements
@@ -31,10 +56,13 @@ python eye_tracking_prototype.py --config custom_config.yaml
 
 ### 1. Calibration Phase
 When you launch the script, it will first enter the calibration phase.
-- The screen will turn black and display a red dot in each grid cell sequentially.
-- Look directly at the red dot and hold your gaze steady.
-- The system collects 30 frames (by default) of your iris position per dot.
-- Once all dots are completed, it computes an affine transformation to map your specific eye geometry to screen coordinates.
+- The screen displays nine red dots sequentially, kept safely inside the physical screen edges.
+- **Look at the center of the visible red dot itself.** Do not look at the purple padding border.
+- Keep your head still and move only your eyes. Blink normally between points where possible.
+- The colored padding is visualization-only; it does not control calibration or grid classification.
+- Calibration uses only unique camera frames; repeated reads of the latest frame do not count as new samples.
+- Closed-eye, unstable, and noisy samples are rejected. A timed-out point or weak overall calibration must be retried.
+- The final score uses leave-one-point-out validation. Tracking cannot start below `calibration.min_quality`.
 
 ### 2. Tracking Phase
 After successful calibration, two windows will open:
@@ -57,10 +85,42 @@ All parameters are tunable without touching the Python code. You can adjust:
 - **Grid Size**: Number of rows and columns, and the label mapped to each cell.
 - **Smoothing Filter**: Choose between `ema`, `kalman`, `median`, or `none`.
 - **Webcam Options**: Target FPS, resolution, and device index.
+- **Inference Resolution**: MediaPipe can process a smaller frame than the displayed camera feed.
+- **Calibration Validation**: Target margin, point timeout, noise limits, feature separation, and minimum quality.
 - **Dwell Threshold**: The minimum time (in ms) before a gaze is counted as intentional.
 
 ## Data Output
 
 All session data is saved into the `sessions/` directory. For each session, two files are created:
-1. `session_<uuid>_<timestamp>.csv`: Contains per-frame raw data (gaze coordinates, grid section, metrics, confidence, etc.).
-2. `session_<uuid>_<timestamp>_summary.json`: An aggregated summary of the entire session including average FPS, dwell times per section, total visit counts, and calibration quality.
+1. `session_<uuid>_<timestamp>.csv`: Contains per-frame gaze data plus processing FPS, capture FPS, inference time, and an explicit gaze-validity state.
+2. `session_<uuid>_<timestamp>_summary.json`: Includes camera diagnostics, held-out calibration errors, average processing FPS, dwell times, and visit counts.
+
+Possible gaze states are `on_screen`, `gaze_outside_screen`, `face_missing`, and
+`eyes_invalid_or_blink`. `gaze_outside_screen` now requires a predicted coordinate
+outside the full physical screen; missing/invalid landmark states are recorded separately.
+
+The black grid is a scaled representation of the **entire physical screen**.
+Colored padding remains visible around that representation, but it is not removed
+from logical screen coordinates and never changes grid-cell classification.
+
+`webcam.width` and `webcam.height` are requested capture settings rather than
+code constants; the negotiated values are recorded under `summary.camera`.
+`inference_width` and `inference_height` intentionally control a separate
+MediaPipe input copy so accuracy/performance can be tuned without changing the
+screen-coordinate mapping, which uses normalized landmarks.
+
+## Performance Pipeline
+
+Tracking uses three decoupled stages: webcam capture, MediaPipe inference, and
+OpenCV display. The inference worker always consumes the newest unique camera
+frame, so a slow fullscreen window cannot build a stale-frame queue or reduce
+the gaze-processing rate. The camera preview and grid default to 15 FPS while
+tracking runs at the maximum rate supplied by the camera and processor.
+
+Performance values have distinct meanings:
+
+- `capture_fps`: frames delivered by the camera backend.
+- `fps_actual`: unique frames processed by the gaze worker.
+- `ui_fps`: display refresh rate, recorded in the JSON summary.
+- `dropped_frame_ratio`: camera frames intentionally skipped to keep latency low.
+- `stage_timings_ms`: mean, P50, and P95 timings for every processing stage.
