@@ -2,3 +2,6 @@
 .gemini
 
 eye_tracking_prototype/sessions/_archive
+
+hrv_monitor_prototype/sessions/
+__pycache__/
