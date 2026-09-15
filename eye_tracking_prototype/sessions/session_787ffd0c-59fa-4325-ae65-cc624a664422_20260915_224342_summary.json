@@ -1,0 +1,131 @@
+{
+  "schema_version": "2.0",
+  "sensor_type": "eye_tracking",
+  "prototype_version": "2.0",
+  "session_id": "787ffd0c-59fa-4325-ae65-cc624a664422",
+  "start_time_iso": "2026-09-15T22:43:44.660716",
+  "end_time_iso": "2026-09-15T22:45:30.030658",
+  "duration_seconds": 105.36782169342041,
+  "tracking_duration_seconds": 55.67920517921448,
+  "config": {
+    "grid_rows": 3,
+    "screen_width": 2880,
+    "screen_height": 1800,
+    "grid_cols": 3,
+    "filter_type": "ema",
+    "mapping_method": "rbf",
+    "layout_mode": "3x3",
+    "async_capture": true,
+    "display_refresh_fps": 15,
+    "latest_frame_only": true
+  },
+  "summary": {
+    "total_frames": 812,
+    "frames_with_face": 811,
+    "face_detection_rate": 0.9987684729064039,
+    "avg_fps": 14.994948015269538,
+    "processing_fps_ema_final": 15.08412583793254,
+    "ui_fps": 11.58421689493132,
+    "dropped_frames": 0,
+    "dropped_frame_ratio": 0.0,
+    "stage_timings_ms": {
+      "capture_age_ms": {
+        "mean": 0.19791773396485807,
+        "p50": 0.10970000221277587,
+        "p95": 0.23185999780253036
+      },
+      "preprocess_ms": {
+        "mean": 0.2501333744247648,
+        "p50": 0.23429999782820232,
+        "p95": 0.35715499907382753
+      },
+      "inference_ms": {
+        "mean": 7.413206773495861,
+        "p50": 7.333049999942887,
+        "p95": 8.596289998058637
+      },
+      "mapping_metrics_ms": {
+        "mean": 0.7807689654807376,
+        "p50": 0.8174499998858664,
+        "p95": 0.9832899986577104
+      },
+      "logging_ms": {
+        "mean": 0.03440923642010423,
+        "p50": 0.029999999242136255,
+        "p95": 0.07329000145546159
+      },
+      "total_processing_ms": {
+        "mean": 8.493375369482973,
+        "p50": 8.40905000040948,
+        "p95": 9.790334998797332
+      }
+    },
+    "camera": {
+      "width": 640,
+      "height": 480,
+      "fps_reported": 60.000240000960005,
+      "capture_fps_observed": 14.976309382728095,
+      "backend": "DSHOW"
+    },
+    "sections": {
+      "main_file": {
+        "total_dwell_ms": 3062,
+        "visit_count": 19,
+        "nrevisit_count": 18,
+        "max_continuous_dwell_ms": 945
+      },
+      "ai_agent": {
+        "total_dwell_ms": 7433,
+        "visit_count": 16,
+        "nrevisit_count": 15,
+        "max_continuous_dwell_ms": 2144
+      },
+      "sidebar": {
+        "total_dwell_ms": 4460,
+        "visit_count": 9,
+        "nrevisit_count": 8,
+        "max_continuous_dwell_ms": 2062
+      },
+      "off_screen": {
+        "total_dwell_ms": 15599,
+        "visit_count": 32,
+        "nrevisit_count": 31,
+        "max_continuous_dwell_ms": 2688
+      },
+      "terminal": {
+        "total_dwell_ms": 12350,
+        "visit_count": 24,
+        "nrevisit_count": 23,
+        "max_continuous_dwell_ms": 8463
+      },
+      "second_file": {
+        "total_dwell_ms": 2249,
+        "visit_count": 13,
+        "nrevisit_count": 12,
+        "max_continuous_dwell_ms": 527
+      }
+    },
+    "total_blinks": 10,
+    "avg_blink_rate_bpm": 10.77601589442202,
+    "calibration_quality": 0.726694797361591,
+    "calibration_diagnostics": {
+      "validation_median_error_screen_fraction": 0.07085664244049825,
+      "validation_p95_error_screen_fraction": 0.19485753485522267,
+      "validation_median_error_px": 240.645682031235,
+      "validation_p95_error_px": 661.7816306147638,
+      "quality": 0.726694797361591,
+      "feature_span_x": 0.2157468614100963,
+      "feature_span_y": 0.08245208381604568,
+      "unique_camera_frames": 234
+    },
+    "baseline_head_pose": {
+      "pitch": -2.5057472731029975,
+      "yaw": 2.6566821700213157,
+      "roll": -0.45077249690941884,
+      "face_width_ratio": 0.1533130553946261,
+      "center_x_ratio": 0.5014700815081596,
+      "center_y_ratio": 0.6032570451498032
+    }
+  },
+  "csv_path": "c:\\Users\\amrin\\OneDrive\\Desktop\\roadmap\\Frontend\\porto\\Adaptive-IDE\\eye_tracking_prototype\\sessions\\session_787ffd0c-59fa-4325-ae65-cc624a664422_20260915_224342.csv"
+}

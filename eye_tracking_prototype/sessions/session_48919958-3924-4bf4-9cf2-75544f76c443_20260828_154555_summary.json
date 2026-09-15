@@ -1,0 +1,114 @@
+{
+  "session_id": "48919958-3924-4bf4-9cf2-75544f76c443",
+  "start_time_iso": "2026-08-28T15:45:59.931927",
+  "end_time_iso": "2026-08-28T15:48:09.572977",
+  "duration_seconds": 129.63883090019226,
+  "tracking_duration_seconds": 20.479447841644287,
+  "config": {
+    "grid_rows": 3,
+    "grid_cols": 3,
+    "filter_type": "ema",
+    "mapping_method": "hybrid",
+    "async_capture": true,
+    "display_refresh_fps": 15,
+    "latest_frame_only": true
+  },
+  "summary": {
+    "total_frames": 793,
+    "frames_with_face": 767,
+    "face_detection_rate": 0.9672131147540983,
+    "avg_fps": 39.49605881447835,
+    "processing_fps_ema_final": 43.56347765187504,
+    "ui_fps": 14.209365627264338,
+    "dropped_frames": 0,
+    "dropped_frame_ratio": 0.0,
+    "stage_timings_ms": {
+      "capture_age_ms": {
+        "mean": 0.12183871394296941,
+        "p50": 0.09619999036658555,
+        "p95": 0.1543800055515021
+      },
+      "preprocess_ms": {
+        "mean": 0.2483689788064519,
+        "p50": 0.2308000111952424,
+        "p95": 0.32016000186558813
+      },
+      "inference_ms": {
+        "mean": 7.990700504523825,
+        "p50": 7.880500008468516,
+        "p95": 9.279900000547059
+      },
+      "mapping_metrics_ms": {
+        "mean": 0.10365825964133214,
+        "p50": 0.10449999535921961,
+        "p95": 0.1373199978843331
+      },
+      "logging_ms": {
+        "mean": 0.031710340702215685,
+        "p50": 0.02819999644998461,
+        "p95": 0.0646200060145929
+      },
+      "total_processing_ms": {
+        "mean": 8.387042748715968,
+        "p50": 8.259800000814721,
+        "p95": 9.730719999060966
+      }
+    },
+    "camera": {
+      "width": 640,
+      "height": 480,
+      "fps_reported": 60.000240000960005,
+      "capture_fps_observed": 39.484365489626896,
+      "backend": "DSHOW"
+    },
+    "sections": {
+      "terminal": {
+        "total_dwell_ms": 2115,
+        "visit_count": 17,
+        "nrevisit_count": 16,
+        "max_continuous_dwell_ms": 480
+      },
+      "main_file": {
+        "total_dwell_ms": 1852,
+        "visit_count": 16,
+        "nrevisit_count": 15,
+        "max_continuous_dwell_ms": 304
+      },
+      "sidebar": {
+        "total_dwell_ms": 1485,
+        "visit_count": 6,
+        "nrevisit_count": 5,
+        "max_continuous_dwell_ms": 608
+      },
+      "ai_agent": {
+        "total_dwell_ms": 768,
+        "visit_count": 6,
+        "nrevisit_count": 5,
+        "max_continuous_dwell_ms": 672
+      },
+      "second_file": {
+        "total_dwell_ms": 2924,
+        "visit_count": 8,
+        "nrevisit_count": 7,
+        "max_continuous_dwell_ms": 2256
+      },
+      "off_screen": {
+        "total_dwell_ms": 7400,
+        "visit_count": 23,
+        "nrevisit_count": 22,
+        "max_continuous_dwell_ms": 2256
+      }
+    },
+    "calibration_quality": 0.7435515935796781,
+    "calibration_diagnostics": {
+      "validation_median_error_screen_fraction": 0.0405514972316313,
+      "validation_p95_error_screen_fraction": 0.12822420321016093,
+      "validation_median_error_px": 137.72234151354792,
+      "validation_p95_error_px": 435.479296952754,
+      "quality": 0.7435515935796781,
+      "feature_span_x": 0.149894985421673,
+      "feature_span_y": 0.04999836752376126
+    }
+  },
+  "csv_path": "c:\\Users\\amrin\\OneDrive\\Desktop\\roadmap\\Frontend\\porto\\Adaptive-IDE\\eye_tracking_prototype\\./sessions\\session_48919958-3924-4bf4-9cf2-75544f76c443_20260828_154555.csv"
+}

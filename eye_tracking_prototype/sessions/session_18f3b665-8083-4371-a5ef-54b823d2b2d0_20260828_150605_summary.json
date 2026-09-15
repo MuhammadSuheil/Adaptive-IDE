@@ -1,0 +1,32 @@
+{
+  "session_id": "18f3b665-8083-4371-a5ef-54b823d2b2d0",
+  "start_time_iso": "2026-08-28T15:06:06.235752",
+  "end_time_iso": "2026-08-28T15:06:22.442883",
+  "duration_seconds": 16.20710587501526,
+  "tracking_duration_seconds": 0.0,
+  "config": {
+    "grid_rows": 3,
+    "grid_cols": 3,
+    "filter_type": "ema",
+    "mapping_method": "hybrid",
+    "async_capture": true
+  },
+  "summary": {
+    "total_frames": 0,
+    "frames_with_face": 0,
+    "face_detection_rate": 0,
+    "avg_fps": 0,
+    "processing_fps_ema_final": 0.0,
+    "camera": {
+      "width": 640,
+      "height": 480,
+      "fps_reported": 60.000240000960005,
+      "capture_fps_observed": 60.07356177425723,
+      "backend": "DSHOW"
+    },
+    "sections": {},
+    "calibration_quality": 0.0,
+    "calibration_diagnostics": {}
+  },
+  "csv_path": "c:\\Users\\amrin\\OneDrive\\Desktop\\roadmap\\Frontend\\porto\\Adaptive-IDE\\eye_tracking_prototype\\./sessions\\session_18f3b665-8083-4371-a5ef-54b823d2b2d0_20260828_150605.csv"
+}

@@ -1,0 +1,59 @@
+{
+  "session_id": "064f7b84-0b01-4dba-bc2a-7c253ed0a50d",
+  "start_time_iso": "2026-08-28T13:54:47.903432",
+  "end_time_iso": "2026-08-28T13:56:46.174898",
+  "duration_seconds": 118.27142763137817,
+  "config": {
+    "grid_rows": 3,
+    "grid_cols": 3,
+    "filter_type": "ema",
+    "mapping_method": "hybrid",
+    "async_capture": true
+  },
+  "summary": {
+    "total_frames": 1005,
+    "frames_with_face": 1002,
+    "face_detection_rate": 0.9970149253731343,
+    "avg_fps": 8.497403135542832,
+    "sections": {
+      "terminal": {
+        "total_dwell_ms": 7243,
+        "visit_count": 24,
+        "nrevisit_count": 0,
+        "max_continuous_dwell_ms": 1417
+      },
+      "off_screen": {
+        "total_dwell_ms": 37961,
+        "visit_count": 31,
+        "nrevisit_count": 0,
+        "max_continuous_dwell_ms": 9343
+      },
+      "sidebar": {
+        "total_dwell_ms": 10412,
+        "visit_count": 21,
+        "nrevisit_count": 0,
+        "max_continuous_dwell_ms": 3503
+      },
+      "main_file": {
+        "total_dwell_ms": 6227,
+        "visit_count": 19,
+        "nrevisit_count": 0,
+        "max_continuous_dwell_ms": 1391
+      },
+      "second_file": {
+        "total_dwell_ms": 1635,
+        "visit_count": 13,
+        "nrevisit_count": 0,
+        "max_continuous_dwell_ms": 476
+      },
+      "ai_agent": {
+        "total_dwell_ms": 1423,
+        "visit_count": 6,
+        "nrevisit_count": 0,
+        "max_continuous_dwell_ms": 545
+      }
+    },
+    "calibration_quality": 0.22047191730646454
+  },
+  "csv_path": "C:\\Users\\amrin\\OneDrive\\Desktop\\roadmap\\Frontend\\porto\\Adaptive-IDE\\eye_tracking_prototype\\./sessions\\session_064f7b84-0b01-4dba-bc2a-7c253ed0a50d_20260828_135445.csv"
+}

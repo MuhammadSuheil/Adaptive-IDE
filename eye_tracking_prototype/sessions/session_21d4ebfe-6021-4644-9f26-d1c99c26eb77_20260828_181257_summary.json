@@ -1,0 +1,69 @@
+{
+  "session_id": "21d4ebfe-6021-4644-9f26-d1c99c26eb77",
+  "start_time_iso": "2026-08-28T18:12:59.205120",
+  "end_time_iso": "2026-08-28T18:13:06.385180",
+  "duration_seconds": 7.180026292800903,
+  "tracking_duration_seconds": 0.0,
+  "config": {
+    "grid_rows": 3,
+    "grid_cols": 3,
+    "filter_type": "ema",
+    "mapping_method": "hybrid",
+    "async_capture": true,
+    "display_refresh_fps": 15,
+    "latest_frame_only": true
+  },
+  "summary": {
+    "total_frames": 0,
+    "frames_with_face": 0,
+    "face_detection_rate": 0,
+    "avg_fps": 0.0,
+    "processing_fps_ema_final": 0.0,
+    "ui_fps": 0.0,
+    "dropped_frames": 0,
+    "dropped_frame_ratio": 0.0,
+    "stage_timings_ms": {
+      "capture_age_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "preprocess_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "inference_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "mapping_metrics_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "logging_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "total_processing_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      }
+    },
+    "camera": {
+      "width": 640,
+      "height": 480,
+      "fps_reported": 60.000240000960005,
+      "capture_fps_observed": 30.057719430023766,
+      "backend": "DSHOW"
+    },
+    "sections": {},
+    "calibration_quality": 0.0,
+    "calibration_diagnostics": {}
+  },
+  "csv_path": "c:\\Users\\amrin\\OneDrive\\Desktop\\roadmap\\Frontend\\porto\\Adaptive-IDE\\eye_tracking_prototype\\./sessions\\session_21d4ebfe-6021-4644-9f26-d1c99c26eb77_20260828_181257.csv"
+}

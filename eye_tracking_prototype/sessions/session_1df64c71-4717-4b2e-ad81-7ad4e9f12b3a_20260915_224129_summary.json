@@ -1,0 +1,131 @@
+{
+  "schema_version": "2.0",
+  "sensor_type": "eye_tracking",
+  "prototype_version": "2.0",
+  "session_id": "1df64c71-4717-4b2e-ad81-7ad4e9f12b3a",
+  "start_time_iso": "2026-09-15T22:41:31.933129",
+  "end_time_iso": "2026-09-15T22:42:56.204452",
+  "duration_seconds": 84.26956558227539,
+  "tracking_duration_seconds": 31.65164852142334,
+  "config": {
+    "grid_rows": 3,
+    "screen_width": 2880,
+    "screen_height": 1800,
+    "grid_cols": 3,
+    "filter_type": "ema",
+    "mapping_method": "rbf",
+    "layout_mode": "3x3",
+    "async_capture": true,
+    "display_refresh_fps": 15,
+    "latest_frame_only": true
+  },
+  "summary": {
+    "total_frames": 417,
+    "frames_with_face": 417,
+    "face_detection_rate": 1.0,
+    "avg_fps": 15.018566486205719,
+    "processing_fps_ema_final": 15.13426291605163,
+    "ui_fps": 10.741936146223265,
+    "dropped_frames": 0,
+    "dropped_frame_ratio": 0.0,
+    "stage_timings_ms": {
+      "capture_age_ms": {
+        "mean": 0.23241750609126316,
+        "p50": 0.112900001113303,
+        "p95": 0.22716000094078478
+      },
+      "preprocess_ms": {
+        "mean": 0.25369352523056843,
+        "p50": 0.24019999909796752,
+        "p95": 0.3379200010385829
+      },
+      "inference_ms": {
+        "mean": 7.498282493870385,
+        "p50": 7.3525999978301115,
+        "p95": 8.672400000796188
+      },
+      "mapping_metrics_ms": {
+        "mean": 0.8047352518197607,
+        "p50": 0.8062999986577779,
+        "p95": 0.9834600008616688
+      },
+      "logging_ms": {
+        "mean": 0.03367793752992754,
+        "p50": 0.029999999242136255,
+        "p95": 0.05014000125811429
+      },
+      "total_processing_ms": {
+        "mean": 8.604841726612662,
+        "p50": 8.448500000667991,
+        "p95": 9.917159999167778
+      }
+    },
+    "camera": {
+      "width": 640,
+      "height": 480,
+      "fps_reported": 60.000240000960005,
+      "capture_fps_observed": 14.994241247445526,
+      "backend": "DSHOW"
+    },
+    "sections": {
+      "sidebar": {
+        "total_dwell_ms": 4897,
+        "visit_count": 11,
+        "nrevisit_count": 10,
+        "max_continuous_dwell_ms": 1790
+      },
+      "main_file": {
+        "total_dwell_ms": 1787,
+        "visit_count": 15,
+        "nrevisit_count": 14,
+        "max_continuous_dwell_ms": 607
+      },
+      "off_screen": {
+        "total_dwell_ms": 8842,
+        "visit_count": 18,
+        "nrevisit_count": 17,
+        "max_continuous_dwell_ms": 2480
+      },
+      "second_file": {
+        "total_dwell_ms": 840,
+        "visit_count": 7,
+        "nrevisit_count": 6,
+        "max_continuous_dwell_ms": 270
+      },
+      "terminal": {
+        "total_dwell_ms": 4010,
+        "visit_count": 11,
+        "nrevisit_count": 10,
+        "max_continuous_dwell_ms": 1471
+      },
+      "ai_agent": {
+        "total_dwell_ms": 2650,
+        "visit_count": 8,
+        "nrevisit_count": 7,
+        "max_continuous_dwell_ms": 1055
+      }
+    },
+    "total_blinks": 3,
+    "avg_blink_rate_bpm": 5.686907583286458,
+    "calibration_quality": 0.6163728660947785,
+    "calibration_diagnostics": {
+      "validation_median_error_screen_fraction": 0.11298651773184687,
+      "validation_p95_error_screen_fraction": 0.2194014134067502,
+      "validation_median_error_px": 383.72856352524803,
+      "validation_p95_error_px": 745.1383659932997,
+      "quality": 0.6163728660947785,
+      "feature_span_x": 0.18759001932190356,
+      "feature_span_y": 0.07248502204070313,
+      "unique_camera_frames": 246
+    },
+    "baseline_head_pose": {
+      "pitch": 0.018244131525193552,
+      "yaw": -4.051287396313538,
+      "roll": 1.6414511948433708,
+      "face_width_ratio": 0.1485370772540377,
+      "center_x_ratio": 0.49787118285894394,
+      "center_y_ratio": 0.5572991818189621
+    }
+  },
+  "csv_path": "c:\\Users\\amrin\\OneDrive\\Desktop\\roadmap\\Frontend\\porto\\Adaptive-IDE\\eye_tracking_prototype\\sessions\\session_1df64c71-4717-4b2e-ad81-7ad4e9f12b3a_20260915_224129.csv"
+}

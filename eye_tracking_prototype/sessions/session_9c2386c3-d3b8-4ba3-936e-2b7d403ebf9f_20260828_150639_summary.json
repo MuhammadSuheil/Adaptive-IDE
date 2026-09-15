@@ -1,0 +1,77 @@
+{
+  "session_id": "9c2386c3-d3b8-4ba3-936e-2b7d403ebf9f",
+  "start_time_iso": "2026-08-28T15:06:41.010515",
+  "end_time_iso": "2026-08-28T15:09:21.572211",
+  "duration_seconds": 160.5615017414093,
+  "tracking_duration_seconds": 72.70843410491943,
+  "config": {
+    "grid_rows": 3,
+    "grid_cols": 3,
+    "filter_type": "ema",
+    "mapping_method": "hybrid",
+    "async_capture": true
+  },
+  "summary": {
+    "total_frames": 644,
+    "frames_with_face": 633,
+    "face_detection_rate": 0.9829192546583851,
+    "avg_fps": 8.857294314311565,
+    "processing_fps_ema_final": 9.301205982845245,
+    "camera": {
+      "width": 640,
+      "height": 480,
+      "fps_reported": 60.000240000960005,
+      "capture_fps_observed": 29.985098211367724,
+      "backend": "DSHOW"
+    },
+    "sections": {
+      "terminal": {
+        "total_dwell_ms": 14673,
+        "visit_count": 20,
+        "nrevisit_count": 19,
+        "max_continuous_dwell_ms": 5294
+      },
+      "main_file": {
+        "total_dwell_ms": 13403,
+        "visit_count": 17,
+        "nrevisit_count": 16,
+        "max_continuous_dwell_ms": 3272
+      },
+      "sidebar": {
+        "total_dwell_ms": 10246,
+        "visit_count": 11,
+        "nrevisit_count": 10,
+        "max_continuous_dwell_ms": 6762
+      },
+      "ai_agent": {
+        "total_dwell_ms": 1919,
+        "visit_count": 3,
+        "nrevisit_count": 2,
+        "max_continuous_dwell_ms": 1016
+      },
+      "second_file": {
+        "total_dwell_ms": 10070,
+        "visit_count": 7,
+        "nrevisit_count": 6,
+        "max_continuous_dwell_ms": 4588
+      },
+      "off_screen": {
+        "total_dwell_ms": 11087,
+        "visit_count": 20,
+        "nrevisit_count": 19,
+        "max_continuous_dwell_ms": 2005
+      }
+    },
+    "calibration_quality": 0.6304622668265731,
+    "calibration_diagnostics": {
+      "validation_median_error_screen_fraction": 0.09238443329335672,
+      "validation_p95_error_screen_fraction": 0.15697408986312947,
+      "validation_median_error_px": 313.75908021069694,
+      "validation_p95_error_px": 533.1206167165876,
+      "quality": 0.6304622668265731,
+      "feature_span_x": 0.08500386467381404,
+      "feature_span_y": 0.03897871145909747
+    }
+  },
+  "csv_path": "c:\\Users\\amrin\\OneDrive\\Desktop\\roadmap\\Frontend\\porto\\Adaptive-IDE\\eye_tracking_prototype\\./sessions\\session_9c2386c3-d3b8-4ba3-936e-2b7d403ebf9f_20260828_150639.csv"
+}

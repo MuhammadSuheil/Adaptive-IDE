@@ -1,0 +1,80 @@
+{
+  "session_id": "19281190-7df6-46ba-8160-6abb34aa169c",
+  "start_time_iso": "2026-09-14T22:01:49.245407",
+  "end_time_iso": "2026-09-14T22:02:31.117855",
+  "duration_seconds": 41.87241840362549,
+  "tracking_duration_seconds": 0.0,
+  "config": {
+    "grid_rows": 3,
+    "grid_cols": 3,
+    "filter_type": "ema",
+    "mapping_method": "rbf",
+    "layout_mode": "3x3",
+    "async_capture": true,
+    "display_refresh_fps": 15,
+    "latest_frame_only": true
+  },
+  "summary": {
+    "total_frames": 0,
+    "frames_with_face": 0,
+    "face_detection_rate": 0,
+    "avg_fps": 0.0,
+    "processing_fps_ema_final": 0.0,
+    "ui_fps": 0.0,
+    "dropped_frames": 0,
+    "dropped_frame_ratio": 0.0,
+    "stage_timings_ms": {
+      "capture_age_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "preprocess_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "inference_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "mapping_metrics_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "logging_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "total_processing_ms": {
+        "mean": 0.0,
+        "p50": 0.0,
+        "p95": 0.0
+      }
+    },
+    "camera": {
+      "width": 640,
+      "height": 480,
+      "fps_reported": 60.000240000960005,
+      "capture_fps_observed": 14.89947098260981,
+      "backend": "DSHOW"
+    },
+    "sections": {},
+    "total_blinks": 0,
+    "avg_blink_rate_bpm": 0.0,
+    "calibration_quality": 0.0,
+    "calibration_diagnostics": {},
+    "baseline_head_pose": {
+      "pitch": 0.582451812076954,
+      "yaw": 9.047375753197906,
+      "roll": 1.523268426217161,
+      "face_width_ratio": 0.1511825748428624,
+      "center_x_ratio": 0.4974084347486496,
+      "center_y_ratio": 0.5328982397913933
+    }
+  },
+  "csv_path": "c:\\Users\\amrin\\OneDrive\\Desktop\\roadmap\\Frontend\\porto\\Adaptive-IDE\\eye_tracking_prototype\\./sessions\\session_19281190-7df6-46ba-8160-6abb34aa169c_20260914_220147.csv"
+}
