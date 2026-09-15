@@ -1,5 +1,30 @@
 # Eye Tracking Prototype
 
+Set the calibration/tracking screen dimensions manually in `config.yaml`:
+
+```yaml
+screen:
+  width: 2880
+  height: 1800
+```
+
+These required positive integer values define the screen coordinate system;
+they are independent of webcam capture resolution. Match the fullscreen monitor
+resolution to avoid display scaling affecting target positions. Restart the
+application and recalibrate after changing them. Custom config files must also
+include this section. Automatic screen-size detection is no longer used.
+
+The head alignment step displays a live camera preview with a circle centered on
+the screen. Forehead, chin and cheek landmarks must fit and fill that circle,
+with the face centered and upright. A continuous five-second green countdown
+is required; losing alignment or the camera resets it. Space/Enter cannot skip it.
+
+Eye calibration defaults to nine targets (`layout_mode: "3x3"`,
+`target_margin: 0.0`): four physical screen corners, four side midpoints, and
+the center. Targets on the pixel boundary are intentionally clipped; look at
+the point where the target meets the screen edge. Calibration has no padding.
+The tracking display retains its visual off-screen padding.
+
 This is the standalone Python prototype for the Eye Tracking Module of the Adaptive IDE Extension. It uses MediaPipe to extract facial landmarks (specifically the iris) and an OpenCV grid to map your gaze to different sections of the IDE.
 
 ## Requirements
