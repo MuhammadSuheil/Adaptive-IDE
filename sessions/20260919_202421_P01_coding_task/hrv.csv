@@ -1,0 +1,11 @@
+phase,window_start,window_end,window_seconds,rr_count,rr_pairs,rmssd_ms,sdnn_ms,status,reason,accepted_rr_seconds,coverage,data_age_seconds
+baseline,2026-09-19T13:24:52.452947+00:00,2026-09-19T13:29:39.389947+00:00,286.9370000000017,172,151,92.19248873029753,89.63466143599166,ready,target_reached,120.580078125,0.42023189105970743,0.9592109375007567
+task,2026-09-19T13:29:39.389947+00:00,2026-09-19T13:30:04.389947+00:00,25,5,4,,,recovering,recovery_pending;insufficient_coverage;insufficient_pairs;stale_or_missing_data,3.7958984375,0.1518359375,15.002429687501717
+task,2026-09-19T13:29:44.389947+00:00,2026-09-19T13:30:09.389947+00:00,25,11,9,,,gap,rr_gap;insufficient_coverage;insufficient_pairs;stale_or_missing_data,8.9951171875,0.3598046875,3.4833984375
+task,2026-09-19T13:29:49.389947+00:00,2026-09-19T13:30:14.389947+00:00,25,6,5,,,gap,rr_gap;insufficient_coverage;insufficient_pairs;stale_or_missing_data,5.19921875,0.20796875,8.4833984375
+task,2026-09-19T13:29:54.389947+00:00,2026-09-19T13:30:19.389947+00:00,25,6,5,,,recovering,recovery_pending;insufficient_coverage;insufficient_pairs;stale_or_missing_data,5.19921875,0.20796875,13.4833984375
+task,2026-09-19T13:29:59.389947+00:00,2026-09-19T13:30:24.389947+00:00,25,6,5,,,gap,rr_gap;insufficient_coverage;insufficient_pairs;stale_or_missing_data,5.19921875,0.20796875,18.4833984375
+task,2026-09-19T13:30:04.389947+00:00,2026-09-19T13:30:29.389947+00:00,25,2,1,,,gap,rr_gap;insufficient_coverage;insufficient_pairs;stale_or_missing_data,1.5166015625,0.0606640625,23.4833984375
+task,2026-09-19T13:30:09.389947+00:00,2026-09-19T13:30:34.389947+00:00,25,0,0,,,gap,rr_gap;insufficient_coverage;insufficient_pairs;stale_or_missing_data,0.0,0.0,
+task,2026-09-19T13:30:14.389947+00:00,2026-09-19T13:30:39.389947+00:00,25,6,5,,,insufficient_data,insufficient_coverage;insufficient_pairs,4.474609375,0.178984375,2.6600312500013388
+task,2026-09-19T13:30:19.389947+00:00,2026-09-19T13:30:44.389947+00:00,25,6,5,,,gap,rr_gap;insufficient_coverage;insufficient_pairs;stale_or_missing_data,4.474609375,0.178984375,7.660031250001339
