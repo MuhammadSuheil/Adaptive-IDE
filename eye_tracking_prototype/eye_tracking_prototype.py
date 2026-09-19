@@ -93,14 +93,20 @@ def estimate_head_pose(landmarks, image_w, image_h):
 
 
 class EyeTrackerApp:
-    def __init__(self, config_path):
+    def __init__(self, config_path, session_dir=None, session_id=None):
         self.cfg = Config(config_path)
         
-        os.makedirs(self.cfg.session_dir, exist_ok=True)
-        self.session_id = str(uuid.uuid4())
+        save_dir = session_dir or self.cfg.session_dir
+        os.makedirs(save_dir, exist_ok=True)
+        self.session_id = session_id or str(uuid.uuid4())
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.csv_path = os.path.join(self.cfg.session_dir, f"session_{self.session_id}_{timestamp}.csv")
-        self.json_path = os.path.join(self.cfg.session_dir, f"session_{self.session_id}_{timestamp}_summary.json")
+        if session_dir:
+            self.csv_path = os.path.join(save_dir, "eye_tracking.csv")
+            self.json_path = os.path.join(save_dir, "eye_summary.json")
+        else:
+            self.csv_path = os.path.join(save_dir, f"session_{self.session_id}_{timestamp}.csv")
+            self.json_path = os.path.join(save_dir, f"session_{self.session_id}_{timestamp}_summary.json")
+
         
         if self.cfg.async_capture:
             print("[EyeTrack] Initializing Async Multithreaded Camera Stream...")
@@ -1547,7 +1553,10 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Adaptive IDE - Eye Tracking Prototype")
     parser.add_argument("--config", default="config.yaml", help="Path to config file")
+    parser.add_argument("--session-dir", default=None, help="Directory to save session files")
+    parser.add_argument("--session-id", default=None, help="Custom session ID")
     args = parser.parse_args()
     
-    app = EyeTrackerApp(args.config)
+    app = EyeTrackerApp(args.config, session_dir=args.session_dir, session_id=args.session_id)
     app.run()
+
