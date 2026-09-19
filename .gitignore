@@ -1,8 +1,13 @@
+# Agent
 .agent
 .gemini
 
-eye_tracking_prototype/sessions/_archive
+#Sessions
+eye_tracking_prototype/sessions/
 hrv_monitor_prototype/sessions/
 __pycache__/
 eye_tracking_prototype/modules/__pycache__
 eyebeam
+sessions/*
+!sessions/saved_session/
+!sessions/saved_session/**

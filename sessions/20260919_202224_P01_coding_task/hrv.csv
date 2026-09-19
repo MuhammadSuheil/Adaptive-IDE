@@ -1,2 +1,0 @@
-phase,window_start,window_end,window_seconds,rr_count,rr_pairs,rmssd_ms,sdnn_ms,status,reason,accepted_rr_seconds,coverage,data_age_seconds
-baseline,2026-09-19T13:22:33.338677+00:00,2026-09-19T13:22:44.573677+00:00,11.235000000000582,13,12,,,unavailable,interrupted,7.8984375,0.7030206942589756,0.9312890625005821
