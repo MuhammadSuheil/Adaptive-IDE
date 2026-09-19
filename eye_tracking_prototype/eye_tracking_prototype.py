@@ -93,11 +93,11 @@ def estimate_head_pose(landmarks, image_w, image_h):
 
 
 class EyeTrackerApp:
-    def __init__(self, config_path):
+    def __init__(self, config_path, session_id=None):
         self.cfg = Config(config_path)
         
         os.makedirs(self.cfg.session_dir, exist_ok=True)
-        self.session_id = str(uuid.uuid4())
+        self.session_id = session_id or str(uuid.uuid4())
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.csv_path = os.path.join(self.cfg.session_dir, f"session_{self.session_id}_{timestamp}.csv")
         self.json_path = os.path.join(self.cfg.session_dir, f"session_{self.session_id}_{timestamp}_summary.json")
@@ -334,6 +334,60 @@ class EyeTrackerApp:
         invalid_count = 0
         countdown_start = None
         frame_id = 0
+        adjusting_oval = True
+        drag_setting = None
+        oval_settings = {
+            "height": self.cfg.hp_guide_height_ratio,
+            "width": self.cfg.hp_guide_width_to_height,
+            "center_x": self.cfg.hp_target_center_x_ratio,
+            "center_y": self.cfg.hp_target_center_y_ratio,
+        }
+        slider_specs = [
+            ("height", "OVAL HEIGHT", 0.20, 0.70),
+            ("width", "OVAL WIDTH", 0.50, 1.00),
+            ("center_x", "HORIZONTAL POSITION", 0.20, 0.80),
+            ("center_y", "VERTICAL POSITION", 0.25, 0.75),
+        ]
+        panel_x, panel_y, slider_w = 55, 195, 390
+        start_button = (panel_x, panel_y + 4 * 62 + 26, panel_x + slider_w, panel_y + 4 * 62 + 82)
+        reset_button = (panel_x, panel_y + 4 * 62 + 94, panel_x + slider_w, panel_y + 4 * 62 + 140)
+
+        def update_slider(name, x):
+            for key, _label, low, high in slider_specs:
+                if key == name:
+                    ratio = min(1.0, max(0.0, (x - panel_x) / slider_w))
+                    oval_settings[key] = low + ratio * (high - low)
+                    return
+
+        def on_mouse(event, x, y, _flags, _param):
+            nonlocal adjusting_oval, drag_setting
+            if not adjusting_oval:
+                return
+            if event == cv2.EVENT_LBUTTONDOWN:
+                if start_button[0] <= x <= start_button[2] and start_button[1] <= y <= start_button[3]:
+                    adjusting_oval = False
+                    drag_setting = None
+                    return
+                if reset_button[0] <= x <= reset_button[2] and reset_button[1] <= y <= reset_button[3]:
+                    oval_settings.update({
+                        "height": self.cfg.hp_guide_height_ratio,
+                        "width": self.cfg.hp_guide_width_to_height,
+                        "center_x": self.cfg.hp_target_center_x_ratio,
+                        "center_y": self.cfg.hp_target_center_y_ratio,
+                    })
+                    return
+                for index, (name, _label, _low, _high) in enumerate(slider_specs):
+                    slider_y = panel_y + index * 62 + 28
+                    if slider_y - 16 <= y <= slider_y + 16 and panel_x - 12 <= x <= panel_x + slider_w + 12:
+                        drag_setting = name
+                        update_slider(name, x)
+                        return
+            elif event == cv2.EVENT_MOUSEMOVE and drag_setting is not None:
+                update_slider(drag_setting, x)
+            elif event == cv2.EVENT_LBUTTONUP:
+                drag_setting = None
+
+        cv2.setMouseCallback("Head Alignment Gate", on_mouse)
 
         target_cx = int(self.screen_w * self.cfg.hp_target_center_x_ratio)
         target_cy = self.screen_h // 2
@@ -415,13 +469,13 @@ class EyeTrackerApp:
             pw, ph = int(fw * scale), int(fh * scale)
             ox, oy = (self.screen_w - pw) // 2, (self.screen_h - ph) // 2
             canvas[oy:oy+ph, ox:ox+pw] = cv2.resize(frame, (pw, ph))
-            radius_y = max(1, int(ph * self.cfg.hp_guide_height_ratio / 2))
-            radius_x = max(1, int(radius_y * self.cfg.hp_guide_width_to_height))
+            radius_y = max(1, int(ph * oval_settings["height"] / 2))
+            radius_x = max(1, int(radius_y * oval_settings["width"]))
             guide_axes = np.array([radius_x, radius_y])
             # Position the guide relative to the visible camera preview so the
             # configured center remains correct when the preview is letterboxed.
-            target_cx = ox + int(pw * self.cfg.hp_target_center_x_ratio)
-            target_cy = oy + int(ph * self.cfg.hp_target_center_y_ratio)
+            target_cx = ox + int(pw * oval_settings["center_x"])
+            target_cy = oy + int(ph * oval_settings["center_y"])
             target_w, target_h = radius_x * 2, radius_y * 2
 
             # Draw target bounding box
@@ -500,6 +554,17 @@ class EyeTrackerApp:
 
             checklist_states = [ck_face, ck_dist, ck_center, ck_angle, is_aligned]
 
+            if adjusting_oval:
+                # Slider values are session-only.  Do not start the gate or alter config.yaml
+                # until the user has approved the real-time oval preview.
+                stable_count = 0
+                invalid_count = 0
+                countdown_start = None
+                checklist_states = [False] * len(checklist_labels)
+                is_aligned = False
+                status_msg = "ADJUST THE OVAL TO YOUR COMFORTABLE SITTING POSITION"
+                msg_color = (255, 220, 0)
+
             if is_aligned:
                 invalid_count = 0
                 stable_count += 1
@@ -525,6 +590,32 @@ class EyeTrackerApp:
             cv2.putText(canvas,
                         "Sit comfortably, align your face in the oval and hold 5 seconds. [Q] Quit",
                         (50, 140), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 255), 1)
+
+            if adjusting_oval:
+                overlay = canvas.copy()
+                cv2.rectangle(overlay, (panel_x - 20, panel_y - 35),
+                              (panel_x + slider_w + 20, reset_button[3] + 22), (15, 15, 15), -1)
+                cv2.addWeighted(overlay, 0.78, canvas, 0.22, 0, canvas)
+                cv2.putText(canvas, "CUSTOMIZE HEAD OVAL", (panel_x, panel_y - 8),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.72, (255, 255, 255), 2)
+                for index, (name, label, low, high) in enumerate(slider_specs):
+                    slider_y = panel_y + index * 62 + 28
+                    value = oval_settings[name]
+                    thumb_x = int(panel_x + slider_w * (value - low) / (high - low))
+                    cv2.putText(canvas, f"{label}: {value:.2f}", (panel_x, slider_y - 12),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.53, (225, 225, 225), 1)
+                    cv2.line(canvas, (panel_x, slider_y), (panel_x + slider_w, slider_y), (130, 130, 130), 3)
+                    cv2.circle(canvas, (thumb_x, slider_y), 10, (0, 220, 255), -1)
+                cv2.rectangle(canvas, start_button[:2], start_button[2:], (0, 175, 70), -1)
+                cv2.putText(canvas, "START HEAD CALIBRATION", (panel_x + 48, start_button[1] + 36),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.62, (255, 255, 255), 2)
+                cv2.rectangle(canvas, reset_button[:2], reset_button[2:], (70, 70, 70), -1)
+                cv2.putText(canvas, "RESET TO CONFIG DEFAULT", (panel_x + 53, reset_button[1] + 30),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1)
+                cv2.putText(canvas, "Changes apply only to this calibration session.",
+                            (panel_x, reset_button[3] + 48), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (210, 210, 210), 1)
+                cv2.putText(canvas, "Keep your arms and body still while recording.",
+                            (panel_x, reset_button[3] + 70), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (0, 220, 255), 1)
 
             # Countdown bar
             if stable_count >= self.cfg.hp_stability_frames_required:
@@ -1547,7 +1638,8 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Adaptive IDE - Eye Tracking Prototype")
     parser.add_argument("--config", default="config.yaml", help="Path to config file")
+    parser.add_argument("--session-id", help="Shared ID supplied by the synchronized-session launcher")
     args = parser.parse_args()
     
-    app = EyeTrackerApp(args.config)
+    app = EyeTrackerApp(args.config, session_id=args.session_id)
     app.run()
