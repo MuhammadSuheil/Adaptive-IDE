@@ -1,0 +1,1 @@
+phase,window_start,window_end,window_seconds,hrv_status,hrv_reason,rr_count,rr_pairs,rmssd_ms,sdnn_ms,lf_power,z_score,eye_frame_count,eye_face_detected_ratio,eye_on_screen_ratio,eye_mean_confidence,eye_mean_gaze_x,eye_mean_gaze_y,eye_blink_count_max,eye_mean_fps,eye_mean_transition_rate
