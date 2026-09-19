@@ -78,10 +78,23 @@ class Config:
         self.hp_target_center_y_ratio = hp_cfg.get('target_center_y_ratio', 0.45)
         self.hp_alignment_tolerance_ratio = hp_cfg.get('alignment_tolerance_ratio', 0.08)
         self.hp_size_tolerance_ratio = hp_cfg.get('size_tolerance_ratio', 0.10)
+        self.hp_max_outside_ratio = float(hp_cfg.get('max_outside_ratio', 1.12))
+        self.hp_min_vertical_fill_ratio = float(hp_cfg.get('min_vertical_fill_ratio', 0.65))
+        self.hp_min_horizontal_fill_ratio = float(hp_cfg.get('min_horizontal_fill_ratio', 0.30))
+        self.hp_center_tolerance_ratio = float(hp_cfg.get('center_tolerance_ratio', 0.25))
         self.hp_max_yaw_deg = hp_cfg.get('max_yaw_deg', 10.0)
         self.hp_max_pitch_deg = hp_cfg.get('max_pitch_deg', 8.0)
         self.hp_stability_frames_required = hp_cfg.get('stability_frames_required', 15)
+        self.hp_invalid_grace_frames = max(0, int(hp_cfg.get('invalid_grace_frames', 8)))
         self.hp_countdown_seconds = max(0.1, float(hp_cfg.get('countdown_seconds', 5)))
+        if not (0.0 <= self.hp_target_center_x_ratio <= 1.0 and
+                0.0 <= self.hp_target_center_y_ratio <= 1.0):
+            raise ValueError("Head guide center ratios must be between 0.0 and 1.0")
+        if not (1.0 <= self.hp_max_outside_ratio <= 2.0 and
+                0.0 <= self.hp_min_vertical_fill_ratio <= 1.0 and
+                0.0 <= self.hp_min_horizontal_fill_ratio <= 1.0 and
+                0.0 < self.hp_center_tolerance_ratio <= 1.0):
+            raise ValueError("Invalid head-positioning fit tolerance")
 
         # Head Pose Monitoring (Phase 3)
         pose_cfg = self.data.get('head_pose', {})
