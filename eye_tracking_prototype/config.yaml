@@ -11,7 +11,7 @@ screen:
 # Webcam settings
 # ─────────────────────────────────────────────
 webcam:
-  device_index: 1 # 0 = default webcam; try 1 for external cam
+  device_index: 0 # 0 = default webcam; try 1 for external cam
   fps_target: 60 # Target FPS: 30 or 60
   width: 640
   height: 480
