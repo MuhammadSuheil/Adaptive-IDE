@@ -81,7 +81,7 @@ class RRRecorder:
         return len(rr_units)
 
 
-async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_ROOT, monitor=None):
+async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_ROOT, monitor=None, session_dir=None):
     """Rekam RR. Monitor opsional menerima start, receive, tick, dan finish;
     logika kalibrasi tetap berada di file pemanggil, bukan di perekam raw.
     """
@@ -100,11 +100,16 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
 
     disconnected = asyncio.Event()
     async with BleakClient(device, disconnected_callback=lambda _: disconnected.set()) as client:
-        session_name = f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S}_{uuid4().hex[:8]}"
-        session = Path(output) / session_name
-        session.mkdir(parents=True, exist_ok=False)
+        if session_dir is not None:
+            session = Path(session_dir)
+            session.mkdir(parents=True, exist_ok=True)
+        else:
+            session_name = f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S}_{uuid4().hex[:8]}"
+            session = Path(output) / session_name
+            session.mkdir(parents=True, exist_ok=False)
         origin = time.monotonic()
-        with (session / "rr_raw.csv").open("x", newline="", encoding="utf-8") as raw_file:
+        with (session / "rr_raw.csv").open("w", newline="", encoding="utf-8") as raw_file:
+
             recorder = RRRecorder(raw_file)
             failure = None
             end_reason = "stopped"
@@ -172,10 +177,12 @@ def main(argv=None):
     parser.add_argument("--address", help="Alamat BLE jika sensor lebih dari satu")
     parser.add_argument("--duration", type=float, help="Durasi rekaman dalam detik; default sampai Ctrl+C")
     parser.add_argument("--output", type=Path, default=SESSION_ROOT, help="Folder induk sesi")
+    parser.add_argument("--session-dir", type=Path, help="Folder sesi spesifik")
     args = parser.parse_args(argv)
     if args.duration is not None and (not math.isfinite(args.duration) or args.duration <= 0):
         parser.error("--duration harus positif dan finite")
-    return asyncio.run(record_sensor(args.name, args.address, args.duration, args.output))
+    return asyncio.run(record_sensor(args.name, args.address, args.duration, args.output, session_dir=args.session_dir))
+
 
 
 if __name__ == "__main__":

@@ -113,19 +113,19 @@ blink:
 head_positioning:
   enabled: true
   fullscreen: true
-  guide_height_ratio: 0.55 # Oval height relative to preview height; previously 0.64; range 0.15 - 0.8
-  guide_width_to_height: 0.66 # Portrait oval pixel aspect ratio; range 0.5 - 1.0
+  guide_height_ratio: 0.55 # Session UI permits a comfortable, bounded 0.45 - 0.65.
+  guide_width_to_height: 0.66 # Session UI permits 0.58 - 0.78; this is a distance/fit guide.
   target_face_width_ratio: 0.20  # Comfortable normal seating distance (~50-70cm)
   target_center_x_ratio: 0.5        # Center horizontally on screen
-  target_center_y_ratio: 0.55       # Center slightly lower than screen center for natural posture
+  target_center_y_ratio: 0.50       # Session UI permits a small 0.47 - 0.53 vertical adjustment.
   max_outside_ratio: 1.12           # Allow landmarks slightly outside the oval
   min_vertical_fill_ratio: 0.65     # Minimum forehead/chin reach inside the oval
   min_horizontal_fill_ratio: 0.30   # Minimum cheek reach inside the oval
   center_tolerance_ratio: 0.25      # Allowed face-center offset within the oval
   alignment_tolerance_ratio: 0.20  # Relaxed center alignment tolerance
   size_tolerance_ratio: 0.35       # Relaxed face distance tolerance (no leaning needed)
-  max_yaw_deg: 30.0                # Relaxed yaw angle tolerance
-  max_pitch_deg: 30.0              # Relaxed pitch angle tolerance
+  max_yaw_deg: 12.0                # Straight-ahead pose required before gaze calibration
+  max_pitch_deg: 12.0              # Straight-ahead pose required before gaze calibration
   stability_frames_required: 4     # Fast confirmation (4 frames)
   invalid_grace_frames: 8          # Brief landmark jitter does not reset countdown
   countdown_seconds: 5             # Continuous valid face fit before eye calibration

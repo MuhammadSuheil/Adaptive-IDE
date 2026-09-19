@@ -43,6 +43,33 @@ BPM is not used as an input feature.
 function and session output directory. Run `calibrate` for the complete workflow;
 run `record_rr` directly only when collecting raw RR without calibration or HRV.
 
+## Multimodal session output
+
+Run `python run_multimodal.py --participant P01 --task coding_task` from the
+repository root. Once either recorder exits (including pressing Q in the eye
+tracker and dismissing its summary), the runner stops the other recorder, waits
+for its files to close, and automatically combines the session data. Ctrl+C also
+ends the session and triggers fusion.
+
+A session with both recordings produces four CSV files in `sessions/<session>/`:
+
+- `eye_tracking.csv`: eye tracking frames and timestamps.
+- `hrv.csv`: baseline and task HRV windows.
+- `rr_raw.csv`: original RR measurements.
+- `multimodal_timeline.csv`: one row per task HRV window, containing HRV features
+  and eye tracking features aggregated over the same timestamp range.
+
+The raw CSV files are preserved. JSON summaries are additional outputs. If a
+session has no task HRV windows yet, the combined CSV contains its header only;
+missing source recordings are reported in the terminal. Single-sensor modes
+(`--skip-eye` or `--skip-hrv`) do not produce a combined CSV.
+
+To combine an existing session, run:
+
+```powershell
+python fuse_and_analyze.py --session-dir "sessions/<session>"
+```
+
 ## General Workflow & Methodology
 
 The research utilizes a multimodal sensor fusion approach to detect the developer's cognitive state while they code. The system gathers data from two primary physiological sources:
