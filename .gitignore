@@ -2,6 +2,7 @@
 .gemini
 
 eye_tracking_prototype/sessions/_archive
-
 hrv_monitor_prototype/sessions/
 __pycache__/
+eye_tracking_prototype/modules/__pycache__
+eyebeam

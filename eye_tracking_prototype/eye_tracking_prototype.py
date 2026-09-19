@@ -331,6 +331,7 @@ class EyeTrackerApp:
         cv2.setWindowProperty("Head Alignment Gate", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         stable_count = 0
+        invalid_count = 0
         countdown_start = None
         frame_id = 0
 
@@ -417,7 +418,10 @@ class EyeTrackerApp:
             radius_y = max(1, int(ph * self.cfg.hp_guide_height_ratio / 2))
             radius_x = max(1, int(radius_y * self.cfg.hp_guide_width_to_height))
             guide_axes = np.array([radius_x, radius_y])
-            target_cx, target_cy = self.screen_w // 2, self.screen_h // 2
+            # Position the guide relative to the visible camera preview so the
+            # configured center remains correct when the preview is letterboxed.
+            target_cx = ox + int(pw * self.cfg.hp_target_center_x_ratio)
+            target_cy = oy + int(ph * self.cfg.hp_target_center_y_ratio)
             target_w, target_h = radius_x * 2, radius_y * 2
 
             # Draw target bounding box
@@ -463,10 +467,11 @@ class EyeTrackerApp:
                                     for i in (10, 152, 234, 454)])
                 guide_center = np.array([target_cx, target_cy])
                 distances = np.linalg.norm((anchors - guide_center) / guide_axes, axis=1)
-                ck_dist = bool(np.all(distances <= 1.05) and
-                               np.all(distances[:2] >= 0.75) and
-                               np.all(distances[2:] >= 0.40))
-                ck_center = np.linalg.norm((anchors.mean(axis=0)-guide_center) / guide_axes) <= 0.18
+                ck_dist = bool(np.all(distances <= self.cfg.hp_max_outside_ratio) and
+                               np.all(distances[:2] >= self.cfg.hp_min_vertical_fill_ratio) and
+                               np.all(distances[2:] >= self.cfg.hp_min_horizontal_fill_ratio))
+                ck_center = (np.linalg.norm((anchors.mean(axis=0)-guide_center) / guide_axes)
+                             <= self.cfg.hp_center_tolerance_ratio)
                 for anchor in anchors:
                     cv2.circle(canvas, tuple(anchor.astype(int)), 5, (0,255,255), -1)
                 ck_angle = (abs(yaw) <= self.cfg.hp_max_yaw_deg and
@@ -476,7 +481,8 @@ class EyeTrackerApp:
                 # Guide checks use the same transformed pixels as the live preview.
 
                 if not ck_dist:
-                    status_msg = ("MOVE BACK - KEEP FACE INSIDE OVAL" if np.any(distances > 1.05)
+                    status_msg = ("MOVE BACK - KEEP FACE INSIDE OVAL" if
+                                  np.any(distances > self.cfg.hp_max_outside_ratio)
                                   else "MOVE CLOSER - FILL OVAL WITH YOUR FACE")
                     msg_color = (0, 165, 255)
                 elif not ck_center:
@@ -495,10 +501,13 @@ class EyeTrackerApp:
             checklist_states = [ck_face, ck_dist, ck_center, ck_angle, is_aligned]
 
             if is_aligned:
+                invalid_count = 0
                 stable_count += 1
             else:
-                stable_count = 0
-                countdown_start = None
+                invalid_count += 1
+                if invalid_count > self.cfg.hp_invalid_grace_frames:
+                    stable_count = 0
+                    countdown_start = None
 
             # Final checklist "Stable" state
             checklist_states[4] = stable_count >= self.cfg.hp_stability_frames_required
@@ -526,7 +535,7 @@ class EyeTrackerApp:
                 cv2.ellipse(canvas, (target_cx, target_cy), (radius_x+10, radius_y+10),
                             0, -90, -90 + 360 * min(elapsed / max(self.cfg.hp_countdown_seconds, 0.1), 1),
                             (0,255,0), 6)
-                if remaining <= 0:
+                if remaining <= 0 and is_aligned:
                     cv2.destroyWindow("Head Alignment Gate")
                     print(f"[EyeTrack] Gate passed! Baseline pose locked: {self.baseline_pose}")
                     return True
