@@ -340,6 +340,61 @@ class EyeTrackerApp:
         invalid_count = 0
         countdown_start = None
         frame_id = 0
+        adjusting_oval = True
+        drag_setting = None
+        baseline_samples = []
+        oval_settings = {
+            "height": self.cfg.hp_guide_height_ratio,
+            "width": self.cfg.hp_guide_width_to_height,
+            "center_y": self.cfg.hp_target_center_y_ratio,
+        }
+        slider_specs = [
+            ("height", "OVAL HEIGHT", 0.45, 0.65),
+            ("width", "OVAL WIDTH", 0.58, 0.78),
+            ("center_y", "VERTICAL POSITION", 0.47, 0.53),
+        ]
+        panel_x, panel_y, slider_w = 55, 195, 390
+        panel_controls_height = len(slider_specs) * 62
+        start_button = (panel_x, panel_y + panel_controls_height + 26,
+                        panel_x + slider_w, panel_y + panel_controls_height + 82)
+        reset_button = (panel_x, panel_y + panel_controls_height + 94,
+                        panel_x + slider_w, panel_y + panel_controls_height + 140)
+
+        def update_slider(name, x):
+            for key, _label, low, high in slider_specs:
+                if key == name:
+                    ratio = min(1.0, max(0.0, (x - panel_x) / slider_w))
+                    oval_settings[key] = low + ratio * (high - low)
+                    return
+
+        def on_mouse(event, x, y, _flags, _param):
+            nonlocal adjusting_oval, drag_setting
+            if not adjusting_oval:
+                return
+            if event == cv2.EVENT_LBUTTONDOWN:
+                if start_button[0] <= x <= start_button[2] and start_button[1] <= y <= start_button[3]:
+                    adjusting_oval = False
+                    drag_setting = None
+                    return
+                if reset_button[0] <= x <= reset_button[2] and reset_button[1] <= y <= reset_button[3]:
+                    oval_settings.update({
+                        "height": self.cfg.hp_guide_height_ratio,
+                        "width": self.cfg.hp_guide_width_to_height,
+                        "center_y": self.cfg.hp_target_center_y_ratio,
+                    })
+                    return
+                for index, (name, _label, _low, _high) in enumerate(slider_specs):
+                    slider_y = panel_y + index * 62 + 28
+                    if slider_y - 16 <= y <= slider_y + 16 and panel_x - 12 <= x <= panel_x + slider_w + 12:
+                        drag_setting = name
+                        update_slider(name, x)
+                        return
+            elif event == cv2.EVENT_MOUSEMOVE and drag_setting is not None:
+                update_slider(drag_setting, x)
+            elif event == cv2.EVENT_LBUTTONUP:
+                drag_setting = None
+
+        cv2.setMouseCallback("Head Alignment Gate", on_mouse)
 
         target_cx = int(self.screen_w * self.cfg.hp_target_center_x_ratio)
         target_cy = self.screen_h // 2
@@ -350,6 +405,7 @@ class EyeTrackerApp:
         checklist_labels = [
             "Face Detected",
             "Distance OK",
+            "Oval Fit",
             "Centered",
             "Head Angle OK",
             "Stable"
@@ -421,13 +477,15 @@ class EyeTrackerApp:
             pw, ph = int(fw * scale), int(fh * scale)
             ox, oy = (self.screen_w - pw) // 2, (self.screen_h - ph) // 2
             canvas[oy:oy+ph, ox:ox+pw] = cv2.resize(frame, (pw, ph))
-            radius_y = max(1, int(ph * self.cfg.hp_guide_height_ratio / 2))
-            radius_x = max(1, int(radius_y * self.cfg.hp_guide_width_to_height))
+            radius_y = max(1, int(ph * oval_settings["height"] / 2))
+            radius_x = max(1, int(radius_y * oval_settings["width"]))
             guide_axes = np.array([radius_x, radius_y])
             # Position the guide relative to the visible camera preview so the
             # configured center remains correct when the preview is letterboxed.
-            target_cx = ox + int(pw * self.cfg.hp_target_center_x_ratio)
-            target_cy = oy + int(ph * self.cfg.hp_target_center_y_ratio)
+            # Horizontal centering is fixed to preserve the camera/face geometry
+            # used by the later gaze-calibration samples.
+            target_cx = ox + pw // 2
+            target_cy = oy + int(ph * oval_settings["center_y"])
             target_w, target_h = radius_x * 2, radius_y * 2
 
             # Draw target bounding box
@@ -439,6 +497,7 @@ class EyeTrackerApp:
             # Checklist state
             ck_face = False
             ck_dist = False
+            ck_fit = False
             ck_center = False
             ck_angle = False
             is_aligned = False
@@ -457,14 +516,6 @@ class EyeTrackerApp:
                 face_cx = int(self.screen_w * cx_ratio)
                 face_cy = int(self.screen_h * cy_ratio)
 
-                self.baseline_pose = {
-                    "pitch": pitch, "yaw": yaw, "roll": roll,
-                    "face_width_ratio": face_w_ratio,
-                    "center_x_ratio": cx_ratio, "center_y_ratio": cy_ratio
-                }
-
-                dx = abs(cx_ratio - self.cfg.hp_target_center_x_ratio)
-                dy = abs(cy_ratio - self.cfg.hp_target_center_y_ratio)
                 dist_diff = abs(face_w_ratio - self.cfg.hp_target_face_width_ratio)
                 dist_tol = self.cfg.hp_size_tolerance_ratio * self.cfg.hp_target_face_width_ratio
 
@@ -473,9 +524,10 @@ class EyeTrackerApp:
                                     for i in (10, 152, 234, 454)])
                 guide_center = np.array([target_cx, target_cy])
                 distances = np.linalg.norm((anchors - guide_center) / guide_axes, axis=1)
-                ck_dist = bool(np.all(distances <= self.cfg.hp_max_outside_ratio) and
-                               np.all(distances[:2] >= self.cfg.hp_min_vertical_fill_ratio) and
-                               np.all(distances[2:] >= self.cfg.hp_min_horizontal_fill_ratio))
+                ck_dist = dist_diff <= dist_tol
+                ck_fit = bool(np.all(distances <= self.cfg.hp_max_outside_ratio) and
+                              np.all(distances[:2] >= self.cfg.hp_min_vertical_fill_ratio) and
+                              np.all(distances[2:] >= self.cfg.hp_min_horizontal_fill_ratio))
                 ck_center = (np.linalg.norm((anchors.mean(axis=0)-guide_center) / guide_axes)
                              <= self.cfg.hp_center_tolerance_ratio)
                 for anchor in anchors:
@@ -487,6 +539,10 @@ class EyeTrackerApp:
                 # Guide checks use the same transformed pixels as the live preview.
 
                 if not ck_dist:
+                    status_msg = ("MOVE CLOSER" if face_w_ratio < self.cfg.hp_target_face_width_ratio
+                                  else "MOVE BACK")
+                    msg_color = (0, 165, 255)
+                elif not ck_fit:
                     status_msg = ("MOVE BACK - KEEP FACE INSIDE OVAL" if
                                   np.any(distances > self.cfg.hp_max_outside_ratio)
                                   else "MOVE CLOSER - FILL OVAL WITH YOUR FACE")
@@ -502,21 +558,39 @@ class EyeTrackerApp:
                     status_msg = "POSTURE CONFIRMED — HOLD STILL!"
                     msg_color = (0, 255, 0)
 
-                # Distance is evaluated against the circle rather than a separate width target.
+                draw_distance_indicator(canvas, face_w_ratio)
 
-            checklist_states = [ck_face, ck_dist, ck_center, ck_angle, is_aligned]
+            checklist_states = [ck_face, ck_dist, ck_fit, ck_center, ck_angle, is_aligned]
+
+            if adjusting_oval:
+                # Slider values are session-only.  Do not start the gate or alter config.yaml
+                # until the user has approved the real-time oval preview.
+                stable_count = 0
+                invalid_count = 0
+                countdown_start = None
+                baseline_samples.clear()
+                checklist_states = [False] * len(checklist_labels)
+                is_aligned = False
+                status_msg = "ADJUST THE OVAL TO YOUR COMFORTABLE SITTING POSITION"
+                msg_color = (255, 220, 0)
 
             if is_aligned:
                 invalid_count = 0
                 stable_count += 1
+                baseline_samples.append({
+                    "pitch": pitch, "yaw": yaw, "roll": roll,
+                    "face_width_ratio": face_w_ratio,
+                    "center_x_ratio": cx_ratio, "center_y_ratio": cy_ratio,
+                })
             else:
                 invalid_count += 1
                 if invalid_count > self.cfg.hp_invalid_grace_frames:
                     stable_count = 0
                     countdown_start = None
+                    baseline_samples.clear()
 
             # Final checklist "Stable" state
-            checklist_states[4] = stable_count >= self.cfg.hp_stability_frames_required
+            checklist_states[-1] = stable_count >= self.cfg.hp_stability_frames_required
 
             box_color = (0, 255, 0) if is_aligned else msg_color
             cv2.ellipse(canvas, (target_cx, target_cy), (radius_x, radius_y),
@@ -532,6 +606,32 @@ class EyeTrackerApp:
                         "Sit comfortably, align your face in the oval and hold 5 seconds. [Q] Quit",
                         (50, 140), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 255), 1)
 
+            if adjusting_oval:
+                overlay = canvas.copy()
+                cv2.rectangle(overlay, (panel_x - 20, panel_y - 35),
+                              (panel_x + slider_w + 20, reset_button[3] + 22), (15, 15, 15), -1)
+                cv2.addWeighted(overlay, 0.78, canvas, 0.22, 0, canvas)
+                cv2.putText(canvas, "CUSTOMIZE HEAD OVAL", (panel_x, panel_y - 8),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.72, (255, 255, 255), 2)
+                for index, (name, label, low, high) in enumerate(slider_specs):
+                    slider_y = panel_y + index * 62 + 28
+                    value = oval_settings[name]
+                    thumb_x = int(panel_x + slider_w * (value - low) / (high - low))
+                    cv2.putText(canvas, f"{label}: {value:.2f}", (panel_x, slider_y - 12),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.53, (225, 225, 225), 1)
+                    cv2.line(canvas, (panel_x, slider_y), (panel_x + slider_w, slider_y), (130, 130, 130), 3)
+                    cv2.circle(canvas, (thumb_x, slider_y), 10, (0, 220, 255), -1)
+                cv2.rectangle(canvas, start_button[:2], start_button[2:], (0, 175, 70), -1)
+                cv2.putText(canvas, "START HEAD CALIBRATION", (panel_x + 48, start_button[1] + 36),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.62, (255, 255, 255), 2)
+                cv2.rectangle(canvas, reset_button[:2], reset_button[2:], (70, 70, 70), -1)
+                cv2.putText(canvas, "RESET TO CONFIG DEFAULT", (panel_x + 53, reset_button[1] + 30),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1)
+                cv2.putText(canvas, "Changes apply only to this calibration session.",
+                            (panel_x, reset_button[3] + 48), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (210, 210, 210), 1)
+                cv2.putText(canvas, "Keep your arms and body still while recording.",
+                            (panel_x, reset_button[3] + 70), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (0, 220, 255), 1)
+
             # Countdown bar
             if stable_count >= self.cfg.hp_stability_frames_required:
                 if countdown_start is None:
@@ -542,6 +642,12 @@ class EyeTrackerApp:
                             0, -90, -90 + 360 * min(elapsed / max(self.cfg.hp_countdown_seconds, 0.1), 1),
                             (0,255,0), 6)
                 if remaining <= 0 and is_aligned:
+                    # Use the median confirmed pose rather than the last frame,
+                    # which is more robust to a noisy landmark estimate.
+                    self.baseline_pose = {
+                        key: float(np.median([sample[key] for sample in baseline_samples]))
+                        for key in self.baseline_pose
+                    }
                     cv2.destroyWindow("Head Alignment Gate")
                     print(f"[EyeTrack] Gate passed! Baseline pose locked: {self.baseline_pose}")
                     return True
@@ -1558,5 +1664,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     app = EyeTrackerApp(args.config, session_dir=args.session_dir, session_id=args.session_id)
-    app.run()
+    import signal
+    if hasattr(signal, "SIGBREAK"):
+        signal.signal(signal.SIGBREAK, signal.default_int_handler)
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        print("\n[EyeTrack] Sesi dihentikan.")
+    finally:
+        if not app.csv_file.closed:
+            app.cleanup()
 
