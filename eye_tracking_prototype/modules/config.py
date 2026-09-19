@@ -87,9 +87,10 @@ class Config:
         self.hp_stability_frames_required = hp_cfg.get('stability_frames_required', 15)
         self.hp_invalid_grace_frames = max(0, int(hp_cfg.get('invalid_grace_frames', 8)))
         self.hp_countdown_seconds = max(0.1, float(hp_cfg.get('countdown_seconds', 5)))
-        if not (0.0 <= self.hp_target_center_x_ratio <= 1.0 and
-                0.0 <= self.hp_target_center_y_ratio <= 1.0):
-            raise ValueError("Head guide center ratios must be between 0.0 and 1.0")
+        if self.hp_target_center_x_ratio != 0.5:
+            raise ValueError("Head guide horizontal center is fixed at 0.50 for gaze calibration")
+        if not 0.47 <= self.hp_target_center_y_ratio <= 0.53:
+            raise ValueError("Head guide vertical center must be within 0.47..0.53")
         if not (1.0 <= self.hp_max_outside_ratio <= 2.0 and
                 0.0 <= self.hp_min_vertical_fill_ratio <= 1.0 and
                 0.0 <= self.hp_min_horizontal_fill_ratio <= 1.0 and

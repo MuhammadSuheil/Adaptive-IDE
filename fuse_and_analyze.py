@@ -19,6 +19,18 @@ import statistics
 import sys
 
 
+TIMELINE_COLUMNS = [
+    'window_idx', 'window_start', 'window_end',
+    'window_seconds', 'hrv_status', 'hrv_coverage',
+    'rmssd_ms', 'sdnn_ms', 'baseline_rmssd_ms',
+    'rmssd_ratio', 'eye_frames_count', 'on_screen_ratio',
+    'face_detected_ratio', 'mean_dwell_ms', 'max_dwell_ms',
+    'section_transitions', 'dominant_section', 'mean_iris_delta',
+    'mean_blink_rate_bpm', 'head_shifted_ratio', 'cognitive_state',
+    'cognitive_load_score', 'cognitive_state_desc',
+]
+
+
 def parse_iso_to_ms(iso_str: str) -> float:
     """Konversi string ISO 8601 ke epoch milliseconds UTC."""
     try:
@@ -222,7 +234,6 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
 
     if not task_windows:
         print("[Fuse] Peringatan: Tidak ada window tugas HRV yang ditemukan.")
-        return None
 
     # Sort frame berdasarkan timestamp_ms
     eye_frames.sort(key=lambda x: x["timestamp_ms"])
@@ -293,13 +304,11 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
     if output_csv is None:
         output_csv = session_dir / "multimodal_timeline.csv"
     
-    if timeline:
-        fieldnames = list(timeline[0].keys())
-        with output_csv.open("w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(timeline)
-        print(f"[Fuse] Timeline multimodal berhasil disimpan: {output_csv}")
+    with output_csv.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=TIMELINE_COLUMNS)
+        writer.writeheader()
+        writer.writerows(timeline)
+    print(f"[Fuse] Timeline multimodal berhasil disimpan: {output_csv}")
 
     # Buat ringkasan sesi JSON
     total_windows = len(timeline)

@@ -234,6 +234,9 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    import signal
+    if hasattr(signal, "SIGBREAK"):
+        signal.signal(signal.SIGBREAK, signal.default_int_handler)
     try:
         sys.exit(main())
     except KeyboardInterrupt:
