@@ -80,9 +80,10 @@ class SessionCalibration:
     def start(self, session):
         self.session = Path(session)
         self.started_at = datetime.now(timezone.utc)
-        self.hrv_file = (self.session / "hrv.csv").open("x", newline="", encoding="utf-8")
+        self.hrv_file = (self.session / "hrv.csv").open("w", newline="", encoding="utf-8")
         self.hrv_writer = csv.DictWriter(self.hrv_file, fieldnames=["phase", *HRV_COLUMNS])
         self.hrv_writer.writeheader()
+
         self.hrv_file.flush()
         print(f"Duduk tenang. Target {self.target_seconds:g} detik RR diterima, "
               f"batas waktu {self.maximum_seconds:g} detik.")
@@ -224,10 +225,12 @@ def main(argv=None):
     parser.add_argument("--address", help="Alamat BLE jika sensor lebih dari satu")
     parser.add_argument("--duration", type=float, help="Durasi perekaman SETELAH baseline siap; default sampai Ctrl+C")
     parser.add_argument("--output", type=Path, default=SESSION_ROOT, help="Folder induk sesi")
+    parser.add_argument("--session-dir", type=Path, help="Folder sesi spesifik")
     args = parser.parse_args(argv)
     calibration = SessionCalibration(task_duration=args.duration)
-    asyncio.run(record_sensor(args.name, args.address, output=args.output, monitor=calibration))
+    asyncio.run(record_sensor(args.name, args.address, output=args.output, monitor=calibration, session_dir=args.session_dir))
     return 0 if calibration.result and calibration.result["status"] == "ready" else 1
+
 
 
 if __name__ == "__main__":
