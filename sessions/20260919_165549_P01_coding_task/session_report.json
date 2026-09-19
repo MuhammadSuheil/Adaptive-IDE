@@ -1,0 +1,26 @@
+{
+  "session_name": "20260919_165549_P01_coding_task",
+  "analyzed_at": "2026-09-19T10:00:07.036310+00:00",
+  "baseline": {
+    "rmssd_ms": 62.24389054678692,
+    "sdnn_ms": 74.06691025212056,
+    "status": "ready"
+  },
+  "total_windows": 15,
+  "state_breakdown_count": {
+    "FOCUSED": 0,
+    "CONFUSED": 1,
+    "SCANNING": 0,
+    "OVERLOADED": 0,
+    "DISTRACTED": 14
+  },
+  "state_breakdown_percent": {
+    "FOCUSED": 0.0,
+    "CONFUSED": 6.7,
+    "SCANNING": 0.0,
+    "OVERLOADED": 0.0,
+    "DISTRACTED": 93.3
+  },
+  "average_cognitive_load_score": 20.0,
+  "timeline_file": "multimodal_timeline.csv"
+}

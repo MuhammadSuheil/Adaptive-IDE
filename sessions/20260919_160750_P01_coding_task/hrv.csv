@@ -1,0 +1,2 @@
+phase,window_start,window_end,window_seconds,rr_count,rr_pairs,rmssd_ms,sdnn_ms,status,reason,accepted_rr_seconds,coverage,data_age_seconds
+baseline,2026-09-19T09:07:58.893485+00:00,2026-09-19T09:07:59.034485+00:00,0.14100000000325963,0,0,,,unavailable,recording_error,0.0,0.0,

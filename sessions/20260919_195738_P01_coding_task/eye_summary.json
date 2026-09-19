@@ -1,0 +1,131 @@
+{
+  "schema_version": "2.0",
+  "sensor_type": "eye_tracking",
+  "prototype_version": "2.0",
+  "session_id": "20260919_195738_P01_coding_task",
+  "start_time_iso": "2026-09-19T19:57:43.119967",
+  "end_time_iso": "2026-09-19T20:01:55.013255",
+  "duration_seconds": 251.89127802848816,
+  "tracking_duration_seconds": 181.13726091384888,
+  "config": {
+    "grid_rows": 3,
+    "screen_width": 2880,
+    "screen_height": 1800,
+    "grid_cols": 3,
+    "filter_type": "ema",
+    "mapping_method": "rbf",
+    "layout_mode": "3x3",
+    "async_capture": true,
+    "display_refresh_fps": 15,
+    "latest_frame_only": true
+  },
+  "summary": {
+    "total_frames": 2645,
+    "frames_with_face": 2638,
+    "face_detection_rate": 0.9973534971644612,
+    "avg_fps": 14.966144820027173,
+    "processing_fps_ema_final": 15.07326522393793,
+    "ui_fps": 14.226882494756637,
+    "dropped_frames": 0,
+    "dropped_frame_ratio": 0.0,
+    "stage_timings_ms": {
+      "capture_age_ms": {
+        "mean": 0.16314865782943208,
+        "p50": 0.12129999959142879,
+        "p95": 0.2271800018206704
+      },
+      "preprocess_ms": {
+        "mean": 0.26980215500071264,
+        "p50": 0.25129999994533136,
+        "p95": 0.38612000134889957
+      },
+      "inference_ms": {
+        "mean": 9.087425179561443,
+        "p50": 8.660299998155097,
+        "p95": 12.075499999627937
+      },
+      "mapping_metrics_ms": {
+        "mean": 0.7138717202541779,
+        "p50": 0.6690999980492052,
+        "p95": 1.043280000158119
+      },
+      "logging_ms": {
+        "mean": 0.036156030212181736,
+        "p50": 0.03149999974993989,
+        "p95": 0.06157999814604379
+      },
+      "total_processing_ms": {
+        "mean": 10.125734177727248,
+        "p50": 9.671299998444738,
+        "p95": 13.465440001164096
+      }
+    },
+    "camera": {
+      "width": 640,
+      "height": 480,
+      "fps_reported": 60.000240000960005,
+      "capture_fps_observed": 14.926831423193699,
+      "backend": "DSHOW"
+    },
+    "sections": {
+      "main_file": {
+        "total_dwell_ms": 9093,
+        "visit_count": 79,
+        "nrevisit_count": 78,
+        "max_continuous_dwell_ms": 1263
+      },
+      "sidebar": {
+        "total_dwell_ms": 3132,
+        "visit_count": 38,
+        "nrevisit_count": 37,
+        "max_continuous_dwell_ms": 401
+      },
+      "terminal": {
+        "total_dwell_ms": 34371,
+        "visit_count": 203,
+        "nrevisit_count": 202,
+        "max_continuous_dwell_ms": 1391
+      },
+      "off_screen": {
+        "total_dwell_ms": 71873,
+        "visit_count": 174,
+        "nrevisit_count": 173,
+        "max_continuous_dwell_ms": 3616
+      },
+      "ai_agent": {
+        "total_dwell_ms": 11781,
+        "visit_count": 49,
+        "nrevisit_count": 48,
+        "max_continuous_dwell_ms": 1344
+      },
+      "second_file": {
+        "total_dwell_ms": 5054,
+        "visit_count": 59,
+        "nrevisit_count": 58,
+        "max_continuous_dwell_ms": 542
+      }
+    },
+    "total_blinks": 14,
+    "avg_blink_rate_bpm": 4.637367241627411,
+    "calibration_quality": 0.49994565160778903,
+    "calibration_diagnostics": {
+      "validation_median_error_screen_fraction": 0.14166709218345694,
+      "validation_p95_error_screen_fraction": 0.3084267409525413,
+      "validation_median_error_px": 481.13448288914026,
+      "validation_p95_error_px": 1047.4891397164745,
+      "quality": 0.49994565160778903,
+      "feature_span_x": 0.1764251449700236,
+      "feature_span_y": 0.07086498497177429,
+      "unique_camera_frames": 269
+    },
+    "baseline_head_pose": {
+      "pitch": -0.5800210952312739,
+      "yaw": -1.7306609582365886,
+      "roll": 2.2937113736480472,
+      "face_width_ratio": 0.15316848333593894,
+      "center_x_ratio": 0.4967408925294876,
+      "center_y_ratio": 0.5414326786994934
+    }
+  },
+  "csv_path": "E:\\Skripsi\\ngodong\\Adaptive-IDE\\sessions\\20260919_195738_P01_coding_task\\eye_tracking.csv"
+}
