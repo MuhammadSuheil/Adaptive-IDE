@@ -1,0 +1,131 @@
+{
+  "schema_version": "2.0",
+  "sensor_type": "eye_tracking",
+  "prototype_version": "2.0",
+  "session_id": "4a9ba24d01fa4b40b9d9d81236338b17",
+  "start_time_iso": "2026-09-19T17:06:50.995280",
+  "end_time_iso": "2026-09-19T17:08:46.427471",
+  "duration_seconds": 115.42826199531555,
+  "tracking_duration_seconds": 69.08439779281616,
+  "config": {
+    "grid_rows": 3,
+    "screen_width": 2880,
+    "screen_height": 1800,
+    "grid_cols": 3,
+    "filter_type": "ema",
+    "mapping_method": "rbf",
+    "layout_mode": "3x3",
+    "async_capture": true,
+    "display_refresh_fps": 15,
+    "latest_frame_only": true
+  },
+  "summary": {
+    "total_frames": 1936,
+    "frames_with_face": 1936,
+    "face_detection_rate": 1.0,
+    "avg_fps": 29.98642595854059,
+    "processing_fps_ema_final": 30.690599766198268,
+    "ui_fps": 7.107248926213758,
+    "dropped_frames": 3,
+    "dropped_frame_ratio": 0.0015471892728210418,
+    "stage_timings_ms": {
+      "capture_age_ms": {
+        "mean": 3.815780836710714,
+        "p50": 0.23620002320967615,
+        "p95": 18.573150009615347
+      },
+      "preprocess_ms": {
+        "mean": 0.406818750716336,
+        "p50": 0.41019998025149107,
+        "p95": 0.6332750344881788
+      },
+      "inference_ms": {
+        "mean": 18.715013274585026,
+        "p50": 11.102600023150444,
+        "p95": 32.09010002319701
+      },
+      "mapping_metrics_ms": {
+        "mean": 1.3467668896805098,
+        "p50": 0.9547499939799309,
+        "p95": 2.4747499846853316
+      },
+      "logging_ms": {
+        "mean": 0.06264783052365827,
+        "p50": 0.06565003423020244,
+        "p95": 0.10782500612549484
+      },
+      "total_processing_ms": {
+        "mean": 20.550976137013446,
+        "p50": 12.481499987188727,
+        "p95": 35.085575029370375
+      }
+    },
+    "camera": {
+      "width": 640,
+      "height": 480,
+      "fps_reported": 60.000240000960005,
+      "capture_fps_observed": 30.008432934381702,
+      "backend": "DSHOW"
+    },
+    "sections": {
+      "main_file": {
+        "total_dwell_ms": 11928,
+        "visit_count": 29,
+        "nrevisit_count": 28,
+        "max_continuous_dwell_ms": 2226
+      },
+      "off_screen": {
+        "total_dwell_ms": 8950,
+        "visit_count": 24,
+        "nrevisit_count": 23,
+        "max_continuous_dwell_ms": 1555
+      },
+      "ai_agent": {
+        "total_dwell_ms": 3538,
+        "visit_count": 12,
+        "nrevisit_count": 11,
+        "max_continuous_dwell_ms": 1728
+      },
+      "terminal": {
+        "total_dwell_ms": 14685,
+        "visit_count": 22,
+        "nrevisit_count": 21,
+        "max_continuous_dwell_ms": 2960
+      },
+      "second_file": {
+        "total_dwell_ms": 3662,
+        "visit_count": 13,
+        "nrevisit_count": 12,
+        "max_continuous_dwell_ms": 1552
+      },
+      "sidebar": {
+        "total_dwell_ms": 15034,
+        "visit_count": 16,
+        "nrevisit_count": 15,
+        "max_continuous_dwell_ms": 2827
+      }
+    },
+    "total_blinks": 5,
+    "avg_blink_rate_bpm": 4.342514512461972,
+    "calibration_quality": 0.6577763963274916,
+    "calibration_diagnostics": {
+      "validation_median_error_screen_fraction": 0.08701226305259503,
+      "validation_p95_error_screen_fraction": 0.2508422542165096,
+      "validation_median_error_px": 295.5139372424619,
+      "validation_p95_error_px": 851.9187936243951,
+      "quality": 0.6577763963274916,
+      "feature_span_x": 0.20193631311788918,
+      "feature_span_y": 0.058780467275867845,
+      "unique_camera_frames": 234
+    },
+    "baseline_head_pose": {
+      "pitch": -1.100947334840214,
+      "yaw": -1.2457931518724494,
+      "roll": 2.470102466838593,
+      "face_width_ratio": 0.17309803775096055,
+      "center_x_ratio": 0.49701984226703644,
+      "center_y_ratio": 0.5946400165557861
+    }
+  },
+  "csv_path": "C:\\Users\\amrin\\OneDrive\\Desktop\\roadmap\\Frontend\\porto\\Adaptive-IDE\\eye_tracking_prototype\\sessions\\session_4a9ba24d01fa4b40b9d9d81236338b17_20260919_170649.csv"
+}
