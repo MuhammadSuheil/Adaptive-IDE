@@ -1,1 +1,0 @@
-timestamp_ms,frame_index,gaze_x_raw,gaze_y_raw,gaze_x_smooth,gaze_y_smooth,grid_row,grid_col,section,confidence,dwell_time_ms,nrevisit_count,transition_rate,iris_size_delta,fps_actual,capture_fps,inference_ms,face_detected,gaze_status,calibration_quality

@@ -1,4 +1,6 @@
 .agent
 .gemini
 
+eye_tracking_prototype/modules/__pycache__
 eye_tracking_prototype/sessions/_archive
+eyebeam

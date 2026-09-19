@@ -11,7 +11,7 @@ screen:
 # Webcam settings
 # ─────────────────────────────────────────────
 webcam:
-  device_index: 0 # 0 = default webcam; try 1 for external cam
+  device_index: 1 # 0 = default webcam; try 1 for external cam
   fps_target: 60 # Target FPS: 30 or 60
   width: 640
   height: 480
@@ -113,8 +113,8 @@ blink:
 head_positioning:
   enabled: true
   fullscreen: true
-  guide_height_ratio: 0.46 # Oval height relative to preview height; previously 0.64
-  guide_width_to_height: 0.74 # Portrait oval pixel aspect ratio
+  guide_height_ratio: 0.55 # Oval height relative to preview height; previously 0.64; range 0.15 - 0.8
+  guide_width_to_height: 0.66 # Portrait oval pixel aspect ratio; range 0.5 - 1.0
   target_face_width_ratio: 0.20  # Comfortable normal seating distance (~50-70cm)
   target_center_x_ratio: 0.5        # Center horizontally on screen
   target_center_y_ratio: 0.55       # Center slightly lower than screen center for natural posture
