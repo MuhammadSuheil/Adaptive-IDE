@@ -110,13 +110,15 @@ class MultimodalTests(unittest.TestCase):
                 self.assertEqual(path, session)
                 return {'timeline_file': 'multimodal_timeline.csv'}
             with patch.object(runner, 'setup_session_directory', return_value=session), \
-                 patch.object(runner.subprocess, 'Popen', side_effect=[hrv, eye]), \
+                 patch.object(runner.subprocess, 'Popen', side_effect=[hrv, eye]) as spawn, \
                  patch.object(runner.time, 'sleep'), \
                  patch.object(runner, 'fuse_session', side_effect=fuse) as fusion_mock:
                 self.assertEqual(runner.main([]), 0)
             hrv.send_signal.assert_called_once()
             hrv.kill.assert_not_called()
             fusion_mock.assert_called_once()
+            self.assertIn('--wait-for-eye', spawn.call_args_list[0].args[0])
+            self.assertIn('--wait-for-hrv', spawn.call_args_list[1].args[0])
 
     def test_mock_hrv_flag_passed_to_hrv_process(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -132,6 +134,7 @@ class MultimodalTests(unittest.TestCase):
             self.assertIn('--mock', cmd)
             self.assertIn('--target-baseline', cmd)
             self.assertIn('15.0', cmd)
+            self.assertNotIn('--wait-for-eye', cmd)
 
     def test_mock_sensor_records_valid_rr_data(self):
         import asyncio
@@ -166,7 +169,6 @@ class MultimodalTests(unittest.TestCase):
             self.assertIn('Kalibrasi:', data['text'])
             self.assertIn('RR diterima:', data['text'])
             self.assertIn('status', data)
-
 
 if __name__ == '__main__':
     unittest.main()

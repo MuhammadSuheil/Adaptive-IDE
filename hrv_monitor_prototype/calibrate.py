@@ -51,7 +51,8 @@ class SessionCalibration:
 
     def __init__(self, task_duration=None, target_seconds=BASELINE_TARGET_SECONDS,
                  maximum_seconds=BASELINE_MAX_SECONDS,
-                 window_seconds=WINDOW_SECONDS, step_seconds=STEP_SECONDS):
+                 window_seconds=WINDOW_SECONDS, step_seconds=STEP_SECONDS,
+                 wait_for_eye=False):
         if (not math.isfinite(target_seconds) or not math.isfinite(maximum_seconds)
                 or not 0 < target_seconds <= maximum_seconds):
             raise ValueError("Kalibrasi harus memenuhi 0 < target <= batas maksimum")
@@ -74,6 +75,8 @@ class SessionCalibration:
         self.result = None
         self.hrv_file = None
         self.phase = "calibration"
+        # Baseline starts immediately; only task recording waits for both sensors.
+        self.wait_for_eye = wait_for_eye
         self.last_print = -1
         self.last_status_update = -1.0
         self.task_start = None
@@ -174,6 +177,10 @@ class SessionCalibration:
         if self.result is not None:
             if self.result["status"] == "unavailable":
                 return True
+            if self.task_start is None:
+                if (self.session / "eye_calibration_ready").is_file():
+                    self.start_task(elapsed)
+                return False
             self.publish_hrv(elapsed - self.task_start)
             return self.task_duration is not None and elapsed - self.task_start >= self.task_duration
 
@@ -191,13 +198,13 @@ class SessionCalibration:
                 and features["rmssd_ms"] is not None and features["sdnn_ms"] is not None):
             self.result = self.make_result("ready", "target_reached", elapsed, used, duration)
             self.save_baseline(used)
-            self.start_task(elapsed)
-            self.update_calib_status("ready", elapsed, duration)
             print(f"\nBaseline siap: RMSSD {features['rmssd_ms']:.2f} ms, SDNN {features['sdnn_ms']:.2f} ms.")
-            print("Perekaman tugas dimulai. Silakan mulai coding; Ctrl+C untuk berhenti.")
-            print(f"Preprocessing otomatis. HRV pertama setelah {self.window_seconds:g} detik, "
-                  f"lalu setiap {self.step_seconds:g} detik.")
-            print(f"Log sesi: {self.session / 'rr_raw.csv'} dan {self.session / 'hrv.csv'}")
+            if self.wait_for_eye and not (self.session / "eye_calibration_ready").is_file():
+                self.phase = "waiting_for_eye"
+                self.update_calib_status("ready", elapsed, duration)
+                print("Baseline HRV siap. Menunggu kalibrasi mata selesai sebelum mulai tugas.")
+            else:
+                self.start_task(elapsed)
         elif elapsed >= self.maximum_seconds:
             self.result = self.make_result("unavailable", "timeout", elapsed, used, duration)
             self.save_baseline(used)
@@ -214,6 +221,12 @@ class SessionCalibration:
         origin = (datetime.fromisoformat(first["received_at"])
                   - timedelta(seconds=first["elapsed_seconds"]) + timedelta(seconds=elapsed))
         self.task_hrv.origin = origin
+        self.update_calib_status("ready", self.result["calibration_end_elapsed_seconds"],
+                                 self.result["accepted_rr_seconds"])
+        print("Perekaman tugas dimulai. Silakan mulai coding; Ctrl+C untuk berhenti.")
+        print(f"Preprocessing otomatis. HRV pertama setelah {self.window_seconds:g} detik, "
+              f"lalu setiap {self.step_seconds:g} detik.")
+        print(f"Log sesi: {self.session / 'rr_raw.csv'} dan {self.session / 'hrv.csv'}")
 
     def publish_hrv(self, elapsed, include_boundary=True):
         if self.task_duration is not None and elapsed > self.task_duration:
@@ -258,10 +271,14 @@ def main(argv=None):
     parser.add_argument("--duration", type=float, help="Durasi perekaman SETELAH baseline siap; default sampai Ctrl+C")
     parser.add_argument("--output", type=Path, default=SESSION_ROOT, help="Folder induk sesi")
     parser.add_argument("--session-dir", type=Path, help="Folder sesi spesifik")
+    parser.add_argument("--wait-for-eye", action="store_true",
+                        help="Baseline langsung berjalan; mulai tugas setelah kalibrasi mata juga selesai")
     parser.add_argument("--mock", action="store_true", help="Gunakan mock/simulasi sensor HRV tanpa perangkat fisik")
     parser.add_argument("--target-baseline", type=float, default=None,
                         help="Target durasi RR kalibrasi baseline dalam detik (default: 120)")
     args = parser.parse_args(argv)
+    if args.wait_for_eye and args.session_dir is None:
+        parser.error("--wait-for-eye memerlukan --session-dir")
     if args.target_baseline is not None and (not math.isfinite(args.target_baseline) or args.target_baseline <= 0):
         parser.error("--target-baseline harus positif dan finite")
     if args.duration is not None and (not math.isfinite(args.duration) or args.duration <= 0):
@@ -269,7 +286,8 @@ def main(argv=None):
 
     target_baseline = args.target_baseline if args.target_baseline is not None else BASELINE_TARGET_SECONDS
     max_baseline = max(BASELINE_MAX_SECONDS, target_baseline * 2)
-    calibration = SessionCalibration(task_duration=args.duration, target_seconds=target_baseline, maximum_seconds=max_baseline)
+    calibration = SessionCalibration(task_duration=args.duration, target_seconds=target_baseline,
+                                     maximum_seconds=max_baseline, wait_for_eye=args.wait_for_eye)
     asyncio.run(record_sensor(args.name, args.address, output=args.output, monitor=calibration, session_dir=args.session_dir, mock=args.mock))
     return 0 if calibration.result and calibration.result["status"] == "ready" else 1
 
