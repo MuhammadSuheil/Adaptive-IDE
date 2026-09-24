@@ -4,6 +4,7 @@ import csv
 from datetime import datetime, timezone
 import math
 from pathlib import Path
+import random
 import sys
 import time
 from uuid import uuid4
@@ -81,10 +82,98 @@ class RRRecorder:
         return len(rr_units)
 
 
-async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_ROOT, monitor=None, session_dir=None):
+async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_ROOT, monitor=None, session_dir=None, mock=False):
     """Rekam RR. Monitor opsional menerima start, receive, tick, dan finish;
     logika kalibrasi tetap berada di file pemanggil, bukan di perekam raw.
+    Jika mock=True, jalankan simulator detak jantung fisiologis tanpa perangkat BLE fisik.
     """
+    if session_dir is not None:
+        session = Path(session_dir)
+        session.mkdir(parents=True, exist_ok=True)
+    else:
+        session_name = f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S}_{uuid4().hex[:8]}"
+        session = Path(output) / session_name
+        session.mkdir(parents=True, exist_ok=False)
+
+    disconnected = asyncio.Event()
+
+    if mock:
+        print(f"[MOCK] Menjalankan simulator sensor HRV (Mock {name})...")
+        origin = time.monotonic()
+        with (session / "rr_raw.csv").open("w", newline="", encoding="utf-8") as raw_file:
+            recorder = RRRecorder(raw_file)
+            failure = None
+            end_reason = "stopped"
+
+            def on_packet(_sender, data):
+                nonlocal failure
+                if failure is not None:
+                    return
+                try:
+                    timestamp = datetime.now(timezone.utc).isoformat()
+                    count = recorder.record(data, timestamp, time.monotonic() - origin,
+                                            phase=getattr(monitor, "phase", "raw"))
+                    if monitor is not None:
+                        monitor.receive(recorder.last_rows)
+                    else:
+                        print(f"\r[MOCK] Paket: {recorder.packet_id} | RR tersimpan: {recorder.raw_id} "
+                              f"| RR di paket terakhir: {count}   ", end="", flush=True)
+                except Exception as error:
+                    failure = error
+                    disconnected.set()
+
+            async def mock_generator():
+                while not disconnected.is_set():
+                    elapsed = time.monotonic() - origin
+                    phase = getattr(monitor, "phase", "calibration")
+                    # Baseline: mean 820ms (~73 bpm), task: mean 780ms (~77 bpm)
+                    base_rr = 820.0 if phase == "calibration" else 780.0
+                    rsa = 30.0 * math.sin(2 * math.pi * 0.25 * elapsed)
+                    noise = random.gauss(0, 8.0)
+                    rr_ms = max(600.0, min(1200.0, base_rr + rsa + noise))
+                    bpm = int(round(60000.0 / rr_ms))
+                    rr_units = int(round(rr_ms * 1024.0 / 1000.0))
+                    data = bytes([0x16, min(255, max(1, bpm))]) + rr_units.to_bytes(2, "little")
+                    on_packet("mock_sensor", data)
+                    await asyncio.sleep(rr_ms / 1000.0)
+
+            print(f"[MOCK] Menyimpan RR mentah ke: {session}")
+            print("Tekan Ctrl+C untuk berhenti.")
+            mock_task = asyncio.create_task(mock_generator())
+            try:
+                if monitor is not None:
+                    monitor.start(session)
+                while not disconnected.is_set():
+                    elapsed = time.monotonic() - origin
+                    if monitor is not None and monitor.tick(elapsed):
+                        end_reason = "monitor_finished"
+                        break
+                    if duration is not None and elapsed >= duration:
+                        end_reason = "duration_reached"
+                        break
+                    await asyncio.sleep(0.1)
+                if failure is not None:
+                    raise failure
+            except (asyncio.CancelledError, KeyboardInterrupt):
+                end_reason = "interrupted"
+                raise
+            except Exception:
+                end_reason = "recording_error"
+                raise
+            finally:
+                mock_task.cancel()
+                try:
+                    await mock_task
+                except asyncio.CancelledError:
+                    pass
+                stopped_elapsed = time.monotonic() - origin
+                try:
+                    if monitor is not None:
+                        monitor.finish(stopped_elapsed, end_reason)
+                finally:
+                    print(f"\nPerekaman ditutup: {recorder.raw_id} RR ditulis ke {session}")
+        return session
+
     from bleak import BleakClient, BleakScanner
 
     device = address
@@ -98,15 +187,7 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
                                f"Gunakan --address. Hasil: {found or 'tidak ada'}")
         device = matches[0]
 
-    disconnected = asyncio.Event()
     async with BleakClient(device, disconnected_callback=lambda _: disconnected.set()) as client:
-        if session_dir is not None:
-            session = Path(session_dir)
-            session.mkdir(parents=True, exist_ok=True)
-        else:
-            session_name = f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S}_{uuid4().hex[:8]}"
-            session = Path(output) / session_name
-            session.mkdir(parents=True, exist_ok=False)
         origin = time.monotonic()
         with (session / "rr_raw.csv").open("w", newline="", encoding="utf-8") as raw_file:
 
@@ -178,10 +259,11 @@ def main(argv=None):
     parser.add_argument("--duration", type=float, help="Durasi rekaman dalam detik; default sampai Ctrl+C")
     parser.add_argument("--output", type=Path, default=SESSION_ROOT, help="Folder induk sesi")
     parser.add_argument("--session-dir", type=Path, help="Folder sesi spesifik")
+    parser.add_argument("--mock", action="store_true", help="Gunakan mock/simulasi sensor HRV tanpa perangkat fisik")
     args = parser.parse_args(argv)
     if args.duration is not None and (not math.isfinite(args.duration) or args.duration <= 0):
         parser.error("--duration harus positif dan finite")
-    return asyncio.run(record_sensor(args.name, args.address, args.duration, args.output, session_dir=args.session_dir))
+    return asyncio.run(record_sensor(args.name, args.address, args.duration, args.output, session_dir=args.session_dir, mock=args.mock))
 
 
 

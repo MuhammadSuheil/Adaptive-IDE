@@ -46,18 +46,22 @@ def setup_session_directory(output_root: Path, participant: str, task: str) -> P
             session_dir = output_root / f"{session_name}_{suffix}"
 
 
-def print_banner(session_dir: Path, participant: str, task: str, duration: float | None):
+def print_banner(session_dir: Path, participant: str, task: str, duration: float | None, mock_hrv: bool = False):
     print("=" * 65)
     print("      ADAPTIVE IDE — MULTIMODAL COGNITIVE LOAD SUITE")
     print("=" * 65)
     print(f"  Partisipan : {participant}")
     print(f"  Tugas      : {task}")
     print(f"  Durasi     : {f'{duration} detik' if duration else 'Hingga Ctrl+C / selesai'}")
+    print(f"  Sensor HRV : {'HW9 (SIMULATOR / MOCK)' if mock_hrv else 'HW9 (BLE)'}")
     print(f"  Folder Sesi: {session_dir}")
     print("=" * 65)
     print("Alur Eksperimen:")
-    print("  1. Pastikan sensor detak jantung (HW9) terpasang.")
-    print("  2. Kalibrasi Baseline HRV (~120s): Partisipan duduk tenang.")
+    if mock_hrv:
+        print("  1. Simulator sensor HRV aktif (tidak memerlukan armband fisik).")
+    else:
+        print("  1. Pastikan sensor detak jantung (HW9) terpasang.")
+    print("  2. Kalibrasi Baseline HRV: Partisipan duduk tenang.")
     print("  3. Kalibrasi Eye Tracking (9-titik): Ikuti titik merah di layar.")
     print("  4. Pengerjaan Tugas: Mulai ngoding.")
     print("  Tekan Ctrl+C kapan saja untuk mengakhiri sesi lebih awal.")
@@ -102,12 +106,18 @@ def main(argv=None):
     parser.add_argument("--config-eye", type=Path, default=default_eye_config, help="Path ke config.yaml eye tracking")
     parser.add_argument("--skip-hrv", action="store_true", help="Jalankan hanya eye tracking (mode uji)")
     parser.add_argument("--skip-eye", action="store_true", help="Jalankan hanya HRV monitor (mode uji)")
+    parser.add_argument("--mock-hrv", action="store_true",
+                        help="Gunakan simulator/mock sensor HRV (tanpa perangkat sensor fisik)")
+    parser.add_argument("--target-baseline", type=float, default=None,
+                        help="Target durasi kalibrasi baseline HRV dalam detik (default: 120)")
     args = parser.parse_args(argv)
 
     if args.skip_eye and args.skip_hrv:
         parser.error("--skip-eye dan --skip-hrv tidak boleh dipakai bersamaan")
     if args.duration is not None and (not math.isfinite(args.duration) or args.duration <= 0):
         parser.error("--duration harus positif dan finite")
+    if args.target_baseline is not None and (not math.isfinite(args.target_baseline) or args.target_baseline <= 0):
+        parser.error("--target-baseline harus positif dan finite")
     eye_config = args.config_eye.resolve()
     if not args.skip_eye and not eye_config.is_file():
         parser.error(f"Konfigurasi eye tracking tidak ditemukan: {eye_config}")
@@ -117,7 +127,7 @@ def main(argv=None):
     except OSError as error:
         print(f"[Orchestrator] Gagal membuat folder sesi: {error}", file=sys.stderr)
         return 1
-    print_banner(session_dir, args.participant, args.task, args.duration)
+    print_banner(session_dir, args.participant, args.task, args.duration, mock_hrv=args.mock_hrv)
 
     processes = []
     python_bin = sys.executable
@@ -130,11 +140,15 @@ def main(argv=None):
                 python_bin, str(repo_root / "hrv_monitor_prototype" / "calibrate.py"),
                 "--name", args.name, "--session-dir", str(session_dir),
             ]
+            if args.mock_hrv:
+                hrv_cmd.append("--mock")
+            if args.target_baseline is not None:
+                hrv_cmd.extend(["--target-baseline", str(args.target_baseline)])
             if args.address:
                 hrv_cmd.extend(["--address", args.address])
             if args.duration is not None:
                 hrv_cmd.extend(["--duration", str(args.duration)])
-            print("[Orchestrator] Menyiapkan proses HRV Monitor...")
+            print("[Orchestrator] Menyiapkan proses HRV Monitor" + (" (MOCK)..." if args.mock_hrv else "..."))
             hrv_proc = subprocess.Popen(hrv_cmd, cwd=str(repo_root), creationflags=creationflags)
             processes.append(("HRV Monitor", hrv_proc))
             # Startup is inside try/finally so Ctrl+C cannot leave HRV running.
