@@ -3,6 +3,7 @@ import asyncio
 import csv
 from datetime import datetime, timedelta, timezone
 from itertools import groupby
+import json
 import math
 from pathlib import Path
 import sys
@@ -74,8 +75,32 @@ class SessionCalibration:
         self.hrv_file = None
         self.phase = "calibration"
         self.last_print = -1
+        self.last_status_update = -1.0
         self.task_start = None
         self.session = None
+
+    def update_calib_status(self, status, elapsed, duration):
+        if self.session is None:
+            return
+        status_file = self.session / "hrv_calib_status.json"
+        temp_file = self.session / "hrv_calib_status.json.tmp"
+        remaining = max(0.0, self.target_seconds - duration)
+        text = f"Kalibrasi: {min(elapsed, self.maximum_seconds):.0f}/{self.maximum_seconds:g} detik | RR diterima: {duration:.1f}/{self.target_seconds:g} detik"
+        payload = {
+            "phase": self.phase,
+            "status": status,
+            "elapsed_seconds": round(float(elapsed), 1),
+            "maximum_seconds": float(self.maximum_seconds),
+            "accepted_rr_seconds": round(float(duration), 1),
+            "target_seconds": float(self.target_seconds),
+            "remaining_seconds": round(float(remaining), 1),
+            "text": text,
+        }
+        try:
+            temp_file.write_text(json.dumps(payload), encoding="utf-8")
+            temp_file.replace(status_file)
+        except OSError:
+            pass
 
     def start(self, session):
         self.session = Path(session)
@@ -85,6 +110,7 @@ class SessionCalibration:
         self.hrv_writer.writeheader()
 
         self.hrv_file.flush()
+        self.update_calib_status("calibrating", 0.0, 0.0)
         print(f"Duduk tenang. Target {self.target_seconds:g} detik RR diterima, "
               f"batas waktu {self.maximum_seconds:g} detik.")
 
@@ -152,6 +178,9 @@ class SessionCalibration:
             return self.task_duration is not None and elapsed - self.task_start >= self.task_duration
 
         used, duration = self.progress(elapsed)
+        if elapsed - self.last_status_update >= 0.5 or int(elapsed) != self.last_print:
+            self.last_status_update = elapsed
+            self.update_calib_status("calibrating", elapsed, duration)
         if int(elapsed) != self.last_print:
             self.last_print = int(elapsed)
             print(f"\rKalibrasi: {min(elapsed, self.maximum_seconds):.0f}/{self.maximum_seconds:g} detik "
@@ -163,6 +192,7 @@ class SessionCalibration:
             self.result = self.make_result("ready", "target_reached", elapsed, used, duration)
             self.save_baseline(used)
             self.start_task(elapsed)
+            self.update_calib_status("ready", elapsed, duration)
             print(f"\nBaseline siap: RMSSD {features['rmssd_ms']:.2f} ms, SDNN {features['sdnn_ms']:.2f} ms.")
             print("Perekaman tugas dimulai. Silakan mulai coding; Ctrl+C untuk berhenti.")
             print(f"Preprocessing otomatis. HRV pertama setelah {self.window_seconds:g} detik, "
@@ -171,6 +201,7 @@ class SessionCalibration:
         elif elapsed >= self.maximum_seconds:
             self.result = self.make_result("unavailable", "timeout", elapsed, used, duration)
             self.save_baseline(used)
+            self.update_calib_status("unavailable", elapsed, duration)
             print("\nBaseline belum tersedia. Jalankan ulang perintah untuk mengulang kalibrasi dalam sesi baru.")
             return True
         return False
@@ -213,6 +244,7 @@ class SessionCalibration:
                 used, duration = self.progress(elapsed)
                 self.result = self.make_result("unavailable", reason, elapsed, used, duration)
                 self.save_baseline(used)
+                self.update_calib_status("unavailable", elapsed, duration)
                 print("\nKalibrasi terhenti sebelum selesai. Ulangi dengan menjalankan sesi baru.")
         finally:
             if self.hrv_file is not None:
@@ -226,9 +258,19 @@ def main(argv=None):
     parser.add_argument("--duration", type=float, help="Durasi perekaman SETELAH baseline siap; default sampai Ctrl+C")
     parser.add_argument("--output", type=Path, default=SESSION_ROOT, help="Folder induk sesi")
     parser.add_argument("--session-dir", type=Path, help="Folder sesi spesifik")
+    parser.add_argument("--mock", action="store_true", help="Gunakan mock/simulasi sensor HRV tanpa perangkat fisik")
+    parser.add_argument("--target-baseline", type=float, default=None,
+                        help="Target durasi RR kalibrasi baseline dalam detik (default: 120)")
     args = parser.parse_args(argv)
-    calibration = SessionCalibration(task_duration=args.duration)
-    asyncio.run(record_sensor(args.name, args.address, output=args.output, monitor=calibration, session_dir=args.session_dir))
+    if args.target_baseline is not None and (not math.isfinite(args.target_baseline) or args.target_baseline <= 0):
+        parser.error("--target-baseline harus positif dan finite")
+    if args.duration is not None and (not math.isfinite(args.duration) or args.duration <= 0):
+        parser.error("--duration harus positif dan finite")
+
+    target_baseline = args.target_baseline if args.target_baseline is not None else BASELINE_TARGET_SECONDS
+    max_baseline = max(BASELINE_MAX_SECONDS, target_baseline * 2)
+    calibration = SessionCalibration(task_duration=args.duration, target_seconds=target_baseline, maximum_seconds=max_baseline)
+    asyncio.run(record_sensor(args.name, args.address, output=args.output, monitor=calibration, session_dir=args.session_dir, mock=args.mock))
     return 0 if calibration.result and calibration.result["status"] == "ready" else 1
 
 

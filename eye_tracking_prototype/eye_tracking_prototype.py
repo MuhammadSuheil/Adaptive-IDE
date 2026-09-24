@@ -98,6 +98,7 @@ class EyeTrackerApp:
         
         save_dir = session_dir if session_dir is not None else self.cfg.session_dir
         os.makedirs(save_dir, exist_ok=True)
+        self.session_dir = save_dir
         self.session_id = session_id or str(uuid.uuid4())
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         if session_dir is not None:
@@ -668,7 +669,7 @@ class EyeTrackerApp:
                             cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 255), 3)
 
             draw_checklist(canvas, checklist_states)
-
+            self.draw_hrv_calib_hud(canvas)
             cv2.imshow("Head Alignment Gate", canvas)
             key = cv2.waitKey(30) & 0xFF
             if key == ord('q'):
@@ -740,6 +741,136 @@ class EyeTrackerApp:
             ys = np.linspace(min_y, max_y, 3)
             return [(int(x), int(y)) for y in ys for x in xs]
 
+    def get_hrv_calib_status(self):
+        """Membaca status kalibrasi HRV terkini dari folder sesi jika tersedia."""
+        if not getattr(self, "session_dir", None):
+            return None
+        status_file = os.path.join(self.session_dir, "hrv_calib_status.json")
+        if not os.path.exists(status_file):
+            return None
+        try:
+            with open(status_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (OSError, json.JSONDecodeError):
+            return None
+
+    def draw_hrv_calib_hud(self, canvas):
+        """Menampilkan teks status kalibrasi HRV di bagian bawah layar kalibrasi mata."""
+        hrv_status = self.get_hrv_calib_status()
+        if not hrv_status:
+            return
+        text = hrv_status.get("text", "")
+        if not text:
+            return
+        status = hrv_status.get("status", "calibrating")
+        color = (0, 255, 0) if status == "ready" else (0, 220, 255)
+        bar_h = 44
+        cv2.rectangle(canvas, (0, self.screen_h - bar_h), (self.screen_w, self.screen_h), (18, 18, 18), -1)
+        cv2.line(canvas, (0, self.screen_h - bar_h), (self.screen_w, self.screen_h - bar_h), (60, 60, 60), 1)
+        cv2.putText(canvas, f"[HRV MONITOR] {text}", (30, self.screen_h - 14),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.72, color, 2)
+
+    def wait_for_hrv_calibration(self):
+        """Jika kalibrasi mata sudah selesai tetapi kalibrasi HRV belum,
+
+        buka window countdown khusus hingga baseline HRV siap.
+        """
+        hrv_status = self.get_hrv_calib_status()
+        if not hrv_status:
+            return True
+
+        if hrv_status.get("status") == "ready" or hrv_status.get("phase") == "task":
+            return True
+
+        window_name = "HRV Calibration Countdown"
+        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+        cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+        print("\n[EyeTrack] Kalibrasi mata selesai. Menunggu kalibrasi baseline HRV...")
+
+        while not self.exit_requested:
+            hrv_status = self.get_hrv_calib_status()
+            if not hrv_status:
+                break
+
+            status = hrv_status.get("status", "calibrating")
+            elapsed = float(hrv_status.get("elapsed_seconds", 0.0))
+            maximum = float(hrv_status.get("maximum_seconds", 300.0))
+            duration = float(hrv_status.get("accepted_rr_seconds", 0.0))
+            target = float(hrv_status.get("target_seconds", 120.0))
+            remaining = max(0.0, target - duration)
+            progress_ratio = min(1.0, max(0.0, duration / target if target > 0 else 1.0))
+
+            canvas = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
+            canvas[:] = (28, 22, 18)
+
+            center_x = self.screen_w // 2
+            center_y = self.screen_h // 2
+
+            # Badge atas
+            cv2.putText(canvas, "KALIBRASI EYE TRACKING SELESAI",
+                        (center_x - 280, center_y - 190), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 120), 2)
+
+            # Judul utama
+            cv2.putText(canvas, "MENUNGGU BASELINE HRV SELESAI",
+                        (center_x - 340, center_y - 120), cv2.FONT_HERSHEY_SIMPLEX, 1.25, (255, 255, 255), 3)
+
+            # Instruksi
+            cv2.putText(canvas, "Harap tetap duduk tenang, rileks, dan bernapas dengan teratur...",
+                        (center_x - 370, center_y - 65), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (200, 200, 200), 1)
+
+            # Teks countdown besar
+            countdown_text = f"SISA WAKTU ESTIMASI: ~{int(math.ceil(remaining))} DETIK"
+            cv2.putText(canvas, countdown_text,
+                        (center_x - 310, center_y + 15), cv2.FONT_HERSHEY_SIMPLEX, 1.15, (0, 220, 255), 3)
+
+            # Detail metrik real-time
+            detail_text = f"Kalibrasi: {min(elapsed, maximum):.0f}/{maximum:g} detik  |  RR diterima: {duration:.1f}/{target:g} detik ({int(progress_ratio * 100)}%)"
+            cv2.putText(canvas, detail_text,
+                        (center_x - 360, center_y + 70), cv2.FONT_HERSHEY_SIMPLEX, 0.72, (220, 220, 220), 2)
+
+            # Progress Bar
+            bar_w = int(self.screen_w * 0.6)
+            bar_h = 32
+            bar_x = center_x - bar_w // 2
+            bar_y = center_y + 120
+            cv2.rectangle(canvas, (bar_x, bar_y), (bar_x + bar_w, bar_y + bar_h), (50, 50, 50), -1)
+            filled_w = int(bar_w * progress_ratio)
+            if filled_w > 0:
+                cv2.rectangle(canvas, (bar_x, bar_y), (bar_x + filled_w, bar_y + bar_h), (0, 210, 100), -1)
+            cv2.rectangle(canvas, (bar_x, bar_y), (bar_x + bar_w, bar_y + bar_h), (130, 130, 130), 2)
+
+            # Footer
+            cv2.putText(canvas, "Tekan [Q] untuk membatalkan",
+                        (center_x - 140, self.screen_h - 45), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (120, 120, 120), 1)
+
+            if status == "ready":
+                cv2.rectangle(canvas, (center_x - 380, center_y + 180), (center_x + 380, center_y + 245), (0, 140, 60), -1)
+                cv2.putText(canvas, "BASELINE HRV SIAP! MEMULAI SESI CODING...",
+                            (center_x - 350, center_y + 222), cv2.FONT_HERSHEY_SIMPLEX, 0.95, (255, 255, 255), 2)
+                cv2.imshow(window_name, canvas)
+                cv2.waitKey(1800)
+                cv2.destroyWindow(window_name)
+                return True
+
+            if status == "unavailable":
+                cv2.putText(canvas, "KALIBRASI HRV GAGAL / TIMEOUT",
+                            (center_x - 260, center_y + 200), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 2)
+                cv2.imshow(window_name, canvas)
+                cv2.waitKey(2000)
+                cv2.destroyWindow(window_name)
+                return False
+
+            cv2.imshow(window_name, canvas)
+            key = cv2.waitKey(100) & 0xFF
+            if key == ord('q'):
+                self.exit_requested = True
+                cv2.destroyWindow(window_name)
+                return False
+
+        cv2.destroyWindow(window_name)
+        return not self.exit_requested
+
     def run_calibration(self):
         print(f"\n[EyeTrack] Starting Phase 1 Fast Calibration ({self.cfg.calib_layout_mode})...")
         self.gaze_filter.reset()
@@ -778,6 +909,7 @@ class EyeTrackerApp:
                             (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2)
                 cv2.putText(bg, f"Move eyes only. Recording in {remaining:.1f}s...",
                             (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (180, 180, 180), 2)
+                self.draw_hrv_calib_hud(bg)
                 cv2.imshow("Calibration", bg)
                 cv2.waitKey(30)
             
@@ -831,6 +963,7 @@ class EyeTrackerApp:
                         cv2.rectangle(copy_bg, (0, 0), (self.screen_w, 36), (0, 60, 180), -1)
                         cv2.putText(copy_bg, head_warning_text,
                                     (20, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)
+                        self.draw_hrv_calib_hud(copy_bg)
                         cv2.imshow("Calibration", copy_bg)
                         cv2.waitKey(1)
                         continue
@@ -891,6 +1024,7 @@ class EyeTrackerApp:
                         cv2.putText(copy_bg, "KEEP EYES FIXED ON THE DOT...",
                                     (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (100, 100, 255), 2)
 
+                    self.draw_hrv_calib_hud(copy_bg)
                     cv2.imshow("Calibration", copy_bg)
                     key = cv2.waitKey(1) & 0xFF
                     if key == ord('q'):
@@ -1004,6 +1138,7 @@ class EyeTrackerApp:
                 cv2.circle(bg, (vdot_x, vdot_y), 18, (255, 255, 0), -1)
                 cv2.putText(bg, f"VALIDATION CHECK ({idx+1}/5) — LOOK AT THE YELLOW DOT",
                             (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2)
+                self.draw_hrv_calib_hud(bg)
                 cv2.imshow("Post-Calibration Validation", bg)
                 cv2.waitKey(20)
 
@@ -1033,6 +1168,7 @@ class EyeTrackerApp:
                 cv2.circle(bg, (vdot_x, vdot_y), 18, (255, 255, 0), -1)
                 cv2.putText(bg, f"CHECKING GAZE ACCURACY... ({len(sample_preds)}/{samples_target})",
                             (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255), 2)
+                self.draw_hrv_calib_hud(bg)
                 cv2.imshow("Post-Calibration Validation", bg)
                 cv2.waitKey(10)
 
@@ -1138,6 +1274,10 @@ class EyeTrackerApp:
                 if self.exit_requested or not self.wait_for_calibration_retry():
                     return False
                 continue
+
+            # Menunggu kalibrasi baseline HRV jika belum selesai
+            if not self.wait_for_hrv_calibration():
+                return False
 
             return True
         return False

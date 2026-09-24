@@ -30,6 +30,12 @@ instruksi untuk mulai coding. Tekan Ctrl+C untuk mengakhiri sesi.
 # Otomatis berhenti setelah 180 detik tugas, di luar durasi kalibrasi.
 python -m hrv_monitor_prototype.calibrate --duration 180
 
+# Gunakan simulator/mock sensor (tanpa perlu sensor fisik terhubung):
+python -m hrv_monitor_prototype.calibrate --mock
+
+# Mode mock dengan kalibrasi baseline cepat (misal 15 detik untuk pengujian):
+python -m hrv_monitor_prototype.calibrate --mock --target-baseline 15
+
 # Gunakan alamat sensor jika ada beberapa perangkat dengan nama yang cocok.
 python -m hrv_monitor_prototype.calibrate --address ALAMAT_BLE
 ```
