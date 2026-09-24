@@ -61,8 +61,8 @@ def print_banner(session_dir: Path, participant: str, task: str, duration: float
         print("  1. Simulator sensor HRV aktif (tidak memerlukan armband fisik).")
     else:
         print("  1. Pastikan sensor detak jantung (HW9) terpasang.")
-    print("  2. Kalibrasi Baseline HRV: Partisipan duduk tenang.")
-    print("  3. Kalibrasi Eye Tracking (9-titik): Ikuti titik merah di layar.")
+    print("  2. Kalibrasi mata dan baseline HRV berjalan bersamaan. Kurangi gerakan tubuh.")
+    print("  3. Setelah mata selesai, layar HRV menampilkan sisa baseline jika belum siap.")
     print("  4. Pengerjaan Tugas: Mulai ngoding.")
     print("  Tekan Ctrl+C kapan saja untuk mengakhiri sesi lebih awal.")
     print("=" * 65 + "\n")
@@ -140,6 +140,8 @@ def main(argv=None):
                 python_bin, str(repo_root / "hrv_monitor_prototype" / "calibrate.py"),
                 "--name", args.name, "--session-dir", str(session_dir),
             ]
+            if not args.skip_eye:
+                hrv_cmd.append("--wait-for-eye")
             if args.mock_hrv:
                 hrv_cmd.append("--mock")
             if args.target_baseline is not None:
@@ -160,6 +162,8 @@ def main(argv=None):
                 "--config", str(eye_config), "--session-dir", str(session_dir),
                 "--session-id", session_dir.name,
             ]
+            if not args.skip_hrv:
+                eye_cmd.append("--wait-for-hrv")
             print("[Orchestrator] Menyiapkan proses Eye Tracking...")
             eye_proc = subprocess.Popen(
                 eye_cmd, cwd=str(repo_root / "eye_tracking_prototype"), creationflags=creationflags)
