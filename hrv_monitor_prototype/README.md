@@ -26,9 +26,22 @@ cd E:\Skripsi\ngodong\Adaptive-IDE
 Peserta duduk tenang selama kalibrasi. Ketika baseline siap, terminal memberikan
 instruksi untuk mulai coding. Tekan Ctrl+C untuk mengakhiri sesi.
 
+Pada sesi gabungan melalui `run_multimodal.py`, baseline HRV langsung berjalan
+bersamaan dengan kalibrasi mata. Setelah validasi mata diterima, layar khusus HRV
+menampilkan sisa RR yang dibutuhkan tanpa mengulang progres sebelumnya. Jika
+baseline sudah siap, layar ini dilewati. Target tetap 120 detik RR dengan batas
+300 detik sejak perekaman HRV dimulai. Panel HRV tidak menutupi titik kalibrasi mata.
+Tugas dimulai setelah kedua kalibrasi siap; mode HRV saja tidak menunggu mata.
+
 ```powershell
 # Otomatis berhenti setelah 180 detik tugas, di luar durasi kalibrasi.
 python -m hrv_monitor_prototype.calibrate --duration 180
+
+# Gunakan simulator/mock sensor (tanpa perlu sensor fisik terhubung):
+python -m hrv_monitor_prototype.calibrate --mock
+
+# Mode mock dengan kalibrasi baseline cepat (misal 15 detik untuk pengujian):
+python -m hrv_monitor_prototype.calibrate --mock --target-baseline 15
 
 # Gunakan alamat sensor jika ada beberapa perangkat dengan nama yang cocok.
 python -m hrv_monitor_prototype.calibrate --address ALAMAT_BLE
@@ -55,7 +68,9 @@ Lokasi folder dicetak di terminal setelah sensor tersambung.
 - `rr_units`: nilai asli BLE dalam unit 1/1024 detik.
 - `rr_original_ms`: konversi RR menjadi milidetik, `rr_units × 1000 / 1024`.
 - `contact_detected`: status kontak jika didukung sensor.
-- `phase`: `calibration` atau `task`.
+- `phase`: `calibration` atau `task`; pada sesi gabungan, `waiting_for_eye`
+  menandai RR setelah baseline siap tetapi mata belum selesai. RR pada fase tunggu
+  ini hanya disimpan sebagai raw, tidak menambah baseline atau window tugas.
 
 Raw ditulis sebelum preprocessing. RR nol, di luar rentang, atau yang kemudian
 ditolak oleh filter tetap tersimpan. Satu paket dapat berisi beberapa RR dengan

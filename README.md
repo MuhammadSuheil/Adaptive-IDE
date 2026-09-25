@@ -45,6 +45,15 @@ run `record_rr` directly only when collecting raw RR without calibration or HRV.
 
 ## Multimodal session output
 
+Eye calibration and the HRV baseline run concurrently. HRV text is not drawn over
+the eye targets. After eye validation is accepted, a dedicated HRV screen shows
+the remaining accepted RR needed, preserving the progress already collected.
+If the baseline is already ready, this screen is skipped. The baseline targets
+120 seconds of accepted RR within 300 seconds from HRV recording startup.
+Task recording starts when both calibrations are ready. If HRV finishes first,
+subsequent raw RR is marked `waiting_for_eye` until eye validation is accepted.
+HRV-only mode does not wait for the eye tracker; eye-only mode does not wait for HRV.
+
 Run `python run_multimodal.py --participant P01 --task coding_task` from the
 repository root. Once either recorder exits (including pressing Q in the eye
 tracker and dismissing its summary), the runner stops the other recorder, waits
@@ -63,6 +72,12 @@ The raw CSV files are preserved. JSON summaries are additional outputs. If a
 session has no task HRV windows yet, the combined CSV contains its header only;
 missing source recordings are reported in the terminal. Single-sensor modes
 (`--skip-eye` or `--skip-hrv`) do not produce a combined CSV.
+
+`hrv_calib_status.json` carries live baseline progress, and `eye_calibration_ready`
+signals that eye validation has been accepted so task recording can begin once
+HRV is also ready. These are session coordination
+files, not measurement data. The runner passes the required waiting flags to
+both recorders automatically.
 
 To combine an existing session, run:
 

@@ -13,6 +13,7 @@ class MultimodalTests(unittest.TestCase):
     def test_invalid_arguments_do_not_start_recorders(self):
         cases = [['--skip-eye', '--skip-hrv']]
         cases += [['--duration', value] for value in ('0', '-1', 'nan', 'inf')]
+        cases += [['--target-baseline', value] for value in ('0', '-1', 'nan', 'inf')]
         with patch.object(runner.subprocess, 'Popen') as spawn:
             for args in cases:
                 with self.subTest(args=args), self.assertRaises(SystemExit) as raised:
@@ -109,14 +110,65 @@ class MultimodalTests(unittest.TestCase):
                 self.assertEqual(path, session)
                 return {'timeline_file': 'multimodal_timeline.csv'}
             with patch.object(runner, 'setup_session_directory', return_value=session), \
-                 patch.object(runner.subprocess, 'Popen', side_effect=[hrv, eye]), \
+                 patch.object(runner.subprocess, 'Popen', side_effect=[hrv, eye]) as spawn, \
                  patch.object(runner.time, 'sleep'), \
                  patch.object(runner, 'fuse_session', side_effect=fuse) as fusion_mock:
                 self.assertEqual(runner.main([]), 0)
             hrv.send_signal.assert_called_once()
             hrv.kill.assert_not_called()
             fusion_mock.assert_called_once()
+            self.assertIn('--wait-for-eye', spawn.call_args_list[0].args[0])
+            self.assertIn('--wait-for-hrv', spawn.call_args_list[1].args[0])
 
+    def test_mock_hrv_flag_passed_to_hrv_process(self):
+        with tempfile.TemporaryDirectory() as directory:
+            session = Path(directory)
+            hrv = Mock()
+            hrv.poll.return_value = 0
+            with patch.object(runner, 'setup_session_directory', return_value=session), \
+                 patch.object(runner.subprocess, 'Popen', return_value=hrv) as spawn, \
+                 patch.object(runner.time, 'sleep'):
+                runner.main(['--skip-eye', '--mock-hrv', '--target-baseline', '15'])
+            spawn.assert_called_once()
+            cmd = spawn.call_args[0][0]
+            self.assertIn('--mock', cmd)
+            self.assertIn('--target-baseline', cmd)
+            self.assertIn('15.0', cmd)
+            self.assertNotIn('--wait-for-eye', cmd)
+
+    def test_mock_sensor_records_valid_rr_data(self):
+        import asyncio
+        from hrv_monitor_prototype.record_rr import record_sensor
+        with tempfile.TemporaryDirectory() as directory:
+            session = Path(directory)
+            asyncio.run(record_sensor(duration=1.2, session_dir=session, mock=True))
+            raw_path = session / 'rr_raw.csv'
+            self.assertTrue(raw_path.exists())
+            with raw_path.open(encoding='utf-8') as f:
+                reader = list(csv.DictReader(f))
+            self.assertGreater(len(reader), 0)
+            self.assertIn('rr_original_ms', reader[0])
+            first_rr = float(reader[0]['rr_original_ms'])
+            self.assertGreaterEqual(first_rr, 600.0)
+            self.assertLessEqual(first_rr, 1200.0)
+
+    def test_hrv_calib_status_file_is_written(self):
+        import asyncio
+        import json
+        from hrv_monitor_prototype.calibrate import SessionCalibration
+        from hrv_monitor_prototype.record_rr import record_sensor
+        with tempfile.TemporaryDirectory() as directory:
+            session = Path(directory)
+            calibration = SessionCalibration(task_duration=1.0, target_seconds=2.0, maximum_seconds=10.0)
+            asyncio.run(record_sensor(duration=1.5, session_dir=session, monitor=calibration, mock=True))
+            status_path = session / 'hrv_calib_status.json'
+            self.assertTrue(status_path.exists())
+            with status_path.open(encoding='utf-8') as f:
+                data = json.load(f)
+            self.assertIn('text', data)
+            self.assertIn('Kalibrasi:', data['text'])
+            self.assertIn('RR diterima:', data['text'])
+            self.assertIn('status', data)
 
 if __name__ == '__main__':
     unittest.main()

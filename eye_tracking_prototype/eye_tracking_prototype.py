@@ -5,6 +5,7 @@ import json
 import uuid
 import time
 import math
+from pathlib import Path
 import threading
 import numpy as np
 from datetime import datetime
@@ -93,11 +94,13 @@ def estimate_head_pose(landmarks, image_w, image_h):
 
 
 class EyeTrackerApp:
-    def __init__(self, config_path, session_id=None, session_dir=None):
+    def __init__(self, config_path, session_id=None, session_dir=None, wait_for_hrv=False):
         self.cfg = Config(config_path)
+        self.wait_for_hrv = wait_for_hrv
         
         save_dir = session_dir if session_dir is not None else self.cfg.session_dir
         os.makedirs(save_dir, exist_ok=True)
+        self.session_dir = save_dir
         self.session_id = session_id or str(uuid.uuid4())
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         if session_dir is not None:
@@ -668,7 +671,6 @@ class EyeTrackerApp:
                             cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 255), 3)
 
             draw_checklist(canvas, checklist_states)
-
             cv2.imshow("Head Alignment Gate", canvas)
             key = cv2.waitKey(30) & 0xFF
             if key == ord('q'):
@@ -739,6 +741,120 @@ class EyeTrackerApp:
             xs = np.linspace(min_x, max_x, 3)
             ys = np.linspace(min_y, max_y, 3)
             return [(int(x), int(y)) for y in ys for x in xs]
+
+    def get_hrv_calib_status(self):
+        """Membaca status kalibrasi HRV terkini dari folder sesi jika tersedia."""
+        if not getattr(self, "session_dir", None):
+            return None
+        status_file = os.path.join(self.session_dir, "hrv_calib_status.json")
+        if not os.path.exists(status_file):
+            return None
+        try:
+            with open(status_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (OSError, json.JSONDecodeError):
+            return None
+
+    def wait_for_hrv_calibration(self):
+        """Setelah validasi mata, tampilkan sisa baseline HRV yang sudah berjalan."""
+        if not self.wait_for_hrv:
+            return True
+
+        # Baseline runs concurrently. This signal only releases task recording
+        # if the HRV baseline has already finished before eye validation.
+        (Path(self.session_dir) / "eye_calibration_ready").touch()
+        hrv_status = self.get_hrv_calib_status()
+        if hrv_status and hrv_status.get("status") == "ready":
+            return True
+
+        window_name = "HRV Calibration Countdown"
+        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+        cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+        print("\n[EyeTrack] Kalibrasi mata selesai. Menunggu kalibrasi baseline HRV...")
+
+        while not self.exit_requested:
+            hrv_status = self.get_hrv_calib_status() or {}
+
+            status = hrv_status.get("status", "connecting")
+            elapsed = float(hrv_status.get("elapsed_seconds", 0.0))
+            maximum = float(hrv_status.get("maximum_seconds", 300.0))
+            duration = float(hrv_status.get("accepted_rr_seconds", 0.0))
+            target = float(hrv_status.get("target_seconds", 120.0))
+            remaining = max(0.0, target - duration)
+            progress_ratio = min(1.0, max(0.0, duration / target if target > 0 else 1.0))
+
+            canvas = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
+            canvas[:] = (28, 22, 18)
+
+            center_x = self.screen_w // 2
+            center_y = self.screen_h // 2
+
+            # Badge atas
+            cv2.putText(canvas, "KALIBRASI EYE TRACKING SELESAI",
+                        (center_x - 280, center_y - 190), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 120), 2)
+
+            # Judul utama
+            cv2.putText(canvas, "MENUNGGU BASELINE HRV SELESAI",
+                        (center_x - 340, center_y - 120), cv2.FONT_HERSHEY_SIMPLEX, 1.25, (255, 255, 255), 3)
+
+            # Instruksi
+            cv2.putText(canvas, "Harap tetap duduk tenang, rileks, dan bernapas dengan teratur...",
+                        (center_x - 370, center_y - 65), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (200, 200, 200), 1)
+
+            # Teks countdown besar
+            countdown_text = f"SISA RR DIBUTUHKAN: {remaining:.1f} DETIK"
+            if status == "connecting":
+                countdown_text = "MENUNGGU SENSOR / BASELINE DIMULAI..."
+            cv2.putText(canvas, countdown_text,
+                        (center_x - 310, center_y + 15), cv2.FONT_HERSHEY_SIMPLEX, 1.15, (0, 220, 255), 3)
+
+            # Detail metrik real-time
+            detail_text = f"Kalibrasi: {min(elapsed, maximum):.0f}/{maximum:g} detik  |  RR diterima: {duration:.1f}/{target:g} detik ({int(progress_ratio * 100)}%)"
+            cv2.putText(canvas, detail_text,
+                        (center_x - 360, center_y + 70), cv2.FONT_HERSHEY_SIMPLEX, 0.72, (220, 220, 220), 2)
+
+            # Progress Bar
+            bar_w = int(self.screen_w * 0.6)
+            bar_h = 32
+            bar_x = center_x - bar_w // 2
+            bar_y = center_y + 120
+            cv2.rectangle(canvas, (bar_x, bar_y), (bar_x + bar_w, bar_y + bar_h), (50, 50, 50), -1)
+            filled_w = int(bar_w * progress_ratio)
+            if filled_w > 0:
+                cv2.rectangle(canvas, (bar_x, bar_y), (bar_x + filled_w, bar_y + bar_h), (0, 210, 100), -1)
+            cv2.rectangle(canvas, (bar_x, bar_y), (bar_x + bar_w, bar_y + bar_h), (130, 130, 130), 2)
+
+            # Footer
+            cv2.putText(canvas, "Tekan [Q] untuk membatalkan",
+                        (center_x - 140, self.screen_h - 45), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (120, 120, 120), 1)
+
+            if status == "ready":
+                cv2.rectangle(canvas, (center_x - 380, center_y + 180), (center_x + 380, center_y + 245), (0, 140, 60), -1)
+                cv2.putText(canvas, "BASELINE HRV SIAP! MEMULAI SESI CODING...",
+                            (center_x - 350, center_y + 222), cv2.FONT_HERSHEY_SIMPLEX, 0.95, (255, 255, 255), 2)
+                cv2.imshow(window_name, canvas)
+                cv2.waitKey(1)
+                cv2.destroyWindow(window_name)
+                return True
+
+            if status == "unavailable":
+                cv2.putText(canvas, "KALIBRASI HRV GAGAL / TIMEOUT",
+                            (center_x - 260, center_y + 200), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 2)
+                cv2.imshow(window_name, canvas)
+                cv2.waitKey(2000)
+                cv2.destroyWindow(window_name)
+                return False
+
+            cv2.imshow(window_name, canvas)
+            key = cv2.waitKey(100) & 0xFF
+            if key == ord('q'):
+                self.exit_requested = True
+                cv2.destroyWindow(window_name)
+                return False
+
+        cv2.destroyWindow(window_name)
+        return not self.exit_requested
 
     def run_calibration(self):
         print(f"\n[EyeTrack] Starting Phase 1 Fast Calibration ({self.cfg.calib_layout_mode})...")
@@ -1138,6 +1254,10 @@ class EyeTrackerApp:
                 if self.exit_requested or not self.wait_for_calibration_retry():
                     return False
                 continue
+
+            # Menunggu kalibrasi baseline HRV jika belum selesai
+            if not self.wait_for_hrv_calibration():
+                return False
 
             return True
         return False
@@ -1675,9 +1795,14 @@ def main(argv=None):
     parser.add_argument("--config", default="config.yaml", help="Path to config file")
     parser.add_argument("--session-dir", help="Shared output directory supplied by run_multimodal.py")
     parser.add_argument("--session-id", help="Shared ID supplied by the synchronized-session launcher")
+    parser.add_argument("--wait-for-hrv", action="store_true",
+                        help="Setelah validasi mata, tampilkan sisa baseline HRV yang masih berjalan")
     args = parser.parse_args(argv)
+    if args.wait_for_hrv and args.session_dir is None:
+        parser.error("--wait-for-hrv memerlukan --session-dir")
     
-    app = EyeTrackerApp(args.config, session_id=args.session_id, session_dir=args.session_dir)
+    app = EyeTrackerApp(args.config, session_id=args.session_id, session_dir=args.session_dir,
+                        wait_for_hrv=args.wait_for_hrv)
     previous_break_handler = None
     if hasattr(signal, "SIGBREAK"):
         previous_break_handler = signal.signal(signal.SIGBREAK, signal.default_int_handler)
