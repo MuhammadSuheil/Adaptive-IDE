@@ -13,7 +13,22 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
-from modules import Config, WebcamStream, GazeFilter, MetricsEngine, GazeMapper, BlinkDetector
+from modules import Config, WebcamStream, GazeFilter, MetricsEngine, GazeMapper, BlinkDetector, EyeStateClassifier
+
+
+CSV_COLUMNS = [
+    "timestamp_ms", "frame_index", "capture_frame_id",
+    "gaze_x_raw", "gaze_y_raw", "gaze_x_smooth", "gaze_y_smooth",
+    "EAR_Right", "EAR_Left", "Eye_State",
+    "grid_row", "grid_col", "section", "confidence",
+    "dwell_time_ms", "nrevisit_count", "transition_rate",
+    "iris_size_delta", "fps_actual", "capture_fps", "capture_age_ms",
+    "preprocess_ms", "inference_ms", "mapping_metrics_ms", "total_processing_ms",
+    "dropped_frames_total",
+    "face_detected", "gaze_status", "calibration_quality",
+    "head_pitch", "head_yaw", "head_pose_shifted",
+    "is_blinking", "total_blinks", "blink_rate_bpm",
+]
 
 
 def estimate_head_pose(landmarks, image_w, image_h):
@@ -137,6 +152,11 @@ class EyeTrackerApp:
         self.gaze_filter = GazeFilter(self.cfg)
         self.metrics = MetricsEngine(self.cfg)
         self.blink_detector = BlinkDetector(self.cfg)
+        self.eye_state_classifier = EyeStateClassifier(
+            fixation_radius_px=self.cfg.eye_state_fixation_radius_px,
+            fixation_frames=self.cfg.eye_state_fixation_frames,
+            saccade_threshold_px=self.cfg.adaptive_ema_saccade_threshold_px,
+        )
         self.mapper = GazeMapper(
             method=self.cfg.calib_mapping_method,
             rbf_kernel=self.cfg.calib_rbf_kernel,
@@ -146,18 +166,7 @@ class EyeTrackerApp:
         
         self.csv_file = open(self.csv_path, 'w', newline='')
         self.csv_writer = csv.writer(self.csv_file)
-        self.csv_writer.writerow([
-            "timestamp_ms", "frame_index", "capture_frame_id",
-            "gaze_x_raw", "gaze_y_raw", "gaze_x_smooth", "gaze_y_smooth",
-            "grid_row", "grid_col", "section", "confidence",
-            "dwell_time_ms", "nrevisit_count", "transition_rate",
-            "iris_size_delta", "fps_actual", "capture_fps", "capture_age_ms",
-            "preprocess_ms", "inference_ms", "mapping_metrics_ms", "total_processing_ms",
-            "dropped_frames_total",
-            "face_detected", "gaze_status", "calibration_quality",
-            "head_pitch", "head_yaw", "head_pose_shifted",
-            "is_blinking", "total_blinks", "blink_rate_bpm"
-        ])
+        self.csv_writer.writerow(CSV_COLUMNS)
         
         self.calibration_quality = 0.0
         self.frame_count = 0
@@ -254,10 +263,10 @@ class EyeTrackerApp:
         l_ear = math.hypot(l_top.x - l_bot.x, l_top.y - l_bot.y) / (math.hypot(l_in.x - l_out.x, l_in.y - l_out.y) + 1e-6)
         r_ear = math.hypot(r_top.x - r_bot.x, r_top.y - r_bot.y) / (math.hypot(r_in.x - r_out.x, r_in.y - r_out.y) + 1e-6)
 
-        return (l_ear + r_ear) / 2.0
+        return l_ear, r_ear, (l_ear + r_ear) / 2.0
 
     def get_normalized_eye_vector(self, landmarks):
-        """Returns ((norm_x, norm_y, ear), iris_size).
+        """Returns ((norm_x, norm_y, ear_average, ear_left, ear_right), iris_size).
         Glasses robustness: each eye is weighted by its own iris consistency
         (lower variance = more reliable). This prevents glare on one lens
         from pulling the averaged gaze position off-centre.
@@ -271,7 +280,7 @@ class EyeTrackerApp:
         right_iris_pts = [landmarks[i] for i in self.cfg.right_iris_indices if i < len(landmarks)]
 
         if not left_iris_pts or not right_iris_pts:
-            return (0.5, 0.5, 0.2), 0.0
+            return (0.5, 0.5, 0.2, None, None), 0.0
 
         l_iris_x = sum(p.x for p in left_iris_pts) / len(left_iris_pts)
         l_iris_y = sum(p.y for p in left_iris_pts) / len(left_iris_pts)
@@ -310,7 +319,7 @@ class EyeTrackerApp:
         norm_x = l_norm_x * l_w + r_norm_x * r_w
         norm_y = l_norm_y * l_w + r_norm_y * r_w
 
-        ear = self.calculate_ear(landmarks)
+        ear_left, ear_right, ear = self.calculate_ear(landmarks)
 
         l_size = math.hypot(left_iris_pts[0].x - left_iris_pts[2].x,
                             left_iris_pts[0].y - left_iris_pts[2].y) if len(left_iris_pts) >= 3 else 0.01
@@ -318,7 +327,7 @@ class EyeTrackerApp:
                             right_iris_pts[0].y - right_iris_pts[2].y) if len(right_iris_pts) >= 3 else 0.01
         iris_size = (l_size + r_size) / 2.0
 
-        return (norm_x, norm_y, ear), iris_size
+        return (norm_x, norm_y, ear, ear_left, ear_right), iris_size
 
     def _next_ts(self):
         ts = int(time.time() * 1000)
@@ -953,7 +962,7 @@ class EyeTrackerApp:
                     else:
                         head_warning_text = ""
 
-                    (ix, iy, ear), _ = self.get_normalized_eye_vector(lm)
+                    (ix, iy, ear, _, _), _ = self.get_normalized_eye_vector(lm)
                     if not (self.cfg.min_ear <= ear <= self.cfg.max_ear):
                         stable_streak = 0
                         cv2.waitKey(1)
@@ -1140,7 +1149,7 @@ class EyeTrackerApp:
                 res = self.landmarker.detect_for_video(mp_img, self._next_ts())
 
                 if res and res.face_landmarks:
-                    (norm_x, norm_y, ear), _ = self.get_normalized_eye_vector(res.face_landmarks[0])
+                    (norm_x, norm_y, ear, _, _), _ = self.get_normalized_eye_vector(res.face_landmarks[0])
                     if self.cfg.min_ear <= ear <= self.cfg.max_ear:
                         pred_x, pred_y = self.mapper.predict(norm_x, norm_y, ear)
                         sample_preds.append((pred_x, pred_y))
@@ -1447,6 +1456,7 @@ class EyeTrackerApp:
 
     def start_tracking_worker(self):
         self.tracking_stop.clear()
+        self.eye_state_classifier.reset()
         self.last_frame_time = None
         self.tracking_thread = threading.Thread(
             target=self.tracking_worker, name="EyeTrackingInference", daemon=True
@@ -1506,6 +1516,8 @@ class EyeTrackerApp:
             mapping_started = time.perf_counter()
             face_detected = False
             raw_x = raw_y = sm_x = sm_y = 0.0
+            ear_left = ear_right = None
+            eye_state = EyeStateClassifier.UNCLASSIFIED
             grid_r = grid_c = -1
             section = None
             conf = iris_size = 0.0
@@ -1529,7 +1541,7 @@ class EyeTrackerApp:
                 if yaw_drift > self.cfg.pose_tracking_warn_yaw_deg or pitch_drift > self.cfg.pose_tracking_warn_pitch_deg:
                     head_pose_shifted = True
 
-                (norm_x, norm_y, ear), iris_size = self.get_normalized_eye_vector(lm)
+                (norm_x, norm_y, ear, ear_left, ear_right), iris_size = self.get_normalized_eye_vector(lm)
                 is_blinking, total_blinks, blink_bpm = self.blink_detector.process(ear, time.time())
                 if self.debug_mode:
                     for point in lm:
@@ -1543,6 +1555,9 @@ class EyeTrackerApp:
                     grid_r, grid_c, section, conf = self.get_grid_cell(sm_x, sm_y)
                     gaze_status = "gaze_outside_screen" if section == self.cfg.off_screen_label else "on_screen"
 
+            gaze_is_valid = gaze_status in ("on_screen", "gaze_outside_screen")
+            eye_state = self.eye_state_classifier.update(sm_x, sm_y, gaze_is_valid)
+
             self.metrics.update(ts_ms, section, iris_size)
             mapping_ms = (time.perf_counter() - mapping_started) * 1000.0
             capture_fps = self.observed_capture_fps()
@@ -1550,7 +1565,9 @@ class EyeTrackerApp:
 
             row = [
                 ts_ms, self.frame_count, frame_id,
-                raw_x, raw_y, sm_x, sm_y, grid_r, grid_c, section or "", conf,
+                raw_x, raw_y, sm_x, sm_y, ear_right if ear_right is not None else "",
+                ear_left if ear_left is not None else "", eye_state,
+                grid_r, grid_c, section or "", conf,
                 self.metrics.dwell_time_ms, self.metrics.get_nrevisit(section),
                 self.metrics.get_transition_rate(), self.metrics.iris_delta,
                 self.fps_ema, capture_fps if capture_fps is not None else "",
