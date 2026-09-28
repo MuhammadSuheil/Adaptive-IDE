@@ -14,6 +14,8 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
 from modules import Config, WebcamStream, GazeFilter, MetricsEngine, GazeMapper, BlinkDetector, EyeStateClassifier
+from modules.stream import open_camera
+from modules.performance import FrameRate
 
 
 CSV_COLUMNS = [
@@ -28,6 +30,8 @@ CSV_COLUMNS = [
     "face_detected", "gaze_status", "calibration_quality",
     "head_pitch", "head_yaw", "head_pose_shifted",
     "is_blinking", "total_blinks", "blink_rate_bpm",
+    "iris_valid", "iris_baseline_ready", "iris_size_mode", "iris_size",
+    "processing_timestamp_ms",
 ]
 
 
@@ -129,14 +133,16 @@ class EyeTrackerApp:
             print("[EyeTrack] Initializing Async Multithreaded Camera Stream...")
             self.stream = WebcamStream(
                 self.cfg.webcam_idx, self.cfg.webcam_w, self.cfg.webcam_h, 
-                self.cfg.webcam_fps, self.cfg.flip_horizontal
+                self.cfg.webcam_fps, self.cfg.flip_horizontal,
+                backend=self.cfg.camera_backend, fourcc=self.cfg.camera_fourcc,
+                buffer_size=self.cfg.camera_buffer_size,
             ).start()
         else:
             self.stream = None
-            self.cap = cv2.VideoCapture(self.cfg.webcam_idx)
-            self.cap.set(cv2.CAP_PROP_FPS, self.cfg.webcam_fps)
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.cfg.webcam_w)
-            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.cfg.webcam_h)
+            self.cap, self.sync_camera_info = open_camera(
+                self.cfg.webcam_idx, self.cfg.webcam_w, self.cfg.webcam_h,
+                self.cfg.webcam_fps, backend=self.cfg.camera_backend,
+                fourcc=self.cfg.camera_fourcc, buffer_size=self.cfg.camera_buffer_size)
         
         base_options = python.BaseOptions(model_asset_path=self.cfg.model_path)
         options = vision.FaceLandmarkerOptions(
@@ -147,7 +153,14 @@ class EyeTrackerApp:
             min_face_presence_confidence=self.cfg.data['mediapipe']['min_face_presence_confidence'],
             min_tracking_confidence=self.cfg.data['mediapipe']['min_tracking_confidence'],
         )
-        self.landmarker = vision.FaceLandmarker.create_from_options(options)
+        try:
+            self.landmarker = vision.FaceLandmarker.create_from_options(options)
+        except Exception:
+            if self.stream is not None:
+                self.stream.stop()
+            else:
+                self.cap.release()
+            raise
         
         self.gaze_filter = GazeFilter(self.cfg)
         self.metrics = MetricsEngine(self.cfg)
@@ -178,8 +191,14 @@ class EyeTrackerApp:
         self._last_ts_ms = 0
         self.tracking_start_time = None
         self.last_frame_time = None
-        self.fps_ema = 0.0
+        self.processing_fps = 0.0
+        self.processing_rate = FrameRate()
+        self.clock_origin_mono = time.perf_counter()
+        self.clock_origin_epoch = time.time()
+        self.worker_error = None
         self.exit_requested = False
+        self.tracking_seconds = None
+        self.tracking_ui = True
         self.calibration_diagnostics = {}
         self.tracking_stop = threading.Event()
         self.result_lock = threading.Lock()
@@ -229,13 +248,7 @@ class EyeTrackerApp:
     def camera_diagnostics(self):
         if self.stream is not None:
             return self.stream.diagnostics()
-        return {
-            "width": int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-            "height": int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
-            "fps_reported": float(self.cap.get(cv2.CAP_PROP_FPS)),
-            "capture_fps_observed": None,
-            "backend": self.cap.getBackendName() if self.cap.isOpened() else "closed",
-        }
+        return dict(self.sync_camera_info, capture_fps_observed=None)
 
     def make_mediapipe_image(self, frame):
         inference_frame = frame
@@ -326,11 +339,23 @@ class EyeTrackerApp:
         r_size = math.hypot(right_iris_pts[0].x - right_iris_pts[2].x,
                             right_iris_pts[0].y - right_iris_pts[2].y) if len(right_iris_pts) >= 3 else 0.01
         iris_size = (l_size + r_size) / 2.0
+        if getattr(self.cfg, 'iris_size_mode', 'image_radius') == 'eye_width_ratio':
+            # Convert normalized image coordinates to aspect-correct pixel geometry.
+            def radius_ratio(points, corner_a, corner_b):
+                def distance(a, b):
+                    return math.hypot((a.x - b.x) * self.cfg.inference_w,
+                                      (a.y - b.y) * self.cfg.inference_h)
+                eye_width = distance(corner_a, corner_b)
+                if eye_width <= 1e-6 or len(points) < 5:
+                    return float('nan')
+                return sum(distance(points[0], p) for p in points[1:5]) / (4 * eye_width)
+            iris_size = (radius_ratio(left_iris_pts, left_corner_outer, left_corner_inner)
+                         + radius_ratio(right_iris_pts, right_corner_outer, right_corner_inner)) / 2
 
         return (norm_x, norm_y, ear, ear_left, ear_right), iris_size
 
-    def _next_ts(self):
-        ts = int(time.time() * 1000)
+    def _next_ts(self, capture_ts=None):
+        ts = int((time.perf_counter() if capture_ts is None else capture_ts) * 1000)
         if ts <= self._last_ts_ms:
             ts = self._last_ts_ms + 1
         self._last_ts_ms = ts
@@ -1455,11 +1480,15 @@ class EyeTrackerApp:
         return overlay
 
     def start_tracking_worker(self):
+        if self.tracking_thread is not None and self.tracking_thread.is_alive():
+            raise RuntimeError('Tracking worker is still running')
         self.tracking_stop.clear()
         self.eye_state_classifier.reset()
         self.last_frame_time = None
+        self.processing_rate = FrameRate()
+        self.worker_error = None
         self.tracking_thread = threading.Thread(
-            target=self.tracking_worker, name="EyeTrackingInference", daemon=True
+            target=self._tracking_worker_guarded, name="EyeTrackingInference", daemon=True
         )
         self.tracking_thread.start()
 
@@ -1467,12 +1496,22 @@ class EyeTrackerApp:
         self.tracking_stop.set()
         if self.tracking_thread is not None and self.tracking_thread.is_alive():
             self.tracking_thread.join(timeout=2.0)
+            if self.tracking_thread.is_alive():
+                raise RuntimeError('Tracking worker did not stop; resources remain in use')
         self.tracking_thread = None
+
+    def _tracking_worker_guarded(self):
+        try:
+            self.tracking_worker()
+        except Exception as exc:
+            self.worker_error = str(exc)
 
     def tracking_worker(self):
         last_frame_id = 0
         while not self.tracking_stop.is_set():
             if self.is_paused:
+                self.processing_rate = FrameRate()
+                last_frame_id = 0  # paused frames are not processing drops
                 self.tracking_stop.wait(0.01)
                 continue
 
@@ -1483,6 +1522,9 @@ class EyeTrackerApp:
                 self._sync_frame_id += 1
                 frame_id, capture_ts = self._sync_frame_id, time.perf_counter()
             if not ret or frame is None:
+                if self.stream is not None and self.stream.stopped:
+                    self.worker_error = self.stream.error or 'Camera stream stopped'
+                    break
                 continue
 
             if frame_id > last_frame_id + 1 and last_frame_id > 0:
@@ -1493,12 +1535,12 @@ class EyeTrackerApp:
                 self.processing_started_at = processing_started
             self.processing_last_at = processing_started
             capture_age_ms = max(0.0, (processing_started - capture_ts) * 1000.0)
-            ts_ms = int(time.time() * 1000)
+            ts_ms = int((self.clock_origin_epoch + capture_ts - self.clock_origin_mono) * 1000)
+            processing_timestamp_ms = int((self.clock_origin_epoch + processing_started - self.clock_origin_mono) * 1000)
 
             self.frame_count += 1
-            if self.last_frame_time is not None:
-                instantaneous_fps = 1.0 / max(processing_started - self.last_frame_time, 1e-6)
-                self.fps_ema = instantaneous_fps if self.fps_ema == 0 else 0.9 * self.fps_ema + 0.1 * instantaneous_fps
+            self.processing_rate.add(processing_started)
+            self.processing_fps = self.processing_rate.fps(processing_started)
             self.last_frame_time = processing_started
 
             preprocess_started = time.perf_counter()
@@ -1507,7 +1549,7 @@ class EyeTrackerApp:
 
             inference_started = time.perf_counter()
             try:
-                res = self.landmarker.detect_for_video(mp_img, self._next_ts())
+                res = self.landmarker.detect_for_video(mp_img, self._next_ts(capture_ts))
             except Exception as exc:
                 print(f"[Warn] MediaPipe error: {exc}")
                 res = None
@@ -1542,7 +1584,7 @@ class EyeTrackerApp:
                     head_pose_shifted = True
 
                 (norm_x, norm_y, ear, ear_left, ear_right), iris_size = self.get_normalized_eye_vector(lm)
-                is_blinking, total_blinks, blink_bpm = self.blink_detector.process(ear, time.time())
+                is_blinking, total_blinks, blink_bpm = self.blink_detector.process(ear, ts_ms / 1000.0)
                 if self.debug_mode:
                     for point in lm:
                         cv2.circle(frame, (int(point.x * frame.shape[1]), int(point.y * frame.shape[0])),
@@ -1558,7 +1600,9 @@ class EyeTrackerApp:
             gaze_is_valid = gaze_status in ("on_screen", "gaze_outside_screen")
             eye_state = self.eye_state_classifier.update(sm_x, sm_y, gaze_is_valid)
 
-            self.metrics.update(ts_ms, section, iris_size)
+            iris_valid = (gaze_is_valid and not is_blinking and not head_pose_shifted
+                          and math.isfinite(iris_size) and iris_size > 0)
+            self.metrics.update(ts_ms, section, iris_size, iris_valid=iris_valid)
             mapping_ms = (time.perf_counter() - mapping_started) * 1000.0
             capture_fps = self.observed_capture_fps()
             total_processing_ms = (time.perf_counter() - processing_started) * 1000.0
@@ -1570,12 +1614,14 @@ class EyeTrackerApp:
                 grid_r, grid_c, section or "", conf,
                 self.metrics.dwell_time_ms, self.metrics.get_nrevisit(section),
                 self.metrics.get_transition_rate(), self.metrics.iris_delta,
-                self.fps_ema, capture_fps if capture_fps is not None else "",
+                self.processing_fps, capture_fps if capture_fps is not None else "",
                 capture_age_ms, preprocess_ms, inference_ms, mapping_ms,
                 total_processing_ms, self.dropped_frames,
                 face_detected, gaze_status, self.calibration_quality,
                 pitch, yaw, head_pose_shifted,
-                is_blinking, total_blinks, blink_bpm
+                is_blinking, total_blinks, blink_bpm,
+                iris_valid, self.metrics.iris_baseline is not None, self.cfg.iris_size_mode,
+                iris_size if iris_valid else '', processing_timestamp_ms,
             ]
             logging_started = time.perf_counter()
             self.csv_writer.writerow(row)
@@ -1598,7 +1644,7 @@ class EyeTrackerApp:
             result = {
                 "timestamp_ms": ts_ms, "frame": frame, "sm_x": sm_x, "sm_y": sm_y,
                 "grid_r": grid_r, "grid_c": grid_c, "section": section,
-                "gaze_status": gaze_status, "fps": self.fps_ema,
+                "gaze_status": gaze_status, "fps": self.processing_fps,
                 "inference_ms": inference_ms, "capture_fps": capture_fps,
                 "dwell_ms": self.metrics.dwell_time_ms,
                 "nrevisit": self.metrics.get_nrevisit(section),
@@ -1626,7 +1672,7 @@ class EyeTrackerApp:
             f"NRevisit: {result['nrevisit']}",
             f"Trans Rate: {result['transition_rate']:.2f}/s",
             f"Blinks: {result.get('total_blinks', 0)} ({result.get('blink_bpm', 0.0):.1f}/min){is_blinking_str}",
-            f"Iris D: {result['iris_delta']:.4f}",
+            f"Iris D: {result['iris_delta']:.4f}" if result['iris_delta'] is not None else "Iris D: unavailable",
         ]
         for index, line in enumerate(lines):
             cv2.putText(frame, line, (10, 30 + index * 25), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
@@ -1645,7 +1691,8 @@ class EyeTrackerApp:
         self.tracking_start_time = time.time()
         self.ui_started = time.perf_counter()
         print(f"[EyeTrack] Camera diagnostics: {self.camera_diagnostics()}")
-        cv2.namedWindow("Eye Tracking - Gaze Grid", cv2.WINDOW_NORMAL)
+        if self.tracking_ui:
+            cv2.namedWindow("Eye Tracking - Gaze Grid", cv2.WINDOW_NORMAL)
         print("[EyeTrack] Starting decoupled capture/inference/UI pipeline...")
         self.start_tracking_worker()
 
@@ -1657,9 +1704,14 @@ class EyeTrackerApp:
         while not self.exit_requested:
             if (self.tracking_thread is not None and not self.tracking_thread.is_alive()
                     and not self.tracking_stop.is_set()):
-                print("[EyeTrack] ERROR: inference worker stopped unexpectedly.")
+                print(f"[EyeTrack] ERROR: inference worker stopped unexpectedly: {self.worker_error}")
                 break
             now = time.perf_counter()
+            if self.tracking_seconds is not None and now - self.ui_started >= self.tracking_seconds:
+                break
+            if not self.tracking_ui:
+                self.tracking_stop.wait(.01)
+                continue
             if now - last_render >= refresh_interval:
                 with self.result_lock:
                     result = self.latest_result
@@ -1710,7 +1762,7 @@ class EyeTrackerApp:
             time.sleep(0.001)
 
         self.stop_tracking_worker()
-        if self.tracking_start_time is not None and self.frame_count > 0:
+        if self.tracking_ui and self.tracking_start_time is not None and self.frame_count > 0:
             self.draw_session_summary()
         self.cleanup()
 
@@ -1722,7 +1774,8 @@ class EyeTrackerApp:
             self.stream.stop()
         else:
             self.cap.release()
-            
+        self.landmarker.close()
+
         cv2.destroyAllWindows()
         self.csv_file.flush()
         self.csv_file.close()
@@ -1752,12 +1805,14 @@ class EyeTrackerApp:
                 "mean": float(np.mean(samples)) if samples else 0.0,
                 "p50": float(np.percentile(samples, 50)) if samples else 0.0,
                 "p95": float(np.percentile(samples, 95)) if samples else 0.0,
+                "p99": float(np.percentile(samples, 99)) if samples else 0.0,
+                "max": float(max(samples)) if samples else 0.0,
             }
 
         csv_path_clean = os.path.abspath(self.csv_path)
 
         summary = {
-            "schema_version": "2.0",
+            "schema_version": "3.0",
             "sensor_type": "eye_tracking",
             "prototype_version": "2.0",
             "session_id": self.session_id,
@@ -1775,14 +1830,18 @@ class EyeTrackerApp:
                 "layout_mode": self.cfg.calib_layout_mode,
                 "async_capture": self.cfg.async_capture,
                 "display_refresh_fps": self.cfg.display_refresh_fps,
-                "latest_frame_only": self.cfg.latest_frame_only
+                "latest_frame_only": True,
+                "iris_size_mode": self.cfg.iris_size_mode,
+                "iris_baseline_seconds": self.cfg.iris_baseline_seconds,
+                "fps_definition": "unique host-delivered frames / monotonic elapsed time; 2s rolling CSV",
+                "timestamp_definition": "host read completion anchored to epoch; not sensor exposure time"
             },
             "summary": {
                 "total_frames": self.frame_count,
                 "frames_with_face": self.total_face_frames,
                 "face_detection_rate": self.total_face_frames / self.frame_count if self.frame_count > 0 else 0,
                 "avg_fps": processing_fps,
-                "processing_fps_ema_final": self.fps_ema,
+                "processing_fps_window_final": self.processing_fps,
                 "ui_fps": self.ui_frame_count / ui_duration if ui_duration > 0 else 0.0,
                 "dropped_frames": self.dropped_frames,
                 "dropped_frame_ratio": (self.dropped_frames / (self.frame_count + self.dropped_frames)
@@ -1812,14 +1871,20 @@ def main(argv=None):
     parser.add_argument("--config", default="config.yaml", help="Path to config file")
     parser.add_argument("--session-dir", help="Shared output directory supplied by run_multimodal.py")
     parser.add_argument("--session-id", help="Shared ID supplied by the synchronized-session launcher")
+    parser.add_argument('--tracking-seconds', type=float, help='Stop after this many seconds AFTER calibration')
+    parser.add_argument('--no-tracking-ui', action='store_true', help='Benchmark full tracking without UI; calibration remains interactive')
     parser.add_argument("--wait-for-hrv", action="store_true",
                         help="Setelah validasi mata, tampilkan sisa baseline HRV yang masih berjalan")
     args = parser.parse_args(argv)
     if args.wait_for_hrv and args.session_dir is None:
         parser.error("--wait-for-hrv memerlukan --session-dir")
+    if args.tracking_seconds is not None and (not math.isfinite(args.tracking_seconds) or args.tracking_seconds <= 0):
+        parser.error('--tracking-seconds must be finite and positive')
     
     app = EyeTrackerApp(args.config, session_id=args.session_id, session_dir=args.session_dir,
                         wait_for_hrv=args.wait_for_hrv)
+    app.tracking_seconds = args.tracking_seconds
+    app.tracking_ui = not args.no_tracking_ui
     previous_break_handler = None
     if hasattr(signal, "SIGBREAK"):
         previous_break_handler = signal.signal(signal.SIGBREAK, signal.default_int_handler)

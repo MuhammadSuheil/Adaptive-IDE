@@ -13,6 +13,9 @@ screen:
 webcam:
   device_index: 1 # 0 = default webcam; try 1 for external cam
   fps_target: 60 # Target FPS: 30 or 60
+  backend: auto # auto uses DirectShow on Windows; alternatives: dshow, msmf, any
+  fourcc: MJPG # verified ~60 FPS; reapplied after resolution/FPS if driver resets it
+  buffer_size: null # optional request; some backends do not support it
   width: 640
   height: 480
   inference_width: 320 # lower-resolution copy used only for MediaPipe inference
@@ -191,7 +194,9 @@ eye_validity:
 # Iris baseline (for pupil-dilation proxy)
 # ─────────────────────────────────────────────
 iris:
-  baseline_frames: 60 # frames to average for baseline iris size
+  baseline_frames: 60 # legacy setting; baseline_seconds now controls collection
+  baseline_seconds: 1.5 # contiguous valid observations; invalid frames restart baseline
+  size_mode: eye_width_ratio # radius / eye width; image_radius restores legacy units
 
 # ─────────────────────────────────────────────
 # Output / data recording

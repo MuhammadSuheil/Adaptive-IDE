@@ -50,6 +50,32 @@ class EyeIntegrationTests(unittest.TestCase):
             self.assertIn('timestamp_ms', columns)
             self.assertIn('gaze_status', columns)
 
+    def test_worker_records_capture_time_and_blank_invalid_iris(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.object(self.eye, 'WebcamStream') as camera, \
+                 patch.object(self.eye.vision.FaceLandmarker, 'create_from_options') as model:
+                app = self.eye.EyeTrackerApp(str(EYE_ROOT / 'config.yaml'), session_dir=directory)
+                model.return_value.detect_for_video.return_value.face_landmarks = []
+                capture_time = app.clock_origin_mono + .1
+                frame = self.eye.np.zeros((480, 640, 3), dtype=self.eye.np.uint8)
+                def read(*args, **kwargs):
+                    app.tracking_stop.set()  # Finish after this one frame.
+                    return True, frame, 100, capture_time
+                camera.return_value.start.return_value.read_latest.side_effect = read
+                camera.return_value.start.return_value.observed_fps.return_value = 60.0
+                try:
+                    app.tracking_worker()
+                    app.csv_file.flush()
+                    with Path(app.csv_path).open() as source:
+                        row = next(csv.DictReader(source))
+                    self.assertNotIn(None, row)
+                    self.assertEqual(int(row['timestamp_ms']), int((app.clock_origin_epoch + .1) * 1000))
+                    self.assertEqual(row['iris_size_delta'], '')
+                    self.assertEqual(row['iris_valid'], 'False')
+                    self.assertEqual(row['capture_frame_id'], '100')
+                finally:
+                    app.csv_file.close()
+
     def test_standalone_keeps_original_filenames(self):
         with tempfile.TemporaryDirectory() as directory:
             config = self.eye.Config(str(EYE_ROOT / 'config.yaml'))

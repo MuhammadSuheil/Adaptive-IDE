@@ -22,6 +22,15 @@ class Config:
         self.screen_w = screen['width']
         self.screen_h = screen['height']
         self.webcam_fps = self.data['webcam']['fps_target']
+        self.camera_backend = self.data['webcam'].get('backend', 'auto').lower()
+        self.camera_fourcc = self.data['webcam'].get('fourcc')
+        self.camera_buffer_size = self.data['webcam'].get('buffer_size')
+        if self.camera_backend not in ('auto', 'any', 'dshow', 'msmf'):
+            raise ValueError('Unsupported webcam.backend')
+        if self.camera_fourcc is not None and (not isinstance(self.camera_fourcc, str) or len(self.camera_fourcc) != 4):
+            raise ValueError('webcam.fourcc must be null or a four-character string')
+        if self.camera_buffer_size is not None and (type(self.camera_buffer_size) is not int or self.camera_buffer_size < 1):
+            raise ValueError('webcam.buffer_size must be null or a positive integer')
         self.webcam_w = self.data['webcam']['width']
         self.webcam_h = self.data['webcam']['height']
         self.inference_w = self.data['webcam'].get('inference_width', self.webcam_w)
@@ -147,6 +156,12 @@ class Config:
             raise ValueError("eye_state fixation radius must be positive and frames must be at least 1")
         
         self.iris_baseline_frames = self.data['iris']['baseline_frames']
+        self.iris_baseline_seconds = float(self.data['iris'].get('baseline_seconds', 1.5))
+        if not 0 < self.iris_baseline_seconds < float('inf'):
+            raise ValueError('iris.baseline_seconds must be finite and positive')
+        self.iris_size_mode = self.data['iris'].get('size_mode', 'image_radius')
+        if self.iris_size_mode not in ('image_radius', 'eye_width_ratio'):
+            raise ValueError('iris.size_mode must be image_radius or eye_width_ratio')
         
         self.session_dir = self.data['output']['session_dir']
         if not os.path.isabs(self.session_dir):
