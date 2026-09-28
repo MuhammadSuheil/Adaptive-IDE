@@ -1,0 +1,63 @@
+{
+  "stage": "capture",
+  "architecture": "synchronous read then processing",
+  "opencv": "5.0.0",
+  "python": "3.10.11",
+  "camera": {
+    "width": 640,
+    "height": 480,
+    "fps_reported": 30.0,
+    "fourcc": "\u0016\u0000\u0000\u0000",
+    "buffer_size_reported": 1.0,
+    "exposure_reported": -1.0,
+    "auto_exposure_reported": -1.0,
+    "backend": "MSMF",
+    "settings": {
+      "width": {
+        "requested": 640,
+        "set_succeeded": true,
+        "readback": 640.0
+      },
+      "height": {
+        "requested": 480,
+        "set_succeeded": true,
+        "readback": 480.0
+      },
+      "fps": {
+        "requested": 60,
+        "set_succeeded": true,
+        "readback": 30.0
+      }
+    }
+  },
+  "timer_ms": null,
+  "timer_request_active": false,
+  "warmup_seconds": 3.0,
+  "requested_seconds": 20.0,
+  "frames": 597,
+  "effective_fps": 29.88816665449153,
+  "read_failures": 0,
+  "face_frames": null,
+  "capture_interval_ms": {
+    "mean": 33.45805755033563,
+    "p50": 8.013199999822973,
+    "p95": 95.45530000013969,
+    "p99": 100.38238000038288,
+    "max": 111.74250000021857
+  },
+  "read_ms": {
+    "mean": 33.535352931331715,
+    "p50": 8.007300000826945,
+    "p95": 95.43738000011216,
+    "p99": 100.37382799982878,
+    "max": 111.73320000034437
+  },
+  "processing_ms": {
+    "mean": 0.0017569514430201944,
+    "p50": 0.001600000359758269,
+    "p95": 0.00270000055024866,
+    "p99": 0.004019999541924317,
+    "max": 0.0625000002401066
+  },
+  "note": "Host delivery timing; not sensor exposure time or proof of distinct images."
+}

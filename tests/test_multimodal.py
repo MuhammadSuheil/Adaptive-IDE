@@ -10,6 +10,20 @@ import run_multimodal as runner
 
 
 class MultimodalTests(unittest.TestCase):
+    def test_iris_fusion_excludes_missing_blink_and_invalid_values(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'eye.csv'
+            path.write_text(
+                'timestamp_ms,face_detected,gaze_status,is_blinking,iris_valid,iris_size_delta\n'
+                '1000,True,on_screen,False,True,0.002\n'
+                '1025,True,eyes_invalid_or_blink,True,False,1\n'
+                '1050,False,face_missing,False,False,1\n'
+                '1075,True,on_screen,False,True,\n'
+                '1100,True,on_screen,True,True,1\n'
+                '1125,True,on_screen,False,True,nan\n', encoding='utf-8')
+            frames = fusion.load_eye_frames(path)
+            self.assertEqual(fusion.aggregate_eye_features(frames)['mean_iris_delta'], .002)
+
     def test_invalid_arguments_do_not_start_recorders(self):
         cases = [['--skip-eye', '--skip-hrv']]
         cases += [['--duration', value] for value in ('0', '-1', 'nan', 'inf')]

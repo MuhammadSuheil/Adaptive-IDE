@@ -105,6 +105,8 @@ def load_eye_frames(eye_csv_path: Path):
                     "nrevisit_count": int(safe_float(row.get("nrevisit_count"))),
                     "transition_rate": safe_float(row.get("transition_rate")),
                     "iris_size_delta": safe_float(row.get("iris_size_delta")),
+                    "iris_valid": (row.get("iris_valid", "true").lower() in ("true", "1")
+                                   and math.isfinite(safe_float(row.get("iris_size_delta"), float('nan')))),
                     "face_detected": row.get("face_detected", "").lower() in ("true", "1"),
                     "gaze_status": row.get("gaze_status", "unknown"),
                     "head_pose_shifted": row.get("head_pose_shifted", "").lower() in ("true", "1"),
@@ -136,7 +138,10 @@ def aggregate_eye_features(window_frames: list):
     head_shift_count = sum(1 for f in window_frames if f["head_pose_shifted"])
 
     dwells = [f["dwell_time_ms"] for f in window_frames if f["dwell_time_ms"] > 0]
-    iris_deltas = [f["iris_size_delta"] for f in window_frames if f["face_detected"]]
+    iris_deltas = [f["iris_size_delta"] for f in window_frames
+                   if f["face_detected"] and f.get("iris_valid", True)
+                   and f['gaze_status'] in ('on_screen', 'gaze_outside_screen')
+                   and not f.get('is_blinking', False)]
     blink_rates = [f["blink_rate_bpm"] for f in window_frames if f["blink_rate_bpm"] > 0]
 
     # Hitung transisi antar section
