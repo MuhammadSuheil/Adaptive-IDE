@@ -1,0 +1,63 @@
+{
+  "stage": "capture",
+  "architecture": "synchronous read then processing",
+  "opencv": "5.0.0",
+  "python": "3.10.11",
+  "camera": {
+    "width": 640,
+    "height": 480,
+    "fps_reported": 60.000240000960005,
+    "fourcc": "YUY2",
+    "buffer_size_reported": -1.0,
+    "exposure_reported": -5.0,
+    "auto_exposure_reported": -1.0,
+    "backend": "DSHOW",
+    "settings": {
+      "width": {
+        "requested": 640,
+        "set_succeeded": true,
+        "readback": 640.0
+      },
+      "height": {
+        "requested": 480,
+        "set_succeeded": true,
+        "readback": 480.0
+      },
+      "fps": {
+        "requested": 60,
+        "set_succeeded": true,
+        "readback": 60.000240000960005
+      }
+    }
+  },
+  "timer_ms": 1,
+  "timer_request_active": true,
+  "warmup_seconds": 3.0,
+  "requested_seconds": 20.0,
+  "frames": 792,
+  "effective_fps": 39.58191628446786,
+  "read_failures": 0,
+  "face_frames": null,
+  "capture_interval_ms": {
+    "mean": 25.26406232616901,
+    "p50": 31.741199999487435,
+    "p95": 32.43940000038492,
+    "p99": 32.748040000387846,
+    "max": 33.75729999970645
+  },
+  "read_ms": {
+    "mean": 25.267408459592044,
+    "p50": 31.737049999719602,
+    "p95": 32.43421500014847,
+    "p99": 32.74309500024174,
+    "max": 33.75229999983276
+  },
+  "processing_ms": {
+    "mean": 0.0014905302851279932,
+    "p50": 0.0014000006558489986,
+    "p95": 0.002100000529026147,
+    "p99": 0.0026269998306816074,
+    "max": 0.006100000064179767
+  },
+  "note": "Host delivery timing; not sensor exposure time or proof of distinct images."
+}
