@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Arrange &mdash; Learn Java by Rearranging Code</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Code Arrange</h1>
+    <p class="subtitle">Drag the scrambled lines into the right order to build the program.</p>
+  </header>
+
+  <main>
+    <!-- ---- Start screen: shown until the learner clicks Start ---- -->
+    <section id="start-screen">
+      <div class="start-card">
+        <div class="field-row">
+          <label>Playing as</label>
+          <p id="player-name-display" class="locked-name">Loading&hellip;</p>
+        </div>
+        <div class="field-row">
+          <label for="puzzle-select">Puzzle</label>
+          <select id="puzzle-select"></select>
+        </div>
+        <button id="start-btn">Start</button>
+        <p id="start-error" class="feedback error"></p>
+      </div>
+    </section>
+
+    <!-- ---- Puzzle screen: shown only after Start is clicked ---- -->
+    <section id="puzzle-screen" class="hidden">
+      <div class="puzzle-meta">
+        <span id="active-player"></span>
+        <span class="badges">
+          <span id="active-puzzle-mode" class="type-badge mode-badge"></span>
+          <span id="active-puzzle-type" class="type-badge"></span>
+        </span>
+        <span id="timer">0:00</span>
+      </div>
+
+      <section class="description-box">
+        <h2>Description</h2>
+        <div id="description-content"></div>
+        <p id="mode-hint" class="mode-hint hidden"></p>
+      </section>
+
+      <section class="panels">
+        <div class="panel">
+          <h3>Available Lines</h3>
+          <ul id="available-list" class="line-list"></ul>
+        </div>
+        <div class="panel">
+          <h3>Your Program</h3>
+          <ul id="solution-list" class="line-list"></ul>
+        </div>
+      </section>
+
+      <section class="actions">
+        <button id="finish-btn">Finish</button>
+        <button id="try-again-btn" class="secondary">Try Again</button>
+        <button id="next-puzzle-btn" class="secondary" disabled>Next Puzzle</button>
+        <p id="feedback" class="feedback"></p>
+      </section>
+
+      <section id="explanation-box" class="description-box hidden">
+        <h2>Explanation</h2>
+        <div id="explanation-content"></div>
+      </section>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
