@@ -1,4 +1,5 @@
 import os
+import math
 import yaml
 
 class Config:
@@ -62,6 +63,15 @@ class Config:
         self.adaptive_ema_low_v_alpha = self.data['filter'].get('adaptive_ema_low_v_alpha', 0.12)
         self.adaptive_ema_high_v_alpha = self.data['filter'].get('adaptive_ema_high_v_alpha', 0.70)
         self.adaptive_ema_saccade_threshold_px = self.data['filter'].get('adaptive_ema_saccade_threshold_px', 80.0)
+        for name, default in [('reference_fps', 40), ('reset_gap_seconds', .3),
+                              ('jump_guard_px', 250), ('jump_guard_speed_px_sec', 12000),
+                              ('jump_confirm_seconds', .035)]:
+            value = float(self.data['filter'].get(name, default))
+            if not math.isfinite(value) or value <= 0:
+                raise ValueError(f'filter.{name} must be finite and positive')
+        for value in (self.ema_alpha, self.adaptive_ema_low_v_alpha, self.adaptive_ema_high_v_alpha):
+            if not 0 < value <= 1:
+                raise ValueError('EMA alpha values must be in (0, 1]')
         
         self.dwell_threshold = self.data['dwell']['threshold_ms']
         self.transition_window_sec = self.data.get('metrics', {}).get('transition_window_sec', 5.0)
@@ -75,6 +85,14 @@ class Config:
         
         # Head Positioning Gate (Phase 0)
         hp_cfg = self.data.get('head_positioning', {})
+        for name, default in [('smoothing_seconds', .12), ('stability_seconds', .5),
+                              ('invalid_grace_seconds', .35), ('stable_angle_range_deg', 3),
+                              ('stable_position_range', .08)]:
+            value = float(hp_cfg.get(name, default))
+            if not math.isfinite(value) or value <= 0:
+                raise ValueError(f'head_positioning.{name} must be finite and positive')
+        if not 0 <= float(hp_cfg.get('hysteresis_ratio', .08)) <= .25:
+            raise ValueError('head_positioning.hysteresis_ratio must be 0..0.25')
         self.hp_enabled = hp_cfg.get('enabled', True)
         self.hp_fullscreen = hp_cfg.get('fullscreen', True)
         self.hp_guide_height_ratio = float(hp_cfg.get('guide_height_ratio', 0.42))

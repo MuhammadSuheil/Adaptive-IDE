@@ -16,6 +16,8 @@ from mediapipe.tasks.python import vision
 from modules import Config, WebcamStream, GazeFilter, MetricsEngine, GazeMapper, BlinkDetector, EyeStateClassifier
 from modules.stream import open_camera
 from modules.performance import FrameRate
+from modules.head_gate import HeadGate
+from modules.filter import eyes_are_open
 
 
 CSV_COLUMNS = [
@@ -200,6 +202,7 @@ class EyeTrackerApp:
         self.tracking_seconds = None
         self.tracking_ui = True
         self.calibration_diagnostics = {}
+        self.calibration_audit = []
         self.tracking_stop = threading.Event()
         self.result_lock = threading.Lock()
         self.tracking_thread = None
@@ -372,9 +375,8 @@ class EyeTrackerApp:
         cv2.namedWindow("Head Alignment Gate", cv2.WINDOW_NORMAL)
         cv2.setWindowProperty("Head Alignment Gate", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
-        stable_count = 0
-        invalid_count = 0
-        countdown_start = None
+        gate = HeadGate(self.cfg)
+        self.calibration_audit.append(gate.record)
         frame_id = 0
         adjusting_oval = True
         drag_setting = None
@@ -488,8 +490,7 @@ class EyeTrackerApp:
                 ret, frame = self.read_frame()
 
             if not ret or frame is None:
-                stable_count = 0
-                countdown_start = None
+                gate.update(time.perf_counter())
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     self.exit_requested = True
                     cv2.destroyWindow("Head Alignment Gate")
@@ -535,6 +536,8 @@ class EyeTrackerApp:
             ck_angle = False
             is_aligned = False
             face_w_ratio_live = 0.0
+            normalized_anchors = None
+            live_pose = None
 
             status_msg = "POSITION YOUR FACE IN THE OVAL"
             msg_color = (0, 165, 255)
@@ -549,77 +552,44 @@ class EyeTrackerApp:
                 face_cx = int(self.screen_w * cx_ratio)
                 face_cy = int(self.screen_h * cy_ratio)
 
-                self.baseline_pose = {
+                live_pose = {
                     "pitch": pitch, "yaw": yaw, "roll": roll,
                     "face_width_ratio": face_w_ratio,
                     "center_x_ratio": cx_ratio, "center_y_ratio": cy_ratio
                 }
 
-                dx = abs(cx_ratio - self.cfg.hp_target_center_x_ratio)
-                dy = abs(cy_ratio - self.cfg.hp_target_center_y_ratio)
-                dist_diff = abs(face_w_ratio - self.cfg.hp_target_face_width_ratio)
-                dist_tol = self.cfg.hp_size_tolerance_ratio * self.cfg.hp_target_face_width_ratio
-
-                ck_face = True
                 anchors = np.array([[ox + lm[i].x * pw, oy + lm[i].y * ph]
                                     for i in (10, 152, 234, 454)])
-                guide_center = np.array([target_cx, target_cy])
-                distances = np.linalg.norm((anchors - guide_center) / guide_axes, axis=1)
-                ck_dist = bool(np.all(distances <= self.cfg.hp_max_outside_ratio) and
-                               np.all(distances[:2] >= self.cfg.hp_min_vertical_fill_ratio) and
-                               np.all(distances[2:] >= self.cfg.hp_min_horizontal_fill_ratio))
-                ck_center = (np.linalg.norm((anchors.mean(axis=0)-guide_center) / guide_axes)
-                             <= self.cfg.hp_center_tolerance_ratio)
+                normalized_anchors = (anchors - np.array([target_cx, target_cy])) / guide_axes
                 for anchor in anchors:
                     cv2.circle(canvas, tuple(anchor.astype(int)), 5, (0,255,255), -1)
-                ck_angle = (abs(yaw) <= self.cfg.hp_max_yaw_deg and
-                            abs(pitch) <= self.cfg.hp_max_pitch_deg and abs(roll) <= 10.0)
 
-                # Face marker
-                # Guide checks use the same transformed pixels as the live preview.
-
-                if not ck_dist:
-                    status_msg = ("MOVE BACK - KEEP FACE INSIDE OVAL" if
-                                  np.any(distances > self.cfg.hp_max_outside_ratio)
-                                  else "MOVE CLOSER - FILL OVAL WITH YOUR FACE")
-                    msg_color = (0, 165, 255)
-                elif not ck_center:
-                    status_msg = "CENTER FOREHEAD, CHIN AND CHEEKS IN THE OVAL"
-                    msg_color = (0, 165, 255)
-                elif not ck_angle:
-                    status_msg = f"LOOK STRAIGHT AT SCREEN  (Yaw {yaw:.1f}°  Pitch {pitch:.1f}°)"
-                    msg_color = (0, 100, 255)
-                else:
-                    is_aligned = True
-                    status_msg = "POSTURE CONFIRMED — HOLD STILL!"
-                    msg_color = (0, 255, 0)
-
-                # Distance is evaluated against the circle rather than a separate width target.
-
-            checklist_states = [ck_face, ck_dist, ck_center, ck_angle, is_aligned]
+            gate_state = ({'checks': [False] * 5, 'reasons': []} if adjusting_oval else
+                          gate.update(time.perf_counter(), normalized_anchors, live_pose))
+            checklist_states = gate_state['checks']
+            is_aligned = all(checklist_states)
+            reason_text = {
+                'face_missing': 'FACE NOT DETECTED', 'pose_invalid': 'FACE LANDMARKS UNRELIABLE',
+                'face_outside_oval': 'MOVE BACK - FOREHEAD OR CHEEKS OUTSIDE OVAL',
+                'face_too_small': 'MOVE CLOSER - FACE DOES NOT FILL OVAL',
+                'face_not_centered': 'CENTER YOUR FACE IN THE OVAL',
+                'head_angle': 'LOOK STRAIGHT - HEAD ANGLE OUTSIDE RANGE',
+                'collecting_stability': 'HOLD STILL - CHECKING STABILITY',
+                'head_moving': 'HEAD MOVING - HOLD YOUR COMFORTABLE POSITION',
+            }
+            if gate_state['reasons']:
+                status_msg = reason_text[gate_state['reasons'][0]]
+                msg_color = (0, 165, 255)
+            else:
+                status_msg, msg_color = 'POSITION STABLE - HOLD STILL', (0, 255, 0)
 
             if adjusting_oval:
                 # Slider values are session-only.  Do not start the gate or alter config.yaml
                 # until the user has approved the real-time oval preview.
-                stable_count = 0
-                invalid_count = 0
-                countdown_start = None
                 checklist_states = [False] * len(checklist_labels)
                 is_aligned = False
                 status_msg = "ADJUST THE OVAL TO YOUR COMFORTABLE SITTING POSITION"
                 msg_color = (255, 220, 0)
-
-            if is_aligned:
-                invalid_count = 0
-                stable_count += 1
-            else:
-                invalid_count += 1
-                if invalid_count > self.cfg.hp_invalid_grace_frames:
-                    stable_count = 0
-                    countdown_start = None
-
-            # Final checklist "Stable" state
-            checklist_states[4] = stable_count >= self.cfg.hp_stability_frames_required
 
             box_color = (0, 255, 0) if is_aligned else msg_color
             cv2.ellipse(canvas, (target_cx, target_cy), (radius_x, radius_y),
@@ -632,7 +602,7 @@ class EyeTrackerApp:
                         cv2.FONT_HERSHEY_SIMPLEX, 1.1, (255, 255, 255), 2)
             cv2.putText(canvas, status_msg, (50, 95), cv2.FONT_HERSHEY_SIMPLEX, 0.9, msg_color, 2)
             cv2.putText(canvas,
-                        "Sit comfortably, align your face in the oval and hold 5 seconds. [Q] Quit",
+                        f"Sit comfortably, align your face in the oval and hold {self.cfg.hp_countdown_seconds:g} seconds. [Q] Quit",
                         (50, 140), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (0, 255, 255), 1)
 
             if adjusting_oval:
@@ -688,15 +658,16 @@ class EyeTrackerApp:
                             (panel_x, reset_button[3] + 70), cv2.FONT_HERSHEY_SIMPLEX, 0.48, (0, 220, 255), 1)
 
             # Countdown bar
-            if stable_count >= self.cfg.hp_stability_frames_required:
-                if countdown_start is None:
-                    countdown_start = time.perf_counter()
-                elapsed = time.perf_counter() - countdown_start
-                remaining = self.cfg.hp_countdown_seconds - elapsed
+            if not adjusting_oval and (is_aligned or gate.hold > 0):
+                remaining = gate_state['remaining']
+                elapsed = self.cfg.hp_countdown_seconds - remaining
                 cv2.ellipse(canvas, (target_cx, target_cy), (radius_x+10, radius_y+10),
                             0, -90, -90 + 360 * min(elapsed / max(self.cfg.hp_countdown_seconds, 0.1), 1),
                             (0,255,0), 6)
-                if remaining <= 0 and is_aligned:
+                if gate_state['passed']:
+                    self.baseline_pose = gate_state['baseline']
+                    gate.record['oval_settings'] = dict(oval_settings)
+                    self.save_calibration_audit()
                     cv2.destroyWindow("Head Alignment Gate")
                     print(f"[EyeTrack] Gate passed! Baseline pose locked: {self.baseline_pose}")
                     return True
@@ -709,6 +680,7 @@ class EyeTrackerApp:
             key = cv2.waitKey(30) & 0xFF
             if key == ord('q'):
                 self.exit_requested = True
+                gate.record['decision'] = 'cancelled'
                 cv2.destroyWindow("Head Alignment Gate")
                 return False
 
@@ -891,6 +863,9 @@ class EyeTrackerApp:
         return not self.exit_requested
 
     def run_calibration(self):
+        audit = {'phase': 'gaze_calibration', 'decision': 'incomplete', 'points': [],
+                 'baseline_pose': dict(self.baseline_pose), 'feature_names': ['norm_x', 'norm_y', 'ear']}
+        self.calibration_audit.append(audit)
         print(f"\n[EyeTrack] Starting Phase 1 Fast Calibration ({self.cfg.calib_layout_mode})...")
         self.gaze_filter.reset()
         
@@ -933,6 +908,8 @@ class EyeTrackerApp:
             
             samples_collected = 0
             collected_feats = []
+            point_record = {'target': [dot_x, dot_y], 'samples': [], 'rejections': {}}
+            audit['points'].append(point_record)
             stable_streak = 0
             prev_ix, prev_iy = None, None
             point_started = time.time()
@@ -959,6 +936,7 @@ class EyeTrackerApp:
                     res = self.landmarker.detect_for_video(mp_img, ts_ms)
                     if not res.face_landmarks:
                         stable_streak = 0
+                        point_record['rejections']['face_missing'] = point_record['rejections'].get('face_missing', 0) + 1
                         cv2.waitKey(1)
                         continue
 
@@ -971,6 +949,7 @@ class EyeTrackerApp:
 
                     if yaw_drift > self.cfg.pose_max_calib_yaw_deg or pitch_drift > self.cfg.pose_max_calib_pitch_deg:
                         stable_streak = 0
+                        point_record['rejections']['head_pose'] = point_record['rejections'].get('head_pose', 0) + 1
                         head_warning_text = f"⚠ HEAD TURNED ({yaw_drift:.1f}° yaw)  LOOK STRAIGHT"
                         # Non-blocking slim HUD bar — keeps dot visible, doesn't block the point
                         copy_bg = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
@@ -987,9 +966,10 @@ class EyeTrackerApp:
                     else:
                         head_warning_text = ""
 
-                    (ix, iy, ear, _, _), _ = self.get_normalized_eye_vector(lm)
-                    if not (self.cfg.min_ear <= ear <= self.cfg.max_ear):
+                    (ix, iy, ear, left_ear, right_ear), _ = self.get_normalized_eye_vector(lm)
+                    if not eyes_are_open(self.cfg, left_ear, right_ear):
                         stable_streak = 0
+                        point_record['rejections']['eyes_invalid_or_blink'] = point_record['rejections'].get('eyes_invalid_or_blink', 0) + 1
                         cv2.waitKey(1)
                         continue
                     
@@ -1003,6 +983,10 @@ class EyeTrackerApp:
                     
                     if stable_streak >= self.cfg.calib_stability_frames:
                         collected_feats.append([ix, iy, ear])
+                        point_record['samples'].append({'features': [ix, iy, ear],
+                                                       'pose': [pitch, yaw, roll],
+                                                       'frame_id': calibration_frame_id,
+                                                       'monotonic_ms': ts_ms})
                         samples_collected += 1
 
                     copy_bg = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
@@ -1050,8 +1034,10 @@ class EyeTrackerApp:
                     
                 except Exception as e:
                     stable_streak = 0
+                    point_record['last_error'] = str(e)
             
             if len(collected_feats) < self.cfg.calib_samples:
+                audit['decision'] = 'point_timeout'
                 print(f"[EyeTrack] Calibration point {dot_num} timed out; restarting calibration.")
                 cv2.destroyWindow("Calibration")
                 return False
@@ -1064,6 +1050,8 @@ class EyeTrackerApp:
             if len(kept) < max(5, self.cfg.calib_samples // 3):
                 kept = samples
             point_std = float(np.max(np.std(kept[:, :2], axis=0)))
+            point_record.update(std_xy=point_std, kept_count=len(kept),
+                                retained_features=kept.tolist(), median_features=np.median(kept, axis=0).tolist())
             if point_std > self.cfg.calib_max_sample_std:
                 print(f"[EyeTrack] Warning: Calibration point {dot_num} was noisy (std={point_std:.4f}).")
 
@@ -1077,6 +1065,7 @@ class EyeTrackerApp:
         span_x = float(np.ptp(feature_array[:, 0]))
         span_y = float(np.ptp(feature_array[:, 1]))
         if span_x < self.cfg.calib_min_feature_span_x or span_y < self.cfg.calib_min_feature_span_y:
+            audit['decision'] = 'insufficient_feature_span'
             self.calibration_quality = 0.0
             self.calibration_diagnostics = {"feature_span_x": span_x, "feature_span_y": span_y}
             print(f"[EyeTrack] Calibration rejected: insufficient feature separation X={span_x:.4f}, Y={span_y:.4f}")
@@ -1087,6 +1076,7 @@ class EyeTrackerApp:
                 eye_features, screen_pts, screen_size=(self.screen_w, self.screen_h)
             )
         except (ValueError, np.linalg.LinAlgError) as exc:
+            audit.update(decision='fit_failed', error=str(exc))
             self.calibration_quality = 0.0
             self.calibration_diagnostics = {"fit_error": str(exc)}
             print(f"[EyeTrack] Calibration model failed: {exc}")
@@ -1095,6 +1085,11 @@ class EyeTrackerApp:
             **self.mapper.diagnostics, "feature_span_x": span_x, "feature_span_y": span_y,
             "unique_camera_frames": calibration_unique_frames,
         }
+        audit['loo_diagnostics'] = dict(self.calibration_diagnostics)
+        audit['model'] = {'method': self.mapper.method, 'kernel': self.cfg.calib_rbf_kernel,
+                          'smoothing': self.cfg.calib_rbf_smoothing, 'output_clamp': self.cfg.calib_output_clamp,
+                          'screen_size': [self.screen_w, self.screen_h]}
+        audit['decision'] = 'accepted_automatic' if self.calibration_quality >= self.cfg.calib_min_quality else 'below_quality_threshold'
         print(f"[EyeTrack] Calibration complete! Quality ({self.mapper.method}): {self.calibration_quality:.2f}")
         print(f"[EyeTrack] Validation: {self.mapper.diagnostics}")
         if self.calibration_quality < self.cfg.calib_min_quality:
@@ -1114,11 +1109,14 @@ class EyeTrackerApp:
                 if key == ord(' ') or key == 13 or key == 10:
                     cv2.destroyWindow("Calibration Quality Check")
                     print("[EyeTrack] Calibration accepted manually by user.")
+                    audit['decision'] = 'accepted_manual'
                     return True
                 if key == ord('r'):
+                    audit['decision'] = 'retry_calibration'
                     cv2.destroyWindow("Calibration Quality Check")
                     return False
                 if key == ord('q'):
+                    audit['decision'] = 'cancelled'
                     self.exit_requested = True
                     cv2.destroyWindow("Calibration Quality Check")
                     return False
@@ -1129,7 +1127,10 @@ class EyeTrackerApp:
     # ─────────────────────────────────────────────
     def run_validation_screen(self):
         if not self.cfg.val_enabled:
+            self.calibration_audit.append({'phase': 'held_out_validation', 'decision': 'disabled'})
             return True
+        audit = {'phase': 'held_out_validation', 'decision': 'incomplete', 'points': []}
+        self.calibration_audit.append(audit)
 
         print("\n[EyeTrack] Running Phase 4 Held-Out Post-Calibration Validation...")
         cv2.namedWindow("Post-Calibration Validation", cv2.WINDOW_NORMAL)
@@ -1158,6 +1159,8 @@ class EyeTrackerApp:
                 cv2.waitKey(20)
 
             sample_preds = []
+            point_record = {'target': [vdot_x, vdot_y], 'samples': []}
+            audit['points'].append(point_record)
             samples_target = 10
             start_t = time.time()
 
@@ -1174,10 +1177,14 @@ class EyeTrackerApp:
                 res = self.landmarker.detect_for_video(mp_img, self._next_ts())
 
                 if res and res.face_landmarks:
-                    (norm_x, norm_y, ear, _, _), _ = self.get_normalized_eye_vector(res.face_landmarks[0])
-                    if self.cfg.min_ear <= ear <= self.cfg.max_ear:
+                    (norm_x, norm_y, ear, left_ear, right_ear), _ = self.get_normalized_eye_vector(res.face_landmarks[0])
+                    if eyes_are_open(self.cfg, left_ear, right_ear):
                         pred_x, pred_y = self.mapper.predict(norm_x, norm_y, ear)
                         sample_preds.append((pred_x, pred_y))
+                        pose = estimate_head_pose(res.face_landmarks[0], frame.shape[1], frame.shape[0])
+                        point_record['samples'].append({'features': [norm_x, norm_y, ear],
+                                                       'prediction': [pred_x, pred_y], 'pose': list(pose),
+                                                       'error_px': math.hypot(pred_x-vdot_x, pred_y-vdot_y)})
 
                 bg = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
                 cv2.circle(bg, (vdot_x, vdot_y), 18, (255, 255, 0), -1)
@@ -1190,6 +1197,8 @@ class EyeTrackerApp:
                 avg_pred_x = float(np.mean([p[0] for p in sample_preds]))
                 avg_pred_y = float(np.mean([p[1] for p in sample_preds]))
                 err = math.hypot(avg_pred_x - vdot_x, avg_pred_y - vdot_y)
+                point_record.update(mean_prediction_error_px=err,
+                                    prediction_std_px=np.std(sample_preds, axis=0).tolist())
                 errors_px.append(err)
                 if idx > 0:
                     corner_errors.append(err)
@@ -1208,10 +1217,18 @@ class EyeTrackerApp:
             p95_err <= self.cfg.val_max_p95_error_px and
             max_corner_err <= self.cfg.val_max_corner_error_px
         )
+        sample_errors = [sample['error_px'] for point in audit['points'] for sample in point['samples']]
+        audit.update(passed_thresholds=bool(passed), mean_target_error_median_px=median_err,
+                     mean_target_error_p95_px=p95_err, max_corner_error_px=max_corner_err,
+                     sample_error_median_px=float(np.median(sample_errors)) if sample_errors else None,
+                     sample_error_p95_px=float(np.percentile(sample_errors, 95)) if sample_errors else None,
+                     decision='accepted_automatic' if passed else 'failed_thresholds')
+        self.calibration_diagnostics['held_out_validation'] = audit
+        self.save_calibration_audit()
 
         bg = np.zeros((self.screen_h, self.screen_w, 3), dtype=np.uint8)
         if passed:
-            cv2.putText(bg, "VALIDATION PASSED PERFECTLY!", (80, self.screen_h // 2 - 60),
+            cv2.putText(bg, "VALIDATION PASSED", (80, self.screen_h // 2 - 60),
                         cv2.FONT_HERSHEY_SIMPLEX, 1.4, (0, 255, 0), 3)
             cv2.putText(bg, f"Median Error: {median_err:.1f}px | P95: {p95_err:.1f}px", (80, self.screen_h // 2 + 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 1.0, (230, 230, 230), 2)
@@ -1236,14 +1253,20 @@ class EyeTrackerApp:
                 if key == ord(' ') or key == 13 or key == 10:
                     cv2.destroyWindow("Post-Calibration Validation")
                     print("[EyeTrack] Validation accepted manually by user.")
+                    audit['decision'] = 'accepted_manual'
+                    self.save_calibration_audit()
                     return True
                 if key == ord('v'):
+                    audit['decision'] = 'retry_validation'
+                    self.save_calibration_audit()
                     cv2.destroyWindow("Post-Calibration Validation")
                     return self.run_validation_screen()
                 if key == ord('r'):
+                    audit['decision'] = 'restart_calibration'
                     cv2.destroyWindow("Post-Calibration Validation")
                     return False
                 if key == ord('q'):
+                    audit['decision'] = 'cancelled'
                     self.exit_requested = True
                     cv2.destroyWindow("Post-Calibration Validation")
                     return False
@@ -1272,19 +1295,25 @@ class EyeTrackerApp:
     def calibrate_until_ready(self):
         while not self.exit_requested:
             # Phase 0: Gate
-            if not self.run_head_positioning_gate():
+            head_ready = self.run_head_positioning_gate()
+            self.save_calibration_audit()
+            if not head_ready:
                 if self.exit_requested or not self.wait_for_calibration_retry():
                     return False
                 continue
 
             # Phase 1 & 2: Calibration
-            if not self.run_calibration():
+            gaze_ready = self.run_calibration()
+            self.save_calibration_audit()
+            if not gaze_ready:
                 if self.exit_requested or not self.wait_for_calibration_retry():
                     return False
                 continue
 
             # Phase 4: Validation Screen
-            if not self.run_validation_screen():
+            validation_ready = self.run_validation_screen()
+            self.save_calibration_audit()
+            if not validation_ready:
                 if self.exit_requested or not self.wait_for_calibration_retry():
                     return False
                 continue
@@ -1387,8 +1416,10 @@ class EyeTrackerApp:
                         (self.screen_w // 2 - 200, self.screen_h // 2),
                         cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
 
-        cx, cy = int(sx), int(sy)
-        if is_off_screen:
+        cx, cy = (int(sx), int(sy)) if sx is not None and sy is not None else (0, 0)
+        if sx is None or sy is None:
+            cv2.putText(grid_img, 'GAZE UNAVAILABLE', (40, 90), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (180, 180, 180), 2)
+        elif is_off_screen:
             cv2.line(grid_img, (cx - 30, cy - 30), (cx + 30, cy + 30), (0, 0, 255), 4)
             cv2.line(grid_img, (cx - 30, cy + 30), (cx + 30, cy - 30), (0, 0, 255), 4)
             cv2.circle(grid_img, (cx, cy), 35, (0, 0, 255), 3)
@@ -1484,6 +1515,7 @@ class EyeTrackerApp:
             raise RuntimeError('Tracking worker is still running')
         self.tracking_stop.clear()
         self.eye_state_classifier.reset()
+        self.gaze_filter.reset()
         self.last_frame_time = None
         self.processing_rate = FrameRate()
         self.worker_error = None
@@ -1589,15 +1621,23 @@ class EyeTrackerApp:
                     for point in lm:
                         cv2.circle(frame, (int(point.x * frame.shape[1]), int(point.y * frame.shape[0])),
                                    1, (255, 255, 255), -1)
-                if not (self.cfg.min_ear <= ear <= self.cfg.max_ear):
+                if is_blinking or not eyes_are_open(self.cfg, ear_left, ear_right):
                     gaze_status = "eyes_invalid_or_blink"
                 else:
                     raw_x, raw_y = self.mapper.predict(norm_x, norm_y, ear)
-                    sm_x, sm_y = self.gaze_filter.update(raw_x, raw_y)
-                    grid_r, grid_c, section, conf = self.get_grid_cell(sm_x, sm_y)
-                    gaze_status = "gaze_outside_screen" if section == self.cfg.off_screen_label else "on_screen"
+                    sm_x, sm_y = self.gaze_filter.update(raw_x, raw_y, capture_ts)
+                    if self.gaze_filter.sample_accepted:
+                        grid_r, grid_c, section, conf = self.get_grid_cell(sm_x, sm_y)
+                        gaze_status = "gaze_outside_screen" if section == self.cfg.off_screen_label else "on_screen"
+                    else:
+                        gaze_status = 'gaze_unconfirmed'
 
             gaze_is_valid = gaze_status in ("on_screen", "gaze_outside_screen")
+            if not gaze_is_valid and gaze_status != 'gaze_unconfirmed':
+                self.gaze_filter.invalidate(capture_ts)
+            if not face_detected:
+                self.blink_detector.closed_frames = 0
+                self.blink_detector.is_blinking = False
             eye_state = self.eye_state_classifier.update(sm_x, sm_y, gaze_is_valid)
 
             iris_valid = (gaze_is_valid and not is_blinking and not head_pose_shifted
@@ -1609,7 +1649,8 @@ class EyeTrackerApp:
 
             row = [
                 ts_ms, self.frame_count, frame_id,
-                raw_x, raw_y, sm_x, sm_y, ear_right if ear_right is not None else "",
+                raw_x if gaze_is_valid else '', raw_y if gaze_is_valid else '',
+                sm_x if gaze_is_valid else '', sm_y if gaze_is_valid else '', ear_right if ear_right is not None else "",
                 ear_left if ear_left is not None else "", eye_state,
                 grid_r, grid_c, section or "", conf,
                 self.metrics.dwell_time_ms, self.metrics.get_nrevisit(section),
@@ -1642,7 +1683,8 @@ class EyeTrackerApp:
                 self.stage_timings[name].append(value)
 
             result = {
-                "timestamp_ms": ts_ms, "frame": frame, "sm_x": sm_x, "sm_y": sm_y,
+                "timestamp_ms": ts_ms, "frame": frame,
+                "sm_x": sm_x if gaze_is_valid else None, "sm_y": sm_y if gaze_is_valid else None,
                 "grid_r": grid_r, "grid_c": grid_c, "section": section,
                 "gaze_status": gaze_status, "fps": self.processing_fps,
                 "inference_ms": inference_ms, "capture_fps": capture_fps,
@@ -1766,6 +1808,12 @@ class EyeTrackerApp:
             self.draw_session_summary()
         self.cleanup()
 
+    def save_calibration_audit(self):
+        path = Path(self.json_path).with_name(Path(self.json_path).stem + '_calibration.json')
+        with path.open('w', encoding='utf-8') as output:
+            json.dump({'schema_version': '1.0', 'config': self.cfg.data,
+                       'attempts': self.calibration_audit}, output, indent=2)
+
     def cleanup(self):
         print("\n[EyeTrack] Cleaning up...")
         self.stop_tracking_worker()
@@ -1780,6 +1828,7 @@ class EyeTrackerApp:
         self.csv_file.flush()
         self.csv_file.close()
         self.metrics.finalize()
+        self.save_calibration_audit()
 
         # If no tracking data was collected (failed calibration, user quit early, etc.),
         # remove the empty CSV and skip JSON summary to keep sessions/ folder clean.

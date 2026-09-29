@@ -49,3 +49,42 @@ requires participant interaction and was not bypassed or fabricated for this tes
 New iris deltas use eye-width-normalized units and must not be compared numerically
 with old image-radius deltas. Frame-based fixation/blink/smoothing thresholds
 still need evaluation at the increased sampling rate.
+
+## Stability update verification - 2026-09-29
+
+Implemented time-based head alignment with hysteresis, raw-motion stability,
+median pose baseline, per-eye blink/validity rejection, capture-time EMA,
+large-jump confirmation and calibration/held-out validation audit records.
+MJPG negotiation, capture/inference resolutions and worker architecture were
+not changed. This is stages 1-4 of the stability work; EAR feature ablation and
+head-motion compensation remain separate follow-up work.
+
+Automated verification:
+
+| Check | Result |
+| --- | --- |
+| Repository tests: `python -m unittest discover -s tests -q` from root | 28 passed |
+| Eye module tests: same command from `eye_tracking_prototype` | 24 passed |
+| Synthetic tracking filter + eye-validity check, 10,000 samples | Mean 0.00335 ms; P95 0.00470 ms; P99 0.0119 ms |
+| Synthetic head gate, 1,000 samples (calibration only) | Mean 0.247 ms; P95 0.531 ms; P99 0.648 ms |
+
+Tests cover gate timing at 20/40/60 updates per second, median baseline,
+dropout pause/reset, movement rejection, oval fill/hysteresis, EMA elapsed-time
+response, isolated-spike rejection versus sustained steps, long-gap reset,
+one-eye closure, worker invalid-frame output and audit serialization.
+Synthetic timings are local microbenchmarks, not a full camera FPS guarantee;
+no new interactive camera session has been measured for this stability update.
+The live results at the top of this document predate this update.
+
+Next acceptance run: use the normal multimodal launcher or the five-minute
+calibrated tracking commands in README. Record time to pass the head gate,
+its rejection reasons/resets, and whether validation required manual override.
+During tracking, look at known center/edge targets, blink normally, then make
+small comfortable head shifts. Compare capture/processing FPS and skipped
+frames against the prior runs. Inspect held-out per-sample error and valid-gaze
+off-screen rate together with `eyes_invalid_or_blink` / `gaze_unconfirmed`
+fractions: fewer reported off-screen frames alone is not evidence of improved
+accuracy when invalid samples are now excluded. Evaluate iris baseline readiness
+and valid delta coverage as well. Preserve the generated calibration audit to
+separate mapping error, movement sensitivity and sample rejection in the next
+diagnosis.
