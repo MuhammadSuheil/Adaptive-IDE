@@ -193,3 +193,54 @@ width using aspect-correct geometry. Values are NOT numerically comparable to ol
 Neither mode measures pupil diameter; iris landmark geometry is not validated
 pupillometry. FPS changes also affect existing frame-based blink/fixation/smoothing
 parameters; those classifiers have not been retuned by this performance change.
+
+### Calibration and gaze stability update (2026-09-29)
+
+Head alignment now smooths guide measurements over 0.12 seconds and uses a
+small exit tolerance (`hysteresis_ratio`) after entering the accepted region.
+Being inside the oval alone is insufficient: face fill, centering, angle and
+measured movement must pass. Movement uses the P10-P90 spread of raw anchors
+and angles over `stability_seconds` (0.5 seconds), so smoothing cannot hide
+sustained movement. The five-second hold starts after stability is established.
+Brief invalid intervals pause the hold; intervals longer than 0.35 seconds
+reset it. The baseline is the median of accepted stable pose samples, rather
+than the final frame. The old `stability_frames_required` and
+`invalid_grace_frames` settings no longer control this gate.
+
+Calibration, validation and tracking require BOTH eyes to have finite EAR within
+`max(eye_validity.min_ear, blink.ear_threshold)` and `eye_validity.max_ear`.
+Closed-eye samples do not update gaze mapping or smoothing, even when blink
+counting is disabled. Invalid gaze coordinates are blank in CSV and the grid
+shows `GAZE UNAVAILABLE`. A gap longer than 0.30 seconds resets filter history.
+
+EMA alpha now accounts for elapsed capture time, with `reference_fps: 40`
+preserving the nominal response of the previous alpha settings. Adaptive EMA
+uses velocity in pixels/second. Large jumps exceeding BOTH 250 pixels and
+12,000 pixels/second require a consistent candidate for 0.035 seconds before
+acceptance (about 50 ms with evenly spaced 60 FPS samples). Pending candidates
+have status `gaze_unconfirmed`, blank gaze coordinates and no valid iris delta.
+This guard applies to all filter modes, including `none`; the median window
+remains frame-based. A genuine large saccade can incur this confirmation delay.
+
+Each session writes `<summary_stem>_calibration.json` beside its summary
+(`eye_summary_calibration.json` in shared multimodal sessions). It includes
+configuration, gate rejection durations/resets, the median pose baseline,
+accepted calibration samples and retained features, model/LOO diagnostics,
+held-out target predictions/errors, and automatic/manual/retry decisions.
+Rejection durations can overlap because several checks can fail together.
+Audits are saved at phase boundaries and cleanup, including failed attempts;
+there is no additional per-frame tracking file write. An interrupted attempt
+may remain `incomplete`.
+
+The summary's legacy `validation_*` model diagnostics are LOO estimates.
+Actual held-out results are recorded separately in `held_out_validation` and
+the audit. Existing pass thresholds use errors of each target's mean prediction;
+new per-sample median/P95 errors expose jitter that averaging can conceal.
+Manual acceptance is recorded separately from `passed_thresholds`.
+
+Capture format/resolution, inference size and the decoupled pipeline remain
+MJPG 640x480, 320x240 and target 60 FPS. This update does not change RBF features
+or implement head-motion compensation. Those require the new calibration data
+and a separate model comparison; smoothing cannot correct a systematically
+inaccurate mapping. See [verification results](PERFORMANCE_RESULTS.md) for
+automated checks and the remaining interactive acceptance run.
