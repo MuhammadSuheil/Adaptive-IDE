@@ -1,4 +1,5 @@
 import os
+import math
 import yaml
 
 class Config:
@@ -22,6 +23,15 @@ class Config:
         self.screen_w = screen['width']
         self.screen_h = screen['height']
         self.webcam_fps = self.data['webcam']['fps_target']
+        self.camera_backend = self.data['webcam'].get('backend', 'auto').lower()
+        self.camera_fourcc = self.data['webcam'].get('fourcc')
+        self.camera_buffer_size = self.data['webcam'].get('buffer_size')
+        if self.camera_backend not in ('auto', 'any', 'dshow', 'msmf'):
+            raise ValueError('Unsupported webcam.backend')
+        if self.camera_fourcc is not None and (not isinstance(self.camera_fourcc, str) or len(self.camera_fourcc) != 4):
+            raise ValueError('webcam.fourcc must be null or a four-character string')
+        if self.camera_buffer_size is not None and (type(self.camera_buffer_size) is not int or self.camera_buffer_size < 1):
+            raise ValueError('webcam.buffer_size must be null or a positive integer')
         self.webcam_w = self.data['webcam']['width']
         self.webcam_h = self.data['webcam']['height']
         self.inference_w = self.data['webcam'].get('inference_width', self.webcam_w)
@@ -53,6 +63,15 @@ class Config:
         self.adaptive_ema_low_v_alpha = self.data['filter'].get('adaptive_ema_low_v_alpha', 0.12)
         self.adaptive_ema_high_v_alpha = self.data['filter'].get('adaptive_ema_high_v_alpha', 0.70)
         self.adaptive_ema_saccade_threshold_px = self.data['filter'].get('adaptive_ema_saccade_threshold_px', 80.0)
+        for name, default in [('reference_fps', 40), ('reset_gap_seconds', .3),
+                              ('jump_guard_px', 250), ('jump_guard_speed_px_sec', 12000),
+                              ('jump_confirm_seconds', .035)]:
+            value = float(self.data['filter'].get(name, default))
+            if not math.isfinite(value) or value <= 0:
+                raise ValueError(f'filter.{name} must be finite and positive')
+        for value in (self.ema_alpha, self.adaptive_ema_low_v_alpha, self.adaptive_ema_high_v_alpha):
+            if not 0 < value <= 1:
+                raise ValueError('EMA alpha values must be in (0, 1]')
         
         self.dwell_threshold = self.data['dwell']['threshold_ms']
         self.transition_window_sec = self.data.get('metrics', {}).get('transition_window_sec', 5.0)
@@ -66,6 +85,14 @@ class Config:
         
         # Head Positioning Gate (Phase 0)
         hp_cfg = self.data.get('head_positioning', {})
+        for name, default in [('smoothing_seconds', .12), ('stability_seconds', .5),
+                              ('invalid_grace_seconds', .35), ('stable_angle_range_deg', 3),
+                              ('stable_position_range', .08)]:
+            value = float(hp_cfg.get(name, default))
+            if not math.isfinite(value) or value <= 0:
+                raise ValueError(f'head_positioning.{name} must be finite and positive')
+        if not 0 <= float(hp_cfg.get('hysteresis_ratio', .08)) <= .25:
+            raise ValueError('head_positioning.hysteresis_ratio must be 0..0.25')
         self.hp_enabled = hp_cfg.get('enabled', True)
         self.hp_fullscreen = hp_cfg.get('fullscreen', True)
         self.hp_guide_height_ratio = float(hp_cfg.get('guide_height_ratio', 0.42))
@@ -147,6 +174,12 @@ class Config:
             raise ValueError("eye_state fixation radius must be positive and frames must be at least 1")
         
         self.iris_baseline_frames = self.data['iris']['baseline_frames']
+        self.iris_baseline_seconds = float(self.data['iris'].get('baseline_seconds', 1.5))
+        if not 0 < self.iris_baseline_seconds < float('inf'):
+            raise ValueError('iris.baseline_seconds must be finite and positive')
+        self.iris_size_mode = self.data['iris'].get('size_mode', 'image_radius')
+        if self.iris_size_mode not in ('image_radius', 'eye_width_ratio'):
+            raise ValueError('iris.size_mode must be image_radius or eye_width_ratio')
         
         self.session_dir = self.data['output']['session_dir']
         if not os.path.isabs(self.session_dir):

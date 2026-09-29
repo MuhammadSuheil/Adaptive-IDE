@@ -1,0 +1,140 @@
+{
+  "stage": "inference",
+  "architecture": "latest-frame thread",
+  "opencv": "5.0.0",
+  "python": "3.10.11",
+  "camera": {
+    "width": 640,
+    "height": 480,
+    "fps_reported": 60.000240000960005,
+    "fourcc": "MJPG",
+    "buffer_size_reported": -1.0,
+    "exposure_reported": -5.0,
+    "auto_exposure_reported": -1.0,
+    "backend": "DSHOW",
+    "settings": {
+      "fourcc": {
+        "requested": 1196444237,
+        "set_succeeded": true,
+        "reapply_succeeded": true,
+        "readback": 1196444237.0,
+        "matches_request": true
+      },
+      "width": {
+        "requested": 640,
+        "set_succeeded": true,
+        "readback": 640.0,
+        "matches_request": true
+      },
+      "height": {
+        "requested": 480,
+        "set_succeeded": true,
+        "readback": 480.0,
+        "matches_request": true
+      },
+      "fps": {
+        "requested": 60,
+        "set_succeeded": true,
+        "readback": 60.000240000960005,
+        "matches_request": true
+      }
+    },
+    "warnings": []
+  },
+  "timer_ms": null,
+  "timer_request_active": false,
+  "warmup_seconds": 3.0,
+  "requested_seconds": 60.0,
+  "frames": 3551,
+  "effective_fps": 59.1816568871756,
+  "read_failures": 0,
+  "dropped_frames": 46,
+  "dropped_ratio": 0.012788434806783431,
+  "face_frames": 2306,
+  "capture_interval_ms": {
+    "mean": 16.897127464788763,
+    "p50": 15.974800000094547,
+    "p95": 32.065419999889855,
+    "p99": 32.73513999976785,
+    "max": 95.47959999963496
+  },
+  "read_or_wait_ms": {
+    "mean": 8.910458490564645,
+    "p50": 7.508099999540718,
+    "p95": 23.955149999892456,
+    "p99": 30.654000000140513,
+    "max": 31.995899999856192
+  },
+  "processing_ms": {
+    "mean": 7.986093100534422,
+    "p50": 8.423499999480555,
+    "p95": 14.375350000136677,
+    "p99": 21.607700000004115,
+    "max": 85.09999999932916
+  },
+  "capture_age_ms": {
+    "mean": 1.3512768515914912,
+    "p50": 0.2602000004117144,
+    "p95": 7.341799999721843,
+    "p99": 11.240150000048743,
+    "max": 68.3813999994527
+  },
+  "capture_thread": {
+    "width": 640,
+    "height": 480,
+    "fps_reported": 60.000240000960005,
+    "fourcc": "MJPG",
+    "buffer_size_reported": -1.0,
+    "exposure_reported": -5.0,
+    "auto_exposure_reported": -1.0,
+    "backend": "DSHOW",
+    "settings": {
+      "fourcc": {
+        "requested": 1196444237,
+        "set_succeeded": true,
+        "reapply_succeeded": true,
+        "readback": 1196444237.0,
+        "matches_request": true
+      },
+      "width": {
+        "requested": 640,
+        "set_succeeded": true,
+        "readback": 640.0,
+        "matches_request": true
+      },
+      "height": {
+        "requested": 480,
+        "set_succeeded": true,
+        "readback": 480.0,
+        "matches_request": true
+      },
+      "fps": {
+        "requested": 60,
+        "set_succeeded": true,
+        "readback": 60.000240000960005,
+        "matches_request": true
+      }
+    },
+    "warnings": [],
+    "capture_fps_observed": 59.958802791037634,
+    "capture_fps_window": 59.548612509831344,
+    "capture_count": 3776,
+    "read_failures": 0,
+    "error": null,
+    "capture_read_ms": {
+      "mean": 16.50801292373021,
+      "p50": 15.799499999957334,
+      "p95": 31.903925000506206,
+      "p99": 32.53094999990935,
+      "max": 67.92379999933473
+    },
+    "capture_interval_ms": {
+      "mean": 16.6781181986755,
+      "p50": 15.962100000251667,
+      "p95": 32.060810000257334,
+      "p99": 32.64707800002725,
+      "max": 68.53619999947114
+    }
+  },
+  "note": "Host delivery timing; not sensor exposure time or proof of distinct images."
+}

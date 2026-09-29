@@ -119,8 +119,128 @@ tracking runs at the maximum rate supplied by the camera and processor.
 
 Performance values have distinct meanings:
 
-- `capture_fps`: frames delivered by the camera backend.
-- `fps_actual`: unique frames processed by the gaze worker.
+- `capture_fps`: host-delivered frames per second over a rolling 2-second window.
+- `fps_actual`: processed frame intervals / monotonic elapsed time over a rolling
+  2-second window (not the previous EMA of instantaneous reciprocals).
 - `ui_fps`: display refresh rate, recorded in the JSON summary.
 - `dropped_frame_ratio`: camera frames intentionally skipped to keep latency low.
 - `stage_timings_ms`: mean, P50, and P95 timings for every processing stage.
+
+### Camera configuration and benchmarks
+
+`webcam.backend` selects `auto` (DirectShow on Windows), `dshow`, `msmf`, or `any`.
+`webcam.fourcc` selects a requested format; `null` leaves the backend default.
+The supplied configuration uses MJPG. DirectShow can reset FourCC when resolution
+or FPS changes, so the opener checks and reapplies the requested format last.
+Diagnostics retain every set result and final readback, including mismatches.
+`buffer_size` is optional: unsupported values are reported, not assumed effective.
+Exposure is read for diagnostics but is never changed automatically.
+
+Run from the repository root (close other camera consumers first):
+
+```powershell
+python eye_tracking_prototype/benchmark_camera.py --fourcc default --seconds 60
+python eye_tracking_prototype/benchmark_camera.py --fourcc MJPG --seconds 60
+python eye_tracking_prototype/benchmark_camera.py --stage preprocess --threaded --seconds 60
+python eye_tracking_prototype/benchmark_camera.py --stage inference --threaded --seconds 60
+```
+
+The first two measure raw synchronous reads. `--threaded` uses the application's
+latest-frame capture thread and reports frames skipped by the consumer. Without
+this flag, processing is synchronous, so that throughput is not directly equivalent
+to the application. A 3-second warmup is excluded from consumer statistics;
+`capture_thread` statistics include warmup and use up to the last 36,000 timings.
+Inference results include `face_frames`: face-absent performance is not evidence
+of sustained face tracking performance. No images are saved. JSON reports are
+created under `tmp/` with unique filenames, or use `--output path.json` (no overwrite).
+Optional `--timer-ms 1` tests a Windows timer request scoped to the benchmark.
+
+For full calibrated tracking (iris, mapping, CSV), with or without display:
+
+```powershell
+python eye_tracking_prototype/eye_tracking_prototype.py --tracking-seconds 300 --no-tracking-ui
+python eye_tracking_prototype/eye_tracking_prototype.py --tracking-seconds 300
+```
+
+Calibration remains interactive. The duration starts after calibration/HRV readiness.
+Compare `summary.avg_fps`, frame drops, processing P95 and camera read timings.
+Aim for capture and processing >=58 FPS and <1% consumer skips, and separately
+check capture jitter (P95 <=20 ms). Meeting average FPS alone does not imply smooth
+delivery or prove distinct sensor exposures. Frame IDs count successful host reads;
+they cannot detect frames lost inside the driver or repeated images from the device.
+
+### Timestamp and iris schema (version 3)
+
+CSV `timestamp_ms` now uses host camera-read completion, converted from a monotonic
+clock to an epoch anchor. `processing_timestamp_ms` records worker start separately.
+This is not a hardware exposure timestamp and does not measure driver buffering.
+In synchronous mode capture time follows the read/flip helper. Summary `avg_fps`
+uses the full first-to-last processing span, including any pause/recalibration;
+rolling FPS restarts after a pause. `total_processing_ms` in CSV excludes logging;
+the JSON stage summary includes logging but excludes capture wait and UI work.
+
+Iris baseline requires 1.5 seconds of contiguous valid observations; invalid
+samples or gaps >250 ms restart an unfinished baseline. `baseline_frames` is kept
+only for old configuration compatibility. Blank `iris_size_delta` means invalid
+or baseline not ready, never a repeated previous measurement. CSV includes
+`iris_valid`, `iris_baseline_ready`, `iris_size`, and `iris_size_mode`; fusion excludes
+invalid, missing, and blinking samples. Head-pose warnings also invalidate new iris
+samples. Baseline is fixed after collection.
+
+The default `eye_width_ratio` measures average iris landmark radius divided by eye
+width using aspect-correct geometry. Values are NOT numerically comparable to old
+`image_radius` deltas. Choose `iris.size_mode: image_radius` to retain the old units.
+Neither mode measures pupil diameter; iris landmark geometry is not validated
+pupillometry. FPS changes also affect existing frame-based blink/fixation/smoothing
+parameters; those classifiers have not been retuned by this performance change.
+
+### Calibration and gaze stability update (2026-09-29)
+
+Head alignment now smooths guide measurements over 0.12 seconds and uses a
+small exit tolerance (`hysteresis_ratio`) after entering the accepted region.
+Being inside the oval alone is insufficient: face fill, centering, angle and
+measured movement must pass. Movement uses the P10-P90 spread of raw anchors
+and angles over `stability_seconds` (0.5 seconds), so smoothing cannot hide
+sustained movement. The five-second hold starts after stability is established.
+Brief invalid intervals pause the hold; intervals longer than 0.35 seconds
+reset it. The baseline is the median of accepted stable pose samples, rather
+than the final frame. The old `stability_frames_required` and
+`invalid_grace_frames` settings no longer control this gate.
+
+Calibration, validation and tracking require BOTH eyes to have finite EAR within
+`max(eye_validity.min_ear, blink.ear_threshold)` and `eye_validity.max_ear`.
+Closed-eye samples do not update gaze mapping or smoothing, even when blink
+counting is disabled. Invalid gaze coordinates are blank in CSV and the grid
+shows `GAZE UNAVAILABLE`. A gap longer than 0.30 seconds resets filter history.
+
+EMA alpha now accounts for elapsed capture time, with `reference_fps: 40`
+preserving the nominal response of the previous alpha settings. Adaptive EMA
+uses velocity in pixels/second. Large jumps exceeding BOTH 250 pixels and
+12,000 pixels/second require a consistent candidate for 0.035 seconds before
+acceptance (about 50 ms with evenly spaced 60 FPS samples). Pending candidates
+have status `gaze_unconfirmed`, blank gaze coordinates and no valid iris delta.
+This guard applies to all filter modes, including `none`; the median window
+remains frame-based. A genuine large saccade can incur this confirmation delay.
+
+Each session writes `<summary_stem>_calibration.json` beside its summary
+(`eye_summary_calibration.json` in shared multimodal sessions). It includes
+configuration, gate rejection durations/resets, the median pose baseline,
+accepted calibration samples and retained features, model/LOO diagnostics,
+held-out target predictions/errors, and automatic/manual/retry decisions.
+Rejection durations can overlap because several checks can fail together.
+Audits are saved at phase boundaries and cleanup, including failed attempts;
+there is no additional per-frame tracking file write. An interrupted attempt
+may remain `incomplete`.
+
+The summary's legacy `validation_*` model diagnostics are LOO estimates.
+Actual held-out results are recorded separately in `held_out_validation` and
+the audit. Existing pass thresholds use errors of each target's mean prediction;
+new per-sample median/P95 errors expose jitter that averaging can conceal.
+Manual acceptance is recorded separately from `passed_thresholds`.
+
+Capture format/resolution, inference size and the decoupled pipeline remain
+MJPG 640x480, 320x240 and target 60 FPS. This update does not change RBF features
+or implement head-motion compensation. Those require the new calibration data
+and a separate model comparison; smoothing cannot correct a systematically
+inaccurate mapping. See [verification results](PERFORMANCE_RESULTS.md) for
+automated checks and the remaining interactive acceptance run.
