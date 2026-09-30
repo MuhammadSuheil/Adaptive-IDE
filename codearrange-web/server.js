@@ -278,7 +278,10 @@ function gradeSubmission(puzzle, order) {
 
 const LOG_DIR = path.join(__dirname, 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'attempts.csv');
-const LOG_HEADER = 'timestamp,name,puzzle_id,puzzle_title,time_seconds,correct,correct_lines,total_lines,score_percent\n';
+const sanitizedSetName = (cliPuzzleSubfolder === '.' ? 'root' : cliPuzzleSubfolder || 'default').replace(/[\\/:*?"<>|]/g, '_');
+const SET_LOG_FILE = path.join(LOG_DIR, `${sanitizedSetName}.csv`);
+const LOG_HEADER =
+  'timestamp,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent\n';
 const ATTEMPTS_BY_PUZZLE_ID = new Map();
 
 function csvField(value) {
@@ -289,27 +292,36 @@ function csvField(value) {
   return str;
 }
 
-function logAttempt({ name, puzzleId, puzzleTitle, timeSeconds, correct, correctPositions, total }) {
+function appendCsvRow(filePath, header, row) {
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, header);
+  }
+  fs.appendFileSync(filePath, row);
+}
+
+function logAttempt({ name, puzzleSet, puzzleId, puzzleTitle, timeSeconds, submissionType, correct, correctPositions, total }) {
   if (!fs.existsSync(LOG_DIR)) {
     fs.mkdirSync(LOG_DIR, { recursive: true });
-  }
-  if (!fs.existsSync(LOG_FILE)) {
-    fs.writeFileSync(LOG_FILE, LOG_HEADER);
   }
   const scorePercent = total > 0 ? ((correctPositions / total) * 100).toFixed(1) : '0.0';
   const row =
     [
       new Date().toISOString(),
       csvField(name),
+      csvField(puzzleSet),
       csvField(puzzleId),
       csvField(puzzleTitle),
       timeSeconds.toFixed(2),
+      csvField(submissionType || 'manual'),
       correct ? 'true' : 'false',
       correctPositions,
       total,
       scorePercent,
     ].join(',') + '\n';
-  fs.appendFileSync(LOG_FILE, row);
+
+  // Write identical row to both the master attempts log and the set-specific log
+  appendCsvRow(LOG_FILE, LOG_HEADER, row);
+  appendCsvRow(SET_LOG_FILE, LOG_HEADER, row);
 }
 
 // ---- HTTP helpers -----------------------------------------------------
@@ -383,10 +395,6 @@ const server = http.createServer(async (req, res) => {
       const puzzle = findPuzzleById(match[1]);
       if (!puzzle) return sendJson(res, 404, { error: 'Puzzle not found' });
       const attempt = ATTEMPTS_BY_PUZZLE_ID.get(puzzle.id);
-      if (!attempt) return sendJson(res, 409, { error: 'No active attempt for this puzzle' });
-      if (attempt.deadlineMs !== null && Date.now() > attempt.deadlineMs + 5000) {
-        return sendJson(res, 403, { error: 'Time limit exceeded for this attempt' });
-      }
       let body;
       try {
         body = await readJsonBody(req);
@@ -394,9 +402,6 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 400, { error: 'Invalid JSON body' });
       }
       const nowMs = Date.now();
-      if (attempt.deadlineMs !== null && nowMs > attempt.deadlineMs + 5000) {
-        return sendJson(res, 403, { error: 'Time limit exceeded for this attempt' });
-      }
       const result = gradeSubmission(puzzle, body.order);
 
       // The player name is locked in at server startup (see the CLI args
@@ -404,14 +409,29 @@ const server = http.createServer(async (req, res) => {
       // -- otherwise a player could spoof a different name by editing
       // browser JavaScript. Every finished attempt gets logged, since
       // there's always a name for this server instance.
-      const elapsedMs = Math.max(0, nowMs - attempt.startedAtMs);
-      const timeSeconds = elapsedMs / 1000;
+      let timeSeconds;
+      let isTimeout = body.submissionType === 'timeout';
+      if (attempt) {
+        const elapsedMs = Math.max(0, nowMs - attempt.startedAtMs);
+        timeSeconds = elapsedMs / 1000;
+        if (attempt.deadlineMs !== null && nowMs >= attempt.deadlineMs) {
+          isTimeout = true;
+        }
+        ATTEMPTS_BY_PUZZLE_ID.delete(puzzle.id);
+      } else {
+        const timeMs = Number(body.timeMs);
+        timeSeconds = Number.isFinite(timeMs) && timeMs >= 0 ? timeMs / 1000 : 0;
+      }
+      const submissionType = isTimeout ? 'timeout' : 'manual';
+
       try {
         logAttempt({
           name: PLAYER_NAME,
+          puzzleSet: cliPuzzleSubfolder,
           puzzleId: puzzle.id,
           puzzleTitle: puzzle.title,
           timeSeconds,
+          submissionType,
           correct: result.correct,
           correctPositions: result.correctPositions,
           total: result.total,

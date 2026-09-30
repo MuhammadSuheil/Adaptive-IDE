@@ -131,26 +131,24 @@ something that isn't there anymore.
 
 ## Attempt log
 
-Every time **Finish** is clicked, a row is appended to
-`logs/attempts.csv` (created automatically on first use):
+Every time a puzzle attempt is finished (either manually by clicking **Finish** or automatically when the time limit expires), an identical row is appended to **two** CSV files:
+1. `logs/attempts.csv` (global master log of all attempts across all sets)
+2. `logs/<puzzle-set>.csv` (e.g. `logs/exam-set-a.csv`, specific to the active set)
+
+Both files are created automatically on first use with the following schema:
 
 ```
-timestamp,name,puzzle_id,puzzle_title,time_seconds,correct,correct_lines,total_lines,score_percent
-2026-09-15T20:16:17.749Z,Ada Lovelace,hello_world,"1. Hello, World!",12.35,true,5,5,100.0
-2026-09-15T20:22:03.410Z,Grace Hopper,hello_world,"1. Hello, World!",20.10,false,1,5,20.0
+timestamp,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent
+2026-09-15T20:16:17.749Z,Ada Lovelace,exam-set-a,hello_world,"1. Hello, World!",12.35,manual,true,5,5,100.0
+2026-09-15T20:22:03.410Z,Grace Hopper,exam-set-a,hello_world,"1. Hello, World!",300.00,timeout,false,1,5,20.0
 ```
 
-`correct` reflects whether the submission exactly matched one of the
-puzzle's accepted solutions. `correct_lines` / `total_lines` /
-`score_percent` capture the partial-credit score even on a miss (matched
-against whichever accepted solution the learner came closest to), so you
-can tell "off by one line" apart from "not even close" in the log.
+- `puzzle_set`: Indicates which puzzle set folder was active during the session.
+- `submission_type`: Records `'manual'` (player clicked Finish) or `'timeout'` (system auto-submitted due to the timer expiring).
+- `correct`: Reflects whether the submission exactly matched one of the puzzle's accepted solutions.
+- `correct_lines` / `total_lines` / `score_percent`: Capture partial-credit score even on a miss (matched against whichever accepted solution the learner came closest to).
 
-Grading and logging both happen server-side, from the server's own copy
-of the solutions — the client only ever sends the order of line ids it
-submitted, so the log can't be faked by editing browser JavaScript.
-Fields containing commas or quotes (e.g. a name like `Smith, "Al"`) are
-CSV-escaped automatically.
+Grading and logging both happen server-side, from the server's own copy of the solutions — the client only sends the submitted line order and submission type, ensuring logs cannot be spoofed. Fields containing commas or quotes are CSV-escaped automatically.
 
 ## API
 
@@ -413,7 +411,8 @@ scripts/
 puzzles/                default puzzle set (served when you pass "." as the subfolder)
   exam-set-a/           example puzzle set — pass "exam-set-a" to serve only these
   exam-set-b/           another example puzzle set
-logs/attempts.csv       created automatically the first time someone clicks Finish
+logs/attempts.csv       master attempt log (created automatically on first submission)
+logs/<set-name>.csv     set-specific attempt log (e.g. logs/exam-set-a.csv)
 public/
   index.html
   styles.css

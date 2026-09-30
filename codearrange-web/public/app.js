@@ -31,6 +31,7 @@
   let startTimeMs = null;
   let timerIntervalId = null;
   let finished = false;
+  let isTimeoutTriggered = false;
   let finishedElapsedMs = null; // frozen elapsed time once Finish has been clicked
   let finishedPerLine = null; // correctness map from the last grading result, for restoring highlights
   let finishedExplanation = null; // explanation text that came back with the last grading result
@@ -479,9 +480,11 @@
     
     if (timeLimitMinutes) {
       const limitMs = timeLimitMinutes * 60 * 1000;
-      label += ` / ${timeLimitMinutes}:00`;
+      const displayElapsed = finished && elapsedMs >= limitMs ? limitMs : elapsedMs;
+      label = `${formatElapsed(displayElapsed)} / ${timeLimitMinutes}:00`;
       
       if (elapsedMs >= limitMs && !finished) {
+        isTimeoutTriggered = true;
         finishBtn.click();
       }
     }
@@ -591,6 +594,9 @@
   finishBtn.addEventListener('click', async () => {
     if (!currentPuzzleId || finished) return;
 
+    const submissionType = isTimeoutTriggered ? 'timeout' : 'manual';
+    isTimeoutTriggered = false;
+
     finished = true;
     finishBtn.disabled = true;
     stopTimer();
@@ -604,13 +610,21 @@
       const res = await fetch(`/api/puzzles/${encodeURIComponent(currentPuzzleId)}/check`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order, timeMs: elapsedMs }),
+        body: JSON.stringify({ order, timeMs: elapsedMs, submissionType }),
       });
       if (!res.ok) throw new Error('Server returned an error');
       result = await res.json();
     } catch (err) {
+      console.error('Check submission failed:', err);
+      isTimeoutTriggered = false;
       feedback.textContent = 'Something went wrong checking your answer. Your attempt was not logged.';
       feedback.className = 'feedback error';
+      if (submissionType === 'timeout' || (timeLimitMinutes && elapsedMs >= timeLimitMinutes * 60 * 1000)) {
+        finishBtn.disabled = true;
+        finished = true;
+        stopTimer();
+        return;
+      }
       finishBtn.disabled = false;
       finished = false;
       startTimer();
@@ -643,7 +657,11 @@
       if (result.wrongLines > 0) {
         message += `${describeWrongLines(result.wrongLines, currentPuzzleData && currentPuzzleData.mode)} `;
       }
-      message += `Time: ${elapsedSeconds}s. Your result has been logged.`;
+      if (submissionType === 'timeout') {
+        message += `Time limit reached (${elapsedSeconds}s). Your result has been logged.`;
+      } else {
+        message += `Time: ${elapsedSeconds}s. Your result has been logged.`;
+      }
       feedback.textContent = message;
       feedback.className = 'feedback error';
     }
