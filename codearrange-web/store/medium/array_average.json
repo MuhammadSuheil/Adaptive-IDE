@@ -1,0 +1,81 @@
+{
+  "id": "array_average",
+  "title": "2. Average of Array Elements",
+  "type": "arrays",
+  "mode": "arrange",
+  "description": "Write a program that iterates through an array of integers `{10, 20, 30, 40, 50}`, calculates their sum, and then calculates and prints the average (`(double) sum / numbers.length`).",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class ArrayAverage {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] numbers = {10, 20, 30, 40, 50};"
+    },
+    {
+      "id": 4,
+      "code": "        int sum = 0;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < numbers.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            sum += numbers[i];"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        double average = (double) sum / numbers.length;"
+    },
+    {
+      "id": 9,
+      "code": "        System.out.println(average);"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  ]
+}

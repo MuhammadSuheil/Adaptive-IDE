@@ -1,0 +1,82 @@
+{
+  "id": "find_max_value",
+  "title": "1. Find Maximum in Array (Debug)",
+  "type": "arrays",
+  "mode": "debug",
+  "description": "This program is supposed to find and print the maximum value in an array that contains negative numbers (expected output: 15), but it prints 0. Find the bugs and rebuild the corrected program.\n```\npublic class FindMax {\n    public static void main(String[] args) {\n        int[] numbers = {-5, -2, 15, 3, 8};\n        int max = 0;\n        for (int i = 0; i < numbers.length; i++) {\n            if (numbers[i] < max) {\n                max = numbers[i];\n            }\n        }\n        System.out.println(max);\n    }\n}\n```",
+  "explanation": "Initializing max to 0 fails when working with negative numbers or seeking the true maximum; it should be initialized to numbers[0]. Also, to find the maximum, the comparison must check if numbers[i] > max, not < max.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FindMax {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] numbers = {-5, -2, 15, 3, 8};"
+    },
+    {
+      "id": 4,
+      "code": "        int max = numbers[0];"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < numbers.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            if (numbers[i] > max) {"
+    },
+    {
+      "id": 7,
+      "code": "                max = numbers[i];"
+    },
+    {
+      "id": 8,
+      "code": "            }"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "        System.out.println(max);"
+    },
+    {
+      "id": 11,
+      "code": "    }"
+    },
+    {
+      "id": 12,
+      "code": "}"
+    },
+    {
+      "id": 13,
+      "code": "        int max = 0;"
+    },
+    {
+      "id": 14,
+      "code": "            if (numbers[i] < max) {"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  ]
+}
