@@ -27,7 +27,7 @@
   let currentPuzzleData = null; // full {id,title,type,description,lines} from the server for the attempt in progress
   let puzzleList = []; // full ordered list from /api/puzzles, used to find "the next puzzle"
   let playerName = ''; // set once from /api/config; the player can't change it
-  let timeLimitMinutes = null; // set once from /api/config if set_config.json exists
+  let timeLimitMinutes = null; // set once from /api/config if master_config.json contains the active set
   let startTimeMs = null;
   let timerIntervalId = null;
   let finished = false;
