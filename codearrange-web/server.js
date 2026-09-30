@@ -351,8 +351,9 @@ const server = http.createServer(async (req, res) => {
       if (fs.existsSync(masterConfigPath)) {
         try {
           const masterConfig = JSON.parse(fs.readFileSync(masterConfigPath, 'utf8'));
-          if (masterConfig[cliPuzzleSubfolder]) {
-            setConfig = masterConfig[cliPuzzleSubfolder];
+          const puzzleSetKey = path.relative(PUZZLES_ROOT, PUZZLES_DIR);
+          if (masterConfig[puzzleSetKey]) {
+            setConfig = masterConfig[puzzleSetKey];
           }
         } catch (e) {
           console.error('Failed to parse master_config.json:', e);
