@@ -384,7 +384,7 @@ const server = http.createServer(async (req, res) => {
       if (!puzzle) return sendJson(res, 404, { error: 'Puzzle not found' });
       const attempt = ATTEMPTS_BY_PUZZLE_ID.get(puzzle.id);
       if (!attempt) return sendJson(res, 409, { error: 'No active attempt for this puzzle' });
-      if (attempt.deadlineMs !== null && Date.now() > attempt.deadlineMs) {
+      if (attempt.deadlineMs !== null && Date.now() > attempt.deadlineMs + 5000) {
         return sendJson(res, 403, { error: 'Time limit exceeded for this attempt' });
       }
       let body;
@@ -394,7 +394,7 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 400, { error: 'Invalid JSON body' });
       }
       const nowMs = Date.now();
-      if (attempt.deadlineMs !== null && nowMs > attempt.deadlineMs) {
+      if (attempt.deadlineMs !== null && nowMs > attempt.deadlineMs + 5000) {
         return sendJson(res, 403, { error: 'Time limit exceeded for this attempt' });
       }
       const result = gradeSubmission(puzzle, body.order);
