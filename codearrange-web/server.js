@@ -282,7 +282,13 @@ const sanitizedSetName = (cliPuzzleSubfolder === '.' ? 'root' : cliPuzzleSubfold
 const SET_LOG_FILE = path.join(LOG_DIR, `${sanitizedSetName}.csv`);
 const LOG_HEADER =
   'timestamp,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent\n';
-const ATTEMPTS_BY_PUZZLE_ID = new Map();
+let sessionStartedAtMs = null;
+let sessionDeadlineMs = null;
+
+function resetSession() {
+  sessionStartedAtMs = null;
+  sessionDeadlineMs = null;
+}
 
 function csvField(value) {
   const str = String(value);
@@ -343,7 +349,12 @@ function sendFile(res, filePath) {
       return;
     }
     const ext = path.extname(filePath);
-    res.writeHead(200, { 'Content-Type': MIME_TYPES[ext] || 'application/octet-stream' });
+    res.writeHead(200, {
+      'Content-Type': MIME_TYPES[ext] || 'application/octet-stream',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    });
     res.end(content);
   });
 }
@@ -377,10 +388,22 @@ const server = http.createServer(async (req, res) => {
   const pathname = decodeURIComponent(url.pathname);
 
   try {
-    // GET /api/config  -> the locked player name and active puzzle set for this server instance
+    // GET /api/config  -> the locked player name, active puzzle set, and session state
     if (req.method === 'GET' && pathname === '/api/config') {
       const setConfig = loadActiveSetConfig();
-      return sendJson(res, 200, { playerName: PLAYER_NAME, puzzleSet: cliPuzzleSubfolder, setConfig });
+      return sendJson(res, 200, {
+        playerName: PLAYER_NAME,
+        puzzleSet: cliPuzzleSubfolder,
+        setConfig,
+        sessionStartedAtMs,
+        sessionDeadlineMs,
+      });
+    }
+
+    // POST /api/session/reset  -> reset the active session timer (e.g. going back to start)
+    if (req.method === 'POST' && pathname === '/api/session/reset') {
+      resetSession();
+      return sendJson(res, 200, { ok: true });
     }
 
     // GET /api/puzzles  -> [{id, title, type, description}, ...]
@@ -394,7 +417,6 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'POST' && match) {
       const puzzle = findPuzzleById(match[1]);
       if (!puzzle) return sendJson(res, 404, { error: 'Puzzle not found' });
-      const attempt = ATTEMPTS_BY_PUZZLE_ID.get(puzzle.id);
       let body;
       try {
         body = await readJsonBody(req);
@@ -404,20 +426,16 @@ const server = http.createServer(async (req, res) => {
       const nowMs = Date.now();
       const result = gradeSubmission(puzzle, body.order);
 
-      // The player name is locked in at server startup (see the CLI args
-      // at the top of this file) and is never taken from the request body
-      // -- otherwise a player could spoof a different name by editing
-      // browser JavaScript. Every finished attempt gets logged, since
-      // there's always a name for this server instance.
+      const timeLimitMs = getActiveSetTimeLimitMs();
       let timeSeconds;
       let isTimeout = body.submissionType === 'timeout';
-      if (attempt) {
-        const elapsedMs = Math.max(0, nowMs - attempt.startedAtMs);
-        timeSeconds = elapsedMs / 1000;
-        if (attempt.deadlineMs !== null && nowMs >= attempt.deadlineMs) {
+
+      if (sessionStartedAtMs !== null) {
+        const elapsedMs = Math.max(0, nowMs - sessionStartedAtMs);
+        if (sessionDeadlineMs !== null && nowMs >= sessionDeadlineMs) {
           isTimeout = true;
         }
-        ATTEMPTS_BY_PUZZLE_ID.delete(puzzle.id);
+        timeSeconds = isTimeout && timeLimitMs ? timeLimitMs / 1000 : elapsedMs / 1000;
       } else {
         const timeMs = Number(body.timeMs);
         timeSeconds = Number.isFinite(timeMs) && timeMs >= 0 ? timeMs / 1000 : 0;
@@ -449,12 +467,12 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && match) {
       const puzzle = findPuzzleById(match[1]);
       if (!puzzle) return sendJson(res, 404, { error: 'Puzzle not found' });
-      const startedAtMs = Date.now();
       const timeLimitMs = getActiveSetTimeLimitMs();
-      ATTEMPTS_BY_PUZZLE_ID.set(puzzle.id, {
-        startedAtMs,
-        deadlineMs: timeLimitMs === null ? null : startedAtMs + timeLimitMs,
-      });
+      // Start session on first puzzle load if not already started
+      if (sessionStartedAtMs === null) {
+        sessionStartedAtMs = Date.now();
+        sessionDeadlineMs = timeLimitMs === null ? null : sessionStartedAtMs + timeLimitMs;
+      }
       return sendJson(res, 200, toClientPuzzle(puzzle));
     }
 

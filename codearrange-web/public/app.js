@@ -28,10 +28,11 @@
   let puzzleList = []; // full ordered list from /api/puzzles, used to find "the next puzzle"
   let playerName = ''; // set once from /api/config; the player can't change it
   let timeLimitMinutes = null; // set once from /api/config if master_config.json contains the active set
-  let startTimeMs = null;
+  let startTimeMs = null; // session start time (persists across Try Again and Next Puzzle)
   let timerIntervalId = null;
   let finished = false;
-  let isTimeoutTriggered = false;
+  let sessionExpired = false; // true when the global session time limit has run out
+  let setCompleted = false; // true when all puzzles in the set have been solved
   let finishedElapsedMs = null; // frozen elapsed time once Finish has been clicked
   let finishedPerLine = null; // correctness map from the last grading result, for restoring highlights
   let finishedExplanation = null; // explanation text that came back with the last grading result
@@ -62,6 +63,8 @@
       solutionOrder: [...solutionList.children].map((li) => Number(li.dataset.id)),
       startTimeMs,
       finished,
+      sessionExpired,
+      setCompleted,
       finishedElapsedMs,
       finishedPerLine,
       finishedExplanation,
@@ -106,7 +109,20 @@
     playerName = config.playerName;
     playerNameDisplay.textContent = playerName;
     if (config.setConfig && config.setConfig.timeLimitMinutes) {
-      timeLimitMinutes = config.setConfig.timeLimitMinutes;
+      timeLimitMinutes = Number(config.setConfig.timeLimitMinutes);
+    }
+    if (config.sessionStartedAtMs) {
+      const elapsed = Date.now() - config.sessionStartedAtMs;
+      const limitMs = timeLimitMinutes ? timeLimitMinutes * 60 * 1000 : Infinity;
+      if (elapsed < limitMs) {
+        startTimeMs = config.sessionStartedAtMs;
+      } else {
+        try {
+          await fetch('/api/session/reset', { method: 'POST' });
+        } catch (e) {}
+        startTimeMs = null;
+        sessionExpired = false;
+      }
     }
   }
 
@@ -233,6 +249,15 @@
     }
     startError.textContent = '';
 
+    // Starting fresh from the start screen resets any old session
+    try {
+      await fetch('/api/session/reset', { method: 'POST' });
+    } catch (e) {}
+    clearSavedState();
+    startTimeMs = Date.now();
+    sessionExpired = false;
+    setCompleted = false;
+
     startScreen.classList.add('hidden');
     puzzleScreen.classList.remove('hidden');
     activePlayerLabel.textContent = `Player: ${playerName}`;
@@ -247,18 +272,19 @@
 
   // ---- Puzzle loading / attempt lifecycle ----
 
-  // Starts a brand-new attempt: fetches a fresh (freshly shuffled) copy of
-  // the puzzle from the server. Used by Start, Try Again, and Next Puzzle --
-  // all three are, from the puzzle's point of view, "begin a new attempt at
-  // puzzle X", just with a different X or a repeat of the same one.
+  // Starts an attempt at puzzleId.
+  // Fetches a fresh copy of the puzzle from the server.
+  // The global session timer keeps running continuously across attempts.
   async function beginAttempt(puzzleId) {
     currentPuzzleId = puzzleId;
     currentPuzzleData = null;
     finished = false;
+    setCompleted = false;
     finishedElapsedMs = null;
     finishedPerLine = null;
     finishedExplanation = null;
-    finishBtn.disabled = false;
+    finishBtn.disabled = sessionExpired;
+    tryAgainBtn.disabled = sessionExpired;
     nextPuzzleBtn.disabled = true; // only enabled once Finish is clicked for this attempt
     updateNextPuzzleButtonLabel();
     clearFeedback();
@@ -276,8 +302,17 @@
     renderDescription(puzzle.description);
     renderTiles(puzzle.lines, puzzle.lines.map((line) => line.id), []);
 
-    startTimeMs = Date.now();
-    startTimer();
+    // Ensure session timer is initialized if not yet started
+    if (!startTimeMs) {
+      startTimeMs = Date.now();
+      sessionExpired = false;
+    }
+
+    if (!sessionExpired) {
+      startTimer();
+    } else {
+      updateTimerLabel();
+    }
     saveState();
   }
 
@@ -292,6 +327,15 @@
     finishedElapsedMs = saved.finishedElapsedMs;
     finishedPerLine = saved.finishedPerLine;
     finishedExplanation = saved.finishedExplanation || null;
+    startTimeMs = saved.startTimeMs || startTimeMs;
+    sessionExpired = Boolean(saved.sessionExpired);
+    setCompleted = Boolean(saved.setCompleted);
+
+    if (timeLimitMinutes && startTimeMs && !setCompleted) {
+      if (Date.now() - startTimeMs >= timeLimitMinutes * 60 * 1000) {
+        sessionExpired = true;
+      }
+    }
 
     startScreen.classList.add('hidden');
     puzzleScreen.classList.remove('hidden');
@@ -308,7 +352,11 @@
 
     if (finished) {
       finishBtn.disabled = true;
+      tryAgainBtn.disabled = sessionExpired || setCompleted;
       nextPuzzleBtn.disabled = false;
+      if (sessionExpired || setCompleted || !hasNextPuzzle()) {
+        nextPuzzleBtn.textContent = 'Back to Start';
+      }
       revealIndentation();
       for (const li of solutionList.children) {
         const id = Number(li.dataset.id);
@@ -316,19 +364,33 @@
           li.classList.add(finishedPerLine[id] ? 'correct' : 'incorrect');
         }
       }
-      timerLabel.textContent = formatElapsed(finishedElapsedMs || 0);
       feedback.textContent = saved.feedbackText || '';
       feedback.className = saved.feedbackClass || 'feedback';
       showExplanation(finishedExplanation);
+
+      if (setCompleted) {
+        stopTimer();
+        const displayLabel = formatElapsed(finishedElapsedMs || 0);
+        timerLabel.textContent = timeLimitMinutes
+          ? `${displayLabel} / ${timeLimitMinutes}:00`
+          : displayLabel;
+        timerLabel.classList.remove('timeout');
+      } else if (!sessionExpired) {
+        startTimer();
+      } else {
+        stopTimer();
+        updateTimerLabel();
+      }
     } else {
-      finishBtn.disabled = false;
-      nextPuzzleBtn.disabled = true;
-      clearFeedback();
-      // Resume the ORIGINAL start time rather than starting a new one, so
-      // the timer reflects real elapsed time straight through the refresh
-      // (including however long the page was sitting reloaded/closed).
-      startTimeMs = saved.startTimeMs;
-      startTimer();
+      if (sessionExpired) {
+        handleSessionTimeout();
+      } else {
+        finishBtn.disabled = false;
+        nextPuzzleBtn.disabled = true;
+        tryAgainBtn.disabled = false;
+        clearFeedback();
+        startTimer();
+      }
     }
   }
 
@@ -475,21 +537,62 @@
   }
 
   function updateTimerLabel() {
-    const elapsedMs = Date.now() - startTimeMs;
+    if (!startTimeMs) {
+      timerLabel.textContent = '0:00';
+      return;
+    }
+    if (setCompleted) {
+      const displayElapsed = finishedElapsedMs || (startTimeMs ? Date.now() - startTimeMs : 0);
+      const label = formatElapsed(displayElapsed);
+      timerLabel.textContent = timeLimitMinutes ? `${label} / ${timeLimitMinutes}:00` : label;
+      timerLabel.classList.remove('timeout');
+      return;
+    }
+    const elapsedMs = Math.max(0, Date.now() - startTimeMs);
     let label = formatElapsed(elapsedMs);
-    
+
     if (timeLimitMinutes) {
       const limitMs = timeLimitMinutes * 60 * 1000;
-      const displayElapsed = finished && elapsedMs >= limitMs ? limitMs : elapsedMs;
+      const displayElapsed = sessionExpired || elapsedMs >= limitMs ? limitMs : elapsedMs;
       label = `${formatElapsed(displayElapsed)} / ${timeLimitMinutes}:00`;
-      
-      if (elapsedMs >= limitMs && !finished) {
-        isTimeoutTriggered = true;
-        finishBtn.click();
+
+      if (elapsedMs >= limitMs) {
+        if (!sessionExpired) {
+          sessionExpired = true;
+          handleSessionTimeout();
+        }
       }
     }
-    
+
     timerLabel.textContent = label;
+    if (sessionExpired) {
+      timerLabel.classList.add('timeout');
+    } else {
+      timerLabel.classList.remove('timeout');
+    }
+  }
+
+  async function handleSessionTimeout() {
+    if (setCompleted) return;
+    sessionExpired = true;
+    stopTimer();
+    finishBtn.disabled = true;
+    tryAgainBtn.disabled = true;
+    nextPuzzleBtn.textContent = 'Back to Start';
+    nextPuzzleBtn.disabled = false;
+
+    if (!finished && currentPuzzleId) {
+      await submitAttempt('timeout');
+    } else {
+      const msg = 'Time limit reached. Exam session has ended.';
+      if (!feedback.textContent) {
+        feedback.textContent = msg;
+        feedback.className = 'feedback error';
+      } else if (!feedback.textContent.includes('Exam session has ended')) {
+        feedback.textContent += ' Exam session has ended.';
+      }
+      saveState();
+    }
   }
 
   function formatElapsed(elapsedMs) {
@@ -511,7 +614,7 @@
   // works exactly the same way as reordering within one of them.
 
   function onDragStart(e) {
-    if (finished) {
+    if (finished || sessionExpired) {
       e.preventDefault();
       return;
     }
@@ -591,16 +694,12 @@
     }
   }
 
-  finishBtn.addEventListener('click', async () => {
+  async function submitAttempt(submissionType = 'manual') {
     if (!currentPuzzleId || finished) return;
-
-    const submissionType = isTimeoutTriggered ? 'timeout' : 'manual';
-    isTimeoutTriggered = false;
 
     finished = true;
     finishBtn.disabled = true;
-    stopTimer();
-    const elapsedMs = Date.now() - startTimeMs;
+    const elapsedMs = startTimeMs ? Math.max(0, Date.now() - startTimeMs) : 0;
     updateTimerLabel();
 
     const order = [...solutionList.children].map((li) => Number(li.dataset.id));
@@ -616,13 +715,17 @@
       result = await res.json();
     } catch (err) {
       console.error('Check submission failed:', err);
-      isTimeoutTriggered = false;
       feedback.textContent = 'Something went wrong checking your answer. Your attempt was not logged.';
       feedback.className = 'feedback error';
       if (submissionType === 'timeout' || (timeLimitMinutes && elapsedMs >= timeLimitMinutes * 60 * 1000)) {
+        sessionExpired = true;
         finishBtn.disabled = true;
+        tryAgainBtn.disabled = true;
+        nextPuzzleBtn.textContent = 'Back to Start';
+        nextPuzzleBtn.disabled = false;
         finished = true;
         stopTimer();
+        saveState();
         return;
       }
       finishBtn.disabled = false;
@@ -642,7 +745,6 @@
       }
     }
 
-    nextPuzzleBtn.disabled = false;
     finishedElapsedMs = elapsedMs;
     finishedPerLine = result.perLine;
     finishedExplanation = result.explanation || null;
@@ -666,19 +768,68 @@
       feedback.className = 'feedback error';
     }
 
+    if (submissionType === 'timeout' || sessionExpired || (timeLimitMinutes && elapsedMs >= timeLimitMinutes * 60 * 1000)) {
+      sessionExpired = true;
+      stopTimer();
+      finishBtn.disabled = true;
+      tryAgainBtn.disabled = true;
+      nextPuzzleBtn.textContent = 'Back to Start';
+      nextPuzzleBtn.disabled = false;
+      if (!feedback.textContent.includes('Exam session has ended')) {
+        feedback.textContent += ' Exam session has ended.';
+      }
+    } else if (result.correct && !hasNextPuzzle()) {
+      setCompleted = true;
+      stopTimer();
+      finishBtn.disabled = true;
+      tryAgainBtn.disabled = true;
+      nextPuzzleBtn.textContent = 'Back to Start';
+      nextPuzzleBtn.disabled = false;
+      const finalDisplay = formatElapsed(elapsedMs);
+      timerLabel.textContent = timeLimitMinutes
+        ? `${finalDisplay} / ${timeLimitMinutes}:00`
+        : finalDisplay;
+      timerLabel.classList.remove('timeout');
+      feedback.textContent += ' You have completed all puzzles in this set!';
+    } else {
+      tryAgainBtn.disabled = false;
+      nextPuzzleBtn.disabled = false;
+      // Continue session timer while participant reviews result
+      startTimer();
+    }
+
     saveState();
+  }
+
+  finishBtn.addEventListener('click', () => {
+    if (!currentPuzzleId || finished || sessionExpired) return;
+    submitAttempt('manual');
   });
 
   tryAgainBtn.addEventListener('click', () => {
-    if (!currentPuzzleId) return;
+    if (!currentPuzzleId || sessionExpired || setCompleted) return;
+    if (timeLimitMinutes && startTimeMs && Date.now() - startTimeMs >= timeLimitMinutes * 60 * 1000) {
+      handleSessionTimeout();
+      return;
+    }
     beginAttempt(currentPuzzleId);
   });
 
   nextPuzzleBtn.addEventListener('click', () => {
-    if (nextPuzzleBtn.disabled) return; // guard against a stray click landing between disable/enable
+    if (nextPuzzleBtn.disabled) return;
 
-    if (hasNextPuzzle()) {
-      const next = getNextPuzzle();
+    if (sessionExpired || setCompleted || !hasNextPuzzle()) {
+      goToStartScreen();
+      return;
+    }
+
+    if (timeLimitMinutes && startTimeMs && Date.now() - startTimeMs >= timeLimitMinutes * 60 * 1000) {
+      handleSessionTimeout();
+      return;
+    }
+
+    const next = getNextPuzzle();
+    if (next) {
       puzzleSelect.value = next.id; // keep the picker in sync for if the player returns to it later
       beginAttempt(next.id);
     } else {
@@ -686,9 +837,12 @@
     }
   });
 
-  function goToStartScreen() {
+  async function goToStartScreen() {
     stopTimer();
     finished = false;
+    sessionExpired = false;
+    setCompleted = false;
+    startTimeMs = null;
     currentPuzzleId = null;
     currentPuzzleData = null;
     clearFeedback();
@@ -696,6 +850,11 @@
     startScreen.classList.remove('hidden');
     startError.textContent = '';
     clearSavedState(); // leaving the puzzle screen deliberately means "start fresh" next time
+    try {
+      await fetch('/api/session/reset', { method: 'POST' });
+    } catch (e) {
+      // ignore network errors on reset
+    }
   }
 
   // ---- Init ----
@@ -705,6 +864,18 @@
     await loadPuzzleList();
 
     const saved = loadSavedState();
+
+    // If the server has no active session (e.g. server was restarted, or
+    // the previous session's time limit already expired and was auto-reset
+    // by loadConfig), any saved state in sessionStorage is stale -- the
+    // server can't grade or continue anything from that session, so trying
+    // to resume it would leave the UI stuck on a dead screen. Discard it
+    // and let the player start fresh from the start screen.
+    if (saved && !startTimeMs) {
+      clearSavedState();
+      return; // start screen is already visible by default
+    }
+
     const savedPuzzleStillExists = saved && puzzleList.some((p) => p.id === saved.puzzleId);
     if (savedPuzzleStillExists) {
       resumeAttempt(saved);

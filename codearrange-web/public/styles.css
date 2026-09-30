@@ -159,6 +159,13 @@ button.secondary {
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 4px 10px;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+#timer.timeout {
+  color: #a3312f;
+  background: #fad6d6;
+  border-color: #e59b9b;
 }
 
 .description-box {

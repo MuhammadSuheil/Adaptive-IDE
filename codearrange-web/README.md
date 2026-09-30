@@ -94,13 +94,13 @@ browser.
    correct answer, the feedback says how many (in a debug puzzle: "2 lines
    you used still contain bugs"), and a puzzle that has an explanation
    shows it in an **Explanation** box below.
-4. **Try Again** reshuffles the same puzzle and restarts the timer for a
-   fresh attempt — it's available right away.
+4. **Try Again** reshuffles the same puzzle for a fresh attempt while the
+   global session timer continues running without resetting.
    **Next Puzzle** is disabled until you click Finish for the current
    attempt; once enabled, it loads the next puzzle in the set (in the same
-   order the dropdown lists them) and starts a fresh timer. On the last
-   puzzle in the set, the button relabels itself **Back to Start** and
-   returns you to the start screen instead (your name stays the same
+   order the dropdown lists them) and continues the same session timer. On
+   the last puzzle in the set, the button relabels itself **Back to Start**
+   and returns you to the start screen instead (your name stays the same
    either way — it's fixed for the whole server session).
 
 ## Resuming after a refresh
@@ -198,7 +198,7 @@ You can set a strict time limit for any puzzle set by editing `puzzles/master_co
 }
 ```
 
-When a time limit is configured for the active set, the timer in the UI will display a countdown target (e.g., `0:15 / 5:00`). When the limit is reached, the app will automatically submit the current arrangement and end the attempt. If a set is not listed in `master_config.json`, it has no time limit.
+When a time limit is configured for the active set, the timer in the UI will display a session target (e.g., `0:15 / 5:00`). This time limit applies globally to the entire quiz session across all questions and retries. When the limit is reached, the active puzzle is automatically submitted, subsequent retries or moves are locked, and the exam session officially ends. If a set is not listed in `master_config.json`, it has no time limit (stopwatch mode).
 
 ## Puzzle modes
 
