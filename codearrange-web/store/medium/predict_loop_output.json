@@ -1,0 +1,33 @@
+{
+  "id": "predict_loop_output",
+  "title": "2. Predict Loop Output",
+  "type": "loops",
+  "mode": "output",
+  "description": "Determine what this program prints, then arrange the output lines in the exact order they appear:\n```\npublic class LoopTrace {\n    public static void main(String[] args) {\n        for (int i = 1; i <= 7; i += 2) {\n            System.out.println(\"Step: \" + i);\n        }\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "Step: 1"
+    },
+    {
+      "id": 2,
+      "code": "Step: 3"
+    },
+    {
+      "id": 3,
+      "code": "Step: 5"
+    },
+    {
+      "id": 4,
+      "code": "Step: 7"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

@@ -11,3 +11,6 @@ eyebeam
 sessions/*
 !sessions/saved_session/
 !sessions/saved_session/**
+
+# Code Arrange
+codearrange-web/logs/**

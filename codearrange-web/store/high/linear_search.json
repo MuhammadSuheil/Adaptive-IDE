@@ -1,0 +1,126 @@
+{
+  "id": "linear_search",
+  "title": "3. Linear Search with Early Exit (Debug)",
+  "type": "algorithms",
+  "mode": "debug",
+  "description": "This program searches for a target number `42` in an array. It should print `\"Found at index: \" + i` and stop immediately when found. If the target is not in the array after checking all elements, it should print `\"Not Found\"`. However, the current code has two bugs: it stops after checking only the first element, and risks an out-of-bounds error. Find the bugs and rebuild the corrected program.\n```\npublic class LinearSearch {\n    public static void main(String[] args) {\n        int[] data = {10, 25, 42, 88, 99};\n        int target = 42;\n        boolean found = false;\n        for (int i = 0; i <= data.length; i++) {\n            if (data[i] == target) {\n                System.out.println(\"Found at index: \" + i);\n                found = true;\n            }\n            break;\n        }\n        if (!found) {\n            System.out.println(\"Not Found\");\n        }\n    }\n}\n```",
+  "explanation": "The loop condition must be i < data.length (using <= causes an ArrayIndexOutOfBoundsException). Furthermore, the break statement must be placed inside the if block so that searching continues until the target is actually found.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class LinearSearch {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] data = {10, 25, 42, 88, 99};"
+    },
+    {
+      "id": 4,
+      "code": "        int target = 42;"
+    },
+    {
+      "id": 5,
+      "code": "        boolean found = false;"
+    },
+    {
+      "id": 6,
+      "code": "        for (int i = 0; i < data.length; i++) {"
+    },
+    {
+      "id": 7,
+      "code": "            if (data[i] == target) {"
+    },
+    {
+      "id": 8,
+      "code": "                System.out.println(\"Found at index: \" + i);"
+    },
+    {
+      "id": 9,
+      "code": "                found = true;"
+    },
+    {
+      "id": 10,
+      "code": "                break;"
+    },
+    {
+      "id": 11,
+      "code": "            }"
+    },
+    {
+      "id": 12,
+      "code": "        }"
+    },
+    {
+      "id": 13,
+      "code": "        if (!found) {"
+    },
+    {
+      "id": 14,
+      "code": "            System.out.println(\"Not Found\");"
+    },
+    {
+      "id": 15,
+      "code": "        }"
+    },
+    {
+      "id": 16,
+      "code": "    }"
+    },
+    {
+      "id": 17,
+      "code": "}"
+    },
+    {
+      "id": 18,
+      "code": "        for (int i = 0; i <= data.length; i++) {"
+    },
+    {
+      "id": 19,
+      "code": "            break;"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      9,
+      8,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  ]
+}

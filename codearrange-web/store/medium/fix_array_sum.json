@@ -1,0 +1,80 @@
+{
+  "id": "fix_array_sum",
+  "title": "3. Fix Array Sum (Debug)",
+  "type": "arrays",
+  "mode": "debug",
+  "description": "This program is supposed to calculate and print the total sum of the array elements `{5, 10, 15}` (expected output: `30`), but it prints `15` because of a bug in how elements are accumulated. Find the bug and rebuild the corrected program.\n```\npublic class ArraySum {\n    public static void main(String[] args) {\n        int[] numbers = {5, 10, 15};\n        int total = 0;\n        for (int i = 0; i < numbers.length; i++) {\n            total = numbers[i];\n        }\n        System.out.println(total);\n    }\n}\n```",
+  "explanation": "The line inside the loop was `total = numbers[i];`, which overwrites `total` on each iteration instead of adding to it. Replacing it with `total += numbers[i];` correctly accumulates the sum.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class ArraySum {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] numbers = {5, 10, 15};"
+    },
+    {
+      "id": 4,
+      "code": "        int total = 0;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < numbers.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            total += numbers[i];"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    },
+    {
+      "id": 11,
+      "code": "            total = numbers[i];"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

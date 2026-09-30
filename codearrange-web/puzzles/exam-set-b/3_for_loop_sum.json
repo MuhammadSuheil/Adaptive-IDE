@@ -1,0 +1,57 @@
+{
+  "id": "for_loop_sum",
+  "title": "3. Sum 1 to 10 with a Loop",
+  "type": "loops",
+  "description": "Write a program that uses a for loop to add up the numbers 1 through 10, then prints the total (55).\n\nFor example, this loop sums the numbers 1 through 5:\n```\nint total = 0;\nfor (int i = 1; i <= 5; i++) {\n    total += i;\n}\n```\nAdapt the same idea to sum 1 through 10 instead.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class LoopSum {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int total = 0;"
+    },
+    {
+      "id": 4,
+      "code": "        for (int i = 1; i <= 10; i++) {"
+    },
+    {
+      "id": 5,
+      "code": "            total += i;"
+    },
+    {
+      "id": 6,
+      "code": "        }"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "id": "calculate_factorial",
+  "title": "1. Calculate Factorial (5!)",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Write a program using a for loop to calculate the factorial of 5 (5! = 5 * 4 * 3 * 2 * 1 = 120). Start with `int result = 1;` and multiply by `i` from 1 to 5, then print `result`.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class Factorial {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int n = 5;"
+    },
+    {
+      "id": 4,
+      "code": "        int result = 1;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 1; i <= n; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            result *= i;"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(result);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "predict_arithmetic_output",
+  "title": "3. Predict Arithmetic Output",
+  "type": "basics",
+  "mode": "output",
+  "description": "Determine what this program prints, then arrange the output lines in the exact order they appear:\n```\npublic class ArithmeticDemo {\n    public static void main(String[] args) {\n        int a = 10;\n        int b = 3;\n        System.out.println(a + b);\n        System.out.println(a - b);\n        System.out.println(a * b);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "13"
+    },
+    {
+      "id": 2,
+      "code": "7"
+    },
+    {
+      "id": 3,
+      "code": "30"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3
+    ]
+  ]
+}

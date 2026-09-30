@@ -1,0 +1,63 @@
+{
+  "id": "rectangle_area",
+  "title": "1. Calculate Rectangle Area",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Write a program that calculates and prints the area of a rectangle with a width of 5 and a height of 10 (expected output: `50`).",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class RectangleArea {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int width = 5;"
+    },
+    {
+      "id": 4,
+      "code": "        int height = 10;"
+    },
+    {
+      "id": 5,
+      "code": "        int area = width * height;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(area);"
+    },
+    {
+      "id": 7,
+      "code": "    }"
+    },
+    {
+      "id": 8,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8
+    ]
+  ]
+}

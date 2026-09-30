@@ -2,7 +2,22 @@
 
 **Laporan/Log Perubahan scope global**
 
-## Ringkasan sesi terakhir
+## Ringkasan Pengembangan Web Platform (Code Arrange)
+
+Platform **Code Arrange** (`codearrange-web`) telah berhasil dikembangkan sebagai environment evaluasi terisolasi untuk merekam *cognitive load* developer saat mengerjakan *coding task* (rearrange code).
+
+Pembaruan dan stabilitas terbaru meliputi:
+1. **Sistem Waktu / Session Timer**: Sesi ujian sekarang dibatasi oleh waktu (misal 1 menit untuk testing, atau custom). Timer divalidasi dan dihitung berdasarkan `sessionStartedAtMs` dari server. 
+2. **Session Storage Persistence**: State puzzle dan navigasi ujian di-_persist_ menggunakan `sessionStorage`. Saat waktu habis (*timeout*), tombol "Back to Start" tetap aktif. Stale session (saat server restart atau waktu habis) secara cerdas dibersihkan oleh `app.js` (pada `init()`) untuk mencegah halaman terkunci (stuck).
+3. **Dual-Logging**: Ujian otomatis mencatat *attempt* user ke dalam dua file log CSV terpisah: 
+   - `logs/attempts.csv` (log global untuk semua percobaan)
+   - `logs/exam-<set_name>.csv` (log khusus ujian untuk mempermudah analisis).
+
+Perekaman meliputi waktu pengerjaan per-soal, tipe submit (`manual` atau `timeout`), jumlah baris benar/salah, hingga detail pergeseran posisi baris. Platform ini siap digunakan bersamaan dengan *multimodal sensor* untuk penelitian utama.
+
+---
+
+## Ringkasan sesi terakhir (Multimodal Prototype)
 
 Prototype eye tracking dan HRV diarahkan menjadi satu alur sesi multimodal. Webcam dan sensor HRV harus aktif bersamaan, tetapi setiap sumber tetap menyimpan log sendiri. Sinkronisasi baru dibuat setelah user menghentikan sesi.
 
