@@ -67,7 +67,7 @@ const MIME_TYPES = {
 function loadAllPuzzles() {
   const files = fs
     .readdirSync(PUZZLES_DIR)
-    .filter((f) => f.endsWith('.json'))
+    .filter((f) => f.endsWith('.json') && f !== 'master_config.json')
     .sort();
   return files.map((f) => normalizePuzzle(JSON.parse(fs.readFileSync(path.join(PUZZLES_DIR, f), 'utf8'))));
 }
