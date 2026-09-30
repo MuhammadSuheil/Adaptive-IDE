@@ -1,8 +1,8 @@
 {
   "exam-set-a": {
-    "timeLimitMinutes": 2
+    "timeLimitMinutes": 5
   },
   "exam-set-b": {
-    "timeLimitMinutes": 2
+    "timeLimitMinutes": 5
   }
 }
