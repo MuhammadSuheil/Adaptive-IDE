@@ -39,6 +39,7 @@ if (!cliPlayerName || !cliPuzzleSubfolder) {
 const PLAYER_NAME = cliPlayerName;
 
 const PUZZLES_DIR = path.resolve(PUZZLES_ROOT, cliPuzzleSubfolder);
+const ACTIVE_PUZZLE_SET_KEY = path.relative(PUZZLES_ROOT, PUZZLES_DIR);
 const isInsidePuzzlesRoot =
   PUZZLES_DIR === PUZZLES_ROOT || PUZZLES_DIR.startsWith(PUZZLES_ROOT + path.sep);
 if (!isInsidePuzzlesRoot) {
@@ -67,9 +68,28 @@ const MIME_TYPES = {
 function loadAllPuzzles() {
   const files = fs
     .readdirSync(PUZZLES_DIR)
-    .filter((f) => f.endsWith('.json'))
+    .filter((f) => f.endsWith('.json') && f !== 'master_config.json')
     .sort();
   return files.map((f) => normalizePuzzle(JSON.parse(fs.readFileSync(path.join(PUZZLES_DIR, f), 'utf8'))));
+}
+
+function loadActiveSetConfig() {
+  const masterConfigPath = path.join(PUZZLES_ROOT, 'master_config.json');
+  if (!fs.existsSync(masterConfigPath)) return {};
+  try {
+    const masterConfig = JSON.parse(fs.readFileSync(masterConfigPath, 'utf8'));
+    return masterConfig[ACTIVE_PUZZLE_SET_KEY] || {};
+  } catch (e) {
+    console.error('Failed to parse master_config.json:', e);
+    return {};
+  }
+}
+
+function getActiveSetTimeLimitMs() {
+  const setConfig = loadActiveSetConfig();
+  const timeLimitMinutes = Number(setConfig.timeLimitMinutes);
+  if (!Number.isFinite(timeLimitMinutes) || timeLimitMinutes <= 0) return null;
+  return timeLimitMinutes * 60 * 1000;
 }
 
 // Puzzles are authored with a "solutions" field: an array of possible
@@ -259,6 +279,7 @@ function gradeSubmission(puzzle, order) {
 const LOG_DIR = path.join(__dirname, 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'attempts.csv');
 const LOG_HEADER = 'timestamp,name,puzzle_id,puzzle_title,time_seconds,correct,correct_lines,total_lines,score_percent\n';
+const ATTEMPTS_BY_PUZZLE_ID = new Map();
 
 function csvField(value) {
   const str = String(value);
@@ -346,7 +367,8 @@ const server = http.createServer(async (req, res) => {
   try {
     // GET /api/config  -> the locked player name and active puzzle set for this server instance
     if (req.method === 'GET' && pathname === '/api/config') {
-      return sendJson(res, 200, { playerName: PLAYER_NAME, puzzleSet: cliPuzzleSubfolder });
+      const setConfig = loadActiveSetConfig();
+      return sendJson(res, 200, { playerName: PLAYER_NAME, puzzleSet: cliPuzzleSubfolder, setConfig });
     }
 
     // GET /api/puzzles  -> [{id, title, type, description}, ...]
@@ -360,11 +382,20 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'POST' && match) {
       const puzzle = findPuzzleById(match[1]);
       if (!puzzle) return sendJson(res, 404, { error: 'Puzzle not found' });
+      const attempt = ATTEMPTS_BY_PUZZLE_ID.get(puzzle.id);
+      if (!attempt) return sendJson(res, 409, { error: 'No active attempt for this puzzle' });
+      if (attempt.deadlineMs !== null && Date.now() > attempt.deadlineMs) {
+        return sendJson(res, 403, { error: 'Time limit exceeded for this attempt' });
+      }
       let body;
       try {
         body = await readJsonBody(req);
       } catch (e) {
         return sendJson(res, 400, { error: 'Invalid JSON body' });
+      }
+      const nowMs = Date.now();
+      if (attempt.deadlineMs !== null && nowMs > attempt.deadlineMs) {
+        return sendJson(res, 403, { error: 'Time limit exceeded for this attempt' });
       }
       const result = gradeSubmission(puzzle, body.order);
 
@@ -373,8 +404,8 @@ const server = http.createServer(async (req, res) => {
       // -- otherwise a player could spoof a different name by editing
       // browser JavaScript. Every finished attempt gets logged, since
       // there's always a name for this server instance.
-      const timeMs = Number(body.timeMs);
-      const timeSeconds = Number.isFinite(timeMs) && timeMs >= 0 ? timeMs / 1000 : 0;
+      const elapsedMs = Math.max(0, nowMs - attempt.startedAtMs);
+      const timeSeconds = elapsedMs / 1000;
       try {
         logAttempt({
           name: PLAYER_NAME,
@@ -398,6 +429,12 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'GET' && match) {
       const puzzle = findPuzzleById(match[1]);
       if (!puzzle) return sendJson(res, 404, { error: 'Puzzle not found' });
+      const startedAtMs = Date.now();
+      const timeLimitMs = getActiveSetTimeLimitMs();
+      ATTEMPTS_BY_PUZZLE_ID.set(puzzle.id, {
+        startedAtMs,
+        deadlineMs: timeLimitMs === null ? null : startedAtMs + timeLimitMs,
+      });
       return sendJson(res, 200, toClientPuzzle(puzzle));
     }
 

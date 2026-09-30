@@ -156,10 +156,10 @@ CSV-escaped automatically.
 
 | Method | Path | Description |
 |---|---|---|
-| GET | `/api/config` | `{ playerName, puzzleSet }` — the name and puzzle-set subfolder this server instance was started with. |
+| GET | `/api/config` | `{ playerName, puzzleSet, setConfig }` — the name and puzzle-set subfolder this server instance was started with, plus any matching configuration from `master_config.json` (e.g. `timeLimitMinutes`). |
 | GET | `/api/puzzles` | List of `{ id, title, type, mode, description }` for every puzzle in the active puzzle set. |
 | GET | `/api/puzzles/:id` | One puzzle's `{ id, title, type, mode, description, lines }`. Lines are shuffled, `code` has full original indentation, `tag` is a disambiguation number (or `null`) — see "Hiding indentation" below. `solutions` and `explanation` are never sent here. |
-| POST | `/api/puzzles/:id/check` | Body `{ "order": [<line ids>], "timeMs"?: number }`. Grades the submission against every ordering in the puzzle's `solutions` list (a match against any one counts as correct) and returns `{ correct, correctPositions, total, submittedCount, perLine, wrongLines, explanation }` — `wrongLines` is how many submitted lines appear in *no* accepted solution (the distractors the player fell for), and `explanation` is the puzzle's optional write-up (or `null`), which only ever leaves the server in this response. Always logs the attempt to `logs/attempts.csv` using the server's locked player name (any `name` field in the request body is ignored) and `timeMs` (defaults to 0 if missing/invalid). |
+| POST | `/api/puzzles/:id/check` | Body `{ "order": [<line ids>], "timeMs"?: number }`. Grades the submission against every ordering in the puzzle's `solutions` list (a match against any one counts as correct) and returns `{ correct, correctPositions, total, submittedCount, perLine, wrongLines, explanation }` — `wrongLines` is how many submitted lines appear in *no* accepted solution (the distractors the player fell for), and `explanation` is the puzzle's optional write-up (or `null`), which only ever leaves the server in this response. A submission is accepted only while the server-owned attempt window is active; once the configured time limit has passed, this endpoint returns `403`. Attempt logs always use the server's locked player name and server-measured elapsed time (any client-sent `name`/`timeMs` is not authoritative). |
 
 ## Puzzle sets (subfolders under `puzzles/`)
 
@@ -169,10 +169,7 @@ above. `puzzles/` in this repo ships with:
 
 ```
 puzzles/
-  1_hello_world.json          } served when you pass "." as the subfolder
-  2_sum_two_numbers.json      }
-  3_for_loop_sum.json         }
-  4_fix_even_sum.json         }
+  master_config.json
   exam-set-a/
     1_hello_world.json
     2_sum_two_numbers.json
@@ -187,6 +184,23 @@ tiers, or classes) — copy/rename/delete freely. A server started with
 `exam-set-a` genuinely cannot serve `exam-set-b`'s puzzles: the puzzle
 list only shows what's in that folder, and `GET`/`POST` requests for a
 puzzle id from a different set 404, even if you know its id.
+
+### Time Limits (master_config.json)
+
+You can set a strict time limit for any puzzle set by editing `puzzles/master_config.json`. The keys must match the exact folder names of your puzzle sets.
+
+```json
+{
+  "exam-set-a": {
+    "timeLimitMinutes": 5
+  },
+  "exam-set-b": {
+    "timeLimitMinutes": 10
+  }
+}
+```
+
+When a time limit is configured for the active set, the timer in the UI will display a countdown target (e.g., `0:15 / 5:00`). When the limit is reached, the app will automatically submit the current arrangement and end the attempt. If a set is not listed in `master_config.json`, it has no time limit.
 
 ## Puzzle modes
 
