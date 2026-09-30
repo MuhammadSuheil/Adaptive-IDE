@@ -27,6 +27,7 @@
   let currentPuzzleData = null; // full {id,title,type,description,lines} from the server for the attempt in progress
   let puzzleList = []; // full ordered list from /api/puzzles, used to find "the next puzzle"
   let playerName = ''; // set once from /api/config; the player can't change it
+  let timeLimitMinutes = null; // set once from /api/config if set_config.json exists
   let startTimeMs = null;
   let timerIntervalId = null;
   let finished = false;
@@ -103,6 +104,9 @@
     const config = await res.json();
     playerName = config.playerName;
     playerNameDisplay.textContent = playerName;
+    if (config.setConfig && config.setConfig.timeLimitMinutes) {
+      timeLimitMinutes = config.setConfig.timeLimitMinutes;
+    }
   }
 
   async function loadPuzzleList() {
@@ -470,7 +474,19 @@
   }
 
   function updateTimerLabel() {
-    timerLabel.textContent = formatElapsed(Date.now() - startTimeMs);
+    const elapsedMs = Date.now() - startTimeMs;
+    let label = formatElapsed(elapsedMs);
+    
+    if (timeLimitMinutes) {
+      const limitMs = timeLimitMinutes * 60 * 1000;
+      label += ` / ${timeLimitMinutes}:00`;
+      
+      if (elapsedMs >= limitMs && !finished) {
+        finishBtn.click();
+      }
+    }
+    
+    timerLabel.textContent = label;
   }
 
   function formatElapsed(elapsedMs) {

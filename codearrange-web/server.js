@@ -346,7 +346,19 @@ const server = http.createServer(async (req, res) => {
   try {
     // GET /api/config  -> the locked player name and active puzzle set for this server instance
     if (req.method === 'GET' && pathname === '/api/config') {
-      return sendJson(res, 200, { playerName: PLAYER_NAME, puzzleSet: cliPuzzleSubfolder });
+      let setConfig = {};
+      const masterConfigPath = path.join(PUZZLES_ROOT, 'master_config.json');
+      if (fs.existsSync(masterConfigPath)) {
+        try {
+          const masterConfig = JSON.parse(fs.readFileSync(masterConfigPath, 'utf8'));
+          if (masterConfig[cliPuzzleSubfolder]) {
+            setConfig = masterConfig[cliPuzzleSubfolder];
+          }
+        } catch (e) {
+          console.error('Failed to parse master_config.json:', e);
+        }
+      }
+      return sendJson(res, 200, { playerName: PLAYER_NAME, puzzleSet: cliPuzzleSubfolder, setConfig });
     }
 
     // GET /api/puzzles  -> [{id, title, type, description}, ...]
