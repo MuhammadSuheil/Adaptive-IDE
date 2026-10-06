@@ -1,0 +1,63 @@
+{
+  "id": "2_simple_ifelse",
+  "title": "Simple If Else",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Cek jika nilai besar dari atau sama dengan 50.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class SimpleIfElse {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int score = 85;"
+    },
+    {
+      "id": 4,
+      "code": "        if (score >= 50) {"
+    },
+    {
+      "id": 5,
+      "code": "            System.out.println(\"Pass\");"
+    },
+    {
+      "id": 6,
+      "code": "        } else {"
+    },
+    {
+      "id": 7,
+      "code": "            System.out.println(\"Fail\");"
+    },
+    {
+      "id": 8,
+      "code": "        }"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

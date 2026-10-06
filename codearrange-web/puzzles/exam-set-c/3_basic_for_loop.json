@@ -1,0 +1,48 @@
+{
+  "id": "3_basic_for_loop",
+  "title": "Print Numbers",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Cetak bilangan 1 sampai 5",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class BasicForLoop {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        for (int i = 1; i <= 5; i++) {"
+    },
+    {
+      "id": 4,
+      "code": "            System.out.println(\"Count: \" + i);"
+    },
+    {
+      "id": 5,
+      "code": "        }"
+    },
+    {
+      "id": 6,
+      "code": "    }"
+    },
+    {
+      "id": 7,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  ]
+}

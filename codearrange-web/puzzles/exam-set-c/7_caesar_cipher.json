@@ -1,0 +1,73 @@
+{
+  "id": "7_caesar_cipher",
+  "title": "Caesar Cipher",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "ncrypts a string by shifting character ASCII values.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class CaesarCipher {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        String text = \"hello\";"
+    },
+    {
+      "id": 4,
+      "code": "        int shift = 3;"
+    },
+    {
+      "id": 5,
+      "code": "        String result = \"\";"
+    },
+    {
+      "id": 6,
+      "code": "        for (int i = 0; i < text.length(); i++) {"
+    },
+    {
+      "id": 7,
+      "code": "            char ch = (char)(((int)text.charAt(i) + shift - 97) % 26 + 97);"
+    },
+    {
+      "id": 8,
+      "code": "            result += ch;"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "        System.out.println(result);"
+    },
+    {
+      "id": 11,
+      "code": "    }"
+    },
+    {
+      "id": 12,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  ]
+}

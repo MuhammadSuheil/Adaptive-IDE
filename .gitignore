@@ -2,15 +2,24 @@
 .agent
 .gemini
 
-#Sessions
-eye_tracking_prototype/sessions/
-hrv_monitor_prototype/sessions/
-__pycache__/
-eye_tracking_prototype/modules/__pycache__
-eyebeam
+#Sessions & Pycache
+eye_tracking_prototype/sessions/**
+!eye_tracking_prototype/sessions/saved_session
+!eye_tracking_prototype/sessions/saved_session/**
+
+hrv_monitor_prototype/sessions/**
+!hrv_monitor_prototype/sessions/saved_session
+!hrv_monitor_prototype/sessions/saved_session/**
+
 sessions/*
 !sessions/saved_session/
 !sessions/saved_session/**
 
+__pycache__/
+eye_tracking_prototype/modules/__pycache__
+eyebeam
+
 # Code Arrange
 codearrange-web/logs/**
+!codearrange-web/logs/saved_log
+!codearrange-web/logs/saved_log/**

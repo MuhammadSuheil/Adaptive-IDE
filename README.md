@@ -24,7 +24,7 @@ This repository contains the software components and research context for develo
      ```powershell
      cd codearrange-web
      npm install # if not installed yet
-     node server.js "Participant Name" "exam-set-a"
+     node server.js "Participant Name" "exam-set-a" # add --review to enable difficulty rating
      ```
      Then open `http://localhost:3000` in your browser.
 

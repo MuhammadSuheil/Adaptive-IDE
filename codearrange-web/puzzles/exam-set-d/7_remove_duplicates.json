@@ -1,0 +1,46 @@
+{
+  "id": "7_remove_duplicates",
+  "title": "Manipulasi Array 2",
+  "type": "arrays",
+  "mode": "arrange",
+  "description": "Susunlah Output/Keluaran dari Kode berikut:```public class ManipulateArray { \n    public static void main(String[] args) { \n        int[] arr = {1, 2, 2, 3, 4, 4, 4, 5}; \n        int j = 0; \n        for (int i = 0; i < arr.length - 1; i++) { \n            if (arr[i] != arr[i + 1]) { \n                arr[j++] = arr[i]; \n            } \n        } \n        arr[j++] = arr[arr.length - 1]; \n        for (int i = 0; i < j; i++) { \n            System.out.println(arr[i]); \n        } \n    } \n}```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "1"
+    },
+    {
+      "id": 2,
+      "code": "2"
+    },
+    {
+      "id": 3,
+      "code": "3"
+    },
+    {
+      "id": 4,
+      "code": "4"
+    },
+    {
+      "id": 5,
+      "code": "5"
+    },
+    {
+      "id": 6,
+      "code": "8"
+    },
+    {
+      "id": 7,
+      "code": "9"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  ]
+}

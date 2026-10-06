@@ -22,6 +22,9 @@
   const feedback = document.getElementById('feedback');
   const explanationBox = document.getElementById('explanation-box');
   const explanationContent = document.getElementById('explanation-content');
+  const ratingModal = document.getElementById('rating-modal');
+  const ratingFeedback = document.getElementById('rating-feedback');
+  const ratingButtons = document.getElementById('rating-buttons');
 
   let currentPuzzleId = null;
   let currentPuzzleData = null; // full {id,title,type,description,lines} from the server for the attempt in progress
@@ -36,6 +39,9 @@
   let finishedElapsedMs = null; // frozen elapsed time once Finish has been clicked
   let finishedPerLine = null; // correctness map from the last grading result, for restoring highlights
   let finishedExplanation = null; // explanation text that came back with the last grading result
+  let reviewMode = false; // set once from /api/config; whether this server instance asks for ratings
+  let pendingRatingAttemptId = null; // set while the rating dialog is open, for the attempt it's rating
+  let pausedAtMs = null; // timestamp when exam timer was paused by the rating dialog
 
   // ---- Resuming after a page refresh (sessionStorage) --------------------
   //
@@ -68,6 +74,8 @@
       finishedElapsedMs,
       finishedPerLine,
       finishedExplanation,
+      pendingRatingAttemptId,
+      pausedAtMs,
       feedbackText: feedback.textContent,
       feedbackClass: feedback.className,
     };
@@ -108,6 +116,7 @@
     const config = await res.json();
     playerName = config.playerName;
     playerNameDisplay.textContent = playerName;
+    reviewMode = Boolean(config.reviewMode);
     if (config.setConfig && config.setConfig.timeLimitMinutes) {
       timeLimitMinutes = Number(config.setConfig.timeLimitMinutes);
     }
@@ -155,7 +164,7 @@
     }
 
     if (puzzleList.length === 0) {
-      startError.textContent = 'No puzzles found in this puzzle set.';
+      startError.textContent = 'Tidak ada soal ditemukan pada set soal ini.';
       startBtn.disabled = true;
     }
   }
@@ -180,10 +189,23 @@
   // attempt starting and the button being clicked, so recomputing is cheap
   // and keeps there being exactly one source of truth.
   function updateNextPuzzleButtonLabel() {
-    nextPuzzleBtn.textContent = hasNextPuzzle() ? 'Next Puzzle' : 'Back to Start';
+    nextPuzzleBtn.textContent = hasNextPuzzle() ? 'Soal Berikutnya' : 'Kembali ke Awal';
   }
 
+  const TYPE_LABELS = {
+    basics: 'Dasar',
+    variables: 'Variabel',
+    loops: 'Perulangan',
+    arrays: 'Array',
+    string: 'String',
+    strings: 'String',
+    uncategorized: 'Lainnya',
+  };
+
   function humanizeType(type) {
+    if (!type) return '';
+    const lower = type.toLowerCase();
+    if (TYPE_LABELS[lower]) return TYPE_LABELS[lower];
     return type
       .split(/[_-]+/)
       .filter(Boolean)
@@ -202,14 +224,14 @@
   const MODE_INFO = {
     arrange: { label: '', hint: '' },
     output: {
-      label: 'Predict output',
-      hint: 'Work out what the program in the description prints, then arrange the output lines in the order they appear.',
+      label: 'Tebak Output',
+      hint: 'Perhatikan apa yang dicetak oleh program pada deskripsi, lalu susun baris output sesuai urutan tampilannya.',
     },
     debug: {
-      label: 'Debug and repair',
+      label: 'Debug & Perbaiki',
       hint:
-        'The program in the description has bugs. Rebuild the corrected version from the tiles. ' +
-        'Some tiles look right but still contain a bug, so not every tile belongs in your program.',
+        'Program pada deskripsi memiliki bug / kesalahan. Susun kembali versi yang benar dari potongan kode yang tersedia. ' +
+        'Beberapa potongan kode terlihat benar namun masih memiliki bug, sehingga tidak semua potongan kode digunakan.',
     },
   };
 
@@ -221,11 +243,10 @@
   }
 
   function describeWrongLines(count, mode) {
-    const noun = count === 1 ? 'line' : 'lines';
     if (mode === 'debug') {
-      return `${count} ${noun} you used still ${count === 1 ? 'contains a bug' : 'contain bugs'}.`;
+      return `${count} baris yang Anda gunakan masih mengandung bug.`;
     }
-    return `${count} ${noun} you used ${count === 1 ? "doesn't" : "don't"} belong in any correct answer.`;
+    return `${count} baris yang Anda gunakan tidak termasuk dalam solusi yang benar.`;
   }
 
   function showExplanation(text) {
@@ -242,9 +263,80 @@
     explanationContent.innerHTML = '';
   }
 
+  // ---- Rating dialog (review mode) ------------------------------------
+  //
+  // Shown after Finish (including timeout) when the server was started with
+  // --review (reviewMode, set once from /api/config). Clicking a number
+  // posts straight to the server; there is no separate "submit" step and no
+  // skip button so the rating is captured reliably. The exam timer is paused
+  // while this dialog is open.
+
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = String(i);
+    btn.addEventListener('click', () => submitRating(i));
+    ratingButtons.appendChild(btn);
+  }
+
+  function showRatingDialog(attemptId) {
+    pendingRatingAttemptId = attemptId;
+    ratingFeedback.textContent = feedback.textContent;
+    ratingFeedback.className = feedback.className;
+    ratingModal.classList.remove('hidden');
+
+    // Freeze client-side timer while rating dialog is open (if not expired)
+    if (!sessionExpired && !setCompleted) {
+      stopTimer();
+      pausedAtMs = Date.now();
+    }
+    saveState();
+  }
+
+  function hideRatingDialog() {
+    pendingRatingAttemptId = null;
+    ratingModal.classList.add('hidden');
+
+    // Unfreeze client-side timer if exam is still active
+    if (pausedAtMs && !sessionExpired && !setCompleted) {
+      const pausedDuration = Math.max(0, Date.now() - pausedAtMs);
+      pausedAtMs = null;
+      if (startTimeMs) {
+        startTimeMs += pausedDuration;
+      }
+      startTimer();
+      updateTimerLabel();
+    }
+    saveState();
+  }
+
+  async function submitRating(rating) {
+    const attemptId = pendingRatingAttemptId;
+    if (!attemptId) return;
+    try {
+      const res = await fetch(`/api/attempts/${encodeURIComponent(attemptId)}/rating`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.sessionStartedAtMs) {
+          startTimeMs = data.sessionStartedAtMs;
+          pausedAtMs = null;
+        }
+      }
+    } catch (err) {
+      // The rating is a nice-to-have on top of an attempt that's already
+      // logged correctly either way -- don't trap the player in the
+      // dialog over a network hiccup.
+    }
+    hideRatingDialog();
+  }
+
   startBtn.addEventListener('click', async () => {
     if (!puzzleSelect.value) {
-      startError.textContent = 'No puzzle is available to start.';
+      startError.textContent = 'Tidak ada soal yang tersedia untuk dimulai.';
       return;
     }
     startError.textContent = '';
@@ -260,7 +352,7 @@
 
     startScreen.classList.add('hidden');
     puzzleScreen.classList.remove('hidden');
-    activePlayerLabel.textContent = `Player: ${playerName}`;
+    activePlayerLabel.textContent = `Peserta: ${playerName}`;
 
     await beginAttempt(puzzleSelect.value);
   });
@@ -283,6 +375,9 @@
     finishedElapsedMs = null;
     finishedPerLine = null;
     finishedExplanation = null;
+    pendingRatingAttemptId = null;
+    pausedAtMs = null;
+    ratingModal.classList.add('hidden');
     finishBtn.disabled = sessionExpired;
     tryAgainBtn.disabled = sessionExpired;
     nextPuzzleBtn.disabled = true; // only enabled once Finish is clicked for this attempt
@@ -292,7 +387,7 @@
     const res = await fetch(`/api/puzzles/${encodeURIComponent(puzzleId)}`);
     if (!res.ok) {
       descriptionContent.innerHTML = '';
-      descriptionContent.appendChild(textParagraph('Could not load that puzzle.'));
+      descriptionContent.appendChild(textParagraph('Gagal memuat soal tersebut.'));
       return;
     }
     const puzzle = await res.json();
@@ -327,6 +422,8 @@
     finishedElapsedMs = saved.finishedElapsedMs;
     finishedPerLine = saved.finishedPerLine;
     finishedExplanation = saved.finishedExplanation || null;
+    pendingRatingAttemptId = saved.pendingRatingAttemptId || null;
+    pausedAtMs = saved.pausedAtMs || null;
     startTimeMs = saved.startTimeMs || startTimeMs;
     sessionExpired = Boolean(saved.sessionExpired);
     setCompleted = Boolean(saved.setCompleted);
@@ -339,7 +436,7 @@
 
     startScreen.classList.add('hidden');
     puzzleScreen.classList.remove('hidden');
-    activePlayerLabel.textContent = `Player: ${playerName}`;
+    activePlayerLabel.textContent = `Peserta: ${playerName}`;
     activePuzzleTypeLabel.textContent =
       saved.puzzle.type && saved.puzzle.type !== 'uncategorized' ? humanizeType(saved.puzzle.type) : '';
     applyMode(saved.puzzle.mode); // state saved before modes existed has no mode; that's just "arrange"
@@ -355,7 +452,7 @@
       tryAgainBtn.disabled = sessionExpired || setCompleted;
       nextPuzzleBtn.disabled = false;
       if (sessionExpired || setCompleted || !hasNextPuzzle()) {
-        nextPuzzleBtn.textContent = 'Back to Start';
+        nextPuzzleBtn.textContent = 'Kembali ke Awal';
       }
       revealIndentation();
       for (const li of solutionList.children) {
@@ -380,6 +477,10 @@
       } else {
         stopTimer();
         updateTimerLabel();
+      }
+
+      if (reviewMode && saved.pendingRatingAttemptId) {
+        showRatingDialog(saved.pendingRatingAttemptId);
       }
     } else {
       if (sessionExpired) {
@@ -578,18 +679,18 @@
     stopTimer();
     finishBtn.disabled = true;
     tryAgainBtn.disabled = true;
-    nextPuzzleBtn.textContent = 'Back to Start';
+    nextPuzzleBtn.textContent = 'Kembali ke Awal';
     nextPuzzleBtn.disabled = false;
 
     if (!finished && currentPuzzleId) {
       await submitAttempt('timeout');
     } else {
-      const msg = 'Time limit reached. Exam session has ended.';
+      const msg = 'Batas waktu telah tercapai. Sesi ujian telah berakhir.';
       if (!feedback.textContent) {
         feedback.textContent = msg;
         feedback.className = 'feedback error';
-      } else if (!feedback.textContent.includes('Exam session has ended')) {
-        feedback.textContent += ' Exam session has ended.';
+      } else if (!feedback.textContent.includes('Sesi ujian telah berakhir')) {
+        feedback.textContent += ' Sesi ujian telah berakhir.';
       }
       saveState();
     }
@@ -715,13 +816,13 @@
       result = await res.json();
     } catch (err) {
       console.error('Check submission failed:', err);
-      feedback.textContent = 'Something went wrong checking your answer. Your attempt was not logged.';
+      feedback.textContent = 'Terjadi kesalahan saat memeriksa jawaban Anda. Percobaan Anda belum dicatat.';
       feedback.className = 'feedback error';
       if (submissionType === 'timeout' || (timeLimitMinutes && elapsedMs >= timeLimitMinutes * 60 * 1000)) {
         sessionExpired = true;
         finishBtn.disabled = true;
         tryAgainBtn.disabled = true;
-        nextPuzzleBtn.textContent = 'Back to Start';
+        nextPuzzleBtn.textContent = 'Kembali ke Awal';
         nextPuzzleBtn.disabled = false;
         finished = true;
         stopTimer();
@@ -752,17 +853,17 @@
 
     const elapsedSeconds = (elapsedMs / 1000).toFixed(1);
     if (result.correct) {
-      feedback.textContent = `Correct! Completed in ${elapsedSeconds}s. Your result has been logged.`;
+      feedback.textContent = `Benar! Selesai dalam ${elapsedSeconds} detik. Hasil Anda telah dicatat.`;
       feedback.className = 'feedback success';
     } else {
-      let message = `${result.correctPositions} of ${result.total} lines were in the right position. `;
+      let message = `${result.correctPositions} dari ${result.total} baris berada di posisi yang benar. `;
       if (result.wrongLines > 0) {
         message += `${describeWrongLines(result.wrongLines, currentPuzzleData && currentPuzzleData.mode)} `;
       }
       if (submissionType === 'timeout') {
-        message += `Time limit reached (${elapsedSeconds}s). Your result has been logged.`;
+        message += `Batas waktu tercapai (${elapsedSeconds} detik). Hasil Anda telah dicatat.`;
       } else {
-        message += `Time: ${elapsedSeconds}s. Your result has been logged.`;
+        message += `Waktu: ${elapsedSeconds} detik. Hasil Anda telah dicatat.`;
       }
       feedback.textContent = message;
       feedback.className = 'feedback error';
@@ -773,24 +874,24 @@
       stopTimer();
       finishBtn.disabled = true;
       tryAgainBtn.disabled = true;
-      nextPuzzleBtn.textContent = 'Back to Start';
+      nextPuzzleBtn.textContent = 'Kembali ke Awal';
       nextPuzzleBtn.disabled = false;
-      if (!feedback.textContent.includes('Exam session has ended')) {
-        feedback.textContent += ' Exam session has ended.';
+      if (!feedback.textContent.includes('Sesi ujian telah berakhir')) {
+        feedback.textContent += ' Sesi ujian telah berakhir.';
       }
     } else if (result.correct && !hasNextPuzzle()) {
       setCompleted = true;
       stopTimer();
       finishBtn.disabled = true;
       tryAgainBtn.disabled = true;
-      nextPuzzleBtn.textContent = 'Back to Start';
+      nextPuzzleBtn.textContent = 'Kembali ke Awal';
       nextPuzzleBtn.disabled = false;
       const finalDisplay = formatElapsed(elapsedMs);
       timerLabel.textContent = timeLimitMinutes
         ? `${finalDisplay} / ${timeLimitMinutes}:00`
         : finalDisplay;
       timerLabel.classList.remove('timeout');
-      feedback.textContent += ' You have completed all puzzles in this set!';
+      feedback.textContent += ' Anda telah menyelesaikan semua soal dalam set ini!';
     } else {
       tryAgainBtn.disabled = false;
       nextPuzzleBtn.disabled = false;
@@ -799,6 +900,10 @@
     }
 
     saveState();
+
+    if (reviewMode && result.attemptId) {
+      showRatingDialog(result.attemptId);
+    }
   }
 
   finishBtn.addEventListener('click', () => {
@@ -845,6 +950,9 @@
     startTimeMs = null;
     currentPuzzleId = null;
     currentPuzzleData = null;
+    pendingRatingAttemptId = null;
+    pausedAtMs = null;
+    ratingModal.classList.add('hidden');
     clearFeedback();
     puzzleScreen.classList.add('hidden');
     startScreen.classList.remove('hidden');

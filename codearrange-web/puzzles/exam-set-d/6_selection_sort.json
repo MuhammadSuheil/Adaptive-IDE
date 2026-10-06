@@ -1,0 +1,49 @@
+{
+  "id": "6_selection_sort",
+  "title": "Manipulasi Array 1",
+  "type": "arrays",
+  "mode": "arrange",
+  "description": "Susunlah Output/Keluaran dari Kode berikut:```public class ArrayManipulation { \n    public static void main(String[] args) { \n        int[] arr = {64, 25, 12, 22, 11}; \n        for (int i = 0; i < arr.length - 1; i++) { \n            int minIdx = i; \n            for (int j = i + 1; j < arr.length; j++) { \n                if (arr[j] < arr[minIdx]) { \n                    minIdx = j; \n                    System.out.println(arr[minIdx]);\n                } \n            } \n            int temp = arr[minIdx]; \n            arr[minIdx] = arr[i]; \n            arr[i] = temp; \n        } \n    } \n}```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "25"
+    },
+    {
+      "id": 2,
+      "code": "12"
+    },
+    {
+      "id": 3,
+      "code": "11"
+    },
+    {
+      "id": 4,
+      "code": "12"
+    },
+    {
+      "id": 5,
+      "code": "22"
+    },
+    {
+      "id": 6,
+      "code": "64"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    [
+      1,
+      4,
+      3,
+      2,
+      5
+    ]
+  ]
+}

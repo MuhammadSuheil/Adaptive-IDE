@@ -1,0 +1,63 @@
+{
+  "id": "4_string_reverse",
+  "title": "String Reverse",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Baliklah sebuah String",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class StringReverse {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        String original = \"hello\";"
+    },
+    {
+      "id": 4,
+      "code": "        String reversed = \"\";"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = original.length() - 1; i >= 0; i--) {"
+    },
+    {
+      "id": 6,
+      "code": "            reversed += original.charAt(i);"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(reversed);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

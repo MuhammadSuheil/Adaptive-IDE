@@ -1,0 +1,57 @@
+{
+  "id": "6_binary_search",
+  "title": "Binary Search",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Kode di bawah ini mencari nilai target dalam array terurut menggunakan Binary Search. Susunlah Output/Keluaran dari kodenya.```public class BinarySearch { \n    public static void main(String[] args) { \n        int[] arr = {2, 3, 4, 7, 9, 10, 15, 20, 40}; \n        int target = 10; \n        int l = 0, r = arr.length - 1; \n        while (l <= r) { \n            int m = l + (r - l) / 2; \n            System.out.println(arr[m]); \n            if (arr[m] == target) { \n                System.out.println(\"Found\"); \n                break; \n            } \n            if (arr[m] < target) l = m + 1; \n            else r = m - 1; \n        } \n    } \n}```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "9"
+    },
+    {
+      "id": 2,
+      "code": "15"
+    },
+    {
+      "id": 3,
+      "code": "10"
+    },
+    {
+      "id": 4,
+      "code": "Found"
+    },
+    {
+      "id": 5,
+      "code": "2"
+    },
+    {
+      "id": 6,
+      "code": "3"
+    },
+    {
+      "id": 7,
+      "code": "4"
+    },
+    {
+      "id": 8,
+      "code": "7"
+    },
+    {
+      "id": 9,
+      "code": "20"
+    },
+    {
+      "id": 10,
+      "code": "40"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "id": "1_variables",
+  "title": "Variables",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Inisialisasi dan cetak variable primitif.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class Variables {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int age = 25;"
+    },
+    {
+      "id": 4,
+      "code": "        double price = 19.99;"
+    },
+    {
+      "id": 5,
+      "code": "        System.out.println(age + \" \" + price);"
+    },
+    {
+      "id": 6,
+      "code": "    }"
+    },
+    {
+      "id": 7,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]
+  ]
+}

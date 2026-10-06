@@ -1,0 +1,63 @@
+{
+  "id": "3_array_sum",
+  "title": "Array Sum",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Penjumlahan semua nilai dalam sebuah Array.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class ArraySum {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] nums = {2, 4, 6, 8};"
+    },
+    {
+      "id": 4,
+      "code": "        int sum = 0;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < nums.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            sum += nums[i];"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(\"Sum: \" + sum);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

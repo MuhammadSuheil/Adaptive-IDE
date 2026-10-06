@@ -1,0 +1,73 @@
+{
+  "id": "5_matrix_addition",
+  "title": "Matrix Addition",
+  "type": "uncategorized",
+  "mode": "arrange",
+  "description": "Lakukan penjumlahan 2 Matriks.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class MatrixAddition {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[][] a = { {1, 2}, {3, 4} };"
+    },
+    {
+      "id": 4,
+      "code": "        int[][] b = { {5, 6}, {7, 8} };"
+    },
+    {
+      "id": 5,
+      "code": "        int[][] sum = new int[2][2];"
+    },
+    {
+      "id": 6,
+      "code": "        for (int i = 0; i < 2; i++) {"
+    },
+    {
+      "id": 7,
+      "code": "            for (int j = 0; j < 2; j++) {"
+    },
+    {
+      "id": 8,
+      "code": "                sum[i][j] = a[i][j] + b[i][j];"
+    },
+    {
+      "id": 9,
+      "code": "            }"
+    },
+    {
+      "id": 10,
+      "code": "        }"
+    },
+    {
+      "id": 11,
+      "code": "    }"
+    },
+    {
+      "id": 12,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  ]
+}

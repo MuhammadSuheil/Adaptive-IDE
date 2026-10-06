@@ -3,6 +3,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { URL } = require('url');
 
 const PORT = process.env.PORT || 3000;
@@ -11,7 +12,7 @@ const PUZZLES_ROOT = path.join(__dirname, 'puzzles');
 
 // ---- Command-line arguments --------------------------------------------
 //
-// node server.js <player-name> <puzzle-set-subfolder>
+// node server.js <player-name> <puzzle-set-subfolder> [--review]
 //
 // <player-name>          Locked in for the whole session -- the browser UI
 //                         displays it but never lets the player change it.
@@ -22,17 +23,28 @@ const PUZZLES_ROOT = path.join(__dirname, 'puzzles');
 //                         instance. This is meant for running one server
 //                         per player/quiz-set, e.g.
 //                         `node server.js "Alice" exam-set-a`.
+// --review                Turns on review mode: after Finish, the player is
+//                         asked to rate the puzzle's difficulty 1 (very
+//                         easy) to 10 (very hard), and that rating is
+//                         recorded in the attempt log. The exam timer is
+//                         paused while the rating dialog is open. Can appear
+//                         anywhere on the command line. Without it, every
+//                         logged attempt's rating is "-".
 
-const [, , cliPlayerName, cliPuzzleSubfolder] = process.argv;
+const rawArgs = process.argv.slice(2);
+const REVIEW_MODE = rawArgs.includes('--review');
+const [cliPlayerName, cliPuzzleSubfolder] = rawArgs.filter((arg) => arg !== '--review');
 
 if (!cliPlayerName || !cliPuzzleSubfolder) {
-  console.error('Usage: node server.js <player-name> <puzzle-set-subfolder>');
+  console.error('Usage: node server.js <player-name> <puzzle-set-subfolder> [--review]');
   console.error('');
   console.error('  <player-name>            Name recorded in the attempt log; locked for the session.');
   console.error('  <puzzle-set-subfolder>   Folder inside puzzles/ whose *.json files will be served.');
   console.error('                           Use "." to serve puzzles/ itself.');
+  console.error('  --review                 Ask the player to rate each puzzle\'s difficulty 1-10 after Finish, and');
+  console.error('                           record that rating in the attempt log.');
   console.error('');
-  console.error('Example: node server.js "Ada Lovelace" exam-set-a');
+  console.error('Example: node server.js "Ada Lovelace" exam-set-a --review');
   process.exit(1);
 }
 
@@ -271,23 +283,159 @@ function gradeSubmission(puzzle, order) {
 
 // ---- Attempt logging --------------------------------------------------
 //
-// Every time a learner clicks "Finish", the server (not the browser) grades
-// the attempt and appends a row to logs/attempts.csv. Doing the logging
-// server-side, using the server's own grading result, means the log can't
-// be spoofed by editing client-side JavaScript.
+// Every time a learner clicks "Finish" (or the session time limit expires),
+// the server (not the browser) grades the attempt and appends an identical
+// row to BOTH logs/attempts.csv (master log) and logs/<puzzle-set>.csv.
+// Doing the logging server-side, using the server's own grading result,
+// means the log can't be spoofed by editing client-side JavaScript.
+//
+// Each row gets a server-generated attempt_id, and a rating column that is
+// "-" until (in review mode) the player rates the puzzle's difficulty --
+// at which point that same row is updated in place in both files.
 
 const LOG_DIR = path.join(__dirname, 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'attempts.csv');
+const LOG_LOCK_FILE = path.join(LOG_DIR, 'attempts.csv.lock');
+const LOG_BACKUP_DIR = path.join(LOG_DIR, 'legacy-backup');
 const sanitizedSetName = (cliPuzzleSubfolder === '.' ? 'root' : cliPuzzleSubfolder || 'default').replace(/[\\/:*?"<>|]/g, '_');
 const SET_LOG_FILE = path.join(LOG_DIR, `${sanitizedSetName}.csv`);
-const LOG_HEADER =
-  'timestamp,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent\n';
+// The files an attempt is written to / a rating is updated in. De-duplicated
+// in case the active set's log name happens to collide with attempts.csv.
+const ACTIVE_LOG_FILES = [...new Set([LOG_FILE, SET_LOG_FILE])];
+fs.mkdirSync(LOG_DIR, { recursive: true }); // safe to call from multiple processes at once (mkdir -p semantics)
+
+const LOG_COLUMNS = [
+  'timestamp',
+  'attempt_id',
+  'name',
+  'puzzle_set',
+  'puzzle_id',
+  'puzzle_title',
+  'time_seconds',
+  'submission_type',
+  'correct',
+  'correct_lines',
+  'total_lines',
+  'score_percent',
+  'rating',
+];
+const LOG_HEADER = LOG_COLUMNS.join(',') + '\n';
+// The header written by versions of this server from before attempt_id and
+// rating existed. Files with exactly this header get upgraded in place.
+const LEGACY_LOG_HEADER =
+  'timestamp,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent';
+
+// ---- Session timer state ----------------------------------------------
+//
+// sessionStartedAtMs / sessionDeadlineMs drive the global exam time limit.
+// sessionPausedAtMs is set only while the review-mode rating dialog is
+// open: the clock is frozen then, and on resume both the start and the
+// deadline are shifted forward by exactly how long it was frozen, so time
+// spent rating never counts against the exam.
 let sessionStartedAtMs = null;
 let sessionDeadlineMs = null;
+let sessionPausedAtMs = null;
 
 function resetSession() {
   sessionStartedAtMs = null;
   sessionDeadlineMs = null;
+  sessionPausedAtMs = null;
+}
+
+// Freezes the session clock. Does nothing if there's no active session, it
+// is already frozen, or the time limit has already passed (an expired
+// session must stay expired -- pausing then resuming must never revive it).
+function pauseSession(nowMs) {
+  if (sessionStartedAtMs === null || sessionPausedAtMs !== null) return false;
+  if (sessionDeadlineMs !== null && nowMs >= sessionDeadlineMs) return false;
+  sessionPausedAtMs = nowMs;
+  return true;
+}
+
+// Unfreezes the session clock, shifting start and deadline forward by the
+// frozen duration. Safe to call when not paused (no-op).
+function resumeSession(nowMs) {
+  if (sessionPausedAtMs === null) return false;
+  const pausedForMs = Math.max(0, nowMs - sessionPausedAtMs);
+  sessionPausedAtMs = null;
+  if (sessionStartedAtMs !== null) {
+    sessionStartedAtMs += pausedForMs;
+    if (sessionDeadlineMs !== null) sessionDeadlineMs += pausedForMs;
+  }
+  return true;
+}
+
+// ---- Cross-process locking for the shared log files -------------------
+//
+// The log files can be shared by several server.js processes at once -- e.g.
+// one instance per student, all pointed at the same project directory. A
+// single process is safe on its own: every fs call here is synchronous, and
+// Node is single-threaded. But nothing stops two SEPARATE processes from
+// touching the files at the same instant, and these operations are
+// genuinely unsafe if that happens:
+//   - creating a file with its header (a check-then-write race)
+//   - upgrading a legacy file's header
+//   - updateAttemptRating's read-the-whole-file-then-write-it-back cycle,
+//     where one process's rewrite can silently clobber a row another
+//     process appended (or re-rated) in between
+// So every operation that touches a log file runs under one lock.
+//
+// The lock is a plain file created with the 'wx' flag, which fails with
+// EEXIST if the file already exists -- an atomic create-if-absent usable as
+// a cross-process mutex without any dependency. A lock older than
+// LOCK_STALE_MS is assumed to belong to a crashed process and is stolen
+// rather than waited on forever.
+
+const LOCK_STALE_MS = 8000;
+const LOCK_TIMEOUT_MS = 5000;
+const LOCK_RETRY_MS = 20;
+
+function acquireLogLock() {
+  const start = Date.now();
+  while (true) {
+    try {
+      const fd = fs.openSync(LOG_LOCK_FILE, 'wx');
+      fs.writeSync(fd, String(process.pid));
+      fs.closeSync(fd);
+      return;
+    } catch (err) {
+      if (err.code !== 'EEXIST') throw err;
+      try {
+        if (Date.now() - fs.statSync(LOG_LOCK_FILE).mtimeMs > LOCK_STALE_MS) {
+          fs.unlinkSync(LOG_LOCK_FILE); // previous holder likely crashed while holding it; steal it
+          continue;
+        }
+      } catch (statErr) {
+        continue; // lock file vanished between our open() and stat() -- just retry
+      }
+      if (Date.now() - start > LOCK_TIMEOUT_MS) {
+        throw new Error(`Timed out waiting for the attempt log lock (held for over ${LOCK_TIMEOUT_MS}ms)`);
+      }
+      // A brief, genuinely synchronous sleep -- setTimeout can't be awaited
+      // here without turning every caller async, and contention is expected
+      // to be rare and measured in milliseconds.
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, LOCK_RETRY_MS);
+    }
+  }
+}
+
+function releaseLogLock() {
+  try {
+    fs.unlinkSync(LOG_LOCK_FILE);
+  } catch (err) {
+    // Already gone (e.g. stolen as stale by another process) -- fine.
+  }
+}
+
+// Runs fn() with the log lock held, guaranteeing it can't interleave with
+// any other process's log operation.
+function withLogLock(fn) {
+  acquireLogLock();
+  try {
+    return fn();
+  } finally {
+    releaseLogLock();
+  }
 }
 
 function csvField(value) {
@@ -298,36 +446,188 @@ function csvField(value) {
   return str;
 }
 
-function appendCsvRow(filePath, header, row) {
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, header);
-  }
-  fs.appendFileSync(filePath, row);
+function csvRow(values) {
+  return values.map(csvField).join(',') + '\n';
 }
 
-function logAttempt({ name, puzzleSet, puzzleId, puzzleTitle, timeSeconds, submissionType, correct, correctPositions, total }) {
-  if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR, { recursive: true });
+// Parses one CSV line back into raw field values, respecting the quoting
+// csvField() produces (quoted fields, doubled "" for an embedded quote).
+// Needed to reliably find a specific row by attempt_id later, since a plain
+// split(',') would break on any field -- like a puzzle title -- that
+// contains a comma and is therefore quoted.
+function parseCsvLine(line) {
+  const fields = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        current += c;
+      }
+    } else if (c === '"') {
+      inQuotes = true;
+    } else if (c === ',') {
+      fields.push(current);
+      current = '';
+    } else {
+      current += c;
+    }
   }
-  const scorePercent = total > 0 ? ((correctPositions / total) * 100).toFixed(1) : '0.0';
-  const row =
-    [
+  fields.push(current);
+  return fields;
+}
+
+// Upgrades a log file written before attempt_id/rating existed: every old
+// row gets an attempt_id and rating "-". The id is derived from the row's
+// own content, so the same legacy attempt gets the SAME id in attempts.csv
+// and in its set log. A copy of the original is kept in logs/legacy-backup/
+// first. Returns true if the file was upgraded. Must run under the lock.
+function upgradeLegacyLogFile(filePath) {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const lines = content.split(/\r?\n/);
+  if (lines.length > 0 && lines[lines.length - 1] === '') lines.pop();
+  if (lines.length === 0 || lines[0].trim() !== LEGACY_LOG_HEADER) return false;
+
+  fs.mkdirSync(LOG_BACKUP_DIR, { recursive: true });
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  fs.copyFileSync(filePath, path.join(LOG_BACKUP_DIR, `${path.basename(filePath, '.csv')}.${stamp}.pre-migration.csv`));
+
+  const out = [LOG_COLUMNS.join(',')];
+  for (let i = 1; i < lines.length; i++) {
+    if (lines[i].trim() === '') continue;
+    const f = parseCsvLine(lines[i]);
+    if (f.length !== 11) {
+      out.push(lines[i]); // unexpected shape: leave untouched rather than guess
+      continue;
+    }
+    const h = crypto.createHash('sha1').update(lines[i]).digest('hex');
+    const legacyId = `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
+    out.push(csvRow([f[0], legacyId, ...f.slice(1), '-']).trimEnd());
+  }
+  fs.writeFileSync(filePath, out.join('\n') + '\n');
+  return true;
+}
+
+// Makes sure filePath exists with the current header, upgrading it first if
+// it still has the legacy one. Throws if it has some other unknown header,
+// so rows are never appended to a file whose columns they don't match.
+// Must run under the lock.
+function ensureLogFile(filePath) {
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, LOG_HEADER);
+    return;
+  }
+  const firstLine = fs.readFileSync(filePath, 'utf8').split(/\r?\n/)[0].trim();
+  if (firstLine === '') {
+    // An empty file (e.g. just created and never written to): start it properly.
+    fs.writeFileSync(filePath, LOG_HEADER);
+    return;
+  }
+  if (firstLine === LOG_COLUMNS.join(',')) return;
+  if (firstLine === LEGACY_LOG_HEADER) {
+    upgradeLegacyLogFile(filePath);
+    return;
+  }
+  throw new Error(`Unrecognised log header in ${filePath}; refusing to append to it.`);
+}
+
+// At startup, upgrade every legacy-format CSV in logs/ (including set logs
+// for sets this instance isn't serving), so the whole folder is consistent.
+function upgradeAllLegacyLogs() {
+  withLogLock(() => {
+    for (const f of fs.readdirSync(LOG_DIR)) {
+      if (!f.endsWith('.csv')) continue;
+      const full = path.join(LOG_DIR, f);
+      if (!fs.statSync(full).isFile()) continue;
+      try {
+        if (upgradeLegacyLogFile(full)) console.log(`  Upgraded legacy log to the new format: logs/${f}`);
+      } catch (err) {
+        console.error(`Could not upgrade logs/${f}:`, err);
+      }
+    }
+  });
+}
+try {
+  upgradeAllLegacyLogs();
+} catch (err) {
+  console.error('Legacy log upgrade skipped:', err);
+}
+
+// Logs an attempt immediately, with rating defaulted to "-". This always
+// happens at Finish/timeout regardless of review mode, so every attempt is
+// guaranteed exactly one row in each log -- a rating given later (see
+// updateAttemptRating) just enriches those same rows rather than being a
+// separate write. Returns the attempt's id so the caller can hand it back to
+// the client for that enrichment step.
+function logAttempt({ name, puzzleSet, puzzleId, puzzleTitle, timeSeconds, submissionType, correct, correctPositions, total }) {
+  return withLogLock(() => {
+    const scorePercent = total > 0 ? ((correctPositions / total) * 100).toFixed(1) : '0.0';
+    const attemptId = crypto.randomUUID();
+    const row = csvRow([
       new Date().toISOString(),
-      csvField(name),
-      csvField(puzzleSet),
-      csvField(puzzleId),
-      csvField(puzzleTitle),
+      attemptId,
+      name,
+      puzzleSet,
+      puzzleId,
+      puzzleTitle,
       timeSeconds.toFixed(2),
-      csvField(submissionType || 'manual'),
+      submissionType || 'manual',
       correct ? 'true' : 'false',
       correctPositions,
       total,
       scorePercent,
-    ].join(',') + '\n';
+      '-',
+    ]);
+    // Write the identical row to both the master attempts log and the set-specific log
+    for (const file of ACTIVE_LOG_FILES) {
+      ensureLogFile(file);
+      fs.appendFileSync(file, row);
+    }
+    return attemptId;
+  });
+}
 
-  // Write identical row to both the master attempts log and the set-specific log
-  appendCsvRow(LOG_FILE, LOG_HEADER, row);
-  appendCsvRow(SET_LOG_FILE, LOG_HEADER, row);
+// Finds the row with this attempt_id in each active log file and rewrites
+// its rating field in place; every other row is left byte-for-byte as it
+// was. Returns false (and changes nothing) if the id isn't found in any
+// file -- e.g. a log file was rotated or edited between Finish and the
+// player submitting a rating.
+function updateAttemptRating(attemptId, rating) {
+  return withLogLock(() => {
+    let updatedAny = false;
+    for (const file of ACTIVE_LOG_FILES) {
+      if (!fs.existsSync(file)) continue;
+      const content = fs.readFileSync(file, 'utf8');
+      const lines = content.split('\n');
+      if (lines.length > 0 && lines[lines.length - 1] === '') lines.pop(); // trailing newline artifact
+      if (lines.length < 2) continue;
+
+      const header = parseCsvLine(lines[0].replace(/\r$/, ''));
+      const idIndex = header.indexOf('attempt_id');
+      const ratingIndex = header.indexOf('rating');
+      if (idIndex === -1 || ratingIndex === -1) continue;
+
+      for (let i = 1; i < lines.length; i++) {
+        const fields = parseCsvLine(lines[i].replace(/\r$/, ''));
+        if (fields[idIndex] === attemptId) {
+          fields[ratingIndex] = String(rating);
+          lines[i] = csvRow(fields).trimEnd();
+          fs.writeFileSync(file, lines.join('\n') + '\n');
+          updatedAny = true;
+          break;
+        }
+      }
+    }
+    return updatedAny;
+  });
 }
 
 // ---- HTTP helpers -----------------------------------------------------
@@ -388,15 +688,17 @@ const server = http.createServer(async (req, res) => {
   const pathname = decodeURIComponent(url.pathname);
 
   try {
-    // GET /api/config  -> the locked player name, active puzzle set, and session state
+    // GET /api/config  -> the locked player name, active puzzle set, review mode, and session state
     if (req.method === 'GET' && pathname === '/api/config') {
       const setConfig = loadActiveSetConfig();
       return sendJson(res, 200, {
         playerName: PLAYER_NAME,
         puzzleSet: cliPuzzleSubfolder,
         setConfig,
+        reviewMode: REVIEW_MODE,
         sessionStartedAtMs,
         sessionDeadlineMs,
+        sessionPausedAtMs,
       });
     }
 
@@ -423,6 +725,10 @@ const server = http.createServer(async (req, res) => {
       } catch (e) {
         return sendJson(res, 400, { error: 'Invalid JSON body' });
       }
+      // A check arriving while the clock is still frozen (e.g. the rating
+      // request never got through) means the player has moved on: unfreeze
+      // before measuring elapsed time, so it excludes the frozen period.
+      resumeSession(Date.now());
       const nowMs = Date.now();
       const result = gradeSubmission(puzzle, body.order);
 
@@ -443,7 +749,7 @@ const server = http.createServer(async (req, res) => {
       const submissionType = isTimeout ? 'timeout' : 'manual';
 
       try {
-        logAttempt({
+        const attemptId = logAttempt({
           name: PLAYER_NAME,
           puzzleSet: cliPuzzleSubfolder,
           puzzleId: puzzle.id,
@@ -454,6 +760,18 @@ const server = http.createServer(async (req, res) => {
           correctPositions: result.correctPositions,
           total: result.total,
         });
+        // Only handed back when the server is running in review mode -- it's
+        // how the client later identifies which row to attach a rating to. A
+        // non-review server never exposes it, so a rating can never reach the
+        // log for that kind of session even if someone tried calling the
+        // rating endpoint directly (that endpoint also checks REVIEW_MODE).
+        if (REVIEW_MODE) {
+          result.attemptId = attemptId;
+          // The rating dialog is about to open: freeze the exam clock while
+          // it is. (No-op if the session already expired, so a timeout
+          // submission is never revived by pausing.)
+          if (!isTimeout) pauseSession(nowMs);
+        }
       } catch (logErr) {
         // Logging failures shouldn't break grading for the learner.
         console.error('Failed to write attempt log:', logErr);
@@ -462,11 +780,40 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, result);
     }
 
+    // POST /api/attempts/:attemptId/rating  -> attach a 1-10 rating to an
+    // already-logged attempt (review mode only) and unfreeze the exam clock
+    match = pathname.match(/^\/api\/attempts\/([^/]+)\/rating$/);
+    if (req.method === 'POST' && match) {
+      if (!REVIEW_MODE) {
+        return sendJson(res, 403, { error: 'This server is not running in review mode.' });
+      }
+      let body;
+      try {
+        body = await readJsonBody(req);
+      } catch (e) {
+        return sendJson(res, 400, { error: 'Invalid JSON body' });
+      }
+      const rating = Number(body.rating);
+      if (!Number.isInteger(rating) || rating < 1 || rating > 10) {
+        return sendJson(res, 400, { error: 'rating must be an integer from 1 to 10' });
+      }
+      // The dialog is closing either way, so unfreeze the clock first and hand
+      // the (possibly shifted) session start back so the client can resync.
+      resumeSession(Date.now());
+      const updated = updateAttemptRating(match[1], rating);
+      if (!updated) {
+        return sendJson(res, 404, { error: 'Attempt not found.', sessionStartedAtMs, sessionDeadlineMs });
+      }
+      return sendJson(res, 200, { ok: true, sessionStartedAtMs, sessionDeadlineMs });
+    }
+
     // GET /api/puzzles/:id  -> puzzle detail (solution stripped, lines shuffled)
     match = pathname.match(/^\/api\/puzzles\/([^/]+)$/);
     if (req.method === 'GET' && match) {
       const puzzle = findPuzzleById(match[1]);
       if (!puzzle) return sendJson(res, 404, { error: 'Puzzle not found' });
+      // Loading a puzzle means the player moved on from any rating dialog.
+      resumeSession(Date.now());
       const timeLimitMs = getActiveSetTimeLimitMs();
       // Start session on first puzzle load if not already started
       if (sessionStartedAtMs === null) {
@@ -500,4 +847,5 @@ server.listen(PORT, () => {
   console.log(`Code Arrange running at http://localhost:${PORT}`);
   console.log(`  Player:      ${PLAYER_NAME}`);
   console.log(`  Puzzle set:  ${cliPuzzleSubfolder} (${PUZZLES_DIR})`);
+  console.log(`  Review mode: ${REVIEW_MODE ? 'on' : 'off'}`);
 });

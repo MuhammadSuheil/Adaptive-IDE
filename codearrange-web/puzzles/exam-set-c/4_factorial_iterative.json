@@ -1,0 +1,63 @@
+{
+  "id": "4_factorial_iterative",
+  "title": "Factorial Iterative",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Hitung nilai Faktorial dari n menggunakan loop (non-recursive).",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FactorialIterative {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int n = 5;"
+    },
+    {
+      "id": 4,
+      "code": "        long fact = 1;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 1; i <= n; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            fact = fact * i;"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(\"Factorial: \" + fact);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "1_hello_world",
+  "title": "Cetak String",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Susunlah Output/Keluaran dari Kode berikut:```public class HelloWorld { \n    public static void main(String[] args) { \n        System.out.println(\"Hello\"); \n        System.out.println(\"World\"); \n    } \n}```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "Hello"
+    },
+    {
+      "id": 2,
+      "code": "World"
+    },
+    {
+      "id": 3,
+      "code": "Halo"
+    },
+    {
+      "id": 4,
+      "code": "Dunia"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2
+    ]
+  ]
+}

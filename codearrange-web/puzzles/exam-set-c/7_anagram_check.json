@@ -1,0 +1,93 @@
+{
+  "id": "anagram_check",
+  "title": "Anagram Check",
+  "type": "uncategorized",
+  "mode": "arrange",
+  "description": "Cek apakah 2 String adalah anagram (anagram = 2 String yang huruf-hurufnya sama tapi posisinya dibolak-balik, contoh: ular dan alur)",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class AnagramCheck {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        String str1 = \"listen\"; String str2 = \"silent\";"
+    },
+    {
+      "id": 5,
+      "code": "        if (str1.length() != str2.length()) return;"
+    },
+    {
+      "id": 6,
+      "code": "        int[] count = new int[256];"
+    },
+    {
+      "id": 7,
+      "code": "        for (int i = 0; i < str1.length(); i++) {"
+    },
+    {
+      "id": 8,
+      "code": "            count[str1.charAt(i)]++;"
+    },
+    {
+      "id": 9,
+      "code": "            count[str2.charAt(i)]--;"
+    },
+    {
+      "id": 10,
+      "code": "        }"
+    },
+    {
+      "id": 11,
+      "code": "        boolean isAnagram = true;"
+    },
+    {
+      "id": 12,
+      "code": "        for (int i = 0; i < 256; i++) {"
+    },
+    {
+      "id": 13,
+      "code": "            if (count[i] != 0) isAnagram = false;"
+    },
+    {
+      "id": 14,
+      "code": "        }"
+    },
+    {
+      "id": 15,
+      "code": "        System.out.println(isAnagram);"
+    },
+    {
+      "id": 16,
+      "code": "    }"
+    },
+    {
+      "id": 17,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  ]
+}

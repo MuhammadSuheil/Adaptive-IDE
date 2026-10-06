@@ -1,0 +1,93 @@
+{
+  "id": "5_prime_check",
+  "title": "Prime Check",
+  "type": "uncategorized",
+  "mode": "arrange",
+  "description": "Cek apakah sebuah nilai bilang prima menggunakan module.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class PrimeCheck {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int n = 29;"
+    },
+    {
+      "id": 4,
+      "code": "        boolean isPrime = true;"
+    },
+    {
+      "id": 5,
+      "code": "        if (n <= 1) isPrime = false;"
+    },
+    {
+      "id": 6,
+      "code": "        else {"
+    },
+    {
+      "id": 7,
+      "code": "            for (int i = 2; i <= Math.sqrt(n); i++) {"
+    },
+    {
+      "id": 8,
+      "code": "                if (n % i == 0) {"
+    },
+    {
+      "id": 9,
+      "code": "                    isPrime = false;"
+    },
+    {
+      "id": 10,
+      "code": "                    break;"
+    },
+    {
+      "id": 11,
+      "code": "                }"
+    },
+    {
+      "id": 12,
+      "code": "            }"
+    },
+    {
+      "id": 13,
+      "code": "        }"
+    },
+    {
+      "id": 14,
+      "code": "        System.out.println(isPrime);"
+    },
+    {
+      "id": 15,
+      "code": "    }"
+    },
+    {
+      "id": 16,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ]
+  ]
+}
