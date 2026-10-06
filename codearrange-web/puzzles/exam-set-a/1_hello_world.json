@@ -2,7 +2,7 @@
   "id": "hello_world",
   "title": "1. Hello, World!",
   "type": "basics",
-  "description": "Write a complete Java program that prints exactly: Hello, World!",
+  "description": "Buatlah program Java lengkap yang mencetak tepat: Hello, World!",
   "lines": [
     {
       "id": 1,

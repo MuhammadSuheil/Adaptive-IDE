@@ -1,10 +1,10 @@
 {
   "id": "fix_even_sum",
-  "title": "4. Fix the Even Sum",
+  "title": "4. Perbaiki Penjumlahan Bilangan Genap",
   "type": "loops",
   "mode": "debug",
-  "description": "This program is supposed to print the sum of the even numbers from 1 through 10 (expected output: 30), but it prints 25. Find the bugs and rebuild the corrected program.\n```\npublic class EvenSum {\n    public static void main(String[] args) {\n        int total = 0;\n        for (int i = 1; i < 10; i++) {\n            if (i % 2 == 1) {\n                total += i;\n            }\n        }\n        System.out.println(total);\n    }\n}\n```",
-  "explanation": "There were two bugs. The loop condition i < 10 stops one short, so 10 is never added; and i % 2 == 1 picks the odd numbers instead of the even ones. The fix is i <= 10 and i % 2 == 0.",
+  "description": "Program ini seharusnya mencetak jumlah bilangan genap dari 1 sampai 10 (output yang diharapkan: 30), namun program mencetak 25. Temukan bug dan susun kembali program yang sudah diperbaiki.\n```\npublic class EvenSum {\n    public static void main(String[] args) {\n        int total = 0;\n        for (int i = 1; i < 10; i++) {\n            if (i % 2 == 1) {\n                total += i;\n            }\n        }\n        System.out.println(total);\n    }\n}\n```",
+  "explanation": "Terdapat dua bug: kondisi loop i < 10 berhenti sebelum angka 10 sehingga 10 tidak pernah dijumlahkan; dan kondisi i % 2 == 1 memilih bilangan ganjil, bukan bilangan genap. Perbaikannya adalah i <= 10 dan i % 2 == 0.",
   "lines": [
     {
       "id": 1,

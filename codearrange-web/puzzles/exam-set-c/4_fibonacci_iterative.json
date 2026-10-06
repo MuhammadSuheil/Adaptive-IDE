@@ -1,0 +1,73 @@
+{
+  "id": "4_fibonacci_iterative",
+  "title": "Fibonacci Iterative",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Buatlah Deret Fibonacci",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FibonacciIterative {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int n = 10, a = 0, b = 1;"
+    },
+    {
+      "id": 4,
+      "code": "        System.out.print(a + \", \" + b);"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 2; i < n; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            int next = a + b;"
+    },
+    {
+      "id": 7,
+      "code": "            System.out.print(\", \" + next);"
+    },
+    {
+      "id": 8,
+      "code": "            a = b;"
+    },
+    {
+      "id": 9,
+      "code": "            b = next;"
+    },
+    {
+      "id": 10,
+      "code": "        }"
+    },
+    {
+      "id": 11,
+      "code": "    }"
+    },
+    {
+      "id": 12,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  ]
+}

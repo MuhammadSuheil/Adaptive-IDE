@@ -1,0 +1,20 @@
+{
+  "id": "for_loop_sum",
+  "title": "3. Penjumlahan 1 sampai 10 dengan Loop",
+  "type": "loops",
+  "description": "Buatlah program menggunakan for loop untuk menjumlahkan angka 1 sampai 10, lalu cetak jumlah totalnya (55).",
+  "lines": [
+    { "id": 1, "code": "public class LoopSum {" },
+    { "id": 2, "code": "    public static void main(String[] args) {" },
+    { "id": 3, "code": "        int total = 0;" },
+    { "id": 4, "code": "        for (int i = 1; i <= 10; i++) {" },
+    { "id": 5, "code": "            total += i;" },
+    { "id": 6, "code": "        }" },
+    { "id": 7, "code": "        System.out.println(total);" },
+    { "id": 8, "code": "    }" },
+    { "id": 9, "code": "}" }
+  ],
+  "solutions": [
+    [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  ]
+}

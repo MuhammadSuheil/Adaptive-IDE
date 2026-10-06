@@ -1,0 +1,78 @@
+{
+  "id": "4_count_vowels",
+  "title": "Count Vowels",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Hitung jumlah huruf vokal dalam sebuah string",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class CountVowels {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        String text = \"education\";"
+    },
+    {
+      "id": 4,
+      "code": "        int count = 0;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < text.length(); i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            char c = text.charAt(i);"
+    },
+    {
+      "id": 7,
+      "code": "            if (c=='a' || c=='e' || c=='i' || c=='o' || c=='u') {"
+    },
+    {
+      "id": 8,
+      "code": "                count++;"
+    },
+    {
+      "id": 9,
+      "code": "            }"
+    },
+    {
+      "id": 10,
+      "code": "        }"
+    },
+    {
+      "id": 11,
+      "code": "        System.out.println(\"Vowels: \" + count);"
+    },
+    {
+      "id": 12,
+      "code": "    }"
+    },
+    {
+      "id": 13,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ]
+  ]
+}

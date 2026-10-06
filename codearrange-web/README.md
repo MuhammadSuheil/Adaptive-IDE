@@ -14,10 +14,10 @@ Zero external dependencies — the server uses only Node's built-in
 
 ## Running it
 
-The server takes two required arguments:
+The server takes two required arguments and one optional flag:
 
 ```bash
-node server.js "<player name>" <puzzle-set-subfolder>
+node server.js "<player name>" <puzzle-set-subfolder> --review
 ```
 
 - **Player name** — recorded in the attempt log for the whole session. The
@@ -29,6 +29,10 @@ node server.js "<player name>" <puzzle-set-subfolder>
   loaded; puzzles elsewhere under `puzzles/` aren't reachable by this
   server instance. `../`-style paths that would escape `puzzles/` are
   rejected.
+- **`--review`** (optional) — turns on review mode: after each attempt (Finish
+  or timeout), a modal asks the participant to rate the puzzle's difficulty
+  from 1 (very easy) to 10 (very hard). The exam timer is paused while the
+  dialog is open.
 
 This is meant for running one server process per player and/or per
 quiz-set — e.g. a teacher starting a separate instance (on its own port)
@@ -36,8 +40,8 @@ for each student, each locked to that student's name and an assigned set
 of puzzles:
 
 ```bash
-PORT=3001 node server.js "Ada Lovelace" exam-set-a
-PORT=3002 node server.js "Grace Hopper" exam-set-a
+PORT=3001 node server.js "Ada Lovelace" exam-set-a --review
+PORT=3002 node server.js "Grace Hopper" exam-set-a --review
 PORT=3003 node server.js "Alan Turing"  exam-set-b
 ```
 
@@ -138,26 +142,40 @@ Every time a puzzle attempt is finished (either manually by clicking **Finish** 
 Both files are created automatically on first use with the following schema:
 
 ```
-timestamp,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent
-2026-09-15T20:16:17.749Z,Ada Lovelace,exam-set-a,hello_world,"1. Hello, World!",12.35,manual,true,5,5,100.0
-2026-09-15T20:22:03.410Z,Grace Hopper,exam-set-a,hello_world,"1. Hello, World!",300.00,timeout,false,1,5,20.0
+timestamp,attempt_id,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent,rating
+2026-09-15T20:16:17.749Z,8786c422-...,Ada Lovelace,exam-set-a,hello_world,"1. Hello, World!",12.35,manual,true,5,5,100.0,8
+2026-09-15T20:22:03.410Z,3392e7c5-...,Grace Hopper,exam-set-a,hello_world,"1. Hello, World!",300.00,timeout,false,1,5,20.0,-
 ```
 
+- `attempt_id`: A server-generated UUID unique to that row, used internally to associate a difficulty rating with the attempt.
 - `puzzle_set`: Indicates which puzzle set folder was active during the session.
 - `submission_type`: Records `'manual'` (player clicked Finish) or `'timeout'` (system auto-submitted due to the timer expiring).
 - `correct`: Reflects whether the submission exactly matched one of the puzzle's accepted solutions.
 - `correct_lines` / `total_lines` / `score_percent`: Capture partial-credit score even on a miss (matched against whichever accepted solution the learner came closest to).
+- `rating`: The participant's 1–10 difficulty rating in review mode, or `-` outside review mode (or if unanswered).
 
 Grading and logging both happen server-side, from the server's own copy of the solutions — the client only sends the submitted line order and submission type, ensuring logs cannot be spoofed. Fields containing commas or quotes are CSV-escaped automatically.
+
+### Multi-instance log safety (Cross-process locking)
+
+When multiple server instances are started from the same project folder (e.g. one process per student), all instances share `logs/attempts.csv`. File operations (appends, migrations, and rating updates) are protected by a file-based lock (`logs/attempts.csv.lock`) with atomic create-if-absent semantics and automatic stale-lock recovery, ensuring concurrent writes never overwrite each other.
+
+## Review mode
+
+When started with `--review`, a dialog prompts the participant to rate each puzzle's difficulty on a scale of 1 (very easy) to 10 (very hard) immediately following each attempt (including timeouts).
+- The exam session timer is **paused** while the rating dialog is open, so rating deliberation does not penalize exam time.
+- Clicking a rating submits `POST /api/attempts/:attemptId/rating`, updating the rating in place across both `attempts.csv` and the active `<puzzle-set>.csv`.
+- The dialog state is persisted in `sessionStorage`, so refreshing the browser preserves the dialog.
 
 ## API
 
 | Method | Path | Description |
 |---|---|---|
-| GET | `/api/config` | `{ playerName, puzzleSet, setConfig }` — the name and puzzle-set subfolder this server instance was started with, plus any matching configuration from `master_config.json` (e.g. `timeLimitMinutes`). |
+| GET | `/api/config` | `{ playerName, puzzleSet, setConfig, reviewMode, sessionStartedAtMs, sessionDeadlineMs, sessionPausedAtMs }` — locked server configuration and exam session state. |
 | GET | `/api/puzzles` | List of `{ id, title, type, mode, description }` for every puzzle in the active puzzle set. |
-| GET | `/api/puzzles/:id` | One puzzle's `{ id, title, type, mode, description, lines }`. Lines are shuffled, `code` has full original indentation, `tag` is a disambiguation number (or `null`) — see "Hiding indentation" below. `solutions` and `explanation` are never sent here. |
-| POST | `/api/puzzles/:id/check` | Body `{ "order": [<line ids>], "timeMs"?: number }`. Grades the submission against every ordering in the puzzle's `solutions` list (a match against any one counts as correct) and returns `{ correct, correctPositions, total, submittedCount, perLine, wrongLines, explanation }` — `wrongLines` is how many submitted lines appear in *no* accepted solution (the distractors the player fell for), and `explanation` is the puzzle's optional write-up (or `null`), which only ever leaves the server in this response. A submission is accepted only while the server-owned attempt window is active; once the configured time limit has passed, this endpoint returns `403`. Attempt logs always use the server's locked player name and server-measured elapsed time (any client-sent `name`/`timeMs` is not authoritative). |
+| GET | `/api/puzzles/:id` | One puzzle's `{ id, title, type, mode, description, lines }`. Lines are shuffled, `code` has full original indentation. Solutions and explanations are never exposed here. |
+| POST | `/api/puzzles/:id/check` | Body `{ "order": [<line ids>], "timeMs"?: number, "submissionType"?: string }`. Grades the submission, logs the attempt, and returns `{ correct, correctPositions, total, submittedCount, perLine, wrongLines, explanation, attemptId? }`. `attemptId` is provided only in review mode. |
+| POST | `/api/attempts/:attemptId/rating` | Review mode only (`403` otherwise). Body `{ "rating": <integer 1-10> }`. Updates that attempt's row in both `attempts.csv` and the set log in place, and unfreezes the exam clock. |
 
 ## Puzzle sets (subfolders under `puzzles/`)
 

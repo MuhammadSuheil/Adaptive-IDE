@@ -12,8 +12,11 @@ Pembaruan dan stabilitas terbaru meliputi:
 3. **Dual-Logging**: Ujian otomatis mencatat *attempt* user ke dalam dua file log CSV terpisah: 
    - `logs/attempts.csv` (log global untuk semua percobaan)
    - `logs/exam-<set_name>.csv` (log khusus ujian untuk mempermudah analisis).
+4. **Review Mode & Rating Tingkat Kesulitan**: Ditambahkan flag `--review` yang memunculkan dialog rating kesulitan (skala 1-10) setelah pengerjaan soal (baik submit manual maupun timeout). Waktu sesi ujian dijeda (*paused*) selama dialog rating aktif agar penilaian subjektif tidak memotong durasi tes. Nilai rating langsung di-update *in-place* di kedua file log CSV.
+5. **Multi-Instance Safety & Unified Schema**: Akses tulis log multi-proses dilindungi *cross-process lock* (`attempts.csv.lock`). Header log distandarisasi ke 13 kolom dengan `attempt_id` dan `rating`, lengkap dengan mekanisme migrasi otomatis file log lama saat server dijalankan.
+6. **Integrasi Aset Java**: Folder `source-codes/` (repo kode Java bertingkat kesulitan 1-9) dan skrip generator `create-java-sourcecodes.py` dari ketua peneliti telah digabungkan ke codebase.
 
-Perekaman meliputi waktu pengerjaan per-soal, tipe submit (`manual` atau `timeout`), jumlah baris benar/salah, hingga detail pergeseran posisi baris. Platform ini siap digunakan bersamaan dengan *multimodal sensor* untuk penelitian utama.
+Perekaman meliputi waktu pengerjaan per-soal, tipe submit (`manual` atau `timeout`), jumlah baris benar/salah, rating kesulitan, hingga detail pergeseran posisi baris. Platform ini siap digunakan bersamaan dengan *multimodal sensor* untuk penelitian utama.
 
 ---
 

@@ -1,0 +1,98 @@
+{
+  "id": "5_palindrome_check",
+  "title": "Palindrome Check",
+  "type": "uncategorized",
+  "mode": "arrange",
+  "description": "Cek apakah sebuah string adalah palindrom (palindrom=jika dibalik tetap sama, misal \"ada\", \"kayak\", dll)",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class PalindromeCheck {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        String str = \"racecar\";"
+    },
+    {
+      "id": 4,
+      "code": "        boolean isPal = true;"
+    },
+    {
+      "id": 5,
+      "code": "        int left = 0;"
+    },
+    {
+      "id": 6,
+      "code": "        int right = str.length() - 1;"
+    },
+    {
+      "id": 7,
+      "code": "        while (left < right) {"
+    },
+    {
+      "id": 8,
+      "code": "            if (str.charAt(left) != str.charAt(right)) {"
+    },
+    {
+      "id": 9,
+      "code": "                isPal = false;"
+    },
+    {
+      "id": 10,
+      "code": "                break;"
+    },
+    {
+      "id": 11,
+      "code": "            }"
+    },
+    {
+      "id": 12,
+      "code": "            left++;"
+    },
+    {
+      "id": 13,
+      "code": "            right--;"
+    },
+    {
+      "id": 14,
+      "code": "        }"
+    },
+    {
+      "id": 15,
+      "code": "        System.out.println(\"Is Palindrome: \" + isPal);"
+    },
+    {
+      "id": 16,
+      "code": "    }"
+    },
+    {
+      "id": 17,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
+  ]
+}

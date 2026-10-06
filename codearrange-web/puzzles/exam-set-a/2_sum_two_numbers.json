@@ -1,8 +1,8 @@
 {
   "id": "sum_two_numbers",
-  "title": "2. Sum Two Numbers",
+  "title": "2. Penjumlahan Dua Angka",
   "type": "variables",
-  "description": "Write a program that declares two integers, 5 and 7, adds them together, and prints the result (12). (It's fine to declare the two variables in either order.)",
+  "description": "Buatlah program yang mendeklarasikan dua integer (5 dan 7), menjumlahkannya, dan mencetak hasilnya (12). (Deklarasi kedua variabel boleh dalam urutan mana pun.)",
   "lines": [
     {
       "id": 1,

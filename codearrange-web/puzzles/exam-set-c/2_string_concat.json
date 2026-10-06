@@ -1,0 +1,53 @@
+{
+  "id": "2_string_concat",
+  "title": "String Concat",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Concat/sambung beberapa String menjadi satu.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class StringConcat {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        String first = \"Java\";"
+    },
+    {
+      "id": 4,
+      "code": "        String second = \"Programming\";"
+    },
+    {
+      "id": 5,
+      "code": "        String result = first + \" \" + second;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(result);"
+    },
+    {
+      "id": 7,
+      "code": "    }"
+    },
+    {
+      "id": 8,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  ]
+}

@@ -1,35 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Code Arrange &mdash; Learn Java by Rearranging Code</title>
-  <link rel="stylesheet" href="/styles.css?v=3" />
+  <title>Code Arrange &mdash; Belajar Java dengan Menyusun Kode</title>
+  <link rel="stylesheet" href="/styles.css?v=5" />
 </head>
 <body>
   <header>
     <h1>Code Arrange</h1>
-    <p class="subtitle">Drag the scrambled lines into the right order to build the program.</p>
+    <p class="subtitle">Geser dan susun potongan kode ke urutan yang tepat untuk membangun program.</p>
   </header>
 
   <main>
-    <!-- ---- Start screen: shown until the learner clicks Start ---- -->
+    <!-- ---- Layar awal: ditampilkan sampai peserta menekan tombol Mulai ---- -->
     <section id="start-screen">
       <div class="start-card">
         <div class="field-row">
-          <label>Playing as</label>
-          <p id="player-name-display" class="locked-name">Loading&hellip;</p>
+          <label>Nama Peserta</label>
+          <p id="player-name-display" class="locked-name">Memuat&hellip;</p>
         </div>
         <div class="field-row">
-          <label for="puzzle-select">Puzzle</label>
+          <label for="puzzle-select">Pilih Soal</label>
           <select id="puzzle-select"></select>
         </div>
-        <button id="start-btn">Start</button>
+        <button id="start-btn">Mulai</button>
         <p id="start-error" class="feedback error"></p>
       </div>
     </section>
 
-    <!-- ---- Puzzle screen: shown only after Start is clicked ---- -->
+    <!-- ---- Layar soal: ditampilkan setelah tombol Mulai ditekan ---- -->
     <section id="puzzle-screen" class="hidden">
       <div class="puzzle-meta">
         <span id="active-player"></span>
@@ -41,36 +41,46 @@
       </div>
 
       <section class="description-box">
-        <h2>Description</h2>
+        <h2>Deskripsi</h2>
         <div id="description-content"></div>
         <p id="mode-hint" class="mode-hint hidden"></p>
       </section>
 
       <section class="panels">
         <div class="panel">
-          <h3>Available Lines</h3>
+          <h3>Baris Kode Tersedia</h3>
           <ul id="available-list" class="line-list"></ul>
         </div>
         <div class="panel">
-          <h3>Your Program</h3>
+          <h3>Program Anda</h3>
           <ul id="solution-list" class="line-list"></ul>
         </div>
       </section>
 
       <section class="actions">
-        <button id="finish-btn">Finish</button>
-        <button id="try-again-btn" class="secondary">Try Again</button>
-        <button id="next-puzzle-btn" class="secondary" disabled>Next Puzzle</button>
+        <button id="finish-btn">Selesai</button>
+        <button id="try-again-btn" class="secondary">Coba Lagi</button>
+        <button id="next-puzzle-btn" class="secondary" disabled>Soal Berikutnya</button>
         <p id="feedback" class="feedback"></p>
       </section>
 
       <section id="explanation-box" class="description-box hidden">
-        <h2>Explanation</h2>
+        <h2>Penjelasan</h2>
         <div id="explanation-content"></div>
       </section>
     </section>
   </main>
 
-  <script src="/app.js?v=3"></script>
+  <!-- Review mode: ditampilkan setelah tombol Selesai jika server dijalankan dengan --review. -->
+  <div id="rating-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <p id="rating-feedback" class="feedback"></p>
+      <h2>Tingkat Kesulitan</h2>
+      <p>Dalam skala 1 (sangat mudah) hingga 10 (sangat sulit), seberapa sulit soal ini menurut Anda?</p>
+      <div id="rating-buttons" class="rating-buttons"></div>
+    </div>
+  </div>
+
+  <script src="/app.js?v=5"></script>
 </body>
 </html>

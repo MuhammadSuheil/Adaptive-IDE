@@ -1,0 +1,103 @@
+{
+  "id": "8_first_non_repeating_char",
+  "title": "First Non Repeating Char",
+  "type": "string",
+  "mode": "arrange",
+  "description": "Carilah karakter pertama yang unik/tidak berulang dalam sebuah string.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FirstNonRepeatingChar {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        String str = \"swiss\";"
+    },
+    {
+      "id": 4,
+      "code": "        for (int i = 0; i < str.length(); i++) {"
+    },
+    {
+      "id": 5,
+      "code": "            boolean unique = true;"
+    },
+    {
+      "id": 6,
+      "code": "            for (int j = 0; j < str.length(); j++) {"
+    },
+    {
+      "id": 7,
+      "code": "                if (i != j && str.charAt(i) == str.charAt(j)) {"
+    },
+    {
+      "id": 8,
+      "code": "                    unique = false;"
+    },
+    {
+      "id": 9,
+      "code": "                    break;"
+    },
+    {
+      "id": 10,
+      "code": "                }"
+    },
+    {
+      "id": 11,
+      "code": "            }"
+    },
+    {
+      "id": 12,
+      "code": "            if (unique) {"
+    },
+    {
+      "id": 13,
+      "code": "                System.out.println(\"First unique: \" + str.charAt(i));"
+    },
+    {
+      "id": 14,
+      "code": "                break;"
+    },
+    {
+      "id": 15,
+      "code": "            }"
+    },
+    {
+      "id": 16,
+      "code": "        }"
+    },
+    {
+      "id": 17,
+      "code": "    }"
+    },
+    {
+      "id": 18,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ]
+  ]
+}
