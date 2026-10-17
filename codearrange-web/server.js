@@ -767,10 +767,13 @@ const server = http.createServer(async (req, res) => {
         // rating endpoint directly (that endpoint also checks REVIEW_MODE).
         if (REVIEW_MODE) {
           result.attemptId = attemptId;
-          // The rating dialog is about to open: freeze the exam clock while
-          // it is. (No-op if the session already expired, so a timeout
-          // submission is never revived by pausing.)
-          if (!isTimeout) pauseSession(nowMs);
+          // The rating dialog is about to open on the client: freeze the
+          // exam clock while it is. Only pause when the dialog will actually
+          // appear — i.e. correct answer or timeout. Wrong-answer submissions
+          // no longer show the rating dialog, so pausing would leave the clock
+          // frozen. (Timeout is already a no-op because the session already
+          // expired, so we only need to check result.correct here.)
+          if (!isTimeout && result.correct) pauseSession(nowMs);
         }
       } catch (logErr) {
         // Logging failures shouldn't break grading for the learner.

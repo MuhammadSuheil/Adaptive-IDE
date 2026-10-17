@@ -901,7 +901,7 @@
 
     saveState();
 
-    if (reviewMode && result.attemptId) {
+    if (reviewMode && result.attemptId && (result.correct || submissionType === 'timeout')) {
       showRatingDialog(result.attemptId);
     }
   }

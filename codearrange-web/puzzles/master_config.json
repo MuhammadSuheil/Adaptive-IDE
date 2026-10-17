@@ -4,11 +4,5 @@
   },
   "exam-set-b": {
     "timeLimitMinutes": 5
-  },
-  "exam-set-c": {
-    "timeLimitMinutes": 5
-  },
-  "exam-set-d": {
-    "timeLimitMinutes": 5
   }
 }
