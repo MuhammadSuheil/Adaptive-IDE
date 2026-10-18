@@ -18,6 +18,7 @@
   const solutionList = document.getElementById('solution-list');
   const finishBtn = document.getElementById('finish-btn');
   const tryAgainBtn = document.getElementById('try-again-btn');
+  const prevPuzzleBtn = document.getElementById('prev-puzzle-btn');
   const nextPuzzleBtn = document.getElementById('next-puzzle-btn');
   const feedback = document.getElementById('feedback');
   const explanationBox = document.getElementById('explanation-box');
@@ -36,6 +37,7 @@
   let finished = false;
   let sessionExpired = false; // true when the global session time limit has run out
   let setCompleted = false; // true when all puzzles in the set have been solved
+  let isDragging = false; // true while a drag gesture is active; prevents click-to-move from firing
   let finishedElapsedMs = null; // frozen elapsed time once Finish has been clicked
   let finishedPerLine = null; // correctness map from the last grading result, for restoring highlights
   let finishedExplanation = null; // explanation text that came back with the last grading result
@@ -169,9 +171,10 @@
     }
   }
 
-  // "Next puzzle" walks puzzleList in the same flat order used to build the
-  // dropdown (server's filename sort), ignoring the type groupings -- so it
-  // still has a well-defined "next" even across a type boundary.
+  // "Next puzzle" and "Prev puzzle" walk puzzleList in the same flat order
+  // used to build the dropdown (server's filename sort), ignoring the type
+  // groupings -- so they still have a well-defined neighbour even across a
+  // type boundary.
   function hasNextPuzzle() {
     const index = puzzleList.findIndex((p) => p.id === currentPuzzleId);
     return index !== -1 && index < puzzleList.length - 1;
@@ -182,6 +185,16 @@
     return index === -1 ? null : puzzleList[index + 1] || null;
   }
 
+  function hasPrevPuzzle() {
+    const index = puzzleList.findIndex((p) => p.id === currentPuzzleId);
+    return index > 0;
+  }
+
+  function getPrevPuzzle() {
+    const index = puzzleList.findIndex((p) => p.id === currentPuzzleId);
+    return index > 0 ? puzzleList[index - 1] : null;
+  }
+
   // The label reflects what clicking the button will actually do. Both this
   // and the click handler call hasNextPuzzle()/getNextPuzzle() fresh rather
   // than caching a decision, so they can't drift out of sync with each
@@ -190,6 +203,11 @@
   // and keeps there being exactly one source of truth.
   function updateNextPuzzleButtonLabel() {
     nextPuzzleBtn.textContent = hasNextPuzzle() ? 'Soal Berikutnya' : 'Kembali ke Awal';
+  }
+
+  // Prev button is only shown as enabled when there actually is a previous puzzle.
+  function updatePrevPuzzleButtonState() {
+    prevPuzzleBtn.disabled = !hasPrevPuzzle();
   }
 
   const TYPE_LABELS = {
@@ -381,7 +399,9 @@
     finishBtn.disabled = sessionExpired;
     tryAgainBtn.disabled = sessionExpired;
     nextPuzzleBtn.disabled = true; // only enabled once Finish is clicked for this attempt
+    prevPuzzleBtn.disabled = true; // only enabled once Finish is clicked for this attempt
     updateNextPuzzleButtonLabel();
+    updatePrevPuzzleButtonState();
     clearFeedback();
 
     const res = await fetch(`/api/puzzles/${encodeURIComponent(puzzleId)}`);
@@ -446,11 +466,13 @@
     renderTiles(saved.puzzle.lines, saved.availableOrder, saved.solutionOrder);
 
     updateNextPuzzleButtonLabel();
+    updatePrevPuzzleButtonState();
 
     if (finished) {
       finishBtn.disabled = true;
       tryAgainBtn.disabled = sessionExpired || setCompleted;
       nextPuzzleBtn.disabled = false;
+      prevPuzzleBtn.disabled = sessionExpired || setCompleted || !hasPrevPuzzle();
       if (sessionExpired || setCompleted || !hasNextPuzzle()) {
         nextPuzzleBtn.textContent = 'Kembali ke Awal';
       }
@@ -605,6 +627,26 @@
     li.draggable = true;
     li.addEventListener('dragstart', onDragStart);
     li.addEventListener('dragend', onDragEnd);
+
+    // ---- Click-to-move -------------------------------------------------------
+    // Clicking a tile moves it to the opposite list (available ↔ solution)
+    // in one tap, without needing to drag. Only active when the puzzle is
+    // in progress; ignored if a drag gesture is happening (isDragging guard
+    // prevents this from firing at the end of a drag on touch devices).
+    li.addEventListener('click', () => {
+      if (finished || sessionExpired || isDragging) return;
+      const isInAvailable = li.parentElement === availableList;
+      const target = isInAvailable ? solutionList : availableList;
+      target.appendChild(li);
+      // Brief animation so the tile's arrival is noticed
+      li.classList.remove('tile-moving');
+      // Force reflow to restart animation even if already present
+      void li.offsetWidth;
+      li.classList.add('tile-moving');
+      li.addEventListener('animationend', () => li.classList.remove('tile-moving'), { once: true });
+      saveState();
+    });
+
     return li;
   }
 
@@ -719,12 +761,14 @@
       e.preventDefault();
       return;
     }
+    isDragging = true;
     e.target.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', e.target.dataset.id);
   }
 
   function onDragEnd(e) {
+    isDragging = false;
     e.target.classList.remove('dragging');
     availableList.classList.remove('drag-over');
     solutionList.classList.remove('drag-over');
@@ -874,6 +918,7 @@
       stopTimer();
       finishBtn.disabled = true;
       tryAgainBtn.disabled = true;
+      prevPuzzleBtn.disabled = true;
       nextPuzzleBtn.textContent = 'Kembali ke Awal';
       nextPuzzleBtn.disabled = false;
       if (!feedback.textContent.includes('Sesi ujian telah berakhir')) {
@@ -884,6 +929,7 @@
       stopTimer();
       finishBtn.disabled = true;
       tryAgainBtn.disabled = true;
+      prevPuzzleBtn.disabled = true;
       nextPuzzleBtn.textContent = 'Kembali ke Awal';
       nextPuzzleBtn.disabled = false;
       const finalDisplay = formatElapsed(elapsedMs);
@@ -895,6 +941,7 @@
     } else {
       tryAgainBtn.disabled = false;
       nextPuzzleBtn.disabled = false;
+      prevPuzzleBtn.disabled = !hasPrevPuzzle();
       // Continue session timer while participant reviews result
       startTimer();
     }
@@ -918,6 +965,22 @@
       return;
     }
     beginAttempt(currentPuzzleId);
+  });
+
+  prevPuzzleBtn.addEventListener('click', () => {
+    if (prevPuzzleBtn.disabled) return;
+    if (sessionExpired || setCompleted) return;
+
+    if (timeLimitMinutes && startTimeMs && Date.now() - startTimeMs >= timeLimitMinutes * 60 * 1000) {
+      handleSessionTimeout();
+      return;
+    }
+
+    const prev = getPrevPuzzle();
+    if (prev) {
+      puzzleSelect.value = prev.id; // keep the picker in sync
+      beginAttempt(prev.id);
+    }
   });
 
   nextPuzzleBtn.addEventListener('click', () => {
@@ -947,6 +1010,7 @@
     finished = false;
     sessionExpired = false;
     setCompleted = false;
+    isDragging = false;
     startTimeMs = null;
     currentPuzzleId = null;
     currentPuzzleData = null;
