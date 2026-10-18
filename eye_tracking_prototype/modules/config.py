@@ -187,6 +187,13 @@ class Config:
             
         self.csv_buffer_size = self.data['output']['csv_buffer_size']
         self.save_video = self.data['output']['save_video']
+        output_cfg = self.data['output']
+        self.compact_csv_enabled = bool(output_cfg.get('compact_csv_enabled', False))
+        self.eye_crops_enabled = bool(output_cfg.get('eye_crops_enabled', False))
+        self.eye_crops_jpeg_quality = int(output_cfg.get('eye_crops_jpeg_quality', 55))
+        self.eye_crops_queue_size = int(output_cfg.get('eye_crops_queue_size', 8))
+        if not 30 <= self.eye_crops_jpeg_quality <= 85 or self.eye_crops_queue_size < 1:
+            raise ValueError('output eye crop quality must be 30..85 and queue size at least 1')
         
         self.model_path = self.data['mediapipe']['model_path']
         if not os.path.isabs(self.model_path):

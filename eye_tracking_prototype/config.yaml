@@ -123,7 +123,7 @@ blink:
 # Head Positioning Gate (Phase 0)
 # ─────────────────────────────────────────────
 head_positioning:
-  enabled: true
+  enabled: false # false: kalibrasi mata tanpa gate/validasi pose kepala
   fullscreen: true
   guide_height_ratio: 0.55 # Session UI permits a comfortable, bounded 0.45 - 0.65.
   guide_width_to_height: 0.66 # Session UI permits 0.58 - 0.78; this is a distance/fit guide.
@@ -216,6 +216,10 @@ output:
   session_dir: "./sessions"
   csv_buffer_size: 60 # flush CSV every N frames (lower = safer, more I/O)
   save_video: false # set true to save annotated mp4 (adds CPU + storage)
+  compact_csv_enabled: true # output fitur mata ringkas; eye_tracking.csv lengkap tetap disimpan
+  eye_crops_enabled: false # simpan crop mata per frame JPEG di folder eye_crops/ (I/O background)
+  eye_crops_jpeg_quality: 55 # 30..85; ukuran file lebih kecil pada nilai rendah
+  eye_crops_queue_size: 8 # antrean terbatas; frame crop dapat dilewati bila disk lambat
 
 # ─────────────────────────────────────────────
 # MediaPipe model & Landmarks
