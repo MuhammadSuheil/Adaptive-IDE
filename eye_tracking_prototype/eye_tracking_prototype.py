@@ -964,10 +964,10 @@ class EyeTrackerApp:
 
                     # Phase 3: Check Head Pose during calibration
                     pitch, yaw, roll, _, _, _ = estimate_head_pose(lm, frame.shape[1], frame.shape[0])
-                yaw_drift = abs(yaw - self.baseline_pose["yaw"])
-                pitch_drift = abs(pitch - self.baseline_pose["pitch"])
+                    yaw_drift = abs(yaw - self.baseline_pose["yaw"])
+                    pitch_drift = abs(pitch - self.baseline_pose["pitch"])
 
-                if self.cfg.hp_enabled and (yaw_drift > self.cfg.pose_max_calib_yaw_deg or pitch_drift > self.cfg.pose_max_calib_pitch_deg):
+                    if self.cfg.hp_enabled and (yaw_drift > self.cfg.pose_max_calib_yaw_deg or pitch_drift > self.cfg.pose_max_calib_pitch_deg):
                         stable_streak = 0
                         point_record['rejections']['head_pose'] = point_record['rejections'].get('head_pose', 0) + 1
                         head_warning_text = f"⚠ HEAD TURNED ({yaw_drift:.1f}° yaw)  LOOK STRAIGHT"
