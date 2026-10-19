@@ -1,2 +1,171 @@
 timestamp,attempt_id,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent,rating
-
+2026-10-17T03:24:43.071Z,d535ee3c-a7a5-438f-bb8a-c92e2c4181fa,Ello,exam-set-a,hello_world,"1. Hello, World!",10.02,manual,true,5,5,100.0,1
+2026-10-18T09:40:39.240Z,ba1c061b-a323-4d42-84be-2247c3da70c2,Suheil,exam-set-a,hello_world,"1. Hello, World!",7.69,manual,true,5,5,100.0,1
+2026-10-18T11:20:06.461Z,7232a9f4-c5e7-41ea-98ae-cbf822cdd5e9,monica,exam-set-a,hello_world,"1. Hello, World!",17.22,manual,true,5,5,100.0,1
+2026-10-18T12:42:38.316Z,5533e4f2-3172-4121-94ed-35ca9bf513f0,Fitran,exam-set-a,hello_world,"1. Hello, World!",10.69,manual,TRUE,5,5,100.0,1
+2026-10-18T12:56:11.093Z,3ff946f6-84be-4e7a-a843-82e94ff6b0cf,<alif>,exam-set-a,hello_world,"1. Hello, World!",10.35,manual,true,5,5,100.0,1
+2026-10-17T03:25:20.915Z,1671f4f0-6992-4bb9-a3f2-baab48d85982,Ello,exam-set-a,sum_two_numbers,2. Penjumlahan Dua Angka,46.34,manual,true,8,8,100.0,1
+2026-10-18T09:40:57.005Z,6064d047-f550-4340-b81a-cfaeb0150731,Suheil,exam-set-a,sum_two_numbers,2. Penjumlahan Dua Angka,24.53,manual,true,8,8,100.0,1
+2026-10-18T11:21:08.483Z,da5c36d3-d552-4834-ba77-92952296b018,monica,exam-set-a,sum_two_numbers,2. Penjumlahan Dua Angka,69.97,manual,true,8,8,100.0,1
+2026-10-18T12:43:03.415Z,692449ab-c5e4-49bd-91e4-05893f57344e,Fitran,exam-set-a,sum_two_numbers,2. Penjumlahan Dua Angka,32.77,manual,TRUE,8,8,100.0,1
+2026-10-18T12:56:47.147Z,6259f7ed-9faa-45d8-b03e-34f4355ec619,<alif>,exam-set-a,sum_two_numbers,2. Penjumlahan Dua Angka,44.85,manual,true,8,8,100.0,1
+2026-10-17T03:26:08.819Z,9dc49cb4-d423-4f38-b396-5597a8fa8389,Ello,exam-set-a,for_loop_sum,3. Penjumlahan 1 sampai 10 dengan Loop,87.63,manual,true,9,9,100.0,2
+2026-10-18T09:41:35.661Z,bc2f87c3-93a7-4736-8f94-df75c50a3909,Suheil,exam-set-a,for_loop_sum,3. Penjumlahan 1 sampai 10 dengan Loop,62.07,manual,true,9,9,100.0,1
+2026-10-18T11:22:12.411Z,40fd1cdd-4a28-40e2-a6cf-d0461b85b463,monica,exam-set-a,for_loop_sum,3. Penjumlahan 1 sampai 10 dengan Loop,130.17,manual,true,9,9,100.0,1
+2026-10-18T12:43:42.841Z,21a6f1cc-7c21-48ef-af9f-cd231a9386fa,Fitran,exam-set-a,for_loop_sum,3. Penjumlahan 1 sampai 10 dengan Loop,70.90,manual,TRUE,9,9,100.0,2
+2026-10-18T12:58:07.448Z,e71f2e64-d5ba-4d49-9be0-7b5e9759c7da,<alif>,exam-set-a,for_loop_sum,3. Penjumlahan 1 sampai 10 dengan Loop,118.58,manual,true,9,9,100.0,1
+2026-10-17T03:28:35.279Z,de645ee2-7dc0-45cf-89dd-5f573365a167,Ello,exam-set-b,sum_two_numbers,2. Penjumlahan Dua Angka,27.07,manual,true,8,8,100.0,1
+2026-10-18T09:42:40.872Z,9c32e388-0e54-4da5-b3e6-0e189c071678,Suheil,exam-set-b,sum_two_numbers,2. Penjumlahan Dua Angka,30.46,manual,true,8,8,100.0,1
+2026-10-18T11:24:18.464Z,2a382eb3-247e-4144-ade8-e00921645887,monica,exam-set-b,sum_two_numbers,2. Penjumlahan Dua Angka,45.89,manual,true,8,8,100.0,1
+2026-10-18T12:44:32.337Z,16e46014-59f8-456c-b676-646d5bf5fb6e,Fitran,exam-set-b,sum_two_numbers,2. Penjumlahan Dua Angka,21.49,manual,TRUE,8,8,100.0,1
+2026-10-18T12:59:27.660Z,e14598c5-b259-4414-a5d3-8e788a6c762e,<alif>,exam-set-b,sum_two_numbers,2. Penjumlahan Dua Angka,25.26,manual,true,8,8,100.0,1
+2026-10-17T03:29:19.215Z,904ff43a-31bc-4b52-8c48-caeb2dc31bd2,Ello,exam-set-b,for_loop_sum,3. Penjumlahan 1 sampai 10 dengan Loop,67.79,manual,true,9,9,100.0,2
+2026-10-18T09:43:25.591Z,02dc81ce-9b1c-44bc-b9f3-6f1e0ceeadc2,Suheil,exam-set-b,for_loop_sum,3. Penjumlahan 1 sampai 10 dengan Loop,73.94,manual,true,9,9,100.0,1
+2026-10-18T11:25:27.030Z,307e5c6b-5d05-4bc8-85f6-08076b8e4026,monica,exam-set-b,for_loop_sum,3. Penjumlahan 1 sampai 10 dengan Loop,107.42,manual,true,9,9,100.0,1
+2026-10-18T12:45:29.284Z,c3f0210c-bf93-43b3-a91b-8120307a9eda,Fitran,exam-set-b,for_loop_sum,3. Penjumlahan 1 sampai 10 dengan Loop,76.97,manual,TRUE,9,9,100.0,1
+2026-10-18T13:00:23.160Z,9b89bac6-949a-45a2-a59f-d722e7c14340,<alif>,exam-set-b,for_loop_sum,3. Penjumlahan 1 sampai 10 dengan Loop,79.65,manual,true,9,9,100.0,1
+2026-10-17T03:30:54.739Z,835635c8-42be-4e62-81df-36605d8e99ac,Ello,exam-set-b,fix_even_sum,4. Perbaiki Penjumlahan Bilangan Genap,152.12,manual,true,11,11,100.0,2
+2026-10-18T09:46:11.029Z,13bf4cf6-a820-490e-8199-5adabedd41b3,Suheil,exam-set-b,fix_even_sum,4. Perbaiki Penjumlahan Bilangan Genap,237.79,manual,true,11,11,100.0,1
+2026-10-18T11:27:37.863Z,6b6b7dde-a6ca-4eab-a772-0f45265bff4b,monica,exam-set-b,fix_even_sum,4. Perbaiki Penjumlahan Bilangan Genap,236.80,manual,true,11,11,100.0,3
+2026-10-18T12:47:20.345Z,2407ba66-6e1f-4df9-ba6a-68d41ffda11c,Fitran,exam-set-b,fix_even_sum,4. Perbaiki Penjumlahan Bilangan Genap,186.16,manual,TRUE,11,11,100.0,3
+2026-10-18T13:01:59.102Z,15c975e7-658b-4574-80e2-3eb0769f6e1e,<alif>,exam-set-b,fix_even_sum,4. Perbaiki Penjumlahan Bilangan Genap,174.63,manual,true,11,11,100.0,2
+2026-10-17T03:33:05.932Z,6f1aabb4-c5b8-4390-ad11-7dd461486f70,Ello,exam-set-c,1_variables,Variables,40.97,manual,true,7,7,100.0,2
+2026-10-18T09:46:58.363Z,c9c06bb2-c905-40bc-9aa1-d4066fe09214,Suheil,exam-set-c,1_variables,Variables,15.17,manual,true,7,7,100.0,1
+2026-10-18T11:32:51.106Z,2775d794-90d8-473f-8127-4ec9bfe455a9,monica,exam-set-c,1_variables,Variables,17.99,manual,true,7,7,100.0,1
+2026-10-18T12:49:28.349Z,0a6bcb48-9a40-44b4-a3cd-bf440f8e5d7e,Fitran,exam-set-c,1_variables,Variables,25.24,manual,TRUE,7,7,100.0,1
+2026-10-18T13:02:59.965Z,2b81b14b-9374-4448-8437-eb49b0c72310,<alif>,exam-set-c,1_variables,Variables,32.95,manual,true,7,7,100.0,2
+2026-10-17T03:34:00.424Z,d11393d2-0d8a-4e5d-894c-6cb492bc7e37,Ello,exam-set-c,2_even_odd,Even Odd,92.05,manual,true,10,10,100.0,2
+2026-10-18T09:47:24.153Z,03b9eb71-fd1c-4a82-a04a-348c3a495e8f,Suheil,exam-set-c,2_even_odd,Even Odd,40.30,manual,true,10,10,100.0,1
+2026-10-18T11:33:59.702Z,59c4dd10-66a8-4f7d-9e40-ea54bf38521f,monica,exam-set-c,2_even_odd,Even Odd,84.07,manual,true,10,10,100.0,2
+2026-10-18T12:52:37.093Z,7427be7e-3835-483b-8996-a3c80ec0c48d,Fitran,exam-set-c,2_even_odd,Even Odd,212.25,manual,TRUE,10,10,100.0,1
+2026-10-18T13:04:07.621Z,39812308-4edf-4770-a233-a8148aa12a4b,<alif>,exam-set-c,2_even_odd,Even Odd,98.91,manual,true,10,10,100.0,1
+2026-10-17T03:35:10.876Z,0388dcba-e101-4ec3-a04e-dbdffb938fab,Ello,exam-set-c,2_simple_ifelse,Simple If Else,160.11,manual,true,10,10,100.0,2
+2026-10-18T09:48:15.006Z,6e783250-5b9d-4cac-925e-ab4ecc30a709,Suheil,exam-set-c,2_simple_ifelse,Simple If Else,89.30,manual,true,10,10,100.0,1
+2026-10-18T11:35:03.671Z,d7f3142b-242c-408f-b86d-3a4fa9f087c2,monica,exam-set-c,2_simple_ifelse,Simple If Else,129.37,manual,true,10,10,100.0,2
+2026-10-18T12:53:26.578Z,5ec89a56-7c69-4311-b8d9-509ffa6adb41,Fitran,exam-set-c,2_simple_ifelse,Simple If Else,259.60,manual,TRUE,10,10,100.0,1
+2026-10-18T13:04:49.559Z,1963447b-e371-4bfc-803d-2d829fa085df,<alif>,exam-set-c,2_simple_ifelse,Simple If Else,134.46,manual,true,10,10,100.0,1
+2026-10-17T03:35:39.164Z,67760171-abd1-4501-844b-b7108fd72c82,Ello,exam-set-c,2_string_concat,String Concat,187.12,manual,true,8,8,100.0,1
+2026-10-18T09:48:38.959Z,e7fd485d-2a74-41e6-99c6-eb4f03df5d36,Suheil,exam-set-c,2_string_concat,String Concat,111.84,manual,true,8,8,100.0,1
+2026-10-18T11:37:18.902Z,1abca03d-df01-4694-9e9b-e8cf22d14c01,monica,exam-set-c,2_string_concat,String Concat,258.85,manual,true,8,8,100.0,1
+2026-10-18T12:54:04.044Z,1799c630-9bcf-4fd9-851e-a592b1de54c8,Fitran,exam-set-c,2_string_concat,String Concat,295.97,manual,TRUE,8,8,100.0,1
+2026-10-18T13:05:39.038Z,31f381c1-7513-41ef-8a8f-34a84630736a,<alif>,exam-set-c,2_string_concat,String Concat,182.97,manual,true,8,8,100.0,1
+2026-10-17T03:36:27.462Z,2cfd4829-b7e4-4148-9436-13771daee0a4,Ello,exam-set-c,3_array_sum,Array Sum,234.11,manual,true,10,10,100.0,2
+2026-10-18T09:49:25.918Z,ffda36f1-ffd3-4e06-b7e1-f4a7dbffb506,Suheil,exam-set-c,3_array_sum,Array Sum,157.92,manual,true,10,10,100.0,1
+2026-10-18T11:38:54.159Z,39156aa7-d14c-4334-a3b7-47f85b84610a,monica,exam-set-c,3_array_sum,Array Sum,347.26,manual,true,10,10,100.0,3
+2026-10-18T12:54:57.270Z,4f4b876e-1753-43ea-9bf9-85ac0b94aacc,Fitran,exam-set-c,3_array_sum,Array Sum,347.90,manual,TRUE,10,10,100.0,1
+2026-10-18T13:08:21.800Z,6e677da5-9a83-4d5d-a968-3263ea6ee0b4,<alif>,exam-set-c,3_array_sum,Array Sum,211.68,manual,true,10,10,100.0,1
+2026-10-17T03:36:52.993Z,495f3c10-21f9-4bcc-ad9f-cf1bbfa56f57,Ello,exam-set-c,3_basic_for_loop,Print Numbers,254.65,manual,true,7,7,100.0,1
+2026-10-18T09:49:43.593Z,65668ed9-7072-4281-90dd-9cf02c57bce8,Suheil,exam-set-c,3_basic_for_loop,Print Numbers,171.93,manual,true,7,7,100.0,1
+2026-10-18T11:39:25.526Z,8e722ade-c990-46e7-a0a1-fbcb5ed5c895,monica,exam-set-c,3_basic_for_loop,Print Numbers,375.15,manual,true,7,7,100.0,3
+2026-10-18T12:56:14.769Z,9f91fabf-306d-4a66-8399-14856ac24961,Fitran,exam-set-c,3_basic_for_loop,Print Numbers,423.07,manual,TRUE,7,7,100.0,1
+2026-10-18T13:08:50.679Z,504d6de6-94dc-46f1-9538-911088cecf0d,<alif>,exam-set-c,3_basic_for_loop,Print Numbers,238.50,manual,true,7,7,100.0,1
+2026-10-17T03:37:44.552Z,7599aae4-b3d4-4684-995b-7cc4ccb84fdd,Ello,exam-set-c,3_basic_while_loop,Print Numbers Reverse,305.39,manual,true,9,9,100.0,3
+2026-10-18T11:41:19.486Z,13c2a43b-a84e-42cb-9a8b-6a48c321e164,monica,exam-set-c,3_basic_while_loop,Print Numbers Reverse,484.34,manual,true,9,9,100.0,4
+2026-10-18T12:56:46.701Z,16d63f6e-7b1e-4c9d-926d-b59de12e7eb2,Fitran,exam-set-c,3_basic_while_loop,Print Numbers Reverse,452.87,manual,TRUE,9,9,100.0,1
+2026-10-18T13:09:51.976Z,593d1582-3f6e-4dbc-9a0e-fbb59e7e558d,<alif>,exam-set-c,3_basic_while_loop,Print Numbers Reverse,298.95,manual,true,9,9,100.0,2
+2026-10-17T03:39:13.107Z,77018356-6ab9-4d08-8d47-e5ae349f2a56,Ello,exam-set-c,3_find_max,Find Max,392.20,manual,true,12,12,100.0,3
+2026-10-18T09:52:45.365Z,a335855b-fecf-45d7-9a89-1a4273341b15,Suheil,exam-set-c,3_find_max,Find Max,352.80,manual,true,12,12,100.0,1
+2026-10-18T11:43:25.025Z,54c9a7c6-2a93-4d96-ba41-cde026d151fc,monica,exam-set-c,3_find_max,Find Max,601.81,manual,true,12,12,100.0,5
+2026-10-18T12:57:57.310Z,73534176-36ec-4526-b701-d0b2ecf82a8a,Fitran,exam-set-c,3_find_max,Find Max,522.19,manual,TRUE,12,12,100.0,1
+2026-10-18T13:13:06.976Z,ab255040-4d71-44ab-b4f4-bac7b30f3487,<alif>,exam-set-c,3_find_max,Find Max,492.93,manual,true,12,12,100.0,4
+2026-10-17T03:40:41.969Z,e67e129a-ad8e-44be-8556-463a4b0584f1,Ello,exam-set-c,4_count_vowels,Count Vowels,476.21,manual,true,13,13,100.0,3
+2026-10-18T09:58:40.127Z,dde55d8d-2271-4a4e-8b41-33fb49b0c2b0,Suheil,exam-set-c,4_count_vowels,Count Vowels,701.66,manual,true,13,13,100.0,3
+2026-10-18T11:47:00.414Z,e6bda74f-b834-47a2-9295-9eeb9fba5f69,monica,exam-set-c,4_count_vowels,Count Vowels,777.18,manual,true,13,13,100.0,7
+2026-10-18T13:01:38.369Z,d23e1beb-c8dd-47ba-8693-3c8b98b04ea9,Fitran,exam-set-c,4_count_vowels,Count Vowels,740.14,manual,TRUE,13,13,100.0,5
+2026-10-18T13:15:25.525Z,8b28eada-1021-41c3-a0b0-a8f01763c6b9,<alif>,exam-set-c,4_count_vowels,Count Vowels,630.08,manual,true,13,13,100.0,4
+2026-10-17T03:42:05.770Z,b912f6c3-0690-47e7-96c9-af61fdb8491e,Ello,exam-set-c,4_factorial_iterative,Factorial Iterative,554.09,manual,true,10,10,100.0,3
+2026-10-18T09:59:33.477Z,e7c35775-57ed-4b2f-b35c-311f71a273ad,Suheil,exam-set-c,4_factorial_iterative,Factorial Iterative,753.16,manual,true,10,10,100.0,1
+2026-10-18T11:48:12.386Z,fbeb618b-60b0-42b8-ac21-65e1f5f5f4da,monica,exam-set-c,4_factorial_iterative,Factorial Iterative,833.08,manual,true,10,10,100.0,4
+2026-10-18T13:02:56.296Z,c5d2d725-46ac-47b4-8831-42ba1057493e,Fitran,exam-set-c,4_factorial_iterative,Factorial Iterative,814.79,manual,TRUE,10,10,100.0,3
+2026-10-18T13:16:55.381Z,cb2e4a21-959c-4d1e-a658-bfdbb79ed5e7,<alif>,exam-set-c,4_factorial_iterative,Factorial Iterative,718.31,manual,true,10,10,100.0,2
+2026-10-17T03:49:08.725Z,c0c28be5-e5d2-4fd1-ba70-b73b88bf81e9,Ello,exam-set-c,4_fibonacci_iterative,Fibonacci Iterative,947.95,manual,true,12,12,100.0,5
+2026-10-18T10:26:39.691Z,95564412-39eb-46bd-97a5-c798ede33616,Suheil,exam-set-c,4_fibonacci_iterative,Fibonacci Iterative,2376.78,manual,true,12,12,100.0,6
+2026-10-18T11:53:26.803Z,e57c159e-72d8-4f79-96c0-73536dbf2ecb,monica,exam-set-c,4_fibonacci_iterative,Fibonacci Iterative,1130.42,manual,true,12,12,100.0,9
+2026-10-18T13:15:55.962Z,443f1b20-459e-4aac-8ef7-32615fff8d8e,Fitran,exam-set-c,4_fibonacci_iterative,Fibonacci Iterative,1593.05,manual,FALSE,7,12,58.3,-
+2026-10-18T13:16:47.538Z,ec5f2d02-8f74-4650-961d-9b4beb908aba,Fitran,exam-set-c,4_fibonacci_iterative,Fibonacci Iterative,1644.63,manual,TRUE,12,12,100.0,9
+2026-10-18T13:25:38.669Z,78470c04-6cf3-4cfc-b4b6-108d0a9f3ca8,<alif>,exam-set-c,4_fibonacci_iterative,Fibonacci Iterative,1240.24,manual,true,12,12,100.0,8
+2026-10-17T03:51:59.644Z,36b0d315-7b7d-4876-a7e8-c947070f9dfb,Ello,exam-set-c,4_linear_search,Linear Search,1115.87,manual,true,14,14,100.0,4
+2026-10-18T10:32:02.529Z,cc0a1244-778f-46b0-99df-0d3916dd08a0,Suheil,exam-set-c,4_linear_search,Linear Search,2695.46,manual,true,14,14,100.0,3
+2026-10-18T11:56:57.253Z,900d9182-6b0b-4fd3-b5ad-94c90cd623a9,monica,exam-set-c,4_linear_search,Linear Search,1330.44,manual,true,14,14,100.0,9
+2026-10-18T13:18:47.283Z,78087641-535b-4ef5-a22b-92a848f366c1,Fitran,exam-set-c,4_linear_search,Linear Search,1758.37,manual,TRUE,14,14,100.0,3
+2026-10-18T13:27:40.090Z,dba8958e-32e4-4f09-8196-d48fb0d44100,<alif>,exam-set-c,4_linear_search,Linear Search,1359.79,manual,true,14,14,100.0,4
+2026-10-17T03:52:47.789Z,c80e36ae-f9e7-4122-a456-d42be4dd6332,Ello,exam-set-c,4_string_reverse,String Reverse,1158.84,manual,true,10,10,100.0,3
+2026-10-18T10:32:57.430Z,dc9c5b47-a33b-43f6-8382-c7c4d8462553,Suheil,exam-set-c,4_string_reverse,String Reverse,2742.62,manual,true,10,10,100.0,2
+2026-10-18T11:58:11.455Z,4d509c2c-079d-4390-9ae4-2a968a3f0cf5,monica,exam-set-c,4_string_reverse,String Reverse,1398.91,manual,true,10,10,100.0,8
+2026-10-18T13:19:29.363Z,978d2620-4bb5-4e59-80f4-1da05f08d544,Fitran,exam-set-c,4_string_reverse,String Reverse,1798.51,manual,TRUE,10,10,100.0,3
+2026-10-18T13:28:09.250Z,8c92721d-3297-41c3-8620-b94485d1b907,<alif>,exam-set-c,4_string_reverse,String Reverse,1387.70,manual,true,10,10,100.0,2
+2026-10-17T03:53:32.223Z,2cf76440-e825-454c-8db5-abb5c03127e5,Ello,exam-set-c,array_copy_manual,Array Copy Manual,1201.61,manual,true,9,9,100.0,4
+2026-10-18T10:33:35.565Z,31235469-4c83-4827-ae2f-8b6c55ff122b,Suheil,exam-set-c,array_copy_manual,Array Copy Manual,2777.86,manual,true,9,9,100.0,2
+2026-10-18T11:59:35.270Z,a9b84075-d90f-470d-997c-c8ff0a2713f2,monica,exam-set-c,array_copy_manual,Array Copy Manual,1477.03,manual,true,9,9,100.0,7
+2026-10-18T13:21:26.791Z,a508946c-2a9a-466f-8dca-901f02729c4d,Fitran,exam-set-c,array_copy_manual,Array Copy Manual,1914.16,manual,TRUE,9,9,100.0,2
+2026-10-18T13:29:02.759Z,04d05f1d-53a1-4bc1-a3f0-42e52c4856d4,<alif>,exam-set-c,array_copy_manual,Array Copy Manual,1439.64,manual,true,9,9,100.0,2
+2026-10-17T03:55:34.761Z,1553e908-63ac-44da-890e-a85eb18b5a00,Ello,exam-set-c,5_matrix_addition,Matrix Addition,1322.91,manual,true,12,12,100.0,4
+2026-10-18T10:34:53.508Z,a60203ff-a7ea-4c2f-8182-874be23949e1,Suheil,exam-set-c,5_matrix_addition,Matrix Addition,2852.58,manual,true,12,12,100.0,3
+2026-10-18T12:01:54.346Z,6ad8f63c-72a5-4b49-982e-751c015f5eaf,monica,exam-set-c,5_matrix_addition,Matrix Addition,1602.05,manual,true,12,12,100.0,8
+2026-10-18T13:22:20.960Z,01ead6ea-96ad-4580-9144-3231efbd13b5,Fitran,exam-set-c,5_matrix_addition,Matrix Addition,1966.78,manual,TRUE,12,12,100.0,3
+2026-10-18T13:29:57.398Z,5c847622-3598-4ac6-aae1-39b8e35c67c6,<alif>,exam-set-c,5_matrix_addition,Matrix Addition,1492.31,manual,true,12,12,100.0,3
+2026-10-17T04:04:30.678Z,8de3a70f-ab67-416f-9722-de61772d8b9a,Ello,exam-set-c,5_palindrome_check,Palindrome Check,1831.59,manual,true,17,17,100.0,6
+2026-10-18T10:40:59.020Z,686d84ed-56c1-4c10-91f7-005f9885b4c1,Suheil,exam-set-c,5_palindrome_check,Palindrome Check,3214.89,manual,true,17,17,100.0,4
+2026-10-18T12:07:30.405Z,62e5ccc8-0055-4a33-9c99-f917b260a205,monica,exam-set-c,5_palindrome_check,Palindrome Check,1922.69,manual,true,17,17,100.0,9
+2026-10-18T13:25:45.862Z,c103c0fe-a6ea-4c95-a2dc-37156143d134,Fitran,exam-set-c,5_palindrome_check,Palindrome Check,2170.45,manual,TRUE,17,17,100.0,6
+2026-10-18T13:32:25.112Z,f1b70c3b-d0ed-47af-ac9e-7fe188e1cfb0,<alif>,exam-set-c,5_palindrome_check,Palindrome Check,1638.79,manual,true,17,17,100.0,4
+2026-10-17T04:10:27.059Z,ba9d1dd8-7b8f-4d46-b501-00cd925abe38,Ello,exam-set-c,5_prime_check,Prime Check,2183.79,manual,true,16,16,100.0,6
+2026-10-18T10:54:49.826Z,11678259-ba99-4b64-800e-06f5051531d4,Suheil,exam-set-c,5_prime_check,Prime Check,4036.97,manual,true,16,16,100.0,6
+2026-10-18T12:11:21.848Z,4dda81e6-d6e8-49c1-8cf0-edd3f9d21c5c,monica,exam-set-c,5_prime_check,Prime Check,2152.62,manual,true,16,16,100.0,9
+2026-10-18T13:39:51.895Z,ab2fe443-1970-4472-8652-d63694120fd0,Fitran,exam-set-c,5_prime_check,Prime Check,3013.27,manual,TRUE,16,16,100.0,5
+2026-10-18T13:42:27.460Z,fc5da8de-c83f-4bac-92eb-30625ae29130,<alif>,exam-set-c,5_prime_check,Prime Check,2236.14,manual,true,16,16,100.0,9
+2026-10-17T04:15:18.480Z,5c116dba-f5ae-4e30-8da1-8c1b575ee074,Ello,exam-set-c,6_bubble_sort,Bubble Sort,2465.57,manual,true,14,14,100.0,6
+2026-10-18T10:58:07.255Z,409d39b2-18c1-4d54-8e60-c8eed8efb25b,Suheil,exam-set-c,6_bubble_sort,Bubble Sort,4228.88,manual,true,14,14,100.0,5
+2026-10-18T12:13:01.300Z,7dc7f832-9170-4d80-a8bb-efa81a9e4372,monica,exam-set-c,6_bubble_sort,Bubble Sort,2250.89,manual,true,14,14,100.0,8
+2026-10-18T13:46:10.358Z,5b9e20f6-1ac5-4e20-906b-0ba8d845cd72,Fitran,exam-set-c,6_bubble_sort,Bubble Sort,3388.34,manual,TRUE,14,14,100.0,3
+2026-10-18T13:47:44.740Z,06b3ab9d-f288-4065-8a03-b3b0cd80db05,<alif>,exam-set-c,6_bubble_sort,Bubble Sort,2550.64,manual,true,14,14,100.0,6
+2026-10-17T04:30:13.448Z,e0f9335d-78c4-4d15-b51c-ea28edfad083,Ello,exam-set-c,anagram_check,Anagram Check,3196.08,manual,true,16,16,100.0,7
+2026-10-18T11:11:36.356Z,74d92617-2110-4a72-b39b-406d6a491cef,Suheil,exam-set-c,anagram_check,Anagram Check,5032.99,manual,true,16,16,100.0,8
+2026-10-18T12:19:06.659Z,65cfcfa7-c791-461d-adda-4e42c3a60208,monica,exam-set-c,anagram_check,Anagram Check,2613.68,manual,true,16,16,100.0,10
+2026-10-18T13:52:12.112Z,28c89ab0-5e87-4af7-80f1-cb173b402f77,Fitran,exam-set-c,anagram_check,Anagram Check,3747.55,manual,TRUE,16,16,100.0,7
+2026-10-18T13:54:03.912Z,bbfdba58-1507-48c6-b70e-faa64fc42df7,<alif>,exam-set-c,anagram_check,Anagram Check,2926.99,manual,true,16,16,100.0,8
+2026-10-17T04:36:55.130Z,2e09a16f-fdff-4974-b22a-ab9012959358,Ello,exam-set-c,7_caesar_cipher,Caesar Cipher,3596.06,manual,true,12,12,100.0,7
+2026-10-18T11:13:00.800Z,1212f389-1140-48f6-80a0-40b3c9da4f09,Suheil,exam-set-c,7_caesar_cipher,Caesar Cipher,5114.83,manual,true,12,12,100.0,4
+2026-10-18T12:20:54.316Z,fc11396d-4d82-4688-a09f-9fca2d2ed41e,monica,exam-set-c,7_caesar_cipher,Caesar Cipher,2719.94,manual,true,12,12,100.0,7
+2026-10-18T13:53:50.839Z,a076f5e8-008f-4b16-94dc-ef2bf5af8847,Fitran,exam-set-c,7_caesar_cipher,Caesar Cipher,3840.70,manual,TRUE,12,12,100.0,5
+2026-10-18T13:54:48.937Z,a2e54004-e0df-4eb5-b458-5c4fd4a15bc6,<alif>,exam-set-c,7_caesar_cipher,Caesar Cipher,2970.30,manual,true,12,12,100.0,3
+2026-10-17T04:39:25.392Z,3fbe882f-0dbe-4f64-9f9b-070e435dc38d,Ello,exam-set-c,7_matrix_transpose,Matrix Transpose,3732.22,manual,true,13,13,100.0,3
+2026-10-18T11:14:35.701Z,f34b8535-6a51-4bec-8288-c82306cfef27,Suheil,exam-set-c,7_matrix_transpose,Matrix Transpose,5205.10,manual,true,13,13,100.0,4
+2026-10-18T12:22:33.930Z,e3b31760-94a0-44cd-89aa-2d58106d03e6,monica,exam-set-c,7_matrix_transpose,Matrix Transpose,2813.57,manual,true,13,13,100.0,7
+2026-10-18T13:55:41.569Z,e336b015-9b6c-458a-be3a-8095fe8b4570,Fitran,exam-set-c,7_matrix_transpose,Matrix Transpose,3949.14,manual,TRUE,13,13,100.0,5
+2026-10-18T13:57:00.193Z,649f00e0-f562-4698-9ce8-60d164e0ae48,<alif>,exam-set-c,7_matrix_transpose,Matrix Transpose,3099.72,manual,true,13,13,100.0,4
+2026-10-17T04:43:14.063Z,aaa1c0e1-e688-4d69-9c92-40a10c2c6aa7,Ello,exam-set-c,8_first_non_repeating_char,First Non Repeating Char,3955.73,manual,true,18,18,100.0,6
+2026-10-18T11:26:38.894Z,f9af3e11-d043-453e-9c81-46a9c550aa7a,Suheil,exam-set-c,8_first_non_repeating_char,First Non Repeating Char,5925.02,manual,true,18,18,100.0,9
+2026-10-18T12:25:03.717Z,6457aa6b-cc9f-4948-b7cb-bfe7cc53a60e,monica,exam-set-c,8_first_non_repeating_char,First Non Repeating Char,2962.13,manual,true,18,18,100.0,10
+2026-10-18T14:02:54.168Z,16e49bc0-4554-4374-ac0d-bfcaf76d8a20,Fitran,exam-set-c,8_first_non_repeating_char,First Non Repeating Char,4380.13,manual,TRUE,18,18,100.0,4
+2026-10-18T14:04:17.527Z,3aefb087-cdc6-464b-80e5-3f048c904bcd,<alif>,exam-set-c,8_first_non_repeating_char,First Non Repeating Char,3536.28,manual,true,18,18,100.0,8
+2026-10-17T04:46:22.788Z,842f9fc9-d380-48f3-ae9d-147eb328b474,Ello,exam-set-c,8_merge_sorted_arrays,Merge Sorted Arrays,4136.44,manual,true,13,13,100.0,8
+2026-10-18T11:35:16.041Z,4349a182-8419-4e7d-9a91-22493d37b174,Suheil,exam-set-c,8_merge_sorted_arrays,Merge Sorted Arrays,6436.87,manual,true,13,13,100.0,7
+2026-10-18T12:28:09.657Z,389f43f2-20af-4f94-b5a8-2ee7eee74ed1,monica,exam-set-c,8_merge_sorted_arrays,Merge Sorted Arrays,3146.70,manual,true,13,13,100.0,10
+2026-10-18T14:09:26.072Z,1e6674a0-1cd3-475d-bde5-bad98dd2cc4d,Fitran,exam-set-c,8_merge_sorted_arrays,Merge Sorted Arrays,4769.12,manual,TRUE,13,13,100.0,9
+2026-10-18T14:12:04.682Z,e3ba002f-cacc-432c-8514-8e2b01f2d12e,<alif>,exam-set-c,8_merge_sorted_arrays,Merge Sorted Arrays,4001.85,manual,true,13,13,100.0,8
+2026-10-17T04:47:43.807Z,55059764-c4a8-4a6e-af4a-2e50fe9acb6f,Ello,exam-set-d,1_hello_world,Cetak String,8.81,manual,true,2,2,100.0,1
+2026-10-18T11:47:08.833Z,5e423868-b172-4280-b2c3-b0662e37f08d,Suheil,exam-set-d,1_hello_world,Cetak String,14.06,manual,true,2,2,100.0,1
+2026-10-18T12:30:52.159Z,2c58dbc3-7c05-4861-a290-4932caa86216,monica,exam-set-d,1_hello_world,Cetak String,42.99,manual,true,2,2,100.0,1
+2026-10-18T14:10:13.053Z,f75098b7-61bf-4b88-a6c3-e904cc50a768,Fitran,exam-set-d,1_hello_world,Cetak String,8.70,manual,TRUE,2,2,100.0,1
+2026-10-18T14:12:34.772Z,a811e663-1260-4918-87dd-52d6d3f2bea6,<alif>,exam-set-d,1_hello_world,Cetak String,8.15,manual,true,2,2,100.0,1
+2026-10-17T04:48:47.508Z,ec5760fa-1975-4d68-936b-671843674cbf,Ello,exam-set-d,4_print_2darray,Cetak Array 2D,71.44,manual,true,3,3,100.0,2
+2026-10-18T11:50:35.269Z,0f1d6e57-e202-4a98-8585-a62a6aaeba74,Suheil,exam-set-d,4_print_2darray,Cetak Array 2D,219.18,manual,true,3,3,100.0,2
+2026-10-18T12:31:51.183Z,020060c4-fcc7-483c-8f9d-21cd70aadad9,monica,exam-set-d,4_print_2darray,Cetak Array 2D,101.05,manual,true,3,3,100.0,3
+2026-10-18T14:11:45.527Z,cb0803bc-fedd-4680-82da-5265ac06601d,Fitran,exam-set-d,4_print_2darray,Cetak Array 2D,99.84,manual,TRUE,3,3,100.0,1
+2026-10-18T14:13:54.883Z,1281137b-747e-4e7a-b970-4b173541a0f5,<alif>,exam-set-d,4_print_2darray,Cetak Array 2D,87.29,manual,true,3,3,100.0,2
+2026-10-17T04:49:19.159Z,02640348-58ad-4aec-90d6-8d3d8d426e9c,Ello,exam-set-d,6_binary_search,Binary Search,101.58,manual,true,4,4,100.0,4
+2026-10-18T11:54:57.095Z,e189c9d4-a340-45ef-a807-f18e222f7264,Suheil,exam-set-d,6_binary_search,Binary Search,476.72,manual,true,4,4,100.0,3
+2026-10-18T12:34:51.191Z,f7db4cd1-7198-4a9f-a433-28c5e3698bcc,monica,exam-set-d,6_binary_search,Binary Search,274.27,manual,true,4,4,100.0,10
+2026-10-18T14:16:43.904Z,49d45524-f590-4b1b-8655-583f1dc628c4,Fitran,exam-set-d,6_binary_search,Binary Search,396.77,manual,TRUE,4,4,100.0,4
+2026-10-18T14:17:51.409Z,bb3299ca-c580-49ec-9a3c-3442b8e18660,<alif>,exam-set-d,6_binary_search,Binary Search,322.89,manual,true,4,4,100.0,6
+2026-10-17T04:55:31.455Z,f0e94514-590c-4bef-8e87-489f66166ec2,Ello,exam-set-d,6_selection_sort,Manipulasi Array 1,65.13,manual,true,5,5,100.0,6
+2026-10-18T12:04:34.393Z,25506a45-52a6-47b4-952a-12a34f14d213,Suheil,exam-set-d,6_selection_sort,Manipulasi Array 1,1050.45,manual,true,5,5,100.0,5
+2026-10-18T12:37:12.624Z,0dfc97ad-d1d6-47b6-8fbf-e03f41d0a5b4,monica,exam-set-d,6_selection_sort,Manipulasi Array 1,411.93,manual,true,5,5,100.0,10
+2026-10-18T14:18:43.074Z,221c0d52-929d-471f-b8e0-03cd4ac8e58d,Fitran,exam-set-d,6_selection_sort,Manipulasi Array 1,509.13,manual,TRUE,5,5,100.0,4
+2026-10-18T14:23:56.674Z,ff7d0e5e-601c-4fca-86e2-b06a33356b79,<alif>,exam-set-d,6_selection_sort,Manipulasi Array 1,685.70,manual,true,5,5,100.0,7
+2026-10-17T04:57:19.983Z,e0582812-6b8a-4f65-8eb9-b48a8734ea11,Ello,exam-set-d,7_remove_duplicates,Manipulasi Array 2,162.68,manual,true,5,5,100.0,5
+2026-10-18T12:05:12.165Z,f7a4aa76-46fc-491c-aef4-dde18431facb,Suheil,exam-set-d,7_remove_duplicates,Manipulasi Array 2,1083.40,manual,true,5,5,100.0,3
+2026-10-18T12:39:29.174Z,b1daa8ce-9a0d-4509-984f-8014c53bbbeb,monica,exam-set-d,7_remove_duplicates,Manipulasi Array 2,543.74,manual,true,5,5,100.0,10
+2026-10-18T14:20:29.034Z,36a81a15-1cfc-40d1-b1b9-f2f887026d47,Fitran,exam-set-d,7_remove_duplicates,Manipulasi Array 2,611.71,manual,TRUE,5,5,100.0,1
+2026-10-18T14:26:24.897Z,2577cf8b-0a18-4c3b-920e-d8287a8b1756,<alif>,exam-set-d,7_remove_duplicates,Manipulasi Array 2,832.73,manual,true,5,5,100.0,5
