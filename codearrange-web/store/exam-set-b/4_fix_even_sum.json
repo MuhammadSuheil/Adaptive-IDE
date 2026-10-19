@@ -1,0 +1,77 @@
+{
+  "id": "fix_even_sum",
+  "title": "4. Perbaiki Penjumlahan Bilangan Genap",
+  "type": "loops",
+  "mode": "debug",
+  "description": "Program ini seharusnya mencetak jumlah bilangan genap dari 1 sampai 10 (output yang diharapkan: 30), namun program mencetak 25. Temukan bug dan susun kembali program yang sudah diperbaiki.\n```\npublic class EvenSum {\n    public static void main(String[] args) {\n        int total = 0;\n        for (int i = 1; i < 10; i++) {\n            if (i % 2 == 1) {\n                total += i;\n            }\n        }\n        System.out.println(total);\n    }\n}\n```",
+  "explanation": "Terdapat dua bug: kondisi loop i < 10 berhenti sebelum angka 10 sehingga 10 tidak pernah dijumlahkan; dan kondisi i % 2 == 1 memilih bilangan ganjil, bukan bilangan genap. Perbaikannya adalah i <= 10 dan i % 2 == 0.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class EvenSum {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int total = 0;"
+    },
+    {
+      "id": 4,
+      "code": "        for (int i = 1; i <= 10; i++) {"
+    },
+    {
+      "id": 5,
+      "code": "            if (i % 2 == 0) {"
+    },
+    {
+      "id": 6,
+      "code": "                total += i;"
+    },
+    {
+      "id": 7,
+      "code": "            }"
+    },
+    {
+      "id": 8,
+      "code": "        }"
+    },
+    {
+      "id": 9,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    },
+    {
+      "id": 12,
+      "code": "        for (int i = 1; i < 10; i++) {"
+    },
+    {
+      "id": 13,
+      "code": "            if (i % 2 == 1) {"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  ]
+}
