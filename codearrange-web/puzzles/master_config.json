@@ -1,8 +1,23 @@
 {
-  "exam-set-a": {
-    "timeLimitMinutes": 5
+  "demo": {
+    "timeLimitMinutes": 5,
+    "showTimerUI": "on"
   },
-  "exam-set-b": {
-    "timeLimitMinutes": 5
+  "easy-1": {
+    "timeLimitMinutes": 5,
+    "showTimerUI": "off"
+  },
+  "easy-2": {
+    "timeLimitMinutes": 5,
+    "showTimerUI": "off"
+  },
+  "medium": {
+    "timeLimitMinutes": 12,
+    "showTimerUI": "off"
+  },
+  "hard": {
+    "timeLimitMinutes": 15,
+    "showTimerUI": "off"
   }
 }
+
