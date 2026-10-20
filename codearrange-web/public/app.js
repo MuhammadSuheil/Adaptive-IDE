@@ -32,6 +32,8 @@
   let puzzleList = []; // full ordered list from /api/puzzles, used to find "the next puzzle"
   let playerName = ''; // set once from /api/config; the player can't change it
   let timeLimitMinutes = null; // set once from /api/config if master_config.json contains the active set
+  let showTimerUI = true; // whether the timer display is shown in the UI (default true, can be toggled in master_config.json)
+  const puzzleSessionCache = new Map(); // caches per-puzzle DOM arrangement and state so participants can freely skip and return
   let startTimeMs = null; // session start time (persists across Try Again and Next Puzzle)
   let timerIntervalId = null;
   let finished = false;
@@ -44,6 +46,64 @@
   let reviewMode = false; // set once from /api/config; whether this server instance asks for ratings
   let pendingRatingAttemptId = null; // set while the rating dialog is open, for the attempt it's rating
   let pausedAtMs = null; // timestamp when exam timer was paused by the rating dialog
+
+  function isTimerUIVisible(val) {
+    if (val === undefined || val === null) return true;
+    if (typeof val === 'boolean') return val;
+    if (typeof val === 'number') return val !== 0;
+    if (typeof val === 'string') {
+      const s = val.trim().toLowerCase();
+      if (s === 'off' || s === 'false' || s === '0' || s === 'hide' || s === 'hidden') return false;
+      return true;
+    }
+    return true;
+  }
+
+  function applyTimerUIVisibility() {
+    if (!showTimerUI) {
+      timerLabel.classList.add('hidden');
+    } else {
+      timerLabel.classList.remove('hidden');
+    }
+  }
+
+  function saveCurrentPuzzleToCache(isCorrectOverride) {
+    if (!currentPuzzleId || !currentPuzzleData) return;
+    const isCorrect = typeof isCorrectOverride === 'boolean'
+      ? isCorrectOverride
+      : (finishedPerLine ? Object.values(finishedPerLine).every(Boolean) : false);
+
+    puzzleSessionCache.set(currentPuzzleId, {
+      puzzleId: currentPuzzleId,
+      puzzle: currentPuzzleData,
+      availableOrder: [...availableList.children].map((li) => Number(li.dataset.id)),
+      solutionOrder: [...solutionList.children].map((li) => Number(li.dataset.id)),
+      finished,
+      correct: isCorrect,
+      finishedElapsedMs,
+      finishedPerLine,
+      finishedExplanation,
+      pendingRatingAttemptId,
+      feedbackText: feedback.textContent,
+      feedbackClass: feedback.className,
+    });
+  }
+
+  function areAllPuzzlesCompleted() {
+    if (!puzzleList || puzzleList.length === 0) return false;
+    return puzzleList.every((p) => {
+      const cached = puzzleSessionCache.get(p.id);
+      return cached && cached.finished && cached.correct;
+    });
+  }
+
+  function getCompletedPuzzlesCount() {
+    if (!puzzleList || puzzleList.length === 0) return 0;
+    return puzzleList.filter((p) => {
+      const cached = puzzleSessionCache.get(p.id);
+      return cached && cached.finished && cached.correct;
+    }).length;
+  }
 
   // ---- Resuming after a page refresh (sessionStorage) --------------------
   //
@@ -64,8 +124,14 @@
 
   function saveState() {
     if (!currentPuzzleId || !currentPuzzleData) return;
+    saveCurrentPuzzleToCache();
+    const cacheObj = {};
+    for (const [k, v] of puzzleSessionCache.entries()) {
+      cacheObj[k] = v;
+    }
     const state = {
       puzzleId: currentPuzzleId,
+      puzzleSessionCache: cacheObj,
       puzzle: currentPuzzleData,
       availableOrder: [...availableList.children].map((li) => Number(li.dataset.id)),
       solutionOrder: [...solutionList.children].map((li) => Number(li.dataset.id)),
@@ -122,6 +188,13 @@
     if (config.setConfig && config.setConfig.timeLimitMinutes) {
       timeLimitMinutes = Number(config.setConfig.timeLimitMinutes);
     }
+    if (config.setConfig && config.setConfig.showTimerUI !== undefined) {
+      showTimerUI = isTimerUIVisible(config.setConfig.showTimerUI);
+    } else {
+      showTimerUI = true;
+    }
+    applyTimerUIVisibility();
+
     if (config.sessionStartedAtMs) {
       const elapsed = Date.now() - config.sessionStartedAtMs;
       const limitMs = timeLimitMinutes ? timeLimitMinutes * 60 * 1000 : Infinity;
@@ -202,11 +275,33 @@
   // attempt starting and the button being clicked, so recomputing is cheap
   // and keeps there being exactly one source of truth.
   function updateNextPuzzleButtonLabel() {
-    nextPuzzleBtn.textContent = hasNextPuzzle() ? 'Soal Berikutnya' : 'Kembali ke Awal';
+    if (sessionExpired || setCompleted || !hasNextPuzzle()) {
+      nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
+    } else {
+      nextPuzzleBtn.textContent = 'Soal Berikutnya';
+    }
   }
 
-  // Prev button is only shown as enabled when there actually is a previous puzzle.
+  function updateNextPuzzleButtonState() {
+    if (sessionExpired || setCompleted) {
+      nextPuzzleBtn.disabled = false;
+      return;
+    }
+    if (hasNextPuzzle()) {
+      // Peserta dapat langsung beralih ke soal berikutnya kapan saja (melewati/skip soal)
+      nextPuzzleBtn.disabled = false;
+    } else {
+      // Di soal terakhir: HANYA aktif jika seluruh soal dalam set/folder telah selesai dengan benar
+      nextPuzzleBtn.disabled = !areAllPuzzlesCompleted();
+    }
+  }
+
+  // Tombol Soal Sebelumnya aktif jika ada soal sebelumnya dan sesi belum selesai/timeout
   function updatePrevPuzzleButtonState() {
+    if (sessionExpired || setCompleted) {
+      prevPuzzleBtn.disabled = true;
+      return;
+    }
     prevPuzzleBtn.disabled = !hasPrevPuzzle();
   }
 
@@ -367,6 +462,7 @@
     startTimeMs = Date.now();
     sessionExpired = false;
     setCompleted = false;
+    puzzleSessionCache.clear();
 
     startScreen.classList.add('hidden');
     puzzleScreen.classList.remove('hidden');
@@ -385,23 +481,75 @@
   // Starts an attempt at puzzleId.
   // Fetches a fresh copy of the puzzle from the server.
   // The global session timer keeps running continuously across attempts.
-  async function beginAttempt(puzzleId) {
+  async function beginAttempt(puzzleId, forceFresh = false) {
+    // Simpan susunan tile soal yang sedang aktif sebelum berpindah
+    if (currentPuzzleId && currentPuzzleId !== puzzleId && currentPuzzleData) {
+      saveCurrentPuzzleToCache();
+    }
+
     currentPuzzleId = puzzleId;
+    ratingModal.classList.add('hidden');
+    pendingRatingAttemptId = null;
+    pausedAtMs = null;
+
+    if (!forceFresh && puzzleSessionCache.has(puzzleId)) {
+      const cached = puzzleSessionCache.get(puzzleId);
+      currentPuzzleData = cached.puzzle;
+      finished = Boolean(cached.finished);
+      finishedElapsedMs = cached.finishedElapsedMs;
+      finishedPerLine = cached.finishedPerLine;
+      finishedExplanation = cached.finishedExplanation || null;
+      pendingRatingAttemptId = cached.pendingRatingAttemptId || null;
+
+      activePuzzleTypeLabel.textContent =
+        cached.puzzle.type && cached.puzzle.type !== 'uncategorized' ? humanizeType(cached.puzzle.type) : '';
+      applyMode(cached.puzzle.mode);
+      renderDescription(cached.puzzle.description);
+      renderTiles(cached.puzzle.lines, cached.availableOrder, cached.solutionOrder);
+
+      updatePrevPuzzleButtonState();
+      updateNextPuzzleButtonState();
+      updateNextPuzzleButtonLabel();
+
+      if (finished) {
+        finishBtn.disabled = true;
+        tryAgainBtn.disabled = sessionExpired || setCompleted;
+        revealIndentation();
+        for (const li of solutionList.children) {
+          const id = Number(li.dataset.id);
+          if (finishedPerLine && Object.prototype.hasOwnProperty.call(finishedPerLine, id)) {
+            li.classList.add(finishedPerLine[id] ? 'correct' : 'incorrect');
+          }
+        }
+        feedback.textContent = cached.feedbackText || '';
+        feedback.className = cached.feedbackClass || 'feedback';
+        showExplanation(finishedExplanation);
+      } else {
+        finishBtn.disabled = sessionExpired;
+        tryAgainBtn.disabled = sessionExpired;
+        clearFeedback();
+      }
+
+      if (!startTimeMs) {
+        startTimeMs = Date.now();
+        sessionExpired = false;
+      }
+      applyTimerUIVisibility();
+      if (!sessionExpired && !setCompleted) {
+        startTimer();
+      } else {
+        updateTimerLabel();
+      }
+      saveState();
+      return;
+    }
+
+    // Inisialisasi awal / fresh attempt dari server
     currentPuzzleData = null;
     finished = false;
-    setCompleted = false;
     finishedElapsedMs = null;
     finishedPerLine = null;
     finishedExplanation = null;
-    pendingRatingAttemptId = null;
-    pausedAtMs = null;
-    ratingModal.classList.add('hidden');
-    finishBtn.disabled = sessionExpired;
-    tryAgainBtn.disabled = sessionExpired;
-    nextPuzzleBtn.disabled = true; // only enabled once Finish is clicked for this attempt
-    prevPuzzleBtn.disabled = true; // only enabled once Finish is clicked for this attempt
-    updateNextPuzzleButtonLabel();
-    updatePrevPuzzleButtonState();
     clearFeedback();
 
     const res = await fetch(`/api/puzzles/${encodeURIComponent(puzzleId)}`);
@@ -417,25 +565,36 @@
     renderDescription(puzzle.description);
     renderTiles(puzzle.lines, puzzle.lines.map((line) => line.id), []);
 
-    // Ensure session timer is initialized if not yet started
+    finishBtn.disabled = sessionExpired;
+    tryAgainBtn.disabled = sessionExpired;
+    updatePrevPuzzleButtonState();
+    updateNextPuzzleButtonState();
+    updateNextPuzzleButtonLabel();
+
     if (!startTimeMs) {
       startTimeMs = Date.now();
       sessionExpired = false;
     }
 
-    if (!sessionExpired) {
+    applyTimerUIVisibility();
+    if (!sessionExpired && !setCompleted) {
       startTimer();
     } else {
       updateTimerLabel();
     }
+
+    saveCurrentPuzzleToCache();
     saveState();
   }
 
-  // Reconstructs the screen from a previously saved state (page refresh),
-  // without any request to /api/puzzles/:id -- using the exact line data
-  // and tile arrangement that was saved means the player sees precisely
-  // what they left, not a freshly (and differently) shuffled puzzle.
+  // Reconstructs the screen from a previously saved state (page refresh)
   function resumeAttempt(saved) {
+    if (saved.puzzleSessionCache) {
+      puzzleSessionCache.clear();
+      for (const [k, v] of Object.entries(saved.puzzleSessionCache)) {
+        puzzleSessionCache.set(k, v);
+      }
+    }
     currentPuzzleId = saved.puzzleId;
     currentPuzzleData = saved.puzzle;
     finished = Boolean(saved.finished);
@@ -458,23 +617,28 @@
     puzzleScreen.classList.remove('hidden');
     activePlayerLabel.textContent = `Peserta: ${playerName}`;
     activePuzzleTypeLabel.textContent =
-      saved.puzzle.type && saved.puzzle.type !== 'uncategorized' ? humanizeType(saved.puzzle.type) : '';
-    applyMode(saved.puzzle.mode); // state saved before modes existed has no mode; that's just "arrange"
+      saved.puzzle && saved.puzzle.type && saved.puzzle.type !== 'uncategorized' ? humanizeType(saved.puzzle.type) : '';
+    applyMode(saved.puzzle ? saved.puzzle.mode : 'arrange');
     puzzleSelect.value = saved.puzzleId;
 
-    renderDescription(saved.puzzle.description);
-    renderTiles(saved.puzzle.lines, saved.availableOrder, saved.solutionOrder);
+    if (saved.puzzle) {
+      renderDescription(saved.puzzle.description);
+      const cached = puzzleSessionCache.get(saved.puzzleId);
+      const avail = cached ? cached.availableOrder : saved.availableOrder;
+      const sol = cached ? cached.solutionOrder : saved.solutionOrder;
+      renderTiles(saved.puzzle.lines, avail, sol);
+    }
 
     updateNextPuzzleButtonLabel();
+    updateNextPuzzleButtonState();
     updatePrevPuzzleButtonState();
+    applyTimerUIVisibility();
 
     if (finished) {
       finishBtn.disabled = true;
       tryAgainBtn.disabled = sessionExpired || setCompleted;
-      nextPuzzleBtn.disabled = false;
-      prevPuzzleBtn.disabled = sessionExpired || setCompleted || !hasPrevPuzzle();
       if (sessionExpired || setCompleted || !hasNextPuzzle()) {
-        nextPuzzleBtn.textContent = 'Kembali ke Awal';
+        nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
       }
       revealIndentation();
       for (const li of solutionList.children) {
@@ -509,7 +673,6 @@
         handleSessionTimeout();
       } else {
         finishBtn.disabled = false;
-        nextPuzzleBtn.disabled = true;
         tryAgainBtn.disabled = false;
         clearFeedback();
         startTimer();
@@ -680,6 +843,7 @@
   }
 
   function updateTimerLabel() {
+    applyTimerUIVisibility();
     if (!startTimeMs) {
       timerLabel.textContent = '0:00';
       return;
@@ -721,7 +885,7 @@
     stopTimer();
     finishBtn.disabled = true;
     tryAgainBtn.disabled = true;
-    nextPuzzleBtn.textContent = 'Kembali ke Awal';
+    nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
     nextPuzzleBtn.disabled = false;
 
     if (!finished && currentPuzzleId) {
@@ -866,7 +1030,7 @@
         sessionExpired = true;
         finishBtn.disabled = true;
         tryAgainBtn.disabled = true;
-        nextPuzzleBtn.textContent = 'Kembali ke Awal';
+        nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
         nextPuzzleBtn.disabled = false;
         finished = true;
         stopTimer();
@@ -913,24 +1077,28 @@
       feedback.className = 'feedback error';
     }
 
+    // Simpan hasil pengerjaan soal ini ke cache sebelum mengecek status seluruh soal
+    saveCurrentPuzzleToCache(result.correct);
+    saveState();
+
     if (submissionType === 'timeout' || sessionExpired || (timeLimitMinutes && elapsedMs >= timeLimitMinutes * 60 * 1000)) {
       sessionExpired = true;
       stopTimer();
       finishBtn.disabled = true;
       tryAgainBtn.disabled = true;
       prevPuzzleBtn.disabled = true;
-      nextPuzzleBtn.textContent = 'Kembali ke Awal';
+      nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
       nextPuzzleBtn.disabled = false;
       if (!feedback.textContent.includes('Sesi ujian telah berakhir')) {
         feedback.textContent += ' Sesi ujian telah berakhir.';
       }
-    } else if (result.correct && !hasNextPuzzle()) {
+    } else if (result.correct && areAllPuzzlesCompleted()) {
       setCompleted = true;
       stopTimer();
       finishBtn.disabled = true;
       tryAgainBtn.disabled = true;
       prevPuzzleBtn.disabled = true;
-      nextPuzzleBtn.textContent = 'Kembali ke Awal';
+      nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
       nextPuzzleBtn.disabled = false;
       const finalDisplay = formatElapsed(elapsedMs);
       timerLabel.textContent = timeLimitMinutes
@@ -940,12 +1108,19 @@
       feedback.textContent += ' Anda telah menyelesaikan semua soal dalam set ini!';
     } else {
       tryAgainBtn.disabled = false;
-      nextPuzzleBtn.disabled = false;
+      updateNextPuzzleButtonState();
+      updateNextPuzzleButtonLabel();
       prevPuzzleBtn.disabled = !hasPrevPuzzle();
+      if (result.correct && !hasNextPuzzle() && !areAllPuzzlesCompleted()) {
+        const completedCount = getCompletedPuzzlesCount();
+        const totalCount = puzzleList ? puzzleList.length : 0;
+        feedback.textContent += ` Anda telah menyelesaikan soal ini (${completedCount}/${totalCount} soal selesai). Masih ada soal yang belum Anda selesaikan, gunakan tombol Soal Sebelumnya jika ingin mengerjakannya.`;
+      }
       // Continue session timer while participant reviews result
       startTimer();
     }
 
+    saveCurrentPuzzleToCache(result.correct);
     saveState();
 
     if (reviewMode && result.attemptId && (result.correct || submissionType === 'timeout')) {
@@ -964,7 +1139,8 @@
       handleSessionTimeout();
       return;
     }
-    beginAttempt(currentPuzzleId);
+    puzzleSessionCache.delete(currentPuzzleId);
+    beginAttempt(currentPuzzleId, true);
   });
 
   prevPuzzleBtn.addEventListener('click', () => {
@@ -978,6 +1154,8 @@
 
     const prev = getPrevPuzzle();
     if (prev) {
+      saveCurrentPuzzleToCache();
+      saveState();
       puzzleSelect.value = prev.id; // keep the picker in sync
       beginAttempt(prev.id);
     }
@@ -986,7 +1164,7 @@
   nextPuzzleBtn.addEventListener('click', () => {
     if (nextPuzzleBtn.disabled) return;
 
-    if (sessionExpired || setCompleted || !hasNextPuzzle()) {
+    if (sessionExpired || setCompleted || (!hasNextPuzzle() && areAllPuzzlesCompleted())) {
       goToStartScreen();
       return;
     }
@@ -998,10 +1176,14 @@
 
     const next = getNextPuzzle();
     if (next) {
+      saveCurrentPuzzleToCache();
+      saveState();
       puzzleSelect.value = next.id; // keep the picker in sync for if the player returns to it later
       beginAttempt(next.id);
     } else {
-      goToStartScreen();
+      if (sessionExpired || setCompleted || areAllPuzzlesCompleted()) {
+        goToStartScreen();
+      }
     }
   });
 
@@ -1016,6 +1198,7 @@
     currentPuzzleData = null;
     pendingRatingAttemptId = null;
     pausedAtMs = null;
+    puzzleSessionCache.clear();
     ratingModal.classList.add('hidden');
     clearFeedback();
     puzzleScreen.classList.add('hidden');

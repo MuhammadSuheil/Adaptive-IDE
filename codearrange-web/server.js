@@ -90,7 +90,13 @@ function loadActiveSetConfig() {
   if (!fs.existsSync(masterConfigPath)) return {};
   try {
     const masterConfig = JSON.parse(fs.readFileSync(masterConfigPath, 'utf8'));
-    return masterConfig[ACTIVE_PUZZLE_SET_KEY] || {};
+    const globalConfig = (typeof masterConfig.global === 'object' && masterConfig.global !== null) ? masterConfig.global : {};
+    const setConfig = (typeof masterConfig[ACTIVE_PUZZLE_SET_KEY] === 'object' && masterConfig[ACTIVE_PUZZLE_SET_KEY] !== null) ? masterConfig[ACTIVE_PUZZLE_SET_KEY] : {};
+    const merged = { ...globalConfig, ...setConfig };
+    if (merged.showTimerUI === undefined && masterConfig.showTimerUI !== undefined) {
+      merged.showTimerUI = masterConfig.showTimerUI;
+    }
+    return merged;
   } catch (e) {
     console.error('Failed to parse master_config.json:', e);
     return {};
