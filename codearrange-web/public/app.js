@@ -67,15 +67,19 @@
     }
   }
 
-  function saveCurrentPuzzleToCache() {
+  function saveCurrentPuzzleToCache(isCorrectOverride) {
     if (!currentPuzzleId || !currentPuzzleData) return;
+    const isCorrect = typeof isCorrectOverride === 'boolean'
+      ? isCorrectOverride
+      : (finishedPerLine ? Object.values(finishedPerLine).every(Boolean) : false);
+
     puzzleSessionCache.set(currentPuzzleId, {
       puzzleId: currentPuzzleId,
       puzzle: currentPuzzleData,
       availableOrder: [...availableList.children].map((li) => Number(li.dataset.id)),
       solutionOrder: [...solutionList.children].map((li) => Number(li.dataset.id)),
       finished,
-      correct: finishedPerLine ? Object.values(finishedPerLine).every(Boolean) : false,
+      correct: isCorrect,
       finishedElapsedMs,
       finishedPerLine,
       finishedExplanation,
@@ -91,6 +95,14 @@
       const cached = puzzleSessionCache.get(p.id);
       return cached && cached.finished && cached.correct;
     });
+  }
+
+  function getCompletedPuzzlesCount() {
+    if (!puzzleList || puzzleList.length === 0) return 0;
+    return puzzleList.filter((p) => {
+      const cached = puzzleSessionCache.get(p.id);
+      return cached && cached.finished && cached.correct;
+    }).length;
   }
 
   // ---- Resuming after a page refresh (sessionStorage) --------------------
@@ -263,8 +275,8 @@
   // attempt starting and the button being clicked, so recomputing is cheap
   // and keeps there being exactly one source of truth.
   function updateNextPuzzleButtonLabel() {
-    if (sessionExpired || setCompleted || (!hasNextPuzzle() && finished)) {
-      nextPuzzleBtn.textContent = 'Kembali ke Awal';
+    if (sessionExpired || setCompleted || !hasNextPuzzle()) {
+      nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
     } else {
       nextPuzzleBtn.textContent = 'Soal Berikutnya';
     }
@@ -279,8 +291,8 @@
       // Peserta dapat langsung beralih ke soal berikutnya kapan saja (melewati/skip soal)
       nextPuzzleBtn.disabled = false;
     } else {
-      // Di soal terakhir: aktif jika sudah selesai (untuk kembali ke awal), nonaktif jika masih dikerjakan
-      nextPuzzleBtn.disabled = !finished;
+      // Di soal terakhir: HANYA aktif jika seluruh soal dalam set/folder telah selesai dengan benar
+      nextPuzzleBtn.disabled = !areAllPuzzlesCompleted();
     }
   }
 
@@ -450,6 +462,7 @@
     startTimeMs = Date.now();
     sessionExpired = false;
     setCompleted = false;
+    puzzleSessionCache.clear();
 
     startScreen.classList.add('hidden');
     puzzleScreen.classList.remove('hidden');
@@ -625,7 +638,7 @@
       finishBtn.disabled = true;
       tryAgainBtn.disabled = sessionExpired || setCompleted;
       if (sessionExpired || setCompleted || !hasNextPuzzle()) {
-        nextPuzzleBtn.textContent = 'Kembali ke Awal';
+        nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
       }
       revealIndentation();
       for (const li of solutionList.children) {
@@ -872,7 +885,7 @@
     stopTimer();
     finishBtn.disabled = true;
     tryAgainBtn.disabled = true;
-    nextPuzzleBtn.textContent = 'Kembali ke Awal';
+    nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
     nextPuzzleBtn.disabled = false;
 
     if (!finished && currentPuzzleId) {
@@ -1017,7 +1030,7 @@
         sessionExpired = true;
         finishBtn.disabled = true;
         tryAgainBtn.disabled = true;
-        nextPuzzleBtn.textContent = 'Kembali ke Awal';
+        nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
         nextPuzzleBtn.disabled = false;
         finished = true;
         stopTimer();
@@ -1064,13 +1077,17 @@
       feedback.className = 'feedback error';
     }
 
+    // Simpan hasil pengerjaan soal ini ke cache sebelum mengecek status seluruh soal
+    saveCurrentPuzzleToCache(result.correct);
+    saveState();
+
     if (submissionType === 'timeout' || sessionExpired || (timeLimitMinutes && elapsedMs >= timeLimitMinutes * 60 * 1000)) {
       sessionExpired = true;
       stopTimer();
       finishBtn.disabled = true;
       tryAgainBtn.disabled = true;
       prevPuzzleBtn.disabled = true;
-      nextPuzzleBtn.textContent = 'Kembali ke Awal';
+      nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
       nextPuzzleBtn.disabled = false;
       if (!feedback.textContent.includes('Sesi ujian telah berakhir')) {
         feedback.textContent += ' Sesi ujian telah berakhir.';
@@ -1081,7 +1098,7 @@
       finishBtn.disabled = true;
       tryAgainBtn.disabled = true;
       prevPuzzleBtn.disabled = true;
-      nextPuzzleBtn.textContent = 'Kembali ke Awal';
+      nextPuzzleBtn.textContent = 'Kembali ke Menu Awal';
       nextPuzzleBtn.disabled = false;
       const finalDisplay = formatElapsed(elapsedMs);
       timerLabel.textContent = timeLimitMinutes
@@ -1095,13 +1112,15 @@
       updateNextPuzzleButtonLabel();
       prevPuzzleBtn.disabled = !hasPrevPuzzle();
       if (result.correct && !hasNextPuzzle() && !areAllPuzzlesCompleted()) {
-        feedback.textContent += ' Anda telah menyelesaikan soal ini. Masih ada soal yang belum Anda selesaikan, gunakan tombol Soal Sebelumnya jika ingin mengerjakannya.';
+        const completedCount = getCompletedPuzzlesCount();
+        const totalCount = puzzleList ? puzzleList.length : 0;
+        feedback.textContent += ` Anda telah menyelesaikan soal ini (${completedCount}/${totalCount} soal selesai). Masih ada soal yang belum Anda selesaikan, gunakan tombol Soal Sebelumnya jika ingin mengerjakannya.`;
       }
       // Continue session timer while participant reviews result
       startTimer();
     }
 
-    saveCurrentPuzzleToCache();
+    saveCurrentPuzzleToCache(result.correct);
     saveState();
 
     if (reviewMode && result.attemptId && (result.correct || submissionType === 'timeout')) {
@@ -1145,7 +1164,7 @@
   nextPuzzleBtn.addEventListener('click', () => {
     if (nextPuzzleBtn.disabled) return;
 
-    if (sessionExpired || setCompleted || (!hasNextPuzzle() && finished)) {
+    if (sessionExpired || setCompleted || (!hasNextPuzzle() && areAllPuzzlesCompleted())) {
       goToStartScreen();
       return;
     }
@@ -1162,7 +1181,9 @@
       puzzleSelect.value = next.id; // keep the picker in sync for if the player returns to it later
       beginAttempt(next.id);
     } else {
-      goToStartScreen();
+      if (sessionExpired || setCompleted || areAllPuzzlesCompleted()) {
+        goToStartScreen();
+      }
     }
   });
 
