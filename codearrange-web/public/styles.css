@@ -180,6 +180,12 @@ main {
   box-shadow: var(--shadow-lg);
 }
 
+.start-actions {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+}
+
 .field-row {
   display: flex;
   flex-direction: column;
@@ -225,6 +231,10 @@ main {
   font-size: 12px;
 }
 
+#research-session-status:empty {
+  display: none;
+}
+
 .locked-name {
   margin: 0;
   font-size: 16px;
@@ -236,6 +246,10 @@ main {
 #start-btn {
   width: 100%;
   padding: 11px 16px;
+}
+
+.start-actions .secondary {
+  justify-self: start;
 }
 
 /* ---- Shared controls ---- */

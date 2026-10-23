@@ -276,7 +276,7 @@
     const linked = Boolean(researchSessionId);
     researchSessionStatus.textContent = linked
       ? `Terhubung ke sesi ${researchSessionId}${researchStudyEnded ? ' (sudah diakhiri)' : ''}.`
-      : 'Opsional untuk penggunaan biasa; wajib dihubungkan untuk sesi penelitian.';
+      : '';
     researchSessionStatus.className = linked ? 'feedback success' : 'feedback';
     endStudyStartBtn.disabled = !linked || researchStudyEnded;
     endStudyPuzzleBtn.disabled = !linked || researchStudyEnded;

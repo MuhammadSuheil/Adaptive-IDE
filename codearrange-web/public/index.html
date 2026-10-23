@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=7" />
+  <link rel="stylesheet" href="/styles.css?v=9" />
 </head>
 <body>
   <header>
@@ -36,16 +36,18 @@
           <select id="set-select"></select>
         </div>
         <div class="field-row">
-          <label for="research-session-id">ID Sesi Sensor (untuk penelitian)</label>
+          <label for="research-session-id">ID Sensor</label>
           <div class="research-session-controls">
             <input id="research-session-id" type="text" autocomplete="off" placeholder="Contoh: 20261023_154026_rama02_coding_task" />
             <button id="research-session-link" class="secondary" type="button">Hubungkan</button>
           </div>
           <p id="research-session-status" class="feedback" role="status"></p>
         </div>
-        <button id="start-btn">Mulai</button>
-        <button id="retry-research-end" class="secondary hidden" type="button">Coba simpan akhir set</button>
-        <button id="end-study-start-btn" class="secondary" type="button" disabled>Akhiri sesi penelitian</button>
+        <div class="start-actions">
+          <button id="start-btn">Mulai</button>
+          <button id="retry-research-end" class="secondary hidden" type="button">Coba simpan akhir set</button>
+          <button id="end-study-start-btn" class="secondary" type="button" disabled>Akhiri sesi penelitian</button>
+        </div>
         <p id="start-error" class="feedback error"></p>
       </div>
     </section>
@@ -104,6 +106,6 @@
     </div>
   </div>
 
-  <script src="/app.js?v=7"></script>
+  <script src="/app.js?v=9"></script>
 </body>
 </html>
