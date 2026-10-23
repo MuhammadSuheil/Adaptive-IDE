@@ -1,0 +1,63 @@
+{
+  "id": "pass_or_fail",
+  "title": "2. Lulus atau Gagal",
+  "type": "conditionals",
+  "mode": "arrange",
+  "description": "Buatlah program yang memeriksa apakah nilai mahasiswa sebesar 80 dinyatakan lulus. Jika `score >= 75`, cetak `\"Pass\"`. Jika tidak, cetak `\"Fail\"`.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class PassOrFail {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int score = 80;"
+    },
+    {
+      "id": 4,
+      "code": "        if (score >= 75) {"
+    },
+    {
+      "id": 5,
+      "code": "            System.out.println(\"Pass\");"
+    },
+    {
+      "id": 6,
+      "code": "        } else {"
+    },
+    {
+      "id": 7,
+      "code": "            System.out.println(\"Fail\");"
+    },
+    {
+      "id": 8,
+      "code": "        }"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}
