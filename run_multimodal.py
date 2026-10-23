@@ -16,7 +16,7 @@ Contoh Penggunaan:
 """
 
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import os
 import math
 from pathlib import Path
@@ -28,9 +28,12 @@ import time
 from fuse_and_analyze import fuse_session
 
 
+INDONESIA_WESTERN_TIME = timezone(timedelta(hours=7))
+
+
 def setup_session_directory(output_root: Path, participant: str, task: str) -> Path:
     """Membuat folder sesi terpadu dengan format timestamp_participant_task."""
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(INDONESIA_WESTERN_TIME).strftime("%Y%m%d_%H%M%S")
     clean_p = "".join(c if c.isalnum() or c in "-_" else "_" for c in participant)
     clean_t = "".join(c if c.isalnum() or c in "-_" else "_" for c in task)
     session_name = f"{timestamp}_{clean_p}_{clean_t}"

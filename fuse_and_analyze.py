@@ -11,7 +11,7 @@ Dapat dijalankan secara mandiri pada folder sesi:
 
 import argparse
 import csv
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
 import math
 from pathlib import Path
@@ -29,6 +29,13 @@ TIMELINE_COLUMNS = [
     'mean_blink_rate_bpm', 'head_shifted_ratio', 'cognitive_state',
     'cognitive_load_score', 'cognitive_state_desc',
 ]
+
+INDONESIA_WESTERN_TIME = timezone(timedelta(hours=7))
+
+
+def format_wib(iso_str: str) -> str:
+    """Konversi ISO-8601 aware ke waktu Indonesia Barat (UTC+7)."""
+    return datetime.fromisoformat(iso_str).astimezone(INDONESIA_WESTERN_TIME).isoformat()
 
 
 def parse_iso_to_ms(iso_str: str) -> float:
@@ -295,8 +302,8 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
 
         row = {
             "window_idx": idx,
-            "window_start": w_start_str,
-            "window_end": w_end_str,
+            "window_start": format_wib(w_start_str) if w_start_str else "",
+            "window_end": format_wib(w_end_str) if w_end_str else "",
             "timestamp_relative": ((w_end_ms - shared_origin_ms) / 1000.0
                                     if shared_origin_ms is not None else ""),
             "timestamp_relative_ms": (round(w_end_ms - shared_origin_ms, 3)
@@ -341,7 +348,7 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
     total_windows = len(timeline)
     summary_report = {
         "session_name": session_dir.name,
-        "analyzed_at": datetime.now(timezone.utc).isoformat(),
+        "analyzed_at": datetime.now(INDONESIA_WESTERN_TIME).isoformat(),
         "baseline": baseline_info,
         "total_windows": total_windows,
         "state_breakdown_count": state_distribution,

@@ -172,7 +172,9 @@ they cannot detect frames lost inside the driver or repeated images from the dev
 ### Timestamp and iris schema (version 3)
 
 CSV `timestamp_ms` now uses host camera-read completion, converted from a monotonic
-clock to an epoch anchor. `processing_timestamp_ms` records worker start separately.
+clock to an epoch anchor. Both `eye_tracking.csv` and `eye_tracking_compact.csv` also
+include `timestamp_wib`, an ISO-8601 calendar timestamp with the fixed `+07:00` offset.
+`processing_timestamp_ms` records worker start separately.
 `timestamp_relative` and `timestamp_relative_ms` use the shared origin recorded in
 `hrv_calib_status.json` when both sensor calibrations are complete. The millisecond
 column is intended for direct alignment with HRV and `multimodal_timeline.csv`;

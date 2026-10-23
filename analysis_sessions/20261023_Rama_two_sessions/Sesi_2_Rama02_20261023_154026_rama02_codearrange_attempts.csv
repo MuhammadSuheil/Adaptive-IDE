@@ -1,0 +1,28 @@
+﻿timestamp,attempt_id,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent,rating,timestamp_wib,minute_wib,elapsed_from_joint_task_start_seconds
+2026-10-23T08:44:50.890Z,56283e1f-bb84-43de-a7cc-7ebd637c3f19,Rama,medium,count_vowels,Menghitung Huruf Vokal,64.17,manual,false,8,13,61.5,-,2026-10-23T15:44:50.890000+07:00,2026-10-23 15:44,94.346
+2026-10-23T08:45:50.258Z,4720d25e-72cf-4bbd-87d6-68c1d53ce94b,Rama,medium,linear_search,Linear Search,123.53,manual,false,4,14,28.6,-,2026-10-23T15:45:50.258000+07:00,2026-10-23 15:45,153.714
+2026-10-23T08:46:43.685Z,3ef34e5a-1588-434c-aa3e-fcfd4addd2de,Rama,medium,linear_search,Linear Search,176.96,manual,false,5,14,35.7,-,2026-10-23T15:46:43.685000+07:00,2026-10-23 15:46,207.141
+2026-10-23T08:47:13.130Z,8c020753-77de-4b58-a813-e6556abcc288,Rama,medium,string_reverse,Membalik String,206.41,manual,false,8,10,80.0,-,2026-10-23T15:47:13.130000+07:00,2026-10-23 15:47,236.586
+2026-10-23T08:47:24.848Z,35b52bfc-7110-4f8b-8850-969569e70e90,Rama,medium,string_reverse,Membalik String,218.13,manual,true,10,10,100.0,10,2026-10-23T15:47:24.848000+07:00,2026-10-23 15:47,248.304
+2026-10-23T08:48:07.357Z,6627d64d-33cc-4750-b08d-19f4452a972d,Rama,medium,matrix_addition,Penjumlahan Matriks,259.71,manual,true,12,12,100.0,10,2026-10-23T15:48:07.357000+07:00,2026-10-23 15:48,290.813
+2026-10-23T08:51:07.428Z,f1459917-dae2-43f2-be78-109b886ef277,Rama,medium,binary_search,Binary Search,438.81,manual,false,0,4,0.0,-,2026-10-23T15:51:07.428000+07:00,2026-10-23 15:51,470.884
+2026-10-23T08:51:12.647Z,3d637997-5d1a-4a99-b5fe-11f52ac78c55,Rama,medium,binary_search,Binary Search,444.03,manual,false,1,4,25.0,-,2026-10-23T15:51:12.647000+07:00,2026-10-23 15:51,476.103
+2026-10-23T08:52:42.953Z,260939d4-2155-404e-ba4f-e1611e9aa3ce,Rama,medium,remove_duplicates,Manipulasi Array 2,534.33,manual,false,0,5,0.0,-,2026-10-23T15:52:42.953000+07:00,2026-10-23 15:52,566.409
+2026-10-23T08:52:45.496Z,ec0b8823-f06b-409b-9b01-5175b22d90cd,Rama,medium,remove_duplicates,Manipulasi Array 2,536.88,manual,false,0,5,0.0,-,2026-10-23T15:52:45.496000+07:00,2026-10-23 15:52,568.952
+2026-10-23T08:53:00.853Z,f7ed4423-9aa5-4e12-809f-18ea24aca240,Rama,medium,remove_duplicates,Manipulasi Array 2,552.23,manual,false,1,5,20.0,-,2026-10-23T15:53:00.853000+07:00,2026-10-23 15:53,584.309
+2026-10-23T08:53:47.801Z,1f8fb4ba-188e-4372-ac2d-741c405d3d58,Rama,medium,matrix_transpose,Transpose Matriks,599.18,manual,false,3,13,23.1,-,2026-10-23T15:53:47.801000+07:00,2026-10-23 15:53,631.257
+2026-10-23T08:54:13.781Z,21ad4382-c83b-4638-b411-360bda9bc192,Rama,medium,matrix_transpose,Transpose Matriks,625.16,manual,false,3,13,23.1,-,2026-10-23T15:54:13.781000+07:00,2026-10-23 15:54,657.237
+2026-10-23T08:54:36.517Z,3176053c-b835-447e-90d7-d8156d8d8ce9,Rama,medium,matrix_transpose,Transpose Matriks,647.90,manual,false,5,13,38.5,-,2026-10-23T15:54:36.517000+07:00,2026-10-23 15:54,679.973
+2026-10-23T08:54:54.905Z,a52b3fd1-b1e2-4d00-a40a-fcdd7acee9e6,Rama,medium,matrix_transpose,Transpose Matriks,666.28,manual,false,10,13,76.9,-,2026-10-23T15:54:54.905000+07:00,2026-10-23 15:54,698.361
+2026-10-23T08:55:17.092Z,84b37856-932a-4ae3-854a-259833f21d37,Rama,medium,matrix_transpose,Transpose Matriks,688.47,manual,true,13,13,100.0,10,2026-10-23T15:55:17.092000+07:00,2026-10-23 15:55,720.548
+2026-10-23T08:55:49.463Z,9115dc37-3d91-47de-b8b1-98592f4667ce,Rama,medium,count_vowels,Menghitung Huruf Vokal,720.00,timeout,false,3,13,23.1,10,2026-10-23T15:55:49.463000+07:00,2026-10-23 15:55,752.919
+2026-10-23T08:57:40.223Z,986087c6-8ef1-43cd-94b4-4f8adb492686,Rama,hard,fibonacci_iterative,Fibonacci Iteratif,26.62,manual,false,3,12,25.0,-,2026-10-23T15:57:40.223000+07:00,2026-10-23 15:57,863.679
+2026-10-23T08:58:12.334Z,2c5355cc-da37-490b-92b2-43c2031d6e1a,Rama,hard,fibonacci_iterative,Fibonacci Iteratif,58.73,manual,false,9,12,75.0,-,2026-10-23T15:58:12.334000+07:00,2026-10-23 15:58,895.79
+2026-10-23T08:58:45.676Z,50cc6b71-2275-41ee-87a4-b8bc91fad87e,Rama,hard,fibonacci_iterative,Fibonacci Iteratif,92.08,manual,true,12,12,100.0,8,2026-10-23T15:58:45.676000+07:00,2026-10-23 15:58,929.132
+2026-10-23T09:01:30.916Z,9022c90f-194d-4c00-8819-a62215388a1a,Rama,hard,merge_sorted_arrays,Menggabungkan Array Terurut,251.69,manual,false,3,13,23.1,-,2026-10-23T16:01:30.916000+07:00,2026-10-23 16:01,1094.372
+2026-10-23T09:01:47.779Z,6ea380c1-f9dc-4f8a-a5bc-c8ff561e1b08,Rama,hard,merge_sorted_arrays,Menggabungkan Array Terurut,268.56,manual,false,3,13,23.1,-,2026-10-23T16:01:47.779000+07:00,2026-10-23 16:01,1111.235
+2026-10-23T09:03:37.268Z,05f4db64-c847-4084-8afb-55b3fe1b0c1c,Rama,hard,merge_sorted_arrays,Menggabungkan Array Terurut,378.05,manual,false,3,13,23.1,-,2026-10-23T16:03:37.268000+07:00,2026-10-23 16:03,1220.724
+2026-10-23T09:04:26.388Z,f36217fd-ff3d-4ab7-8a92-0a052e45103b,Rama,hard,merge_sorted_arrays,Menggabungkan Array Terurut,427.17,manual,false,3,13,23.1,-,2026-10-23T16:04:26.388000+07:00,2026-10-23 16:04,1269.844
+2026-10-23T09:11:11.577Z,a9504b0b-259e-46e5-bb1d-d6081d0440ca,Rama,hard,anagram_check,Pemeriksaan Anagram,832.36,manual,false,2,16,12.5,-,2026-10-23T16:11:11.577000+07:00,2026-10-23 16:11,1675.033
+2026-10-23T09:11:26.956Z,5c49caaf-5afe-46dd-8950-1a56e0cc5e3f,Rama,hard,anagram_check,Pemeriksaan Anagram,847.73,manual,false,2,16,12.5,-,2026-10-23T16:11:26.956000+07:00,2026-10-23 16:11,1690.412
+2026-10-23T09:12:19.308Z,3ace7481-84d0-4c67-821e-0f3602e018f5,Rama,hard,anagram_check,Pemeriksaan Anagram,900.00,timeout,false,2,16,12.5,10,2026-10-23T16:12:19.308000+07:00,2026-10-23 16:12,1742.764

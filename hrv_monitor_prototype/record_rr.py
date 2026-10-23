@@ -1,7 +1,7 @@
 import argparse
 import asyncio
 import csv
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import math
 from pathlib import Path
 import random
@@ -11,6 +11,7 @@ from uuid import uuid4
 
 
 HR_MEASUREMENT_UUID = "00002a37-0000-1000-8000-00805f9b34fb"
+INDONESIA_WESTERN_TIME = timezone(timedelta(hours=7))
 SESSION_ROOT = Path(__file__).with_name("sessions")
 RAW_COLUMNS = [
     "raw_id", "packet_id", "received_at", "elapsed_seconds", "timestamp_relative",
@@ -92,7 +93,7 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
         session = Path(session_dir)
         session.mkdir(parents=True, exist_ok=True)
     else:
-        session_name = f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S}_{uuid4().hex[:8]}"
+        session_name = f"{datetime.now(INDONESIA_WESTERN_TIME):%Y%m%dT%H%M%S}_{uuid4().hex[:8]}"
         session = Path(output) / session_name
         session.mkdir(parents=True, exist_ok=False)
 
@@ -111,7 +112,7 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
                 if failure is not None:
                     return
                 try:
-                    timestamp = datetime.now(timezone.utc).isoformat()
+                    timestamp = datetime.now(INDONESIA_WESTERN_TIME).isoformat()
                     elapsed = time.monotonic() - origin
                     phase = getattr(monitor, "phase", "raw")
                     relative = (monitor.timestamp_relative(elapsed, phase)
@@ -205,7 +206,7 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
                 if failure is not None:
                     return
                 try:
-                    timestamp = datetime.now(timezone.utc).isoformat()
+                    timestamp = datetime.now(INDONESIA_WESTERN_TIME).isoformat()
                     elapsed = time.monotonic() - origin
                     phase = getattr(monitor, "phase", "raw")
                     relative = (monitor.timestamp_relative(elapsed, phase)

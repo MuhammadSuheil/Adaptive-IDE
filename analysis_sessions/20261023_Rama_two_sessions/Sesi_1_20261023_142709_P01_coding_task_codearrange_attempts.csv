@@ -1,0 +1,22 @@
+﻿timestamp,attempt_id,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent,rating,timestamp_wib,minute_wib,elapsed_from_joint_task_start_seconds
+2026-10-23T07:30:40.778Z,73034387-a140-47ee-b9fe-d76abd431d53,Rama,easy-1,variables,Variabel,43.46,manual,false,3,7,42.9,-,2026-10-23T14:30:40.778000+07:00,2026-10-23 14:30,52.165
+2026-10-23T07:31:23.481Z,f48cc7bc-9faf-4751-9f37-4d2dfd8cab45,Rama,easy-1,even_odd,Bilangan Genap atau Ganjil,86.16,manual,true,10,10,100.0,10,2026-10-23T14:31:23.481000+07:00,2026-10-23 14:31,94.868
+2026-10-23T07:32:43.443Z,1e92e976-adcf-490e-8502-0522018f33ee,Rama,easy-1,find_max,Mencari Nilai Maksimum,159.48,manual,false,7,12,58.3,-,2026-10-23T14:32:43.443000+07:00,2026-10-23 14:32,174.83
+2026-10-23T07:35:04.040Z,2b822c77-86d8-4545-9654-5aff0c1f4686,Rama,easy-1,fix_even_sum,4. Perbaiki Penjumlahan Bilangan Genap,300.00,timeout,false,5,11,45.5,10,2026-10-23T14:35:04.040000+07:00,2026-10-23 14:35,315.427
+2026-10-23T07:37:58.948Z,6a5f34db-ef35-4b13-a64a-c9f17095ed1e,Rama,medium,count_vowels,Menghitung Huruf Vokal,116.11,manual,false,8,13,61.5,-,2026-10-23T14:37:58.948000+07:00,2026-10-23 14:37,490.335
+2026-10-23T07:39:32.908Z,11ab947d-5fc6-474c-8772-5b250fb80ae8,Rama,medium,linear_search,Linear Search,210.07,manual,false,9,14,64.3,-,2026-10-23T14:39:32.908000+07:00,2026-10-23 14:39,584.295
+2026-10-23T07:40:30.038Z,dac53edd-f98c-4cc9-8506-c77097d944bd,Rama,medium,string_reverse,Membalik String,267.20,manual,false,8,10,80.0,-,2026-10-23T14:40:30.038000+07:00,2026-10-23 14:40,641.425
+2026-10-23T07:40:56.441Z,f91ade59-7cfc-4a93-b47c-cd8135fe00dc,Rama,medium,string_reverse,Membalik String,293.60,manual,false,8,10,80.0,-,2026-10-23T14:40:56.441000+07:00,2026-10-23 14:40,667.828
+2026-10-23T07:41:16.276Z,9e814817-c40e-465c-a068-9dba30d42781,Rama,medium,string_reverse,Membalik String,313.44,manual,true,10,10,100.0,10,2026-10-23T14:41:16.276000+07:00,2026-10-23 14:41,687.663
+2026-10-23T07:42:15.819Z,b61156ba-b823-417f-aa36-b9690d885013,Rama,medium,matrix_addition,Penjumlahan Matriks,372.10,manual,false,7,12,58.3,-,2026-10-23T14:42:15.819000+07:00,2026-10-23 14:42,747.206
+2026-10-23T07:42:45.320Z,ff369880-e68e-4182-9732-838bd5d3ccfb,Rama,medium,matrix_addition,Penjumlahan Matriks,401.60,manual,false,10,12,83.3,-,2026-10-23T14:42:45.320000+07:00,2026-10-23 14:42,776.707
+2026-10-23T07:44:58.581Z,59d3cfa5-a0d9-4123-86e1-9bf715390dbf,Rama,medium,bubble_sort,Bubble Sort,534.86,manual,false,3,14,21.4,-,2026-10-23T14:44:58.581000+07:00,2026-10-23 14:44,909.968
+2026-10-23T07:46:57.228Z,3d50c416-fdad-43cd-8074-3705c6726212,Rama,medium,bubble_sort,Bubble Sort,653.50,manual,false,10,14,71.4,-,2026-10-23T14:46:57.228000+07:00,2026-10-23 14:46,1028.615
+2026-10-23T07:48:03.831Z,da867f7e-dedb-4e91-ba2d-e5e88c72de52,Rama,medium,binary_search,Binary Search,720.00,timeout,false,0,4,0.0,10,2026-10-23T14:48:03.831000+07:00,2026-10-23 14:48,1095.218
+2026-10-23T07:53:45.232Z,e9073b44-9228-4c41-a9b4-c9af775ae708,Rama,hard,fibonacci_iterative,Fibonacci Iteratif,222.09,manual,false,7,12,58.3,-,2026-10-23T14:53:45.232000+07:00,2026-10-23 14:53,1436.619
+2026-10-23T07:57:48.251Z,c8d4fb41-87d9-420e-aaed-42aef33bae44,Rama,hard,fibonacci_iterative,Fibonacci Iteratif,465.11,manual,false,5,12,41.7,-,2026-10-23T14:57:48.251000+07:00,2026-10-23 14:57,1679.638
+2026-10-23T07:58:33.303Z,6bdd2265-4dbb-4c34-ac79-f0d76ecb1018,Rama,hard,fibonacci_iterative,Fibonacci Iteratif,510.16,manual,false,6,12,50.0,-,2026-10-23T14:58:33.303000+07:00,2026-10-23 14:58,1724.69
+2026-10-23T07:59:39.860Z,535e60e2-7211-44aa-96ea-d9e8f88b7230,Rama,hard,fibonacci_iterative,Fibonacci Iteratif,576.72,manual,false,3,12,25.0,-,2026-10-23T14:59:39.860000+07:00,2026-10-23 14:59,1791.247
+2026-10-23T08:00:53.185Z,be1701a7-d1ae-441f-b7a9-f91c39e60266,Rama,hard,fibonacci_iterative,Fibonacci Iteratif,650.04,manual,false,6,12,50.0,-,2026-10-23T15:00:53.185000+07:00,2026-10-23 15:00,1864.572
+2026-10-23T08:01:44.268Z,d81e07f7-3ed3-4e52-ba93-931730ee7d30,Rama,hard,fibonacci_iterative,Fibonacci Iteratif,701.13,manual,false,7,12,58.3,-,2026-10-23T15:01:44.268000+07:00,2026-10-23 15:01,1915.655
+2026-10-23T08:02:36.127Z,c7156e8e-33e1-41e5-adc6-f763220a6509,Rama,hard,fibonacci_iterative,Fibonacci Iteratif,752.98,manual,false,8,12,66.7,-,2026-10-23T15:02:36.127000+07:00,2026-10-23 15:02,1967.514

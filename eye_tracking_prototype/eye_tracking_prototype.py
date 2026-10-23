@@ -9,7 +9,7 @@ from pathlib import Path
 import threading
 import queue
 import numpy as np
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
@@ -22,7 +22,7 @@ from modules.filter import eyes_are_open
 
 
 CSV_COLUMNS = [
-    "timestamp_ms", "timestamp_relative", "timestamp_relative_ms", "frame_index", "capture_frame_id",
+    "timestamp_ms", "timestamp_wib", "timestamp_relative", "timestamp_relative_ms", "frame_index", "capture_frame_id",
     "gaze_x_raw", "gaze_y_raw", "gaze_x_smooth", "gaze_y_smooth",
     "EAR_Right", "EAR_Left", "Eye_State",
     "grid_row", "grid_col", "section", "confidence",
@@ -37,9 +37,16 @@ CSV_COLUMNS = [
     "processing_timestamp_ms", "eye_crop_file",
 ]
 COMPACT_CSV_COLUMNS = [
-    "timestamp_ms", "timestamp_relative", "timestamp_relative_ms", "gaze_x_raw", "gaze_y_raw", "EAR_Left", "EAR_Right",
+    "timestamp_ms", "timestamp_wib", "timestamp_relative", "timestamp_relative_ms", "gaze_x_raw", "gaze_y_raw", "EAR_Left", "EAR_Right",
     "fps_captured", "iris_size_delta", "blink_count", "eye_state", "eye_crop_file",
 ]
+INDONESIA_WESTERN_TIME = timezone(timedelta(hours=7))
+
+
+def epoch_ms_to_wib(timestamp_ms):
+    """Ubah epoch milliseconds ke ISO-8601 WIB dengan presisi millisecond."""
+    return datetime.fromtimestamp(timestamp_ms / 1000.0, timezone.utc).astimezone(
+        INDONESIA_WESTERN_TIME).isoformat(timespec="milliseconds")
 
 
 def estimate_head_pose(landmarks, image_w, image_h):
@@ -1656,6 +1663,7 @@ class EyeTrackerApp:
             self.processing_last_at = processing_started
             capture_age_ms = max(0.0, (processing_started - capture_ts) * 1000.0)
             ts_ms = int((self.clock_origin_epoch + capture_ts - self.clock_origin_mono) * 1000)
+            timestamp_wib = epoch_ms_to_wib(ts_ms)
             joint_origin = self.joint_calibration_epoch()
             timestamp_relative_ms = (ts_ms - joint_origin * 1000.0
                                      if joint_origin is not None else 0.0)
@@ -1740,7 +1748,7 @@ class EyeTrackerApp:
             total_processing_ms = (time.perf_counter() - processing_started) * 1000.0
 
             row = [
-                ts_ms, timestamp_relative, timestamp_relative_ms, self.frame_count, frame_id,
+                ts_ms, timestamp_wib, timestamp_relative, timestamp_relative_ms, self.frame_count, frame_id,
                 raw_x if gaze_is_valid else '', raw_y if gaze_is_valid else '',
                 sm_x if gaze_is_valid else '', sm_y if gaze_is_valid else '', ear_right if ear_right is not None else "",
                 ear_left if ear_left is not None else "", eye_state,
@@ -1764,7 +1772,7 @@ class EyeTrackerApp:
             self.csv_writer.writerow(row)
             if self.compact_csv_writer is not None:
                 self.compact_csv_writer.writerow([
-                    ts_ms, timestamp_relative, timestamp_relative_ms,
+                    ts_ms, timestamp_wib, timestamp_relative, timestamp_relative_ms,
                     raw_x if gaze_is_valid else '', raw_y if gaze_is_valid else '',
                     ear_left if ear_left is not None else '', ear_right if ear_right is not None else '',
                     capture_fps if capture_fps is not None else '', self.metrics.iris_delta,

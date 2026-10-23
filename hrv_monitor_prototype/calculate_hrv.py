@@ -1,6 +1,6 @@
 import argparse
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import math
 from pathlib import Path
 from statistics import mean, stdev
@@ -22,6 +22,8 @@ HRV_COLUMNS = [
     "rmssd_ms", "sdnn_ms",
     "status", "reason", "accepted_rr_seconds", "coverage", "data_age_seconds",
 ]
+
+INDONESIA_WESTERN_TIME = timezone(timedelta(hours=7))
 
 
 def calculate_hrv(intervals):
@@ -214,7 +216,10 @@ def calculate_csv(source, output=None, window_seconds=WINDOW_SECONDS, step_secon
         writer = csv.DictWriter(stream, fieldnames=HRV_COLUMNS)
         writer.writeheader()
         for features in hrv_windows(intervals, window_seconds, step_seconds):
-            writer.writerow(features)
+            row = dict(features)
+            row["window_start"] = datetime.fromisoformat(row["window_start"]).astimezone(INDONESIA_WESTERN_TIME).isoformat()
+            row["window_end"] = datetime.fromisoformat(row["window_end"]).astimezone(INDONESIA_WESTERN_TIME).isoformat()
+            writer.writerow(row)
             count += 1
     print(f"Hasil HRV: {output} ({count} window)")
     if count == 0:

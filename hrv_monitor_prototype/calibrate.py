@@ -8,6 +8,14 @@ import math
 from pathlib import Path
 import sys
 
+
+INDONESIA_WESTERN_TIME = timezone(timedelta(hours=7))
+
+
+def to_wib(timestamp):
+    """Format timestamp ISO-8601 sebagai waktu Indonesia Barat (UTC+7)."""
+    return datetime.fromisoformat(timestamp).astimezone(INDONESIA_WESTERN_TIME).isoformat()
+
 if __package__:
     from .config import (BASELINE_TARGET_SECONDS, BASELINE_MAX_SECONDS,
                          MEDIAN_THRESHOLD_MS, WINDOW_SECONDS, STEP_SECONDS)
@@ -174,8 +182,8 @@ class SessionCalibration:
             features["rmssd_ms"] = features["sdnn_ms"] = None
         duration = self.result["accepted_rr_seconds"]
         self.hrv_writer.writerow({
-            "phase": "baseline", "window_start": origin.isoformat(),
-            "window_end": (origin + timedelta(seconds=elapsed)).isoformat(),
+            "phase": "baseline", "window_start": origin.astimezone(INDONESIA_WESTERN_TIME).isoformat(),
+            "window_end": (origin + timedelta(seconds=elapsed)).astimezone(INDONESIA_WESTERN_TIME).isoformat(),
             # Baseline ends before the shared task origin is necessarily known.
             "timestamp_relative": "", "timestamp_relative_ms": "",
             "window_seconds": elapsed, **features,
@@ -258,7 +266,10 @@ class SessionCalibration:
             relative_ms = (datetime.fromisoformat(features["window_end"]) - joint_origin).total_seconds() * 1000.0
             features["timestamp_relative"] = relative_ms / 1000.0
             features["timestamp_relative_ms"] = round(relative_ms, 3)
-            self.hrv_writer.writerow(dict(features, phase="task"))
+            row = dict(features, phase="task")
+            row["window_start"] = to_wib(row["window_start"])
+            row["window_end"] = to_wib(row["window_end"])
+            self.hrv_writer.writerow(row)
             self.hrv_file.flush()
             rmssd = features["rmssd_ms"]
             sdnn = features["sdnn_ms"]
@@ -266,7 +277,7 @@ class SessionCalibration:
             sdnn_text = f"{sdnn:.2f} ms" if sdnn is not None else "tidak tersedia"
             label = {"ready": "siap", "gap": "jeda RR", "recovering": "pemulihan",
                      "insufficient_data": "data belum cukup"}[features["status"]]
-            line = (f"[HRV] {features['window_end']} | window {self.window_seconds:g}s "
+            line = (f"[HRV] {to_wib(features['window_end'])} | window {self.window_seconds:g}s "
                     f"| status: {label} "
                     f"| RMSSD: {rmssd_text} | SDNN: {sdnn_text} "
                     f"| RR: {features['rr_count']} | pasangan: {features['rr_pairs']} "
