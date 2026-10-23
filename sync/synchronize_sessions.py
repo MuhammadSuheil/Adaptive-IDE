@@ -7,6 +7,7 @@ same interval represented by each RMSSD/SDNN value.
 
 import argparse
 import csv
+import json
 import math
 import signal
 import subprocess
@@ -18,7 +19,8 @@ from uuid import uuid4
 
 OUTPUT_ROOT = Path(__file__).resolve().parent / "sessions_sync"
 OUTPUT_FIELDS = [
-    "phase", "window_start", "window_end", "window_seconds",
+    "phase", "window_start", "window_end", "timestamp_relative", "timestamp_relative_ms",
+    "window_seconds",
     "hrv_status", "hrv_reason", "rr_count", "rr_pairs", "rmssd_ms", "sdnn_ms",
     "lf_power", "z_score",
     "eye_frame_count", "eye_face_detected_ratio", "eye_on_screen_ratio",
@@ -46,6 +48,21 @@ def _mean(rows, name):
     values = [_number(row.get(name)) for row in rows]
     values = [value for value in values if value is not None]
     return sum(values) / len(values) if values else ""
+
+
+def _joint_origin_epoch(session_dir, hrv_rows):
+    status_path = Path(session_dir) / "hrv_calib_status.json"
+    try:
+        status = json.loads(status_path.read_text(encoding="utf-8"))
+        value = status.get("both_calibrated_at_utc")
+        if value:
+            return _timestamp(value)
+    except (OSError, ValueError, json.JSONDecodeError):
+        pass
+    first_task = next((row for row in hrv_rows if row.get("phase") == "task"), None)
+    if first_task:
+        return _timestamp(first_task["window_end"]) - (_number(first_task.get("window_seconds")) or 0.0)
+    return None
 
 
 def latest_session_logs():
@@ -92,6 +109,7 @@ def synchronize(eye_csv, hrv_csv, output=None):
 
     with hrv_csv.open(newline="", encoding="utf-8") as stream:
         hrv_rows = list(csv.DictReader(stream))
+    joint_origin = _joint_origin_epoch(hrv_csv.parent, hrv_rows)
 
     with output.open("x", newline="", encoding="utf-8") as stream:
         writer = csv.DictWriter(stream, fieldnames=OUTPUT_FIELDS)
@@ -99,6 +117,8 @@ def synchronize(eye_csv, hrv_csv, output=None):
         for hrv in hrv_rows:
             start = _timestamp(hrv["window_start"])
             end = _timestamp(hrv["window_end"])
+            relative = (end - joint_origin if joint_origin is not None and hrv.get("phase") == "task" else "")
+            relative_ms = round(relative * 1000.0, 3) if relative != "" else ""
             selected = [row for stamp, row in eye_times if start <= stamp <= end]
             face_ratio = (sum(str(row.get("face_detected", "")).lower() == "true"
                               for row in selected) / len(selected) if selected else "")
@@ -108,6 +128,8 @@ def synchronize(eye_csv, hrv_csv, output=None):
                 "phase": hrv.get("phase", ""),
                 "window_start": hrv.get("window_start", ""),
                 "window_end": hrv.get("window_end", ""),
+                "timestamp_relative": relative,
+                "timestamp_relative_ms": relative_ms,
                 "window_seconds": hrv.get("window_seconds", ""),
                 "hrv_status": hrv.get("status", ""),
                 "hrv_reason": hrv.get("reason", ""),

@@ -190,8 +190,14 @@ class Config:
         output_cfg = self.data['output']
         self.compact_csv_enabled = bool(output_cfg.get('compact_csv_enabled', False))
         self.eye_crops_enabled = bool(output_cfg.get('eye_crops_enabled', False))
+        self.eye_crops_mode = output_cfg.get('eye_crops_mode', 'single')
+        self.eye_crops_single_eye = output_cfg.get('eye_crops_single_eye', 'left')
         self.eye_crops_jpeg_quality = int(output_cfg.get('eye_crops_jpeg_quality', 55))
         self.eye_crops_queue_size = int(output_cfg.get('eye_crops_queue_size', 8))
+        if self.eye_crops_mode not in ('single', 'both'):
+            raise ValueError("output.eye_crops_mode must be 'single' or 'both'")
+        if self.eye_crops_single_eye not in ('left', 'right'):
+            raise ValueError("output.eye_crops_single_eye must be 'left' or 'right'")
         if not 30 <= self.eye_crops_jpeg_quality <= 85 or self.eye_crops_queue_size < 1:
             raise ValueError('output eye crop quality must be 30..85 and queue size at least 1')
         

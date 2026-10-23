@@ -17,7 +17,8 @@ else:
 
 
 HRV_COLUMNS = [
-    "window_start", "window_end", "window_seconds", "rr_count", "rr_pairs",
+    "window_start", "window_end", "timestamp_relative", "timestamp_relative_ms",
+    "window_seconds", "rr_count", "rr_pairs",
     "rmssd_ms", "sdnn_ms",
     "status", "reason", "accepted_rr_seconds", "coverage", "data_age_seconds",
 ]
@@ -131,6 +132,7 @@ class LiveHRV:
             features = {
                 "window_start": (self.origin + timedelta(seconds=start)).isoformat(),
                 "window_end": (self.origin + timedelta(seconds=end)).isoformat(),
+                "timestamp_relative": end,
                 "window_seconds": self.window_seconds,
                 **window_features(self.rows, start, end, last_event, **self.requirements),
             }
@@ -197,6 +199,7 @@ def hrv_windows(intervals, window_seconds=WINDOW_SECONDS, step_seconds=STEP_SECO
         yield {
             "window_start": (origin + timedelta(seconds=start)).isoformat(),
             "window_end": (origin + timedelta(seconds=end)).isoformat(),
+            "timestamp_relative": end,
             "window_seconds": window_seconds, **features,
         }
         end += step_seconds

@@ -85,15 +85,18 @@ dilaporkan di terminal. Payload paket BLE tidak lagi disimpan ke file.
   `unavailable` dan nilai HRV kosong; alasannya tetap tercatat.
 - `task`: hasil pada setiap window tugas setelah kalibrasi berhasil.
 
-Kolom lainnya: `window_start`, `window_end`, `window_seconds`, `rr_count`,
+Kolom lainnya: `window_start`, `window_end`, `timestamp_relative`,
+`timestamp_relative_ms`, `window_seconds`, `rr_count`,
 `rr_pairs`, `rmssd_ms`, `sdnn_ms`, `status`, `reason`, `accepted_rr_seconds`,
 `coverage`, dan `data_age_seconds`.
 
 Semua timestamp HRV memakai UTC. Pada baris baseline, batas waktu mencakup masa
 kalibrasi; `accepted_rr_seconds` menunjukkan durasi RR yang dipakai. Pada baris
-tugas, batas waktu menunjukkan window analisis. Window tugas dimulai dari akhir
-kalibrasi. Raw memakai elapsed seluruh sesi; rebasing waktu untuk analisis tugas
-hanya dilakukan di memori.
+tugas, batas waktu menunjukkan window analisis. Waktu relatif tugas memakai titik
+nol saat kedua kalibrasi selesai; `timestamp_relative_ms` menyimpan waktu akhir
+window dalam milidetik, sedangkan `timestamp_relative` mempertahankan nilai detik.
+Baris baseline membiarkan kedua kolom relatif kosong karena titik nol bersama
+belum tentu diketahui saat baseline ditulis. Raw memakai elapsed seluruh sesi.
 
 Hasil preprocessing, paket BLE, baseline JSON, salinan raw tugas, dan log teks
 terpisah tidak dibuat saat sesi live. Baseline HRV sudah masuk `hrv.csv`.

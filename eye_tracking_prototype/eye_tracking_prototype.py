@@ -9,7 +9,7 @@ from pathlib import Path
 import threading
 import queue
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timezone
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
@@ -22,7 +22,7 @@ from modules.filter import eyes_are_open
 
 
 CSV_COLUMNS = [
-    "timestamp_ms", "frame_index", "capture_frame_id",
+    "timestamp_ms", "timestamp_relative", "timestamp_relative_ms", "frame_index", "capture_frame_id",
     "gaze_x_raw", "gaze_y_raw", "gaze_x_smooth", "gaze_y_smooth",
     "EAR_Right", "EAR_Left", "Eye_State",
     "grid_row", "grid_col", "section", "confidence",
@@ -37,7 +37,7 @@ CSV_COLUMNS = [
     "processing_timestamp_ms", "eye_crop_file",
 ]
 COMPACT_CSV_COLUMNS = [
-    "timestamp_ms", "gaze_x_raw", "gaze_y_raw", "EAR_Left", "EAR_Right",
+    "timestamp_ms", "timestamp_relative", "timestamp_relative_ms", "gaze_x_raw", "gaze_y_raw", "EAR_Left", "EAR_Right",
     "fps_captured", "iris_size_delta", "blink_count", "eye_state", "eye_crop_file",
 ]
 
@@ -223,6 +223,7 @@ class EyeTrackerApp:
         self.tracking_ui = True
         self.calibration_diagnostics = {}
         self.calibration_audit = []
+        self.eye_calibration_completed_at = None
         self.tracking_stop = threading.Event()
         self.result_lock = threading.Lock()
         self.tracking_thread = None
@@ -781,16 +782,33 @@ class EyeTrackerApp:
         except (OSError, json.JSONDecodeError):
             return None
 
+    def joint_calibration_epoch(self):
+        """Epoch timestamp when both sensor calibrations have completed."""
+        status = self.get_hrv_calib_status() or {}
+        value = status.get("both_calibrated_at_utc")
+        if value:
+            try:
+                return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+            except ValueError:
+                pass
+        if self.eye_calibration_completed_at is not None:
+            return self.eye_calibration_completed_at.timestamp()
+        return None
+
     def wait_for_hrv_calibration(self):
         """Setelah validasi mata, tampilkan sisa baseline HRV yang sudah berjalan."""
+        ready_marker = Path(self.session_dir) / "eye_calibration_ready"
+        if getattr(self, "eye_calibration_completed_at", None) is None:
+            self.eye_calibration_completed_at = datetime.now(timezone.utc)
+            ready_marker.write_text(self.eye_calibration_completed_at.isoformat(), encoding="utf-8")
         if not self.wait_for_hrv:
             return True
 
         # Baseline runs concurrently. This signal only releases task recording
         # if the HRV baseline has already finished before eye validation.
-        (Path(self.session_dir) / "eye_calibration_ready").touch()
         hrv_status = self.get_hrv_calib_status()
-        if hrv_status and hrv_status.get("status") == "ready":
+        if hrv_status and (hrv_status.get("phase") == "task"
+                           or (hrv_status.get("status") == "ready" and "phase" not in hrv_status)):
             return True
 
         window_name = "HRV Calibration Countdown"
@@ -803,6 +821,10 @@ class EyeTrackerApp:
             hrv_status = self.get_hrv_calib_status() or {}
 
             status = hrv_status.get("status", "connecting")
+            if (hrv_status.get("phase") == "task"
+                    or (hrv_status.get("status") == "ready" and "phase" not in hrv_status)):
+                cv2.destroyWindow(window_name)
+                return True
             elapsed = float(hrv_status.get("elapsed_seconds", 0.0))
             maximum = float(hrv_status.get("maximum_seconds", 300.0))
             duration = float(hrv_status.get("accepted_rr_seconds", 0.0))
@@ -1559,37 +1581,48 @@ class EyeTrackerApp:
             self.worker_error = str(exc)
 
     def _queue_eye_crop(self, frame, landmarks, frame_id):
-        """Queue one small JPEG eye-region crop; disk writes stay off the 60 FPS worker."""
+        """Queue tight iris-centered JPEG crops; disk writes stay off the tracking worker."""
         h, w = frame.shape[:2]
-        indices = (33, 133, 159, 145, 362, 263, 386, 374)
-        if len(landmarks) <= max(indices):
+        eyes = (("left", self.cfg.left_iris_indices), ("right", self.cfg.right_iris_indices))
+        if self.cfg.eye_crops_mode == "single":
+            eyes = tuple(eye for eye in eyes if eye[0] == self.cfg.eye_crops_single_eye)
+
+        crops = []
+        for eye_name, indices in eyes:
+            if len(indices) < 3 or len(landmarks) <= max(indices):
+                continue
+            iris_points = [(landmarks[i].x * w, landmarks[i].y * h) for i in indices]
+            # Match eye_tracking_facemesh.py: crop around the iris using ~3x iris radius.
+            center_x = sum(point[0] for point in iris_points) / len(iris_points)
+            center_y = sum(point[1] for point in iris_points) / len(iris_points)
+            radius = max(math.hypot(x - center_x, y - center_y) for x, y in iris_points)
+            pad = max(4, int(round(radius * 3.0)))
+            x1, x2 = max(0, int(center_x - pad)), min(w, int(center_x + pad + 1))
+            y1, y2 = max(0, int(center_y - pad)), min(h, int(center_y + pad + 1))
+            if x2 <= x1 or y2 <= y1:
+                continue
+            relative_path = os.path.join("eye_crops", f"frame_{frame_id:08d}_{eye_name}.jpg")
+            crops.append((relative_path, frame[y1:y2, x1:x2].copy()))
+
+        if not crops:
             return ""
-        xs = [landmarks[i].x * w for i in indices]
-        ys = [landmarks[i].y * h for i in indices]
-        eye_span = max(max(xs) - min(xs), 1.0)
-        pad_x, pad_y = eye_span * 0.20, eye_span * 0.35
-        x1 = max(0, int(min(xs) - pad_x))
-        x2 = min(w, int(max(xs) + pad_x))
-        y1 = max(0, int(min(ys) - pad_y))
-        y2 = min(h, int(max(ys) + pad_y))
-        if x2 <= x1 or y2 <= y1:
-            return ""
-        relative_path = os.path.join("eye_crops", f"frame_{frame_id:08d}.jpg")
         try:
-            self.crop_queue.put_nowait((relative_path, frame[y1:y2, x1:x2].copy()))
+            # One queue item per frame keeps left/right crops in sync under backpressure.
+            self.crop_queue.put_nowait(crops)
         except queue.Full:
             return ""
-        return relative_path.replace(os.sep, "/")
+        return ";".join(path.replace(os.sep, "/") for path, _ in crops)
 
     def _write_eye_crops(self):
         while not self.crop_stop.is_set() or (self.crop_queue and not self.crop_queue.empty()):
             try:
-                relative_path, crop = self.crop_queue.get(timeout=0.1)
+                crops = self.crop_queue.get(timeout=0.1)
             except queue.Empty:
                 continue
             try:
-                destination = os.path.join(self.session_dir, relative_path)
-                cv2.imwrite(destination, crop, [cv2.IMWRITE_JPEG_QUALITY, self.cfg.eye_crops_jpeg_quality])
+                for relative_path, crop in crops:
+                    destination = os.path.join(self.session_dir, relative_path)
+                    cv2.imwrite(destination, crop, [cv2.IMWRITE_JPEG_QUALITY, self.cfg.eye_crops_jpeg_quality])
             finally:
                 self.crop_queue.task_done()
 
@@ -1623,6 +1656,10 @@ class EyeTrackerApp:
             self.processing_last_at = processing_started
             capture_age_ms = max(0.0, (processing_started - capture_ts) * 1000.0)
             ts_ms = int((self.clock_origin_epoch + capture_ts - self.clock_origin_mono) * 1000)
+            joint_origin = self.joint_calibration_epoch()
+            timestamp_relative_ms = (ts_ms - joint_origin * 1000.0
+                                     if joint_origin is not None else 0.0)
+            timestamp_relative = timestamp_relative_ms / 1000.0
             processing_timestamp_ms = int((self.clock_origin_epoch + processing_started - self.clock_origin_mono) * 1000)
 
             self.frame_count += 1
@@ -1703,7 +1740,7 @@ class EyeTrackerApp:
             total_processing_ms = (time.perf_counter() - processing_started) * 1000.0
 
             row = [
-                ts_ms, self.frame_count, frame_id,
+                ts_ms, timestamp_relative, timestamp_relative_ms, self.frame_count, frame_id,
                 raw_x if gaze_is_valid else '', raw_y if gaze_is_valid else '',
                 sm_x if gaze_is_valid else '', sm_y if gaze_is_valid else '', ear_right if ear_right is not None else "",
                 ear_left if ear_left is not None else "", eye_state,
@@ -1727,7 +1764,8 @@ class EyeTrackerApp:
             self.csv_writer.writerow(row)
             if self.compact_csv_writer is not None:
                 self.compact_csv_writer.writerow([
-                    ts_ms, raw_x if gaze_is_valid else '', raw_y if gaze_is_valid else '',
+                    ts_ms, timestamp_relative, timestamp_relative_ms,
+                    raw_x if gaze_is_valid else '', raw_y if gaze_is_valid else '',
                     ear_left if ear_left is not None else '', ear_right if ear_right is not None else '',
                     capture_fps if capture_fps is not None else '', self.metrics.iris_delta,
                     total_blinks, eye_state, eye_crop_file,

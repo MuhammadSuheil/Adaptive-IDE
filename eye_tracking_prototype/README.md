@@ -173,6 +173,10 @@ they cannot detect frames lost inside the driver or repeated images from the dev
 
 CSV `timestamp_ms` now uses host camera-read completion, converted from a monotonic
 clock to an epoch anchor. `processing_timestamp_ms` records worker start separately.
+`timestamp_relative` and `timestamp_relative_ms` use the shared origin recorded in
+`hrv_calib_status.json` when both sensor calibrations are complete. The millisecond
+column is intended for direct alignment with HRV and `multimodal_timeline.csv`;
+the seconds column remains for compatibility.
 This is not a hardware exposure timestamp and does not measure driver buffering.
 In synchronous mode capture time follows the read/flip helper. Summary `avg_fps`
 uses the full first-to-last processing span, including any pause/recalibration;

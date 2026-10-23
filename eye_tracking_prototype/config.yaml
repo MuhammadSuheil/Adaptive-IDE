@@ -217,7 +217,9 @@ output:
   csv_buffer_size: 60 # flush CSV every N frames (lower = safer, more I/O)
   save_video: false # set true to save annotated mp4 (adds CPU + storage)
   compact_csv_enabled: true # output fitur mata ringkas; eye_tracking.csv lengkap tetap disimpan
-  eye_crops_enabled: false # simpan crop mata per frame JPEG di folder eye_crops/ (I/O background)
+  eye_crops_enabled: true # simpan crop mata per frame JPEG di folder eye_crops/ (I/O background)
+  eye_crops_mode: single # single = crop satu iris; both = crop kiri dan kanan seperti eye_tracking_facemesh.py
+  eye_crops_single_eye: left # mata yang dicrop ketika mode single: left atau right
   eye_crops_jpeg_quality: 55 # 30..85; ukuran file lebih kecil pada nilai rendah
   eye_crops_queue_size: 8 # antrean terbatas; frame crop dapat dilewati bila disk lambat
 
