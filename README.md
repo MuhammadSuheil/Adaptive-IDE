@@ -43,6 +43,8 @@ This repository contains the software components and research context for develo
      ```powershell
      python run_multimodal.py --participant P01 --task coding_task
      ```
+     **Mock Test:**
+     python run_multimodal.py --participant P01 --task coding_test --mock-hrv --target-baseline 60
 
 *(For more details regarding calibration, parameters, and architecture, refer to the `README.md` in their respective folders).*
 

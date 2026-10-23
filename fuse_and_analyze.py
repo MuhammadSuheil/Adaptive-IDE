@@ -20,7 +20,7 @@ import sys
 
 
 TIMELINE_COLUMNS = [
-    'window_idx', 'window_start', 'window_end',
+    'window_idx', 'window_start', 'window_end', 'timestamp_relative', 'timestamp_relative_ms',
     'window_seconds', 'hrv_status', 'hrv_coverage',
     'rmssd_ms', 'sdnn_ms', 'baseline_rmssd_ms',
     'rmssd_ratio', 'eye_frames_count', 'on_screen_ratio',
@@ -38,6 +38,23 @@ def parse_iso_to_ms(iso_str: str) -> float:
         return dt.timestamp() * 1000.0
     except Exception:
         return 0.0
+
+
+def joint_origin_ms(session_dir: Path, task_windows: list) -> float | None:
+    """Shared zero is the UTC time when both sensor calibrations are complete."""
+    status_path = session_dir / "hrv_calib_status.json"
+    try:
+        status = json.loads(status_path.read_text(encoding="utf-8"))
+        value = status.get("both_calibrated_at_utc")
+        if value:
+            return parse_iso_to_ms(value)
+    except (OSError, json.JSONDecodeError):
+        pass
+    if task_windows:
+        first = task_windows[0]
+        end_ms = parse_iso_to_ms(first.get("window_end", ""))
+        return end_ms - safe_float(first.get("window_seconds")) * 1000.0
+    return None
 
 
 def safe_float(val, default=0.0):
@@ -233,6 +250,7 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
     eye_frames = load_eye_frames(eye_csv)
 
     baseline_rmssd = baseline_info.get("rmssd_ms")
+    shared_origin_ms = joint_origin_ms(session_dir, task_windows)
     print(f"[Fuse] Memproses sesi: {session_dir.name}")
     print(f"[Fuse] Baseline RMSSD: {baseline_rmssd} ms (status: {baseline_info.get('status')})")
     print(f"[Fuse] Ditemukan {len(task_windows)} window HRV dan {len(eye_frames)} frame mata.")
@@ -279,6 +297,10 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
             "window_idx": idx,
             "window_start": w_start_str,
             "window_end": w_end_str,
+            "timestamp_relative": ((w_end_ms - shared_origin_ms) / 1000.0
+                                    if shared_origin_ms is not None else ""),
+            "timestamp_relative_ms": (round(w_end_ms - shared_origin_ms, 3)
+                                      if shared_origin_ms is not None else ""),
             "window_seconds": safe_float(w.get("window_seconds")),
             # Sinyal HRV
             "hrv_status": hrv_status,

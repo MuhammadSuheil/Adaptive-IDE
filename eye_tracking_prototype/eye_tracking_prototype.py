@@ -7,8 +7,9 @@ import time
 import math
 from pathlib import Path
 import threading
+import queue
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timezone
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
@@ -21,7 +22,7 @@ from modules.filter import eyes_are_open
 
 
 CSV_COLUMNS = [
-    "timestamp_ms", "frame_index", "capture_frame_id",
+    "timestamp_ms", "timestamp_relative", "timestamp_relative_ms", "frame_index", "capture_frame_id",
     "gaze_x_raw", "gaze_y_raw", "gaze_x_smooth", "gaze_y_smooth",
     "EAR_Right", "EAR_Left", "Eye_State",
     "grid_row", "grid_col", "section", "confidence",
@@ -33,7 +34,11 @@ CSV_COLUMNS = [
     "head_pitch", "head_yaw", "head_pose_shifted",
     "is_blinking", "total_blinks", "blink_rate_bpm",
     "iris_valid", "iris_baseline_ready", "iris_size_mode", "iris_size",
-    "processing_timestamp_ms",
+    "processing_timestamp_ms", "eye_crop_file",
+]
+COMPACT_CSV_COLUMNS = [
+    "timestamp_ms", "timestamp_relative", "timestamp_relative_ms", "gaze_x_raw", "gaze_y_raw", "EAR_Left", "EAR_Right",
+    "fps_captured", "iris_size_delta", "blink_count", "eye_state", "eye_crop_file",
 ]
 
 
@@ -182,6 +187,21 @@ class EyeTrackerApp:
         self.csv_file = open(self.csv_path, 'w', newline='')
         self.csv_writer = csv.writer(self.csv_file)
         self.csv_writer.writerow(CSV_COLUMNS)
+        self.compact_csv_file = None
+        self.compact_csv_writer = None
+        self.crop_queue = None
+        self.crop_thread = None
+        self.crop_stop = threading.Event()
+        if self.cfg.compact_csv_enabled:
+            self.compact_csv_file = open(os.path.join(save_dir, "eye_tracking_compact.csv"), 'w', newline='')
+            self.compact_csv_writer = csv.writer(self.compact_csv_file)
+            self.compact_csv_writer.writerow(COMPACT_CSV_COLUMNS)
+        if self.cfg.eye_crops_enabled:
+            self.eye_crops_dir = os.path.join(save_dir, "eye_crops")
+            os.makedirs(self.eye_crops_dir, exist_ok=True)
+            self.crop_queue = queue.Queue(maxsize=self.cfg.eye_crops_queue_size)
+            self.crop_thread = threading.Thread(target=self._write_eye_crops, name="EyeCropWriter", daemon=True)
+            self.crop_thread.start()
         
         self.calibration_quality = 0.0
         self.frame_count = 0
@@ -203,6 +223,7 @@ class EyeTrackerApp:
         self.tracking_ui = True
         self.calibration_diagnostics = {}
         self.calibration_audit = []
+        self.eye_calibration_completed_at = None
         self.tracking_stop = threading.Event()
         self.result_lock = threading.Lock()
         self.tracking_thread = None
@@ -761,16 +782,33 @@ class EyeTrackerApp:
         except (OSError, json.JSONDecodeError):
             return None
 
+    def joint_calibration_epoch(self):
+        """Epoch timestamp when both sensor calibrations have completed."""
+        status = self.get_hrv_calib_status() or {}
+        value = status.get("both_calibrated_at_utc")
+        if value:
+            try:
+                return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+            except ValueError:
+                pass
+        if self.eye_calibration_completed_at is not None:
+            return self.eye_calibration_completed_at.timestamp()
+        return None
+
     def wait_for_hrv_calibration(self):
         """Setelah validasi mata, tampilkan sisa baseline HRV yang sudah berjalan."""
+        ready_marker = Path(self.session_dir) / "eye_calibration_ready"
+        if getattr(self, "eye_calibration_completed_at", None) is None:
+            self.eye_calibration_completed_at = datetime.now(timezone.utc)
+            ready_marker.write_text(self.eye_calibration_completed_at.isoformat(), encoding="utf-8")
         if not self.wait_for_hrv:
             return True
 
         # Baseline runs concurrently. This signal only releases task recording
         # if the HRV baseline has already finished before eye validation.
-        (Path(self.session_dir) / "eye_calibration_ready").touch()
         hrv_status = self.get_hrv_calib_status()
-        if hrv_status and hrv_status.get("status") == "ready":
+        if hrv_status and (hrv_status.get("phase") == "task"
+                           or (hrv_status.get("status") == "ready" and "phase" not in hrv_status)):
             return True
 
         window_name = "HRV Calibration Countdown"
@@ -783,6 +821,10 @@ class EyeTrackerApp:
             hrv_status = self.get_hrv_calib_status() or {}
 
             status = hrv_status.get("status", "connecting")
+            if (hrv_status.get("phase") == "task"
+                    or (hrv_status.get("status") == "ready" and "phase" not in hrv_status)):
+                cv2.destroyWindow(window_name)
+                return True
             elapsed = float(hrv_status.get("elapsed_seconds", 0.0))
             maximum = float(hrv_status.get("maximum_seconds", 300.0))
             duration = float(hrv_status.get("accepted_rr_seconds", 0.0))
@@ -947,7 +989,7 @@ class EyeTrackerApp:
                     yaw_drift = abs(yaw - self.baseline_pose["yaw"])
                     pitch_drift = abs(pitch - self.baseline_pose["pitch"])
 
-                    if yaw_drift > self.cfg.pose_max_calib_yaw_deg or pitch_drift > self.cfg.pose_max_calib_pitch_deg:
+                    if self.cfg.hp_enabled and (yaw_drift > self.cfg.pose_max_calib_yaw_deg or pitch_drift > self.cfg.pose_max_calib_pitch_deg):
                         stable_streak = 0
                         point_record['rejections']['head_pose'] = point_record['rejections'].get('head_pose', 0) + 1
                         head_warning_text = f"⚠ HEAD TURNED ({yaw_drift:.1f}° yaw)  LOOK STRAIGHT"
@@ -1295,7 +1337,7 @@ class EyeTrackerApp:
     def calibrate_until_ready(self):
         while not self.exit_requested:
             # Phase 0: Gate
-            head_ready = self.run_head_positioning_gate()
+            head_ready = self.run_head_positioning_gate() if self.cfg.hp_enabled else True
             self.save_calibration_audit()
             if not head_ready:
                 if self.exit_requested or not self.wait_for_calibration_retry():
@@ -1538,6 +1580,52 @@ class EyeTrackerApp:
         except Exception as exc:
             self.worker_error = str(exc)
 
+    def _queue_eye_crop(self, frame, landmarks, frame_id):
+        """Queue tight iris-centered JPEG crops; disk writes stay off the tracking worker."""
+        h, w = frame.shape[:2]
+        eyes = (("left", self.cfg.left_iris_indices), ("right", self.cfg.right_iris_indices))
+        if self.cfg.eye_crops_mode == "single":
+            eyes = tuple(eye for eye in eyes if eye[0] == self.cfg.eye_crops_single_eye)
+
+        crops = []
+        for eye_name, indices in eyes:
+            if len(indices) < 3 or len(landmarks) <= max(indices):
+                continue
+            iris_points = [(landmarks[i].x * w, landmarks[i].y * h) for i in indices]
+            # Match eye_tracking_facemesh.py: crop around the iris using ~3x iris radius.
+            center_x = sum(point[0] for point in iris_points) / len(iris_points)
+            center_y = sum(point[1] for point in iris_points) / len(iris_points)
+            radius = max(math.hypot(x - center_x, y - center_y) for x, y in iris_points)
+            pad = max(4, int(round(radius * 3.0)))
+            x1, x2 = max(0, int(center_x - pad)), min(w, int(center_x + pad + 1))
+            y1, y2 = max(0, int(center_y - pad)), min(h, int(center_y + pad + 1))
+            if x2 <= x1 or y2 <= y1:
+                continue
+            relative_path = os.path.join("eye_crops", f"frame_{frame_id:08d}_{eye_name}.jpg")
+            crops.append((relative_path, frame[y1:y2, x1:x2].copy()))
+
+        if not crops:
+            return ""
+        try:
+            # One queue item per frame keeps left/right crops in sync under backpressure.
+            self.crop_queue.put_nowait(crops)
+        except queue.Full:
+            return ""
+        return ";".join(path.replace(os.sep, "/") for path, _ in crops)
+
+    def _write_eye_crops(self):
+        while not self.crop_stop.is_set() or (self.crop_queue and not self.crop_queue.empty()):
+            try:
+                crops = self.crop_queue.get(timeout=0.1)
+            except queue.Empty:
+                continue
+            try:
+                for relative_path, crop in crops:
+                    destination = os.path.join(self.session_dir, relative_path)
+                    cv2.imwrite(destination, crop, [cv2.IMWRITE_JPEG_QUALITY, self.cfg.eye_crops_jpeg_quality])
+            finally:
+                self.crop_queue.task_done()
+
     def tracking_worker(self):
         last_frame_id = 0
         while not self.tracking_stop.is_set():
@@ -1568,6 +1656,10 @@ class EyeTrackerApp:
             self.processing_last_at = processing_started
             capture_age_ms = max(0.0, (processing_started - capture_ts) * 1000.0)
             ts_ms = int((self.clock_origin_epoch + capture_ts - self.clock_origin_mono) * 1000)
+            joint_origin = self.joint_calibration_epoch()
+            timestamp_relative_ms = (ts_ms - joint_origin * 1000.0
+                                     if joint_origin is not None else 0.0)
+            timestamp_relative = timestamp_relative_ms / 1000.0
             processing_timestamp_ms = int((self.clock_origin_epoch + processing_started - self.clock_origin_mono) * 1000)
 
             self.frame_count += 1
@@ -1612,7 +1704,7 @@ class EyeTrackerApp:
                 yaw_drift = abs(yaw - self.baseline_pose["yaw"])
                 pitch_drift = abs(pitch - self.baseline_pose["pitch"])
 
-                if yaw_drift > self.cfg.pose_tracking_warn_yaw_deg or pitch_drift > self.cfg.pose_tracking_warn_pitch_deg:
+                if self.cfg.hp_enabled and (yaw_drift > self.cfg.pose_tracking_warn_yaw_deg or pitch_drift > self.cfg.pose_tracking_warn_pitch_deg):
                     head_pose_shifted = True
 
                 (norm_x, norm_y, ear, ear_left, ear_right), iris_size = self.get_normalized_eye_vector(lm)
@@ -1640,7 +1732,7 @@ class EyeTrackerApp:
                 self.blink_detector.is_blinking = False
             eye_state = self.eye_state_classifier.update(sm_x, sm_y, gaze_is_valid)
 
-            iris_valid = (gaze_is_valid and not is_blinking and not head_pose_shifted
+            iris_valid = (gaze_is_valid and not is_blinking and (not self.cfg.hp_enabled or not head_pose_shifted)
                           and math.isfinite(iris_size) and iris_size > 0)
             self.metrics.update(ts_ms, section, iris_size, iris_valid=iris_valid)
             mapping_ms = (time.perf_counter() - mapping_started) * 1000.0
@@ -1648,7 +1740,7 @@ class EyeTrackerApp:
             total_processing_ms = (time.perf_counter() - processing_started) * 1000.0
 
             row = [
-                ts_ms, self.frame_count, frame_id,
+                ts_ms, timestamp_relative, timestamp_relative_ms, self.frame_count, frame_id,
                 raw_x if gaze_is_valid else '', raw_y if gaze_is_valid else '',
                 sm_x if gaze_is_valid else '', sm_y if gaze_is_valid else '', ear_right if ear_right is not None else "",
                 ear_left if ear_left is not None else "", eye_state,
@@ -1664,10 +1756,24 @@ class EyeTrackerApp:
                 iris_valid, self.metrics.iris_baseline is not None, self.cfg.iris_size_mode,
                 iris_size if iris_valid else '', processing_timestamp_ms,
             ]
+            eye_crop_file = ""
+            if self.crop_queue is not None and face_detected:
+                eye_crop_file = self._queue_eye_crop(frame, lm, frame_id)
+            row.append(eye_crop_file)
             logging_started = time.perf_counter()
             self.csv_writer.writerow(row)
+            if self.compact_csv_writer is not None:
+                self.compact_csv_writer.writerow([
+                    ts_ms, timestamp_relative, timestamp_relative_ms,
+                    raw_x if gaze_is_valid else '', raw_y if gaze_is_valid else '',
+                    ear_left if ear_left is not None else '', ear_right if ear_right is not None else '',
+                    capture_fps if capture_fps is not None else '', self.metrics.iris_delta,
+                    total_blinks, eye_state, eye_crop_file,
+                ])
             if self.frame_count % self.cfg.csv_buffer_size == 0:
                 self.csv_file.flush()
+                if self.compact_csv_file is not None:
+                    self.compact_csv_file.flush()
             logging_ms = (time.perf_counter() - logging_started) * 1000.0
             actual_total_ms = (time.perf_counter() - processing_started) * 1000.0
 
@@ -1827,6 +1933,12 @@ class EyeTrackerApp:
         cv2.destroyAllWindows()
         self.csv_file.flush()
         self.csv_file.close()
+        if self.compact_csv_file is not None:
+            self.compact_csv_file.flush()
+            self.compact_csv_file.close()
+        if self.crop_thread is not None:
+            self.crop_stop.set()
+            self.crop_thread.join(timeout=2.0)
         self.metrics.finalize()
         self.save_calibration_audit()
 

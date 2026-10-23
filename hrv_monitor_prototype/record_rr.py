@@ -13,7 +13,7 @@ from uuid import uuid4
 HR_MEASUREMENT_UUID = "00002a37-0000-1000-8000-00805f9b34fb"
 SESSION_ROOT = Path(__file__).with_name("sessions")
 RAW_COLUMNS = [
-    "raw_id", "packet_id", "received_at", "elapsed_seconds",
+    "raw_id", "packet_id", "received_at", "elapsed_seconds", "timestamp_relative",
     "rr_units", "rr_original_ms", "contact_detected", "phase",
 ]
 
@@ -59,7 +59,7 @@ class RRRecorder:
         self.raw_id = 0
         self.last_rows = []
 
-    def record(self, data, received_at, elapsed_seconds, phase="raw"):
+    def record(self, data, received_at, elapsed_seconds, phase="raw", timestamp_relative=""):
         self.packet_id += 1
         self.last_rows = []
         try:
@@ -73,6 +73,7 @@ class RRRecorder:
             row = {
                 "raw_id": self.raw_id, "packet_id": self.packet_id,
                 "received_at": received_at, "elapsed_seconds": elapsed_seconds,
+                "timestamp_relative": timestamp_relative,
                 "rr_units": units, "rr_original_ms": units * 1000 / 1024,
                 "contact_detected": contact, "phase": phase,
             }
@@ -111,8 +112,12 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
                     return
                 try:
                     timestamp = datetime.now(timezone.utc).isoformat()
-                    count = recorder.record(data, timestamp, time.monotonic() - origin,
-                                            phase=getattr(monitor, "phase", "raw"))
+                    elapsed = time.monotonic() - origin
+                    phase = getattr(monitor, "phase", "raw")
+                    relative = (monitor.timestamp_relative(elapsed, phase)
+                                if monitor is not None and hasattr(monitor, "timestamp_relative") else "")
+                    count = recorder.record(data, timestamp, elapsed,
+                                            phase=phase, timestamp_relative=relative)
                     if monitor is not None:
                         monitor.receive(recorder.last_rows)
                     else:
@@ -201,8 +206,12 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
                     return
                 try:
                     timestamp = datetime.now(timezone.utc).isoformat()
-                    count = recorder.record(data, timestamp, time.monotonic() - origin,
-                                            phase=getattr(monitor, "phase", "raw"))
+                    elapsed = time.monotonic() - origin
+                    phase = getattr(monitor, "phase", "raw")
+                    relative = (monitor.timestamp_relative(elapsed, phase)
+                                if monitor is not None and hasattr(monitor, "timestamp_relative") else "")
+                    count = recorder.record(data, timestamp, elapsed,
+                                            phase=phase, timestamp_relative=relative)
                     if monitor is not None:
                         monitor.receive(recorder.last_rows)
                     else:

@@ -99,6 +99,10 @@ class SessionCalibration:
             "remaining_seconds": round(float(remaining), 1),
             "text": text,
         }
+        if self.result is not None:
+            payload["hrv_calibration_completed_at_utc"] = self.result.get("calibration_completed_at_utc")
+        if getattr(self, "both_calibrated_at_utc", None):
+            payload["both_calibrated_at_utc"] = self.both_calibrated_at_utc
         try:
             temp_file.write_text(json.dumps(payload), encoding="utf-8")
             temp_file.replace(status_file)
@@ -141,11 +145,18 @@ class SessionCalibration:
         return baseline_data(self.processed, elapsed, self.maximum_seconds)
 
     def make_result(self, status, reason, elapsed, used, duration):
+        if self.rows:
+            first = self.rows[0]
+            origin = datetime.fromisoformat(first["received_at"]) - timedelta(seconds=first["elapsed_seconds"])
+            calibration_completed_at = origin + timedelta(seconds=elapsed)
+        else:
+            calibration_completed_at = self.started_at + timedelta(seconds=elapsed)
         return {
             "status": status, "reason": reason, "condition": "seated_rest",
             "target_rr_seconds": self.target_seconds,
             "maximum_elapsed_seconds": self.maximum_seconds,
             "calibration_end_elapsed_seconds": elapsed,
+            "calibration_completed_at_utc": calibration_completed_at.astimezone(timezone.utc).isoformat(),
             "accepted_rr_seconds": duration,
             # Baseline satu RMSSD/SDNN dari RR kalibrasi, bukan rata-rata window.
             "hrv": calculate_hrv(used) if status == "ready" else None,
@@ -165,6 +176,8 @@ class SessionCalibration:
         self.hrv_writer.writerow({
             "phase": "baseline", "window_start": origin.isoformat(),
             "window_end": (origin + timedelta(seconds=elapsed)).isoformat(),
+            # Baseline ends before the shared task origin is necessarily known.
+            "timestamp_relative": "", "timestamp_relative_ms": "",
             "window_seconds": elapsed, **features,
             "status": self.result["status"], "reason": self.result["reason"],
             "accepted_rr_seconds": duration, "coverage": min(1, duration / elapsed) if elapsed > 0 else 0,
@@ -221,6 +234,14 @@ class SessionCalibration:
         origin = (datetime.fromisoformat(first["received_at"])
                   - timedelta(seconds=first["elapsed_seconds"]) + timedelta(seconds=elapsed))
         self.task_hrv.origin = origin
+        hrv_ready = datetime.fromisoformat(self.result["calibration_completed_at_utc"])
+        eye_marker = self.session / "eye_calibration_ready"
+        try:
+            eye_ready = datetime.fromisoformat(eye_marker.read_text(encoding="utf-8").strip())
+        except (OSError, ValueError):
+            eye_ready = origin
+        both_ready = max(hrv_ready, eye_ready).astimezone(timezone.utc)
+        self.both_calibrated_at_utc = both_ready.isoformat()
         self.update_calib_status("ready", self.result["calibration_end_elapsed_seconds"],
                                  self.result["accepted_rr_seconds"])
         print("Perekaman tugas dimulai. Silakan mulai coding; Ctrl+C untuk berhenti.")
@@ -233,6 +254,10 @@ class SessionCalibration:
             elapsed = self.task_duration
             include_boundary = True
         for features in self.task_hrv.advance(elapsed, include_boundary):
+            joint_origin = datetime.fromisoformat(self.both_calibrated_at_utc)
+            relative_ms = (datetime.fromisoformat(features["window_end"]) - joint_origin).total_seconds() * 1000.0
+            features["timestamp_relative"] = relative_ms / 1000.0
+            features["timestamp_relative_ms"] = round(relative_ms, 3)
             self.hrv_writer.writerow(dict(features, phase="task"))
             self.hrv_file.flush()
             rmssd = features["rmssd_ms"]
@@ -248,6 +273,12 @@ class SessionCalibration:
                     f"| durasi RR: {features['accepted_rr_seconds']:.2f}/{self.window_seconds:g}s "
                     f"| alasan: {features['reason'] or '-'}")
             print(line, flush=True)
+
+    def timestamp_relative(self, elapsed, phase):
+        """HRV sample seconds relative to completion of HRV calibration."""
+        if phase != "task" or self.result is None:
+            return ""
+        return max(0.0, float(elapsed) - self.result["calibration_end_elapsed_seconds"])
 
     def finish(self, elapsed, reason):
         try:
