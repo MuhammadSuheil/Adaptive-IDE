@@ -65,9 +65,13 @@ When you launch the script, it will first enter the calibration phase.
 - The final score uses leave-one-point-out validation. Tracking cannot start below `calibration.min_quality`.
 
 ### 2. Tracking Phase
-After successful calibration, two windows will open:
-1. **Eye Tracking - Camera Feed**: Shows your raw webcam feed, facial mesh, highlighted iris centers, and a live HUD of tracking metrics.
-2. **Eye Tracking - Gaze Grid**: Shows a full-screen grid mapping. The cell you are currently looking at will be highlighted in color, and your exact estimated gaze point is shown as a red dot.
+After successful calibration, **Eye Tracking - Camera Feed** opens with a smaller
+480x360 preview and stays on top of other application windows. It shows your
+webcam feed, facial mesh, highlighted iris centers, and a live HUD of tracking metrics.
+The **Eye Tracking - Gaze Grid** starts hidden; press `g` to show or hide it.
+Its active cell is highlighted in color, and the estimated gaze point is a red dot.
+These defaults can be adjusted with `display.camera_preview_scale`,
+`display.camera_always_on_top`, and `display.show_grid` in `config.yaml`.
 
 ## Controls
 

@@ -38,7 +38,13 @@ class Config:
         self.inference_h = self.data['webcam'].get('inference_height', self.webcam_h)
         self.flip_horizontal = self.data['webcam'].get('flip_horizontal', True)
         self.async_capture = self.data['webcam'].get('async_capture', True)
-        self.display_refresh_fps = self.data.get('display', {}).get('refresh_fps', 15)
+        display = self.data.get('display', {})
+        self.display_refresh_fps = display.get('refresh_fps', 15)
+        self.display_show_grid = display.get('show_grid', False)
+        self.camera_preview_scale = float(display.get('camera_preview_scale', 0.75))
+        if not math.isfinite(self.camera_preview_scale) or not 0 < self.camera_preview_scale <= 1:
+            raise ValueError('display.camera_preview_scale must be in (0, 1]')
+        self.camera_always_on_top = display.get('camera_always_on_top', True)
         self.latest_frame_only = self.data.get('performance', {}).get('latest_frame_only', True)
         
         self.grid_rows = self.data['grid']['rows']
