@@ -208,7 +208,7 @@ class EyeTrackerApp:
         self.total_face_frames = 0
         self.start_time = time.time()
         self.is_paused = False
-        self.show_grid = True
+        self.show_grid = self.cfg.display_show_grid
         self.debug_mode = False
         self._last_ts_ms = 0
         self.tracking_start_time = None
@@ -1840,7 +1840,15 @@ class EyeTrackerApp:
         self.ui_started = time.perf_counter()
         print(f"[EyeTrack] Camera diagnostics: {self.camera_diagnostics()}")
         if self.tracking_ui:
-            cv2.namedWindow("Eye Tracking - Gaze Grid", cv2.WINDOW_NORMAL)
+            camera_window = "Eye Tracking - Camera Feed"
+            cv2.namedWindow(camera_window, cv2.WINDOW_NORMAL)
+            cv2.resizeWindow(camera_window,
+                             max(1, round(self.cfg.webcam_w * self.cfg.camera_preview_scale)),
+                             max(1, round(self.cfg.webcam_h * self.cfg.camera_preview_scale)))
+            cv2.setWindowProperty(camera_window, cv2.WND_PROP_TOPMOST,
+                                  float(self.cfg.camera_always_on_top))
+            if self.show_grid:
+                cv2.namedWindow("Eye Tracking - Gaze Grid", cv2.WINDOW_NORMAL)
         print("[EyeTrack] Starting decoupled capture/inference/UI pipeline...")
         self.start_tracking_worker()
 
@@ -1896,7 +1904,9 @@ class EyeTrackerApp:
                 self.is_paused = not self.is_paused
             elif key == ord('g'):
                 self.show_grid = not self.show_grid
-                if not self.show_grid:
+                if self.show_grid:
+                    cv2.namedWindow("Eye Tracking - Gaze Grid", cv2.WINDOW_NORMAL)
+                else:
                     try: cv2.destroyWindow("Eye Tracking - Gaze Grid")
                     except cv2.error: pass
             elif key == ord('d'):

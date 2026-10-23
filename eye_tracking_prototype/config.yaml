@@ -27,6 +27,9 @@ webcam:
 # throttle MediaPipe. Tracking still runs at the maximum unique-frame rate.
 display:
   refresh_fps: 15
+  show_grid: false # Start tracking with the grid hidden; press G to toggle
+  camera_preview_scale: 0.75 # 640x480 capture -> 480x360 preview
+  camera_always_on_top: true # Keep the camera visible over other applications
 
 performance:
   latest_frame_only: true
