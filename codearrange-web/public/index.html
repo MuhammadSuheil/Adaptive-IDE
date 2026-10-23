@@ -7,12 +7,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=6" />
+  <link rel="stylesheet" href="/styles.css?v=7" />
 </head>
 <body>
   <header>
-    <h1>Code Arrange</h1>
-    <p class="subtitle">Geser dan susun potongan kode ke urutan yang tepat untuk membangun program.</p>
+    <div class="header-content">
+      <div>
+        <h1>Code Arrange</h1>
+        <p class="subtitle">Geser dan susun potongan kode ke urutan yang tepat untuk membangun program.</p>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Aktifkan mode gelap" title="Aktifkan mode gelap">
+        <span id="theme-toggle-icon" class="theme-toggle-icon" aria-hidden="true">☾</span>
+        <span id="theme-toggle-label">Mode Gelap</span>
+      </button>
+    </div>
   </header>
 
   <main>

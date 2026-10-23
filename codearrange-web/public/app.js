@@ -5,6 +5,47 @@
   const setSelect = document.getElementById('set-select');
   const startBtn = document.getElementById('start-btn');
   const startError = document.getElementById('start-error');
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeToggleIcon = document.getElementById('theme-toggle-icon');
+  const themeToggleLabel = document.getElementById('theme-toggle-label');
+
+  const THEME_STORAGE_KEY = 'codeArrange:theme';
+
+  function normalizeTheme(theme) {
+    return theme === 'dark' ? 'dark' : 'light';
+  }
+
+  function readSavedTheme() {
+    try {
+      return normalizeTheme(localStorage.getItem(THEME_STORAGE_KEY));
+    } catch (e) {
+      return 'light';
+    }
+  }
+
+  function applyTheme(theme) {
+    const normalizedTheme = normalizeTheme(theme);
+    const isDark = normalizedTheme === 'dark';
+    document.documentElement.dataset.theme = normalizedTheme;
+    themeToggleIcon.textContent = isDark ? '☀' : '☾';
+    themeToggleLabel.textContent = isDark ? 'Mode Terang' : 'Mode Gelap';
+    themeToggle.setAttribute('aria-pressed', String(isDark));
+    themeToggle.setAttribute('aria-label', isDark ? 'Aktifkan mode terang' : 'Aktifkan mode gelap');
+    themeToggle.title = isDark ? 'Aktifkan mode terang' : 'Aktifkan mode gelap';
+  }
+
+  let currentTheme = readSavedTheme();
+  applyTheme(currentTheme);
+
+  themeToggle.addEventListener('click', () => {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(currentTheme);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, currentTheme);
+    } catch (e) {
+      // The theme still applies for this page even when storage is unavailable.
+    }
+  });
 
   // ---- Puzzle screen elements ----
   const puzzleScreen = document.getElementById('puzzle-screen');
