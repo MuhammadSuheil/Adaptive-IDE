@@ -58,6 +58,7 @@ def print_banner(session_dir: Path, participant: str, task: str, duration: float
     print(f"  Durasi     : {f'{duration} detik' if duration else 'Hingga Ctrl+C / selesai'}")
     print(f"  Sensor HRV : {'HW9 (SIMULATOR / MOCK)' if mock_hrv else 'HW9 (BLE)'}")
     print(f"  Folder Sesi: {session_dir}")
+    print(f"  ID Sesi sensor: {session_dir.name}")
     print("=" * 65)
     print("Alur Eksperimen:")
     if mock_hrv:

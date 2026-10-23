@@ -210,6 +210,21 @@ main {
   box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
+.research-session-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.research-session-controls input {
+  min-width: 0;
+  flex: 1;
+}
+
+#research-session-status {
+  margin: 0;
+  font-size: 12px;
+}
+
 .locked-name {
   margin: 0;
   font-size: 16px;
@@ -313,6 +328,8 @@ button.secondary:hover:not(:disabled) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 14px;
   font-size: 13px;
   color: var(--text-muted);

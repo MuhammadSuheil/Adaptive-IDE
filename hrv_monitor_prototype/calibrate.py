@@ -121,7 +121,10 @@ class SessionCalibration:
         self.session = Path(session)
         self.started_at = datetime.now(timezone.utc)
         self.hrv_file = (self.session / "hrv.csv").open("w", newline="", encoding="utf-8")
-        self.hrv_writer = csv.DictWriter(self.hrv_file, fieldnames=["phase", *HRV_COLUMNS])
+        self.hrv_writer = csv.DictWriter(
+            self.hrv_file,
+            fieldnames=["phase", *HRV_COLUMNS, "session_id", "study_phase", "window_phase_mix"],
+        )
         self.hrv_writer.writeheader()
 
         self.hrv_file.flush()
@@ -190,6 +193,9 @@ class SessionCalibration:
             "status": self.result["status"], "reason": self.result["reason"],
             "accepted_rr_seconds": duration, "coverage": min(1, duration / elapsed) if elapsed > 0 else 0,
             "data_age_seconds": max(0, elapsed - used[-1]["beat_elapsed_seconds"]) if used else None,
+            "session_id": self.session.name,
+            "study_phase": "baseline",
+            "window_phase_mix": "",
         })
         self.hrv_file.flush()
 
@@ -266,7 +272,8 @@ class SessionCalibration:
             relative_ms = (datetime.fromisoformat(features["window_end"]) - joint_origin).total_seconds() * 1000.0
             features["timestamp_relative"] = relative_ms / 1000.0
             features["timestamp_relative_ms"] = round(relative_ms, 3)
-            row = dict(features, phase="task")
+            row = dict(features, phase="task", session_id=self.session.name,
+                       study_phase="", window_phase_mix="")
             row["window_start"] = to_wib(row["window_start"])
             row["window_end"] = to_wib(row["window_end"])
             self.hrv_writer.writerow(row)

@@ -34,11 +34,12 @@ CSV_COLUMNS = [
     "head_pitch", "head_yaw", "head_pose_shifted",
     "is_blinking", "total_blinks", "blink_rate_bpm",
     "iris_valid", "iris_baseline_ready", "iris_size_mode", "iris_size",
-    "processing_timestamp_ms", "eye_crop_file",
+    "processing_timestamp_ms", "eye_crop_file", "session_id", "study_phase",
 ]
 COMPACT_CSV_COLUMNS = [
     "timestamp_ms", "timestamp_wib", "timestamp_relative", "timestamp_relative_ms", "gaze_x_raw", "gaze_y_raw", "EAR_Left", "EAR_Right",
     "fps_captured", "iris_size_delta", "blink_count", "eye_state", "eye_crop_file",
+    "session_id", "study_phase",
 ]
 INDONESIA_WESTERN_TIME = timezone(timedelta(hours=7))
 
@@ -1768,6 +1769,7 @@ class EyeTrackerApp:
             if self.crop_queue is not None and face_detected:
                 eye_crop_file = self._queue_eye_crop(frame, lm, frame_id)
             row.append(eye_crop_file)
+            row.extend([self.session_id, ""])
             logging_started = time.perf_counter()
             self.csv_writer.writerow(row)
             if self.compact_csv_writer is not None:
@@ -1777,6 +1779,7 @@ class EyeTrackerApp:
                     ear_left if ear_left is not None else '', ear_right if ear_right is not None else '',
                     capture_fps if capture_fps is not None else '', self.metrics.iris_delta,
                     total_blinks, eye_state, eye_crop_file,
+                    self.session_id, "",
                 ])
             if self.frame_count % self.cfg.csv_buffer_size == 0:
                 self.csv_file.flush()

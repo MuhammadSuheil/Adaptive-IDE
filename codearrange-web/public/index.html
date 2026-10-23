@@ -35,7 +35,16 @@
           <label for="set-select">Pilih Set Soal</label>
           <select id="set-select"></select>
         </div>
+        <div class="field-row">
+          <label for="research-session-id">ID Sesi Sensor (untuk penelitian)</label>
+          <div class="research-session-controls">
+            <input id="research-session-id" type="text" autocomplete="off" placeholder="Contoh: 20261023_154026_rama02_coding_task" />
+            <button id="research-session-link" class="secondary" type="button">Hubungkan</button>
+          </div>
+          <p id="research-session-status" class="feedback" role="status"></p>
+        </div>
         <button id="start-btn">Mulai</button>
+        <button id="end-study-start-btn" class="secondary" type="button" disabled>Akhiri sesi penelitian</button>
         <p id="start-error" class="feedback error"></p>
       </div>
     </section>
@@ -49,6 +58,7 @@
           <span id="active-puzzle-type" class="type-badge"></span>
         </span>
         <span id="timer">0:00</span>
+        <button id="end-study-puzzle-btn" class="secondary" type="button" disabled>Akhiri sesi penelitian</button>
       </div>
 
       <section class="description-box">
