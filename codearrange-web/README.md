@@ -167,6 +167,23 @@ When started with `--review`, a dialog prompts the participant to rate each puzz
 - Clicking a rating submits `POST /api/attempts/:attemptId/rating`, updating the rating in place across both `attempts.csv` and the active `<puzzle-set>.csv`.
 - The dialog state is persisted in `sessionStorage`, so refreshing the browser preserves the dialog.
 
+## Sinkronisasi sesi penelitian dengan sensor
+
+Untuk mengaitkan event CodeArrange dengan rekaman Eye Tracking/HRV:
+
+1. Jalankan `run_multimodal.py` terlebih dahulu dan salin **ID Sesi sensor** yang ditampilkan.
+2. Buka CodeArrange, masukkan ID tersebut pada bagian **ID Sesi Sensor**, lalu pilih **Hubungkan**. Server memeriksa bahwa folder sesi itu sudah ada sebelum menerima event.
+3. Mulai set seperti biasa. CodeArrange mencatat waktu set/soal mulai, setiap submit/timeout, akhir set, dan tombol **Akhiri sesi penelitian** ke `sessions/<session-id>/task_events.csv`.
+4. Setelah tugas terakhir, tekan **Akhiri sesi penelitian**, kemudian hentikan proses sensor. Fusi yang dijalankan saat sensor berhenti memberi label fase pada `eye_tracking.csv`, `eye_tracking_compact.csv`, `hrv.csv`, dan `rr_raw.csv`, serta memberi detail set/soal dan komposisi window pada `multimodal_timeline.csv`.
+
+Set dan tingkat kesulitan dicatat dari metadata set (`difficultyLevel` pada `master_config.json`); urutan set tidak dikunci. Jeda antar-set dikenali dari set selesai sampai set berikutnya mulai. Jika tidak ada event akhir sesi, ringkasan menandai sesi sebagai `interrupted`; fase setelah set terakhir yang tidak memiliki lanjutan juga diberi label tersebut, bukan dianggap selesai.
+
+Isi `difficultyLevel` dengan `easy`, `medium`, `hard`, atau `practice` untuk setiap set yang dipakai. Set seperti `easy-1` dan `easy-2` saat ini sama-sama dipetakan ke `easy`.
+
+`task_events.csv` menggunakan epoch milliseconds sebagai waktu acuan dan turut menyimpan WIB (`+07:00`) serta waktu penerimaan server UTC. Jika folder sensor berada di lokasi selain folder default `sessions/`, jalankan CodeArrange dengan environment variable `CODEARRANGE_SESSIONS_ROOT` diarahkan ke root folder tersebut. Baris lama `attempts.csv` dimigrasikan dengan kolom `session_id` kosong; baris attempt baru menyimpan ID sesi terkait.
+
+Tanpa menghubungkan ID sesi, CodeArrange tetap berfungsi untuk pemakaian biasa, tetapi event penelitian tidak dibuat.
+
 ## API
 
 The set argument in the start command is the initial selection. The home

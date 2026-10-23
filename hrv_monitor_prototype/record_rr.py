@@ -15,7 +15,7 @@ INDONESIA_WESTERN_TIME = timezone(timedelta(hours=7))
 SESSION_ROOT = Path(__file__).with_name("sessions")
 RAW_COLUMNS = [
     "raw_id", "packet_id", "received_at", "elapsed_seconds", "timestamp_relative",
-    "rr_units", "rr_original_ms", "contact_detected", "phase",
+    "rr_units", "rr_original_ms", "contact_detected", "phase", "session_id", "study_phase",
 ]
 
 
@@ -51,8 +51,9 @@ def parse_rr_packet(data):
 class RRRecorder:
     """Tulis RR asli tanpa filtering atau perhitungan HRV."""
 
-    def __init__(self, raw_file):
+    def __init__(self, raw_file, session_id=""):
         self.raw_file = raw_file
+        self.session_id = session_id
         self.writer = csv.DictWriter(raw_file, fieldnames=RAW_COLUMNS)
         self.writer.writeheader()
         self.raw_file.flush()
@@ -77,6 +78,7 @@ class RRRecorder:
                 "timestamp_relative": timestamp_relative,
                 "rr_units": units, "rr_original_ms": units * 1000 / 1024,
                 "contact_detected": contact, "phase": phase,
+                "session_id": self.session_id, "study_phase": "",
             }
             self.writer.writerow(row)
             self.last_rows.append(row)
@@ -103,7 +105,7 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
         print(f"[MOCK] Menjalankan simulator sensor HRV (Mock {name})...")
         origin = time.monotonic()
         with (session / "rr_raw.csv").open("w", newline="", encoding="utf-8") as raw_file:
-            recorder = RRRecorder(raw_file)
+            recorder = RRRecorder(raw_file, session.name)
             failure = None
             end_reason = "stopped"
 
@@ -197,7 +199,7 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
         origin = time.monotonic()
         with (session / "rr_raw.csv").open("w", newline="", encoding="utf-8") as raw_file:
 
-            recorder = RRRecorder(raw_file)
+            recorder = RRRecorder(raw_file, session.name)
             failure = None
             end_reason = "stopped"
 

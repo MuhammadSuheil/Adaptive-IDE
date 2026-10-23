@@ -1,21 +1,26 @@
 {
   "demo": {
+    "difficultyLevel": "practice",
     "timeLimitMinutes": 5,
     "showTimerUI": "on"
   },
   "easy-1": {
+    "difficultyLevel": "easy",
     "timeLimitMinutes": 5,
     "showTimerUI": "off"
   },
   "easy-2": {
+    "difficultyLevel": "easy",
     "timeLimitMinutes": 5,
     "showTimerUI": "off"
   },
   "medium": {
+    "difficultyLevel": "medium",
     "timeLimitMinutes": 12,
     "showTimerUI": "off"
   },
   "hard": {
+    "difficultyLevel": "hard",
     "timeLimitMinutes": 15,
     "showTimerUI": "on"
   }

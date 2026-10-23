@@ -184,6 +184,10 @@ include `timestamp_wib`, an ISO-8601 calendar timestamp with the fixed `+07:00` 
 column is intended for direct alignment with HRV and `multimodal_timeline.csv`;
 the seconds column remains for compatibility.
 This is not a hardware exposure timestamp and does not measure driver buffering.
+Both eye CSVs also reserve `session_id` and `study_phase`. After a linked
+CodeArrange session is fused, these columns are filled from `task_events.csv`
+with coarse states such as `pre_task`, `active_task`, `rest`, `post_task`, or
+`interrupted`. Without a linked event log, the rows remain unlabeled.
 In synchronous mode capture time follows the read/flip helper. Summary `avg_fps`
 uses the full first-to-last processing span, including any pause/recalibration;
 rolling FPS restarts after a pause. `total_processing_ms` in CSV excludes logging;

@@ -360,7 +360,14 @@ const LOG_DIR = path.join(__dirname, 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'attempts.csv');
 const LOG_LOCK_FILE = path.join(LOG_DIR, 'attempts.csv.lock');
 const LOG_BACKUP_DIR = path.join(LOG_DIR, 'legacy-backup');
+const SENSOR_SESSIONS_ROOT = path.resolve(
+  process.env.CODEARRANGE_SESSIONS_ROOT || path.join(__dirname, '..', 'sessions'),
+);
 fs.mkdirSync(LOG_DIR, { recursive: true }); // safe to call from multiple processes at once (mkdir -p semantics)
+
+let linkedResearchSessionId = '';
+let researchSetOpen = false;
+let researchStudyEnded = false;
 
 function getActiveLogFiles() {
   const sanitizedSetName = (activePuzzleSetKey === '.' ? 'root' : activePuzzleSetKey || 'default').replace(/[\\/:*?"<>|]/g, '_');
@@ -384,12 +391,71 @@ const LOG_COLUMNS = [
   'total_lines',
   'score_percent',
   'rating',
+  'session_id',
 ];
 const LOG_HEADER = LOG_COLUMNS.join(',') + '\n';
 // The header written by versions of this server from before attempt_id and
 // rating existed. Files with exactly this header get upgraded in place.
 const LEGACY_LOG_HEADER =
   'timestamp,name,puzzle_set,puzzle_id,puzzle_title,time_seconds,submission_type,correct,correct_lines,total_lines,score_percent';
+const PREVIOUS_LOG_HEADER = [
+  'timestamp', 'attempt_id', 'name', 'puzzle_set', 'puzzle_id', 'puzzle_title',
+  'time_seconds', 'submission_type', 'correct', 'correct_lines', 'total_lines',
+  'score_percent', 'rating',
+].join(',');
+
+const RESEARCH_EVENT_COLUMNS = [
+  'event_id', 'session_id', 'attempt_id', 'event_type', 'event_time_ms', 'event_time_wib',
+  'server_received_at_utc', 'puzzle_set', 'difficulty_level', 'puzzle_id',
+  'puzzle_title', 'submission_type', 'outcome',
+];
+const ALLOWED_RESEARCH_EVENTS = new Set([
+  'session_linked', 'set_started', 'puzzle_started', 'attempt_submitted', 'set_ended', 'study_ended',
+]);
+
+function difficultyLevelForSet(setKey) {
+  if (!setKey) return '';
+  const configured = loadActiveSetConfig(setKey).difficultyLevel;
+  if (['easy', 'medium', 'hard', 'practice'].includes(configured)) return configured;
+  if (setKey === 'demo' || setKey.toLowerCase().startsWith('demo')) return 'practice';
+  const match = setKey.toLowerCase().match(/^(easy|medium|hard)(?:[-_]|$)/);
+  return match ? match[1] : '';
+}
+
+function researchSessionDirectory(sessionId) {
+  if (typeof sessionId !== 'string' || !/^[A-Za-z0-9_-]{1,160}$/.test(sessionId)) return null;
+  const candidate = path.resolve(SENSOR_SESSIONS_ROOT, sessionId);
+  if (path.dirname(candidate) !== SENSOR_SESSIONS_ROOT) return null;
+  if (!fs.existsSync(candidate) || !fs.statSync(candidate).isDirectory()) return null;
+  return candidate;
+}
+
+function writeResearchEvent({ eventType, eventTimeMs = Date.now(), puzzleSet = activePuzzleSetKey,
+  puzzleId = '', puzzleTitle = '', submissionType = '', outcome = '', attemptId = '' }) {
+  if (!linkedResearchSessionId) return false;
+  if (!ALLOWED_RESEARCH_EVENTS.has(eventType)) throw new Error('Unknown research event type.');
+  const directory = researchSessionDirectory(linkedResearchSessionId);
+  if (!directory) throw new Error('Folder sesi sensor tidak lagi tersedia.');
+  const timestamp = Number(eventTimeMs);
+  if (!Number.isFinite(timestamp) || timestamp <= 0) throw new Error('Waktu event tidak valid.');
+  const wibTime = new Date(timestamp + 7 * 60 * 60 * 1000).toISOString().replace('Z', '+07:00');
+  const row = csvRow([
+    crypto.randomUUID(), linkedResearchSessionId, attemptId, eventType, Math.round(timestamp),
+    wibTime,
+    new Date().toISOString(), puzzleSet || '', difficultyLevelForSet(puzzleSet || activePuzzleSetKey),
+    puzzleId, puzzleTitle, submissionType, outcome,
+  ]);
+  const eventPath = path.join(directory, 'task_events.csv');
+  if (!fs.existsSync(eventPath)) {
+    try {
+      fs.writeFileSync(eventPath, RESEARCH_EVENT_COLUMNS.join(',') + '\n', { flag: 'wx' });
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+    }
+  }
+  fs.appendFileSync(eventPath, row, 'utf8');
+  return true;
+}
 
 // ---- Session timer state ----------------------------------------------
 //
@@ -551,16 +617,18 @@ function parseCsvLine(line) {
   return fields;
 }
 
-// Upgrades a log file written before attempt_id/rating existed: every old
-// row gets an attempt_id and rating "-". The id is derived from the row's
-// own content, so the same legacy attempt gets the SAME id in attempts.csv
-// and in its set log. A copy of the original is kept in logs/legacy-backup/
-// first. Returns true if the file was upgraded. Must run under the lock.
+// Upgrades legacy attempt logs and adds the study session column to the
+// previous current format. Legacy IDs remain deterministic across master/set
+// logs. A copy of the original is kept before migration. Must run under lock.
 function upgradeLegacyLogFile(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   const lines = content.split(/\r?\n/);
   if (lines.length > 0 && lines[lines.length - 1] === '') lines.pop();
-  if (lines.length === 0 || lines[0].trim() !== LEGACY_LOG_HEADER) return false;
+  if (lines.length === 0) return false;
+  const header = lines[0].trim();
+  const isLegacy = header === LEGACY_LOG_HEADER;
+  const isPrevious = header === PREVIOUS_LOG_HEADER;
+  if (!isLegacy && !isPrevious) return false;
 
   fs.mkdirSync(LOG_BACKUP_DIR, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -570,20 +638,24 @@ function upgradeLegacyLogFile(filePath) {
   for (let i = 1; i < lines.length; i++) {
     if (lines[i].trim() === '') continue;
     const f = parseCsvLine(lines[i]);
-    if (f.length !== 11) {
+    if (isPrevious && f.length === 13) {
+      out.push(csvRow([...f, '']).trimEnd());
+      continue;
+    }
+    if (!isLegacy || f.length !== 11) {
       out.push(lines[i]); // unexpected shape: leave untouched rather than guess
       continue;
     }
     const h = crypto.createHash('sha1').update(lines[i]).digest('hex');
     const legacyId = `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
-    out.push(csvRow([f[0], legacyId, ...f.slice(1), '-']).trimEnd());
+    out.push(csvRow([f[0], legacyId, ...f.slice(1), '-', '']).trimEnd());
   }
   fs.writeFileSync(filePath, out.join('\n') + '\n');
   return true;
 }
 
-// Makes sure filePath exists with the current header, upgrading it first if
-// it still has the legacy one. Throws if it has some other unknown header,
+// Makes sure filePath exists with the current header, upgrading known older
+// versions first. Throws if it has some other unknown header,
 // so rows are never appended to a file whose columns they don't match.
 // Must run under the lock.
 function ensureLogFile(filePath) {
@@ -598,7 +670,7 @@ function ensureLogFile(filePath) {
     return;
   }
   if (firstLine === LOG_COLUMNS.join(',')) return;
-  if (firstLine === LEGACY_LOG_HEADER) {
+  if (firstLine === LEGACY_LOG_HEADER || firstLine === PREVIOUS_LOG_HEADER) {
     upgradeLegacyLogFile(filePath);
     return;
   }
@@ -633,12 +705,13 @@ try {
 // updateAttemptRating) just enriches those same rows rather than being a
 // separate write. Returns the attempt's id so the caller can hand it back to
 // the client for that enrichment step.
-function logAttempt({ name, puzzleSet, puzzleId, puzzleTitle, timeSeconds, submissionType, correct, correctPositions, total }) {
+function logAttempt({ name, puzzleSet, puzzleId, puzzleTitle, timeSeconds, submissionType,
+  correct, correctPositions, total, timestampMs = Date.now() }) {
   return withLogLock(() => {
     const scorePercent = total > 0 ? ((correctPositions / total) * 100).toFixed(1) : '0.0';
     const attemptId = crypto.randomUUID();
     const row = csvRow([
-      new Date().toISOString(),
+      new Date(timestampMs).toISOString(),
       attemptId,
       name,
       puzzleSet,
@@ -651,11 +724,22 @@ function logAttempt({ name, puzzleSet, puzzleId, puzzleTitle, timeSeconds, submi
       total,
       scorePercent,
       '-',
+      linkedResearchSessionId,
     ]);
     // Write the identical row to both the master attempts log and the set-specific log
     for (const file of getActiveLogFiles()) {
       ensureLogFile(file);
       fs.appendFileSync(file, row);
+    }
+    if (linkedResearchSessionId) {
+      try {
+        writeResearchEvent({
+          eventType: 'attempt_submitted', eventTimeMs: timestampMs, puzzleSet, puzzleId,
+          puzzleTitle, submissionType, outcome: correct ? 'correct' : 'incorrect', attemptId,
+        });
+      } catch (error) {
+        console.error('Failed to write research attempt event:', error.message);
+      }
     }
     return attemptId;
   });
@@ -759,6 +843,88 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, discoverPuzzleSets());
     }
 
+    // POST /api/research/session/link -> bind this CodeArrange run to a sensor folder.
+    if (req.method === 'POST' && pathname === '/api/research/session/link') {
+      if (researchSetOpen) {
+        return sendJson(res, 409, { error: 'Sesi sensor tidak dapat diganti saat set soal sedang berjalan.' });
+      }
+      let body;
+      try {
+        body = await readJsonBody(req);
+      } catch (e) {
+        return sendJson(res, 400, { error: 'JSON sesi penelitian tidak valid.' });
+      }
+      const sessionId = typeof body.sessionId === 'string' ? body.sessionId.trim() : '';
+      if (!sessionId) return sendJson(res, 400, { error: 'Masukkan ID sesi sensor terlebih dahulu.' });
+      if (!researchSessionDirectory(sessionId)) {
+        return sendJson(res, 404, { error: 'Folder sesi sensor tidak ditemukan. Periksa ID dan folder sesi.' });
+      }
+      const previousId = linkedResearchSessionId;
+      linkedResearchSessionId = sessionId;
+      try {
+        writeResearchEvent({ eventType: 'session_linked', eventTimeMs: Date.now(), puzzleSet: '' });
+        researchStudyEnded = false;
+      } catch (error) {
+        linkedResearchSessionId = previousId;
+        return sendJson(res, 500, { error: `Tidak dapat menulis event ke folder sesi: ${error.message}` });
+      }
+      return sendJson(res, 200, { ok: true, sessionId: linkedResearchSessionId });
+    }
+
+    // POST /api/research/events -> append a browser-originated study event.
+    if (req.method === 'POST' && pathname === '/api/research/events') {
+      if (!linkedResearchSessionId) {
+        return sendJson(res, 409, { error: 'Hubungkan ID sesi sensor sebelum merekam event penelitian.' });
+      }
+      let body;
+      try {
+        body = await readJsonBody(req);
+      } catch (e) {
+        return sendJson(res, 400, { error: 'JSON event penelitian tidak valid.' });
+      }
+      const eventType = body.eventType;
+      if (!['set_started', 'puzzle_started', 'set_ended', 'study_ended'].includes(eventType)) {
+        return sendJson(res, 400, { error: 'Jenis event penelitian tidak dikenal.' });
+      }
+      const eventTimeMs = Number(body.eventTimeMs);
+      if (!Number.isFinite(eventTimeMs) || eventTimeMs <= 0) {
+        return sendJson(res, 400, { error: 'Timestamp event penelitian tidak valid.' });
+      }
+      if (eventType === 'set_started' && researchSetOpen) {
+        return sendJson(res, 409, { error: 'Set sebelumnya belum ditutup.' });
+      }
+      if (researchStudyEnded) {
+        return sendJson(res, 409, { error: 'Sesi penelitian ini sudah diakhiri.' });
+      }
+      if (eventType === 'puzzle_started' && !researchSetOpen) {
+        return sendJson(res, 409, { error: 'Set soal belum ditandai mulai.' });
+      }
+      if (eventType === 'set_ended' && !researchSetOpen) {
+        return sendJson(res, 409, { error: 'Tidak ada set aktif yang dapat ditutup.' });
+      }
+      let puzzle = null;
+      if (eventType === 'puzzle_started') {
+        puzzle = findPuzzleById(String(body.puzzleId || ''));
+        if (!puzzle) return sendJson(res, 404, { error: 'Soal untuk event tidak ditemukan.' });
+      }
+      try {
+        writeResearchEvent({
+          eventType,
+          eventTimeMs,
+          puzzleSet: activePuzzleSetKey,
+          puzzleId: puzzle ? puzzle.id : '',
+          puzzleTitle: puzzle ? puzzle.title : '',
+          outcome: typeof body.outcome === 'string' ? body.outcome.slice(0, 40) : '',
+        });
+      } catch (error) {
+        return sendJson(res, 500, { error: `Event penelitian gagal disimpan: ${error.message}` });
+      }
+      if (eventType === 'set_started') researchSetOpen = true;
+      if (eventType === 'set_ended' || eventType === 'study_ended') researchSetOpen = false;
+      if (eventType === 'study_ended') researchStudyEnded = true;
+      return sendJson(res, 200, { ok: true, sessionId: linkedResearchSessionId });
+    }
+
     // POST /api/session/select-set -> switch sets from the home screen
     if (req.method === 'POST' && pathname === '/api/session/select-set') {
       if (sessionPausedAtMs !== null) {
@@ -796,6 +962,8 @@ const server = http.createServer(async (req, res) => {
         sessionStartedAtMs,
         sessionDeadlineMs,
         sessionPausedAtMs,
+        researchSessionId: linkedResearchSessionId,
+        researchStudyEnded,
       });
     }
 
@@ -856,6 +1024,7 @@ const server = http.createServer(async (req, res) => {
           correct: result.correct,
           correctPositions: result.correctPositions,
           total: result.total,
+          timestampMs: nowMs,
         });
         // Only handed back when the server is running in review mode -- it's
         // how the client later identifies which row to attach a rating to. A

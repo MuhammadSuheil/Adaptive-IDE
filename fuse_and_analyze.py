@@ -14,12 +14,15 @@ import csv
 from datetime import datetime, timedelta, timezone
 import json
 import math
+import os
 from pathlib import Path
 import statistics
 import sys
 
 
 TIMELINE_COLUMNS = [
+    'session_id', 'study_session_status', 'study_phase', 'difficulty_level',
+    'puzzle_set', 'puzzle_id', 'window_phase_mix',
     'window_idx', 'window_start', 'window_end', 'timestamp_relative', 'timestamp_relative_ms',
     'window_seconds', 'hrv_status', 'hrv_coverage',
     'rmssd_ms', 'sdnn_ms', 'baseline_rmssd_ms',
@@ -72,6 +75,211 @@ def safe_float(val, default=0.0):
         return f if math.isfinite(f) else default
     except (ValueError, TypeError):
         return default
+
+
+def load_study_events(session_dir: Path):
+    """Read CodeArrange events; a missing/invalid ledger stays explicitly unlabelled."""
+    event_path = Path(session_dir) / "task_events.csv"
+    if not event_path.exists():
+        return [], "unlabeled"
+    events = []
+    try:
+        with event_path.open("r", newline="", encoding="utf-8-sig") as f:
+            for row in csv.DictReader(f):
+                if row.get("session_id") != Path(session_dir).name:
+                    continue
+                timestamp = safe_float(row.get("event_time_ms"), None)
+                if timestamp is None or timestamp <= 0:
+                    continue
+                events.append({
+                    "event_time_ms": timestamp,
+                    "event_type": (row.get("event_type") or "").strip(),
+                    "puzzle_set": (row.get("puzzle_set") or "").strip(),
+                    "difficulty_level": (row.get("difficulty_level") or "").strip(),
+                    "puzzle_id": (row.get("puzzle_id") or "").strip(),
+                    "puzzle_title": (row.get("puzzle_title") or "").strip(),
+                    "outcome": (row.get("outcome") or "").strip(),
+                })
+    except (OSError, csv.Error, UnicodeError) as error:
+        print(f"[Fuse] Tidak dapat membaca event penelitian: {error}", file=sys.stderr)
+        return [], "unlabeled"
+    events.sort(key=lambda event: event["event_time_ms"])
+    if not events:
+        return [], "unlabeled"
+    complete = any(event["event_type"] == "study_ended" for event in events)
+    return events, "completed" if complete else "interrupted"
+
+
+def calibration_ready_ms(session_dir: Path):
+    try:
+        with (Path(session_dir) / "hrv_calib_status.json").open(encoding="utf-8") as f:
+            status = json.load(f)
+        value = status.get("both_calibrated_at_utc")
+        if value:
+            return parse_iso_to_ms(value)
+    except (OSError, json.JSONDecodeError, TypeError):
+        pass
+    return None
+
+
+def _empty_context(phase):
+    return {"study_phase": phase, "difficulty_level": "", "puzzle_set": "", "puzzle_id": "", "puzzle_title": ""}
+
+
+def context_at(timestamp_ms: float, events: list, ready_ms=None):
+    """Resolve a sample's phase and current set/question from the event ledger."""
+    if not events:
+        return _empty_context("unlabeled")
+    if ready_ms is not None and timestamp_ms < ready_ms:
+        return _empty_context("baseline")
+
+    before = [event for event in events if event["event_time_ms"] <= timestamp_ms]
+    latest_set_start = None
+    latest_set_end = None
+    latest_study_end = None
+    for event in before:
+        kind = event["event_type"]
+        if kind == "set_started":
+            latest_set_start = event
+            latest_set_end = None
+            latest_study_end = None
+        elif kind == "set_ended":
+            latest_set_end = event
+        elif kind == "study_ended":
+            latest_study_end = event
+
+    if latest_study_end is not None:
+        post_start = (latest_set_end["event_time_ms"] if latest_set_end is not None
+                      and (latest_set_start is None or latest_set_end["event_time_ms"] > latest_set_start["event_time_ms"])
+                      else latest_study_end["event_time_ms"])
+        if timestamp_ms >= post_start:
+            return _empty_context("post_task")
+
+    if latest_set_start is None:
+        return _empty_context("pre_task")
+
+    if latest_set_end is not None and latest_set_end["event_time_ms"] > latest_set_start["event_time_ms"]:
+        future_starts = [event for event in events
+                         if event["event_type"] == "set_started"
+                         and event["event_time_ms"] > latest_set_end["event_time_ms"]]
+        future_study_ends = [event for event in events
+                             if event["event_type"] == "study_ended"
+                             and event["event_time_ms"] > latest_set_end["event_time_ms"]]
+        next_start_ms = future_starts[0]["event_time_ms"] if future_starts else None
+        end_ms = future_study_ends[0]["event_time_ms"] if future_study_ends else None
+        if end_ms is not None and (next_start_ms is None or end_ms < next_start_ms):
+            return _empty_context("post_task")
+        if next_start_ms is not None:
+            return _empty_context("rest")
+        return _empty_context("interrupted")
+
+    puzzle_starts = [event for event in before
+                     if event["event_type"] == "puzzle_started"
+                     and event["event_time_ms"] >= latest_set_start["event_time_ms"]]
+    current_puzzle = puzzle_starts[-1] if puzzle_starts else {}
+    return {
+        "study_phase": "active_task",
+        "difficulty_level": latest_set_start.get("difficulty_level", ""),
+        "puzzle_set": latest_set_start.get("puzzle_set", ""),
+        "puzzle_id": current_puzzle.get("puzzle_id", ""),
+        "puzzle_title": current_puzzle.get("puzzle_title", ""),
+    }
+
+
+def interval_segments(start_ms: float, end_ms: float, events: list, ready_ms=None):
+    """Return time-proportional phase/context segments for an HRV window."""
+    if not events or end_ms <= start_ms:
+        return []
+    boundaries = {start_ms, end_ms}
+    if ready_ms is not None and start_ms < ready_ms < end_ms:
+        boundaries.add(ready_ms)
+    boundaries.update(event["event_time_ms"] for event in events
+                      if start_ms < event["event_time_ms"] < end_ms)
+    ordered = sorted(boundaries)
+    segments = []
+    for left, right in zip(ordered, ordered[1:]):
+        if right <= left:
+            continue
+        segment = {
+            **context_at((left + right) / 2.0, events, ready_ms),
+            "duration_seconds": round((right - left) / 1000.0, 3),
+            "proportion": round((right - left) / (end_ms - start_ms), 4),
+        }
+        context_keys = ("study_phase", "difficulty_level", "puzzle_set", "puzzle_id", "puzzle_title")
+        if segments and all(segments[-1].get(key) == segment.get(key) for key in context_keys):
+            segments[-1]["duration_seconds"] = round(segments[-1]["duration_seconds"] + segment["duration_seconds"], 3)
+            segments[-1]["proportion"] = round(segments[-1]["proportion"] + segment["proportion"], 4)
+        else:
+            segments.append(segment)
+    return segments
+
+
+def summarize_segments(segments):
+    if not segments:
+        return {"study_phase": "unlabeled", "difficulty_level": "", "puzzle_set": "", "puzzle_id": "", "window_phase_mix": ""}
+
+    def unique_or_mixed(key):
+        values = [segment.get(key, "") for segment in segments]
+        nonempty = list(dict.fromkeys(value for value in values if value))
+        if not nonempty:
+            return ""
+        if len(nonempty) == 1 and all(value == nonempty[0] for value in values):
+            return nonempty[0]
+        return "mixed"
+
+    phases = list(dict.fromkeys(segment["study_phase"] for segment in segments))
+    return {
+        "study_phase": phases[0] if len(phases) == 1 else "mixed",
+        "difficulty_level": unique_or_mixed("difficulty_level"),
+        "puzzle_set": unique_or_mixed("puzzle_set"),
+        "puzzle_id": unique_or_mixed("puzzle_id"),
+        "window_phase_mix": json.dumps(segments, ensure_ascii=False, separators=(",", ":")),
+    }
+
+
+def annotate_sensor_csv(path: Path, session_id: str, events: list, ready_ms=None, kind="eye"):
+    """Add/recompute labels in one finished sensor CSV without changing measurements."""
+    if not path.exists() or not events:
+        return 0
+    temp_path = path.with_name(path.name + ".labeling.tmp")
+    changed = 0
+    try:
+        with path.open("r", newline="", encoding="utf-8-sig") as source:
+            reader = csv.DictReader(source)
+            fieldnames = list(reader.fieldnames or [])
+            for column in ("session_id", "study_phase"):
+                if column not in fieldnames:
+                    fieldnames.append(column)
+            if kind == "hrv" and "window_phase_mix" not in fieldnames:
+                fieldnames.append("window_phase_mix")
+            with temp_path.open("w", newline="", encoding="utf-8") as target:
+                writer = csv.DictWriter(target, fieldnames=fieldnames, extrasaction="ignore")
+                writer.writeheader()
+                for row in reader:
+                    row["session_id"] = session_id
+                    if kind == "hrv" and row.get("phase") == "baseline":
+                        row["study_phase"] = "baseline"
+                        row["window_phase_mix"] = ""
+                    elif kind == "hrv":
+                        start_ms = parse_iso_to_ms(row.get("window_start", ""))
+                        end_ms = parse_iso_to_ms(row.get("window_end", ""))
+                        row.update(summarize_segments(interval_segments(start_ms, end_ms, events, ready_ms)))
+                    else:
+                        timestamp_ms = (safe_float(row.get("timestamp_ms"), None) if kind == "eye"
+                                        else parse_iso_to_ms(row.get("received_at", "")))
+                        row["study_phase"] = (context_at(timestamp_ms, events, ready_ms)["study_phase"]
+                                              if timestamp_ms is not None and timestamp_ms > 0 else "unlabeled")
+                    writer.writerow(row)
+                    changed += 1
+        os.replace(temp_path, path)
+    except (OSError, csv.Error, UnicodeError) as error:
+        try:
+            temp_path.unlink(missing_ok=True)
+        except OSError:
+            pass
+        print(f"[Fuse] Gagal memberi label {path.name}: {error}", file=sys.stderr)
+        return 0
+    return changed
 
 
 def load_hrv_data(hrv_csv_path: Path):
@@ -254,6 +462,21 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
             eye_csv = candidates[0]
 
     baseline_info, task_windows = load_hrv_data(hrv_csv)
+    session_id = session_dir.name
+    study_events, study_session_status = load_study_events(session_dir)
+    ready_ms = calibration_ready_ms(session_dir)
+    if study_events:
+        for filename, kind in (
+            ("eye_tracking.csv", "eye"),
+            ("eye_tracking_compact.csv", "eye"),
+            ("hrv.csv", "hrv"),
+            ("rr_raw.csv", "rr"),
+        ):
+            count = annotate_sensor_csv(session_dir / filename, session_id, study_events, ready_ms, kind)
+            if count:
+                print(f"[Fuse] Label fase ditambahkan ke {filename}: {count} baris.")
+    else:
+        print("[Fuse] task_events.csv tidak tersedia/valid; data sesi ini tetap tanpa label fase.", file=sys.stderr)
     eye_frames = load_eye_frames(eye_csv)
 
     baseline_rmssd = baseline_info.get("rmssd_ms")
@@ -276,6 +499,7 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
         w_end_str = w.get("window_end", "")
         w_start_ms = parse_iso_to_ms(w_start_str)
         w_end_ms = parse_iso_to_ms(w_end_str)
+        study_labels = summarize_segments(interval_segments(w_start_ms, w_end_ms, study_events, ready_ms))
 
         # Filter frame mata dalam rentang window
         window_frames = [f for f in eye_frames if w_start_ms <= f["timestamp_ms"] <= w_end_ms]
@@ -301,6 +525,9 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
         state_distribution[state] = state_distribution.get(state, 0) + 1
 
         row = {
+            "session_id": session_id,
+            "study_session_status": study_session_status,
+            **study_labels,
             "window_idx": idx,
             "window_start": format_wib(w_start_str) if w_start_str else "",
             "window_end": format_wib(w_end_str) if w_end_str else "",
@@ -348,6 +575,9 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
     total_windows = len(timeline)
     summary_report = {
         "session_name": session_dir.name,
+        "study_session_status": study_session_status,
+        "study_event_count": len(study_events),
+        "study_events_file": "task_events.csv" if study_events else None,
         "analyzed_at": datetime.now(INDONESIA_WESTERN_TIME).isoformat(),
         "baseline": baseline_info,
         "total_windows": total_windows,

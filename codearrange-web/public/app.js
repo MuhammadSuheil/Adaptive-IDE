@@ -5,6 +5,11 @@
   const setSelect = document.getElementById('set-select');
   const startBtn = document.getElementById('start-btn');
   const startError = document.getElementById('start-error');
+  const researchSessionInput = document.getElementById('research-session-id');
+  const researchSessionLinkBtn = document.getElementById('research-session-link');
+  const researchSessionStatus = document.getElementById('research-session-status');
+  const endStudyStartBtn = document.getElementById('end-study-start-btn');
+  const endStudyPuzzleBtn = document.getElementById('end-study-puzzle-btn');
   const themeToggle = document.getElementById('theme-toggle');
   const themeToggleIcon = document.getElementById('theme-toggle-icon');
   const themeToggleLabel = document.getElementById('theme-toggle-label');
@@ -72,6 +77,8 @@
   let currentPuzzleData = null; // full {id,title,type,description,lines} from the server for the attempt in progress
   let puzzleList = []; // full ordered list from /api/puzzles, used to find "the next puzzle"
   let playerName = ''; // set once from /api/config; the player can't change it
+  let researchSessionId = '';
+  let researchStudyEnded = false;
   let activePuzzleSet = '';
   let availablePuzzleSets = [];
   let timeLimitMinutes = null; // set once from /api/config if master_config.json contains the active set
@@ -227,6 +234,10 @@
     const res = await fetch('/api/config');
     const config = await res.json();
     playerName = config.playerName;
+    researchSessionId = config.researchSessionId || '';
+    researchStudyEnded = Boolean(config.researchStudyEnded);
+    researchSessionInput.value = researchSessionId;
+    updateResearchControls();
     activePuzzleSet = config.puzzleSet || '';
     playerNameDisplay.textContent = playerName;
     reviewMode = Boolean(config.reviewMode);
@@ -255,6 +266,74 @@
     }
   }
 
+  function updateResearchControls() {
+    const linked = Boolean(researchSessionId);
+    researchSessionStatus.textContent = linked
+      ? `Terhubung ke sesi ${researchSessionId}${researchStudyEnded ? ' (sudah diakhiri)' : ''}.`
+      : 'Opsional untuk penggunaan biasa; wajib dihubungkan untuk sesi penelitian.';
+    researchSessionStatus.className = linked ? 'feedback success' : 'feedback';
+    endStudyStartBtn.disabled = !linked || researchStudyEnded;
+    endStudyPuzzleBtn.disabled = !linked || researchStudyEnded;
+    startBtn.disabled = researchStudyEnded;
+  }
+
+  async function recordResearchEvent(eventType, details = {}) {
+    if (!researchSessionId) return false;
+    const res = await fetch('/api/research/events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventType, eventTimeMs: Date.now(), ...details }),
+    });
+    let data = {};
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok) throw new Error(data.error || 'Event penelitian gagal disimpan.');
+    if (eventType === 'study_ended') {
+      researchStudyEnded = true;
+      updateResearchControls();
+    }
+    if (eventType === 'set_ended') updateResearchControls();
+    return true;
+  }
+
+  researchSessionLinkBtn.addEventListener('click', async () => {
+    researchSessionStatus.textContent = 'Memvalidasi folder sesi sensor…';
+    researchSessionStatus.className = 'feedback';
+    researchSessionLinkBtn.disabled = true;
+    try {
+      const res = await fetch('/api/research/session/link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: researchSessionInput.value.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Sesi sensor tidak dapat dihubungkan.');
+      researchSessionId = data.sessionId;
+      researchStudyEnded = false;
+      updateResearchControls();
+    } catch (error) {
+      researchSessionStatus.textContent = error.message;
+      researchSessionStatus.className = 'feedback error';
+    } finally {
+      researchSessionLinkBtn.disabled = false;
+    }
+  });
+
+  async function endResearchStudy() {
+    if (!researchSessionId || researchStudyEnded) return;
+    if (!window.confirm('Akhiri penandaan sesi penelitian ini? Perekaman sensor tetap berjalan sampai dihentikan terpisah.')) return;
+    endStudyStartBtn.disabled = true;
+    endStudyPuzzleBtn.disabled = true;
+    try {
+      await recordResearchEvent('study_ended');
+    } catch (error) {
+      researchSessionStatus.textContent = error.message;
+      researchSessionStatus.className = 'feedback error';
+      updateResearchControls();
+    }
+  }
+  endStudyStartBtn.addEventListener('click', endResearchStudy);
+  endStudyPuzzleBtn.addEventListener('click', endResearchStudy);
+
   async function loadPuzzleList() {
     const res = await fetch('/api/puzzles');
     if (!res.ok) throw new Error('Gagal memuat daftar soal.');
@@ -276,7 +355,7 @@
     if (activePuzzleSet && availablePuzzleSets.some((set) => set.key === activePuzzleSet)) {
       setSelect.value = activePuzzleSet;
     }
-    startBtn.disabled = availablePuzzleSets.length === 0;
+    startBtn.disabled = availablePuzzleSets.length === 0 || researchStudyEnded;
     if (availablePuzzleSets.length === 0) {
       startError.textContent = 'Tidak ada set soal yang tersedia.';
     }
@@ -511,6 +590,7 @@
       return;
     }
     startError.textContent = '';
+    const setStartEventMs = Date.now();
 
     try {
       await selectPuzzleSet(setSelect.value);
@@ -539,6 +619,15 @@
     if (puzzleList.length === 0) {
       startError.textContent = 'Tidak ada soal ditemukan pada set soal ini.';
       return;
+    }
+
+    if (researchSessionId) {
+      try {
+        await recordResearchEvent('set_started', { eventTimeMs: setStartEventMs });
+      } catch (error) {
+        startError.textContent = `Set tidak dimulai karena penanda penelitian gagal disimpan: ${error.message}`;
+        return;
+      }
     }
 
     // Starting from the home screen always creates a fresh set session.
@@ -584,6 +673,18 @@
       applyMode(cached.puzzle.mode);
       renderDescription(cached.puzzle.description);
       renderTiles(cached.puzzle.lines, cached.availableOrder, cached.solutionOrder);
+
+      if (researchSessionId) {
+        try {
+          await recordResearchEvent('puzzle_started', { puzzleId, eventTimeMs: Date.now() });
+        } catch (error) {
+          feedback.textContent = `Penanda soal gagal disimpan: ${error.message}. Hubungi peneliti sebelum melanjutkan.`;
+          feedback.className = 'feedback error';
+          finishBtn.disabled = true;
+          nextPuzzleBtn.disabled = true;
+          return;
+        }
+      }
 
       updatePrevPuzzleButtonState();
       updateNextPuzzleButtonState();
@@ -642,6 +743,18 @@
     applyMode(puzzle.mode);
     renderDescription(puzzle.description);
     renderTiles(puzzle.lines, puzzle.lines.map((line) => line.id), []);
+
+    if (researchSessionId) {
+      try {
+        await recordResearchEvent('puzzle_started', { puzzleId, eventTimeMs: Date.now() });
+      } catch (error) {
+        feedback.textContent = `Penanda soal gagal disimpan: ${error.message}. Hubungi peneliti sebelum melanjutkan.`;
+        feedback.className = 'feedback error';
+        finishBtn.disabled = true;
+        nextPuzzleBtn.disabled = true;
+        return;
+      }
+    }
 
     finishBtn.disabled = sessionExpired;
     tryAgainBtn.disabled = sessionExpired;
@@ -967,6 +1080,14 @@
     if (!finished && currentPuzzleId) {
       await submitAttempt('timeout');
     } else {
+      if (researchSessionId) {
+        try {
+          await recordResearchEvent('set_ended', { outcome: 'timed_out' });
+        } catch (error) {
+          feedback.textContent = `Batas waktu tercapai, tetapi penanda akhir set gagal disimpan: ${error.message}`;
+          feedback.className = 'feedback error';
+        }
+      }
       const msg = 'Batas waktu telah tercapai. Sesi ujian telah berakhir.';
       if (!feedback.textContent) {
         feedback.textContent = msg;
@@ -1158,6 +1279,13 @@
     saveState();
 
     if (submissionType === 'timeout' || sessionExpired || (timeLimitMinutes && elapsedMs >= timeLimitMinutes * 60 * 1000)) {
+      if (researchSessionId) {
+        try {
+          await recordResearchEvent('set_ended', { outcome: 'timed_out' });
+        } catch (error) {
+          feedback.textContent += ` Penanda akhir set gagal disimpan: ${error.message}`;
+        }
+      }
       sessionExpired = true;
       stopTimer();
       finishBtn.disabled = true;
@@ -1169,6 +1297,14 @@
         feedback.textContent += ' Sesi ujian telah berakhir.';
       }
     } else if (result.correct && areAllPuzzlesCompleted()) {
+      if (researchSessionId) {
+        try {
+          await recordResearchEvent('set_ended', { outcome: 'completed' });
+        } catch (error) {
+          feedback.textContent += ` Penanda akhir set gagal disimpan: ${error.message}`;
+          feedback.className = 'feedback error';
+        }
+      }
       setCompleted = true;
       stopTimer();
       finishBtn.disabled = true;
@@ -1299,6 +1435,7 @@
     }
 
     const saved = loadSavedState();
+    updateResearchControls();
 
     // If the server has no active session (e.g. server was restarted, or
     // the previous session's time limit already expired and was auto-reset
