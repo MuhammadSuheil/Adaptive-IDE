@@ -178,6 +178,8 @@ Untuk mengaitkan event CodeArrange dengan rekaman Eye Tracking/HRV:
 
 Set dan tingkat kesulitan dicatat dari metadata set (`difficultyLevel` pada `master_config.json`); urutan set tidak dikunci. Jeda antar-set dikenali dari set selesai sampai set berikutnya mulai. Jika tidak ada event akhir sesi, ringkasan menandai sesi sebagai `interrupted`; fase setelah set terakhir yang tidak memiliki lanjutan juga diberi label tersebut, bukan dianggap selesai.
 
+`active_task` hanya berlaku sejak soal siap ditampilkan sampai jawaban dikirim. Waktu membaca hasil (`feedback`) dan mengisi rating (`rating`) tetap direkam tetapi tidak masuk ringkasan utama pengerjaan. Window HRV yang melintasi batas aktivitas diberi `mixed` dan rincian `window_phase_mix`; ringkasan per set hanya memakai window `active_task` dengan status HRV `ready` dan frame mata tersedia. Jika penanda akhir set gagal ditulis, kembali ke menu lalu gunakan **Coba simpan akhir set** sebelum memulai set berikutnya.
+
 Isi `difficultyLevel` dengan `easy`, `medium`, `hard`, atau `practice` untuk setiap set yang dipakai. Set seperti `easy-1` dan `easy-2` saat ini sama-sama dipetakan ke `easy`.
 
 `task_events.csv` menggunakan epoch milliseconds sebagai waktu acuan dan turut menyimpan WIB (`+07:00`) serta waktu penerimaan server UTC. Jika folder sensor berada di lokasi selain folder default `sessions/`, jalankan CodeArrange dengan environment variable `CODEARRANGE_SESSIONS_ROOT` diarahkan ke root folder tersebut. Baris lama `attempts.csv` dimigrasikan dengan kolom `session_id` kosong; baris attempt baru menyimpan ID sesi terkait.

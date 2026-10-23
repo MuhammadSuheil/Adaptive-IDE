@@ -410,7 +410,7 @@ const RESEARCH_EVENT_COLUMNS = [
   'puzzle_title', 'submission_type', 'outcome',
 ];
 const ALLOWED_RESEARCH_EVENTS = new Set([
-  'session_linked', 'set_started', 'puzzle_started', 'attempt_submitted', 'set_ended', 'study_ended',
+  'session_linked', 'set_started', 'puzzle_started', 'attempt_submitted', 'rating_started', 'rating_ended', 'set_ended', 'study_ended',
 ]);
 
 function difficultyLevelForSet(setKey) {
@@ -883,15 +883,15 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 400, { error: 'JSON event penelitian tidak valid.' });
       }
       const eventType = body.eventType;
-      if (!['set_started', 'puzzle_started', 'set_ended', 'study_ended'].includes(eventType)) {
+      if (!['set_started', 'puzzle_started', 'rating_started', 'rating_ended', 'set_ended', 'study_ended'].includes(eventType)) {
         return sendJson(res, 400, { error: 'Jenis event penelitian tidak dikenal.' });
       }
-      const eventTimeMs = Number(body.eventTimeMs);
-      if (!Number.isFinite(eventTimeMs) || eventTimeMs <= 0) {
-        return sendJson(res, 400, { error: 'Timestamp event penelitian tidak valid.' });
-      }
+      const eventTimeMs = Date.now();
       if (eventType === 'set_started' && researchSetOpen) {
         return sendJson(res, 409, { error: 'Set sebelumnya belum ditutup.' });
+      }
+      if (eventType === 'study_ended' && researchSetOpen) {
+        return sendJson(res, 409, { error: 'Tutup set aktif sebelum mengakhiri penelitian.' });
       }
       if (researchStudyEnded) {
         return sendJson(res, 409, { error: 'Sesi penelitian ini sudah diakhiri.' });
@@ -900,7 +900,7 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 409, { error: 'Set soal belum ditandai mulai.' });
       }
       if (eventType === 'set_ended' && !researchSetOpen) {
-        return sendJson(res, 409, { error: 'Tidak ada set aktif yang dapat ditutup.' });
+        return sendJson(res, 200, { ok: true, sessionId: linkedResearchSessionId });
       }
       let puzzle = null;
       if (eventType === 'puzzle_started') {
@@ -927,6 +927,9 @@ const server = http.createServer(async (req, res) => {
 
     // POST /api/session/select-set -> switch sets from the home screen
     if (req.method === 'POST' && pathname === '/api/session/select-set') {
+      if (researchSetOpen) {
+        return sendJson(res, 409, { error: 'Set sebelumnya belum ditutup.' });
+      }
       if (sessionPausedAtMs !== null) {
         return sendJson(res, 409, { error: 'Tidak dapat mengganti set saat dialog rating masih aktif.' });
       }
@@ -964,6 +967,7 @@ const server = http.createServer(async (req, res) => {
         sessionPausedAtMs,
         researchSessionId: linkedResearchSessionId,
         researchStudyEnded,
+        researchSetOpen,
       });
     }
 

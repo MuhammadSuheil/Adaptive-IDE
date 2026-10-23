@@ -159,6 +159,10 @@ def context_at(timestamp_ms: float, events: list, ready_ms=None):
         return _empty_context("pre_task")
 
     if latest_set_end is not None and latest_set_end["event_time_ms"] > latest_set_start["event_time_ms"]:
+        later_rating = [event for event in before if event["event_time_ms"] > latest_set_end["event_time_ms"]
+                        and event["event_type"] in ("rating_started", "rating_ended")]
+        if later_rating and later_rating[-1]["event_type"] == "rating_started":
+            return _empty_context("rating")
         future_starts = [event for event in events
                          if event["event_type"] == "set_started"
                          and event["event_time_ms"] > latest_set_end["event_time_ms"]]
@@ -177,8 +181,20 @@ def context_at(timestamp_ms: float, events: list, ready_ms=None):
                      if event["event_type"] == "puzzle_started"
                      and event["event_time_ms"] >= latest_set_start["event_time_ms"]]
     current_puzzle = puzzle_starts[-1] if puzzle_starts else {}
+    phase = "active_task" if current_puzzle else "feedback"
+    for event in before:
+        if event["event_time_ms"] < latest_set_start["event_time_ms"]:
+            continue
+        if event["event_type"] == "puzzle_started":
+            phase = "active_task"
+        elif event["event_type"] == "attempt_submitted":
+            phase = "feedback"
+        elif event["event_type"] == "rating_started":
+            phase = "rating"
+        elif event["event_type"] == "rating_ended":
+            phase = "feedback"
     return {
-        "study_phase": "active_task",
+        "study_phase": phase,
         "difficulty_level": latest_set_start.get("difficulty_level", ""),
         "puzzle_set": latest_set_start.get("puzzle_set", ""),
         "puzzle_id": current_puzzle.get("puzzle_id", ""),
@@ -247,7 +263,7 @@ def annotate_sensor_csv(path: Path, session_id: str, events: list, ready_ms=None
         with path.open("r", newline="", encoding="utf-8-sig") as source:
             reader = csv.DictReader(source)
             fieldnames = list(reader.fieldnames or [])
-            for column in ("session_id", "study_phase"):
+            for column in ("session_id", "study_phase", "difficulty_level", "puzzle_set", "puzzle_id"):
                 if column not in fieldnames:
                     fieldnames.append(column)
             if kind == "hrv" and "window_phase_mix" not in fieldnames:
@@ -259,6 +275,7 @@ def annotate_sensor_csv(path: Path, session_id: str, events: list, ready_ms=None
                     row["session_id"] = session_id
                     if kind == "hrv" and row.get("phase") == "baseline":
                         row["study_phase"] = "baseline"
+                        row["difficulty_level"] = row["puzzle_set"] = row["puzzle_id"] = ""
                         row["window_phase_mix"] = ""
                     elif kind == "hrv":
                         start_ms = parse_iso_to_ms(row.get("window_start", ""))
@@ -267,8 +284,9 @@ def annotate_sensor_csv(path: Path, session_id: str, events: list, ready_ms=None
                     else:
                         timestamp_ms = (safe_float(row.get("timestamp_ms"), None) if kind == "eye"
                                         else parse_iso_to_ms(row.get("received_at", "")))
-                        row["study_phase"] = (context_at(timestamp_ms, events, ready_ms)["study_phase"]
-                                              if timestamp_ms is not None and timestamp_ms > 0 else "unlabeled")
+                        context = (context_at(timestamp_ms, events, ready_ms)
+                                   if timestamp_ms is not None and timestamp_ms > 0 else _empty_context("unlabeled"))
+                        row.update({key: context[key] for key in ("study_phase", "difficulty_level", "puzzle_set", "puzzle_id")})
                     writer.writerow(row)
                     changed += 1
         os.replace(temp_path, path)
@@ -573,6 +591,30 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
 
     # Buat ringkasan sesi JSON
     total_windows = len(timeline)
+    task_windows_by_set = {}
+    eligible_task_rows = []
+    excluded_windows = {
+        "mixed": 0, "feedback": 0, "rating": 0, "rest": 0, "pre_task": 0,
+        "post_task": 0, "interrupted": 0, "unlabeled": 0, "baseline": 0,
+        "other_phase": 0, "sensor_quality": 0,
+    }
+    for row in timeline:
+        phase = row["study_phase"]
+        if phase != "active_task" or row["puzzle_set"] in ("", "mixed"):
+            reason = phase if phase in excluded_windows else "other_phase"
+            excluded_windows[reason] += 1
+            continue
+        if row["hrv_status"] != "ready" or not row["eye_frames_count"]:
+            excluded_windows["sensor_quality"] += 1
+            continue
+        key = row["puzzle_set"]
+        eligible_task_rows.append(row)
+        task_windows_by_set.setdefault(key, {"difficulty_level": row["difficulty_level"], "scores": []})["scores"].append(row["cognitive_load_score"])
+    task_summary_by_set = {
+        key: {"difficulty_level": value["difficulty_level"], "window_count": len(value["scores"]),
+              "average_cognitive_load_score": round(statistics.mean(value["scores"]), 1)}
+        for key, value in task_windows_by_set.items()
+    }
     summary_report = {
         "session_name": session_dir.name,
         "study_session_status": study_session_status,
@@ -581,14 +623,20 @@ def fuse_session(session_dir: Path, output_csv: Path = None, output_json: Path =
         "analyzed_at": datetime.now(INDONESIA_WESTERN_TIME).isoformat(),
         "baseline": baseline_info,
         "total_windows": total_windows,
+        "task_summary_by_set": task_summary_by_set,
+        "excluded_window_count": excluded_windows,
+        "task_state_breakdown_count": {
+            state: sum(row["cognitive_state"] == state for row in eligible_task_rows)
+            for state in state_distribution
+        },
         "state_breakdown_count": state_distribution,
         "state_breakdown_percent": {
             k: round((v / total_windows * 100), 1) if total_windows > 0 else 0.0
             for k, v in state_distribution.items()
         },
         "average_cognitive_load_score": round(
-            statistics.mean(r["cognitive_load_score"] for r in timeline), 1
-        ) if timeline else 0.0,
+            statistics.mean(r["cognitive_load_score"] for r in eligible_task_rows), 1
+        ) if eligible_task_rows else None,
         "timeline_file": str(output_csv.name)
     }
 
