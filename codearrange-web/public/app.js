@@ -2,7 +2,7 @@
   // ---- Start screen elements ----
   const startScreen = document.getElementById('start-screen');
   const playerNameDisplay = document.getElementById('player-name-display');
-  const puzzleSelect = document.getElementById('puzzle-select');
+  const setSelect = document.getElementById('set-select');
   const startBtn = document.getElementById('start-btn');
   const startError = document.getElementById('start-error');
 
@@ -31,6 +31,8 @@
   let currentPuzzleData = null; // full {id,title,type,description,lines} from the server for the attempt in progress
   let puzzleList = []; // full ordered list from /api/puzzles, used to find "the next puzzle"
   let playerName = ''; // set once from /api/config; the player can't change it
+  let activePuzzleSet = '';
+  let availablePuzzleSets = [];
   let timeLimitMinutes = null; // set once from /api/config if master_config.json contains the active set
   let showTimerUI = true; // whether the timer display is shown in the UI (default true, can be toggled in master_config.json)
   const puzzleSessionCache = new Map(); // caches per-puzzle DOM arrangement and state so participants can freely skip and return
@@ -130,6 +132,7 @@
       cacheObj[k] = v;
     }
     const state = {
+      puzzleSet: activePuzzleSet,
       puzzleId: currentPuzzleId,
       puzzleSessionCache: cacheObj,
       puzzle: currentPuzzleData,
@@ -183,6 +186,7 @@
     const res = await fetch('/api/config');
     const config = await res.json();
     playerName = config.playerName;
+    activePuzzleSet = config.puzzleSet || '';
     playerNameDisplay.textContent = playerName;
     reviewMode = Boolean(config.reviewMode);
     if (config.setConfig && config.setConfig.timeLimitMinutes) {
@@ -212,35 +216,28 @@
 
   async function loadPuzzleList() {
     const res = await fetch('/api/puzzles');
+    if (!res.ok) throw new Error('Gagal memuat daftar soal.');
     puzzleList = await res.json();
+    return puzzleList;
+  }
 
-    puzzleSelect.innerHTML = '';
-
-    // Group puzzles into <optgroup>s by their "type", preserving the order
-    // types first appear in (server sorts puzzles by filename) rather than
-    // alphabetizing, so puzzle authors control the order via filenames.
-    const groups = new Map();
-    for (const p of puzzleList) {
-      const type = p.type || 'uncategorized';
-      if (!groups.has(type)) groups.set(type, []);
-      groups.get(type).push(p);
+  async function loadPuzzleSets() {
+    const res = await fetch('/api/puzzle-sets');
+    if (!res.ok) throw new Error('Gagal memuat daftar set soal.');
+    availablePuzzleSets = await res.json();
+    setSelect.innerHTML = '';
+    for (const set of availablePuzzleSets) {
+      const option = document.createElement('option');
+      option.value = set.key;
+      option.textContent = set.label;
+      setSelect.appendChild(option);
     }
-
-    for (const [type, puzzlesOfType] of groups) {
-      const optgroup = document.createElement('optgroup');
-      optgroup.label = humanizeType(type);
-      for (const p of puzzlesOfType) {
-        const option = document.createElement('option');
-        option.value = p.id;
-        option.textContent = p.title;
-        optgroup.appendChild(option);
-      }
-      puzzleSelect.appendChild(optgroup);
+    if (activePuzzleSet && availablePuzzleSets.some((set) => set.key === activePuzzleSet)) {
+      setSelect.value = activePuzzleSet;
     }
-
-    if (puzzleList.length === 0) {
-      startError.textContent = 'Tidak ada soal ditemukan pada set soal ini.';
-      startBtn.disabled = true;
+    startBtn.disabled = availablePuzzleSets.length === 0;
+    if (availablePuzzleSets.length === 0) {
+      startError.textContent = 'Tidak ada set soal yang tersedia.';
     }
   }
 
@@ -447,32 +444,72 @@
     hideRatingDialog();
   }
 
+  async function selectPuzzleSet(setKey) {
+    const res = await fetch('/api/session/select-set', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ puzzleSet: setKey }),
+    });
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {}
+    if (!res.ok) throw new Error(data.error || 'Set soal tidak dapat dipilih.');
+
+    activePuzzleSet = data.puzzleSet;
+    const config = data.setConfig || {};
+    timeLimitMinutes = config.timeLimitMinutes ? Number(config.timeLimitMinutes) : null;
+    showTimerUI = config.showTimerUI === undefined ? true : isTimerUIVisible(config.showTimerUI);
+    applyTimerUIVisibility();
+    return data;
+  }
+
   startBtn.addEventListener('click', async () => {
-    if (!puzzleSelect.value) {
-      startError.textContent = 'Tidak ada soal yang tersedia untuk dimulai.';
+    if (!setSelect.value) {
+      startError.textContent = 'Tidak ada set soal yang tersedia untuk dimulai.';
       return;
     }
     startError.textContent = '';
 
-    // Starting fresh from the start screen resets any old session
     try {
-      await fetch('/api/session/reset', { method: 'POST' });
-    } catch (e) {}
+      await selectPuzzleSet(setSelect.value);
+    } catch (e) {
+      startError.textContent = e.message || 'Set soal tidak dapat dimuat.';
+      return;
+    }
+
+    // Selecting a set always discards the previous set's browser state,
+    // including when loading the new puzzle list subsequently fails.
     clearSavedState();
-    startTimeMs = Date.now();
+    stopTimer();
+    startTimeMs = null;
     sessionExpired = false;
     setCompleted = false;
+    currentPuzzleId = null;
+    currentPuzzleData = null;
     puzzleSessionCache.clear();
 
+    try {
+      await loadPuzzleList();
+    } catch (e) {
+      startError.textContent = e.message || 'Gagal memuat soal dari set tersebut.';
+      return;
+    }
+    if (puzzleList.length === 0) {
+      startError.textContent = 'Tidak ada soal ditemukan pada set soal ini.';
+      return;
+    }
+
+    // Starting from the home screen always creates a fresh set session.
     startScreen.classList.add('hidden');
     puzzleScreen.classList.remove('hidden');
     activePlayerLabel.textContent = `Peserta: ${playerName}`;
 
-    await beginAttempt(puzzleSelect.value);
+    await beginAttempt(puzzleList[0].id);
   });
 
-  // Allow pressing Enter in the puzzle picker to start.
-  puzzleSelect.addEventListener('keydown', (e) => {
+  // Allow pressing Enter in the set picker to start.
+  setSelect.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') startBtn.click();
   });
 
@@ -619,8 +656,6 @@
     activePuzzleTypeLabel.textContent =
       saved.puzzle && saved.puzzle.type && saved.puzzle.type !== 'uncategorized' ? humanizeType(saved.puzzle.type) : '';
     applyMode(saved.puzzle ? saved.puzzle.mode : 'arrange');
-    puzzleSelect.value = saved.puzzleId;
-
     if (saved.puzzle) {
       renderDescription(saved.puzzle.description);
       const cached = puzzleSessionCache.get(saved.puzzleId);
@@ -1156,7 +1191,6 @@
     if (prev) {
       saveCurrentPuzzleToCache();
       saveState();
-      puzzleSelect.value = prev.id; // keep the picker in sync
       beginAttempt(prev.id);
     }
   });
@@ -1178,7 +1212,6 @@
     if (next) {
       saveCurrentPuzzleToCache();
       saveState();
-      puzzleSelect.value = next.id; // keep the picker in sync for if the player returns to it later
       beginAttempt(next.id);
     } else {
       if (sessionExpired || setCompleted || areAllPuzzlesCompleted()) {
@@ -1215,8 +1248,14 @@
   // ---- Init ----
 
   async function init() {
-    await loadConfig();
-    await loadPuzzleList();
+    try {
+      await loadConfig();
+      await loadPuzzleSets();
+    } catch (e) {
+      startError.textContent = e.message || 'Gagal memuat konfigurasi aplikasi.';
+      startBtn.disabled = true;
+      return;
+    }
 
     const saved = loadSavedState();
 
@@ -1231,12 +1270,24 @@
       return; // start screen is already visible by default
     }
 
-    const savedPuzzleStillExists = saved && puzzleList.some((p) => p.id === saved.puzzleId);
-    if (savedPuzzleStillExists) {
-      resumeAttempt(saved);
+    if (saved && saved.puzzleSet === activePuzzleSet && startTimeMs) {
+      try {
+        await loadPuzzleList();
+      } catch (e) {
+        clearSavedState();
+        return;
+      }
+      const savedPuzzleStillExists = puzzleList.some((p) => p.id === saved.puzzleId);
+      if (savedPuzzleStillExists) {
+        resumeAttempt(saved);
+      } else {
+        // Stale state (e.g. the puzzle set changed since the last visit) --
+        // don't try to resume something that no longer exists.
+        clearSavedState();
+      }
     } else if (saved) {
-      // Stale state (e.g. the puzzle set changed since the last visit) --
-      // don't try to resume something that no longer exists.
+      // A state from another set, or a state whose server session no longer
+      // exists, must never resurrect old progress on the home screen.
       clearSavedState();
     }
   }

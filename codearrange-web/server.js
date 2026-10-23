@@ -51,7 +51,7 @@ if (!cliPlayerName || !cliPuzzleSubfolder) {
 const PLAYER_NAME = cliPlayerName;
 
 const PUZZLES_DIR = path.resolve(PUZZLES_ROOT, cliPuzzleSubfolder);
-const ACTIVE_PUZZLE_SET_KEY = path.relative(PUZZLES_ROOT, PUZZLES_DIR);
+const CLI_PUZZLE_SET_KEY = path.relative(PUZZLES_ROOT, PUZZLES_DIR) || '.';
 const isInsidePuzzlesRoot =
   PUZZLES_DIR === PUZZLES_ROOT || PUZZLES_DIR.startsWith(PUZZLES_ROOT + path.sep);
 if (!isInsidePuzzlesRoot) {
@@ -63,6 +63,11 @@ if (!fs.existsSync(PUZZLES_DIR) || !fs.statSync(PUZZLES_DIR).isDirectory()) {
   console.error(`Puzzle set folder not found: ${PUZZLES_DIR}`);
   process.exit(1);
 }
+
+// The command-line set is the initial set only. The browser may switch to
+// another direct child of puzzles/ through /api/session/select-set.
+let activePuzzleSetKey = CLI_PUZZLE_SET_KEY;
+let activePuzzlesDir = PUZZLES_DIR;
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -77,30 +82,82 @@ const MIME_TYPES = {
 // small JSON files, so this costs nothing) which means you can add or edit
 // files in puzzles/ without restarting the server.
 
-function loadAllPuzzles() {
+function loadAllPuzzles(puzzlesDir = activePuzzlesDir) {
   const files = fs
-    .readdirSync(PUZZLES_DIR)
+    .readdirSync(puzzlesDir)
     .filter((f) => f.endsWith('.json') && f !== 'master_config.json')
     .sort();
-  return files.map((f) => normalizePuzzle(JSON.parse(fs.readFileSync(path.join(PUZZLES_DIR, f), 'utf8'))));
+  return files.map((f) => normalizePuzzle(JSON.parse(fs.readFileSync(path.join(puzzlesDir, f), 'utf8'))));
 }
 
-function loadActiveSetConfig() {
+function readMasterConfig() {
   const masterConfigPath = path.join(PUZZLES_ROOT, 'master_config.json');
   if (!fs.existsSync(masterConfigPath)) return {};
   try {
-    const masterConfig = JSON.parse(fs.readFileSync(masterConfigPath, 'utf8'));
-    const globalConfig = (typeof masterConfig.global === 'object' && masterConfig.global !== null) ? masterConfig.global : {};
-    const setConfig = (typeof masterConfig[ACTIVE_PUZZLE_SET_KEY] === 'object' && masterConfig[ACTIVE_PUZZLE_SET_KEY] !== null) ? masterConfig[ACTIVE_PUZZLE_SET_KEY] : {};
-    const merged = { ...globalConfig, ...setConfig };
-    if (merged.showTimerUI === undefined && masterConfig.showTimerUI !== undefined) {
-      merged.showTimerUI = masterConfig.showTimerUI;
-    }
-    return merged;
+    return JSON.parse(fs.readFileSync(masterConfigPath, 'utf8'));
   } catch (e) {
     console.error('Failed to parse master_config.json:', e);
     return {};
   }
+}
+
+function loadActiveSetConfig(setKey = activePuzzleSetKey) {
+  const masterConfig = readMasterConfig();
+  const globalConfig = (typeof masterConfig.global === 'object' && masterConfig.global !== null) ? masterConfig.global : {};
+  const setConfig = (typeof masterConfig[setKey] === 'object' && masterConfig[setKey] !== null) ? masterConfig[setKey] : {};
+  const merged = { ...globalConfig, ...setConfig };
+  if (merged.showTimerUI === undefined && masterConfig.showTimerUI !== undefined) {
+    merged.showTimerUI = masterConfig.showTimerUI;
+  }
+  return merged;
+}
+
+function hasPuzzleFiles(puzzlesDir) {
+  return fs.readdirSync(puzzlesDir).some((file) => file.endsWith('.json') && file !== 'master_config.json');
+}
+
+function puzzleSetLabel(setKey) {
+  if (setKey === '.') return 'Root';
+  return setKey
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function discoverPuzzleSets() {
+  const masterConfig = readMasterConfig();
+  const configuredKeys = Object.keys(masterConfig).filter((key) => key !== 'global' && key !== 'showTimerUI');
+  const available = new Map();
+
+  for (const entry of fs.readdirSync(PUZZLES_ROOT, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const setKey = entry.name;
+    const puzzlesDir = path.join(PUZZLES_ROOT, setKey);
+    if (hasPuzzleFiles(puzzlesDir)) available.set(setKey, puzzlesDir);
+  }
+
+  const orderedKeys = [
+    ...configuredKeys.filter((key) => available.has(key)),
+    ...[...available.keys()].filter((key) => !configuredKeys.includes(key)).sort(),
+  ];
+  return orderedKeys.map((key) => ({
+    key,
+    label: puzzleSetLabel(key),
+    puzzleCount: loadAllPuzzles(available.get(key)).length,
+    setConfig: loadActiveSetConfig(key),
+  }));
+}
+
+function resolveSelectablePuzzleSet(setKey) {
+  if (typeof setKey !== 'string' || setKey.trim() === '' || setKey === '.' || setKey.includes('/') || setKey.includes('\\') || setKey === '..' || setKey.includes('..')) {
+    return null;
+  }
+  const puzzlesDir = path.resolve(PUZZLES_ROOT, setKey);
+  if (path.dirname(puzzlesDir) !== path.resolve(PUZZLES_ROOT)) return null;
+  if (!fs.readdirSync(PUZZLES_ROOT).includes(setKey)) return null;
+  if (!fs.existsSync(puzzlesDir) || !fs.statSync(puzzlesDir).isDirectory() || !hasPuzzleFiles(puzzlesDir)) return null;
+  return { key: setKey, dir: puzzlesDir };
 }
 
 function getActiveSetTimeLimitMs() {
@@ -303,12 +360,15 @@ const LOG_DIR = path.join(__dirname, 'logs');
 const LOG_FILE = path.join(LOG_DIR, 'attempts.csv');
 const LOG_LOCK_FILE = path.join(LOG_DIR, 'attempts.csv.lock');
 const LOG_BACKUP_DIR = path.join(LOG_DIR, 'legacy-backup');
-const sanitizedSetName = (cliPuzzleSubfolder === '.' ? 'root' : cliPuzzleSubfolder || 'default').replace(/[\\/:*?"<>|]/g, '_');
-const SET_LOG_FILE = path.join(LOG_DIR, `${sanitizedSetName}.csv`);
-// The files an attempt is written to / a rating is updated in. De-duplicated
-// in case the active set's log name happens to collide with attempts.csv.
-const ACTIVE_LOG_FILES = [...new Set([LOG_FILE, SET_LOG_FILE])];
 fs.mkdirSync(LOG_DIR, { recursive: true }); // safe to call from multiple processes at once (mkdir -p semantics)
+
+function getActiveLogFiles() {
+  const sanitizedSetName = (activePuzzleSetKey === '.' ? 'root' : activePuzzleSetKey || 'default').replace(/[\\/:*?"<>|]/g, '_');
+  const setLogFile = path.join(LOG_DIR, `${sanitizedSetName}.csv`);
+  // The files an attempt is written to / a rating is updated in. De-duplicated
+  // in case the active set's log name happens to collide with attempts.csv.
+  return [...new Set([LOG_FILE, setLogFile])];
+}
 
 const LOG_COLUMNS = [
   'timestamp',
@@ -593,7 +653,7 @@ function logAttempt({ name, puzzleSet, puzzleId, puzzleTitle, timeSeconds, submi
       '-',
     ]);
     // Write the identical row to both the master attempts log and the set-specific log
-    for (const file of ACTIVE_LOG_FILES) {
+    for (const file of getActiveLogFiles()) {
       ensureLogFile(file);
       fs.appendFileSync(file, row);
     }
@@ -609,7 +669,7 @@ function logAttempt({ name, puzzleSet, puzzleId, puzzleTitle, timeSeconds, submi
 function updateAttemptRating(attemptId, rating) {
   return withLogLock(() => {
     let updatedAny = false;
-    for (const file of ACTIVE_LOG_FILES) {
+    for (const file of getActiveLogFiles()) {
       if (!fs.existsSync(file)) continue;
       const content = fs.readFileSync(file, 'utf8');
       const lines = content.split('\n');
@@ -694,12 +754,43 @@ const server = http.createServer(async (req, res) => {
   const pathname = decodeURIComponent(url.pathname);
 
   try {
+    // GET /api/puzzle-sets -> available direct puzzle-set folders
+    if (req.method === 'GET' && pathname === '/api/puzzle-sets') {
+      return sendJson(res, 200, discoverPuzzleSets());
+    }
+
+    // POST /api/session/select-set -> switch sets from the home screen
+    if (req.method === 'POST' && pathname === '/api/session/select-set') {
+      if (sessionPausedAtMs !== null) {
+        return sendJson(res, 409, { error: 'Tidak dapat mengganti set saat dialog rating masih aktif.' });
+      }
+      let body;
+      try {
+        body = await readJsonBody(req);
+      } catch (e) {
+        return sendJson(res, 400, { error: 'Invalid JSON body' });
+      }
+      const selected = resolveSelectablePuzzleSet(body.puzzleSet);
+      if (!selected) {
+        return sendJson(res, 400, { error: 'Puzzle set tidak valid.' });
+      }
+      activePuzzleSetKey = selected.key;
+      activePuzzlesDir = selected.dir;
+      resetSession();
+      return sendJson(res, 200, {
+        ok: true,
+        puzzleSet: activePuzzleSetKey,
+        setConfig: loadActiveSetConfig(),
+        puzzleCount: loadAllPuzzles().length,
+      });
+    }
+
     // GET /api/config  -> the locked player name, active puzzle set, review mode, and session state
     if (req.method === 'GET' && pathname === '/api/config') {
       const setConfig = loadActiveSetConfig();
       return sendJson(res, 200, {
         playerName: PLAYER_NAME,
-        puzzleSet: cliPuzzleSubfolder,
+        puzzleSet: activePuzzleSetKey,
         setConfig,
         reviewMode: REVIEW_MODE,
         sessionStartedAtMs,
@@ -757,7 +848,7 @@ const server = http.createServer(async (req, res) => {
       try {
         const attemptId = logAttempt({
           name: PLAYER_NAME,
-          puzzleSet: cliPuzzleSubfolder,
+          puzzleSet: activePuzzleSetKey,
           puzzleId: puzzle.id,
           puzzleTitle: puzzle.title,
           timeSeconds,
@@ -855,6 +946,6 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`Code Arrange running at http://localhost:${PORT}`);
   console.log(`  Player:      ${PLAYER_NAME}`);
-  console.log(`  Puzzle set:  ${cliPuzzleSubfolder} (${PUZZLES_DIR})`);
+  console.log(`  Initial puzzle set: ${activePuzzleSetKey} (${activePuzzlesDir})`);
   console.log(`  Review mode: ${REVIEW_MODE ? 'on' : 'off'}`);
 });

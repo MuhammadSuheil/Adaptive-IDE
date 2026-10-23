@@ -169,6 +169,16 @@ When started with `--review`, a dialog prompts the participant to rate each puzz
 
 ## API
 
+The set argument in the start command is the initial selection. The home
+screen uses these additional endpoints to discover and switch sets without a
+server restart:
+
+- `GET /api/puzzle-sets` lists each direct puzzle subfolder containing JSON,
+  ordered by `master_config.json` and then alphabetically.
+- `POST /api/session/select-set` with `{ "puzzleSet": "medium" }` selects a
+  valid set and resets its timer and browser session. It is rejected while a
+  review rating dialog is active.
+
 | Method | Path | Description |
 |---|---|---|
 | GET | `/api/config` | `{ playerName, puzzleSet, setConfig, reviewMode, sessionStartedAtMs, sessionDeadlineMs, sessionPausedAtMs }` — locked server configuration and exam session state. |
@@ -434,7 +444,7 @@ logs/<set-name>.csv     set-specific attempt log (e.g. logs/exam-set-a.csv)
 public/
   index.html
   styles.css
-  app.js                start screen (locked name + puzzle picker), timer, drag-and-drop, finish/try-again flow
+  app.js                start screen (locked name + set picker), timer, drag-and-drop, finish/try-again flow
 ```
 
 ## Ideas for extending it
@@ -445,3 +455,11 @@ public/
 - Score indentation, not just line order.
 - Deploy behind a real process manager (pm2, systemd) or containerize
   with a `Dockerfile` for production use.
+
+## Switching puzzle sets
+
+The set argument in the start command selects the initial set only. The home
+screen lists every direct subfolder under `puzzles/` that contains JSON puzzle
+files. Selecting another set resets the timer and browser progress for a new
+independent session; previously recorded attempts remain in the master log and
+in the log for the set where they occurred.
