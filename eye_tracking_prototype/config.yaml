@@ -110,7 +110,7 @@ metrics:
   transition_window_sec: 5.0 # rolling window for gaze transition rate
 
 eye_state:
-  fixation_radius_px: 30.0
+  fixation_radius_px: 50.0
   fixation_frames: 6
 
 # ─────────────────────────────────────────────

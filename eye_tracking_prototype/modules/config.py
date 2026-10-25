@@ -174,7 +174,7 @@ class Config:
         self.max_ear = eye_validity.get('max_ear', 0.65)
 
         eye_state_cfg = self.data.get('eye_state', {})
-        self.eye_state_fixation_radius_px = float(eye_state_cfg.get('fixation_radius_px', 30.0))
+        self.eye_state_fixation_radius_px = float(eye_state_cfg.get('fixation_radius_px', 50.0))
         self.eye_state_fixation_frames = int(eye_state_cfg.get('fixation_frames', 6))
         if self.eye_state_fixation_radius_px <= 0 or self.eye_state_fixation_frames < 1:
             raise ValueError("eye_state fixation radius must be positive and frames must be at least 1")
