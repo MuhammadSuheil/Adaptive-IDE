@@ -5,13 +5,17 @@ from collections import deque
 
 
 class EyeStateClassifier:
-    """Classify valid smoothed gaze samples using dispersion and jump distance."""
+    """Classify valid smoothed gaze as fixation, saccade, or transition.
+
+    Unclassified is reserved for invalid samples and the initial fixation window.
+    """
 
     FIXATION = "Fixation"
     SACCADE = "Saccade"
+    TRANSITION = "Transition"
     UNCLASSIFIED = "Unclassified"
 
-    def __init__(self, fixation_radius_px=15.0, fixation_frames=6, saccade_threshold_px=80.0):
+    def __init__(self, fixation_radius_px=50.0, fixation_frames=6, saccade_threshold_px=80.0):
         self.fixation_radius_px = float(fixation_radius_px)
         self.fixation_frames = int(fixation_frames)
         self.saccade_threshold_px = float(saccade_threshold_px)
@@ -53,4 +57,6 @@ class EyeStateClassifier:
             math.hypot(x - centroid_x, y - centroid_y)
             for x, y in self._points
         )
-        return self.FIXATION if max_radius <= self.fixation_radius_px else self.UNCLASSIFIED
+        if max_radius <= self.fixation_radius_px:
+            return self.FIXATION
+        return self.TRANSITION
