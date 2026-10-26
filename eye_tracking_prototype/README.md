@@ -14,6 +14,10 @@ resolution to avoid display scaling affecting target positions. Restart the
 application and recalibrate after changing them. Custom config files must also
 include this section. Automatic screen-size detection is no longer used.
 
+At startup, a fullscreen preparation window shows the live camera preview and
+**Press Q to Enter**. Adjust your position, then press `q` to start the calibration
+sequence. Closing the window or pressing `Esc` cancels startup.
+
 The head alignment step displays a live camera preview with a circle centered on
 the screen. Forehead, chin and cheek landmarks must fit and fill that circle,
 with the face centered and upright. A continuous five-second green countdown

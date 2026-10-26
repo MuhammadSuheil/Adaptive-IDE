@@ -24,6 +24,37 @@ class EyeIntegrationTests(unittest.TestCase):
         finally:
             sys.path.remove(str(EYE_ROOT))
 
+    def test_camera_preparation_waits_for_q_in_fullscreen(self):
+        app = self.eye.EyeTrackerApp.__new__(self.eye.EyeTrackerApp)
+        app.cfg = Mock(display_refresh_fps=15)
+        app.exit_requested = False
+        app.stream = None
+        app.screen_w, app.screen_h = 1280, 720
+        app.read_frame = Mock(return_value=(True, self.eye.np.zeros((480, 640, 3), dtype='uint8')))
+        with patch.object(self.eye.cv2, 'namedWindow'), \
+             patch.object(self.eye.cv2, 'setWindowProperty') as window_property, \
+             patch.object(self.eye.cv2, 'imshow') as show, \
+             patch.object(self.eye.cv2, 'getWindowProperty', return_value=1), \
+             patch.object(self.eye.cv2, 'destroyWindow') as destroy, \
+             patch.object(self.eye.cv2, 'waitKey') as wait:
+            wait.side_effect = [-1, ord('q')]
+            self.assertTrue(app.run_camera_preparation())
+            self.assertEqual(show.call_count, 2)
+            self.assertEqual(show.call_args.args[1].shape, (720, 1280, 3))
+            window_property.assert_called_once_with('Persiapan Kalibrasi',
+                self.eye.cv2.WND_PROP_FULLSCREEN, self.eye.cv2.WINDOW_FULLSCREEN)
+            destroy.assert_called_once_with('Persiapan Kalibrasi')
+        self.assertFalse(app.exit_requested)
+
+    def test_cancelled_camera_preparation_does_not_start_calibration(self):
+        app = self.eye.EyeTrackerApp.__new__(self.eye.EyeTrackerApp)
+        app.run_camera_preparation = Mock(return_value=False)
+        app.calibrate_until_ready = Mock()
+        app.cleanup = Mock()
+        app.run()
+        app.calibrate_until_ready.assert_not_called()
+        app.cleanup.assert_called_once()
+
     def test_launcher_arguments_create_shared_csv(self):
         with tempfile.TemporaryDirectory() as directory:
             session = Path(directory) / 'shared'

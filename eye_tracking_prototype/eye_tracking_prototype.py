@@ -396,6 +396,61 @@ class EyeTrackerApp:
     # ─────────────────────────────────────────────
     # Phase 0: Head Positioning & Alignment Gate
     # ─────────────────────────────────────────────
+    def run_camera_preparation(self):
+        """Show an unannotated camera preview until the user starts calibration."""
+        window = "Persiapan Kalibrasi"
+        width, preview_height = self.screen_w, self.screen_h
+        frame_ready = False
+        cv2.namedWindow(window, cv2.WINDOW_NORMAL)
+        cv2.setWindowProperty(window, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        delay = max(1, round(1000 / max(float(self.cfg.display_refresh_fps), 1)))
+        try:
+            while not self.exit_requested:
+                ret, frame = self.read_frame()
+                frame_ready = ret and frame is not None
+                canvas = np.zeros((preview_height, width, 3), dtype=np.uint8)
+                if frame_ready:
+                    height, frame_width = frame.shape[:2]
+                    scale = min(width / frame_width, preview_height / height)
+                    resized = cv2.resize(frame, (max(1, round(frame_width * scale)),
+                                                 max(1, round(height * scale))))
+                    h, w = resized.shape[:2]
+                    x, y = (width - w) // 2, (preview_height - h) // 2
+                    canvas[y:y + h, x:x + w] = resized
+                else:
+                    cv2.putText(canvas, "Menunggu kamera...", (160, 240),
+                                cv2.FONT_HERSHEY_SIMPLEX, .8, (200, 200, 200), 2)
+                    if self.stream is not None and self.stream.stopped:
+                        print(f"[EyeTrack] Camera unavailable: {self.stream.error}")
+                        self.exit_requested = True
+                        return False
+                font_scale = max(.5, min(width / 900, preview_height / 600))
+                thickness = max(1, round(font_scale * 2))
+                prompt = "Press Q to Enter"
+                (text_width, text_height), baseline = cv2.getTextSize(
+                    prompt, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness)
+                margin = max(10, round(preview_height * .03))
+                text_x = max(0, (width - text_width) // 2)
+                text_y = preview_height - margin - baseline
+                cv2.rectangle(canvas, (0, max(0, text_y - text_height - margin)),
+                              (width, preview_height), (25, 25, 25), -1)
+                color = (255, 255, 255) if frame_ready else (130, 130, 130)
+                cv2.putText(canvas, prompt, (text_x, text_y),
+                            cv2.FONT_HERSHEY_SIMPLEX, font_scale, color, thickness, cv2.LINE_AA)
+                cv2.imshow(window, canvas)
+                key = cv2.waitKey(delay) & 0xFF
+                if key == 27 or cv2.getWindowProperty(window, cv2.WND_PROP_VISIBLE) < 1:
+                    self.exit_requested = True
+                    return False
+                if key in (ord('q'), ord('Q')) and frame_ready:
+                    return True
+            return False
+        finally:
+            try:
+                cv2.destroyWindow(window)
+            except cv2.error:
+                pass
+
     def run_head_positioning_gate(self):
         if not self.cfg.hp_enabled:
             return True
@@ -1843,6 +1898,9 @@ class EyeTrackerApp:
                         (20, frame.shape[0] - 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
 
     def run(self):
+        if not self.run_camera_preparation():
+            self.cleanup()
+            return
         if not self.calibrate_until_ready():
             self.cleanup()
             return
