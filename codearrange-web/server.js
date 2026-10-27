@@ -467,6 +467,35 @@ function writeResearchEvent({ eventType, eventTimeMs = Date.now(), puzzleSet = a
 let sessionStartedAtMs = null;
 let sessionDeadlineMs = null;
 let sessionPausedAtMs = null;
+let setSessionId = crypto.randomUUID();
+let setSessionStatus = 'idle';
+let pendingReviewAttemptId = null;
+const endedSetSessions = new Map();
+
+function sessionState() {
+  return { setSessionId, setSessionStatus };
+}
+
+function wrongSetSession(id) {
+  return id !== undefined && id !== setSessionId;
+}
+
+function closeActiveSet(outcome, puzzleId = '') {
+  if (endedSetSessions.has(setSessionId)) return endedSetSessions.get(setSessionId);
+  const endedAtMs = Date.now();
+  if (linkedResearchSessionId && researchSetOpen) {
+    const puzzle = puzzleId ? findPuzzleById(puzzleId) : null;
+    writeResearchEvent({ eventType: 'set_ended', eventTimeMs: endedAtMs, outcome,
+      puzzleId: puzzle ? puzzle.id : '', puzzleTitle: puzzle ? puzzle.title : '' });
+  }
+  // Commit lifecycle state only after the event append succeeds.
+  researchSetOpen = false;
+  setSessionStatus = 'ended';
+  resetSession();
+  const result = { ok: true, ...sessionState(), outcome, endedAtMs };
+  endedSetSessions.set(setSessionId, result);
+  return result;
+}
 
 function resetSession() {
   sessionStartedAtMs = null;
@@ -855,6 +884,9 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 400, { error: 'JSON sesi penelitian tidak valid.' });
       }
       const sessionId = typeof body.sessionId === 'string' ? body.sessionId.trim() : '';
+      if (setSessionStatus === 'active') {
+        return sendJson(res, 409, { error: 'Sesi sensor tidak dapat diganti saat set sedang berjalan.' });
+      }
       if (!sessionId) return sendJson(res, 400, { error: 'Masukkan ID sesi sensor terlebih dahulu.' });
       if (!researchSessionDirectory(sessionId)) {
         return sendJson(res, 404, { error: 'Folder sesi sensor tidak ditemukan. Periksa ID dan folder sesi.' });
@@ -883,6 +915,9 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 400, { error: 'JSON event penelitian tidak valid.' });
       }
       const eventType = body.eventType;
+      if (wrongSetSession(body.setSessionId)) {
+        return sendJson(res, 409, { error: 'Event berasal dari sesi set yang sudah berganti.' });
+      }
       if (!['set_started', 'puzzle_started', 'rating_started', 'rating_ended', 'set_ended', 'study_ended'].includes(eventType)) {
         return sendJson(res, 400, { error: 'Jenis event penelitian tidak dikenal.' });
       }
@@ -890,7 +925,7 @@ const server = http.createServer(async (req, res) => {
       if (eventType === 'set_started' && researchSetOpen) {
         return sendJson(res, 409, { error: 'Set sebelumnya belum ditutup.' });
       }
-      if (eventType === 'study_ended' && researchSetOpen) {
+      if (eventType === 'study_ended' && (researchSetOpen || setSessionStatus === 'active')) {
         return sendJson(res, 409, { error: 'Tutup set aktif sebelum mengakhiri penelitian.' });
       }
       if (researchStudyEnded) {
@@ -899,8 +934,15 @@ const server = http.createServer(async (req, res) => {
       if (eventType === 'puzzle_started' && !researchSetOpen) {
         return sendJson(res, 409, { error: 'Set soal belum ditandai mulai.' });
       }
-      if (eventType === 'set_ended' && !researchSetOpen) {
-        return sendJson(res, 200, { ok: true, sessionId: linkedResearchSessionId });
+      if (eventType === 'set_ended') {
+        try {
+          return sendJson(res, 200, closeActiveSet(String(body.outcome || 'interrupted')));
+        } catch (error) {
+          return sendJson(res, 500, { error: `Event penelitian gagal disimpan: ${error.message}` });
+        }
+      }
+      if (['set_started', 'puzzle_started'].includes(eventType) && setSessionStatus === 'ended') {
+        return sendJson(res, 409, { error: 'Set sudah ditutup. Pilih set baru dari menu awal.' });
       }
       let puzzle = null;
       if (eventType === 'puzzle_started') {
@@ -925,6 +967,37 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, { ok: true, sessionId: linkedResearchSessionId });
     }
 
+    // Close a set without grading its unfinished draft. Retries target one generation.
+    if (req.method === 'POST' && pathname === '/api/session/end-set') {
+      let body;
+      try { body = await readJsonBody(req); }
+      catch { return sendJson(res, 400, { error: 'JSON penutupan set tidak valid.' }); }
+      if (!body || typeof body !== 'object' || typeof body.setSessionId !== 'string' || !body.setSessionId) {
+        return sendJson(res, 400, { error: 'ID sesi set wajib disertakan.' });
+      }
+      if (endedSetSessions.has(body.setSessionId)) {
+        return sendJson(res, 200, endedSetSessions.get(body.setSessionId));
+      }
+      if (wrongSetSession(body.setSessionId) || setSessionStatus !== 'active') {
+        return sendJson(res, 409, { error: 'Tidak ada sesi set aktif yang cocok.' });
+      }
+      const outcome = body.outcome || 'stopped_manually';
+      if (!['stopped_manually', 'completed', 'timed_out', 'interrupted'].includes(outcome)) {
+        return sendJson(res, 400, { error: 'Alasan penutupan set tidak valid.' });
+      }
+      if (outcome === 'stopped_manually' && (sessionPausedAtMs !== null || pendingReviewAttemptId !== null)) {
+        return sendJson(res, 409, { error: 'Selesaikan rating sebelum mengakhiri set.' });
+      }
+      if (body.puzzleId && !findPuzzleById(String(body.puzzleId))) {
+        return sendJson(res, 400, { error: 'Soal tidak termasuk set aktif.' });
+      }
+      try {
+        return sendJson(res, 200, closeActiveSet(outcome, String(body.puzzleId || '')));
+      } catch (error) {
+        return sendJson(res, 500, { error: `Penanda akhir set gagal disimpan: ${error.message}` });
+      }
+    }
+
     // POST /api/session/select-set -> switch sets from the home screen
     if (req.method === 'POST' && pathname === '/api/session/select-set') {
       if (researchSetOpen) {
@@ -939,6 +1012,12 @@ const server = http.createServer(async (req, res) => {
       } catch (e) {
         return sendJson(res, 400, { error: 'Invalid JSON body' });
       }
+      if (setSessionStatus === 'active' || researchSetOpen || pendingReviewAttemptId !== null) {
+        return sendJson(res, 409, { error: 'Akhiri set dan selesaikan rating sebelum memilih set lain.' });
+      }
+      if (researchStudyEnded) {
+        return sendJson(res, 409, { error: 'Sesi penelitian sudah diakhiri. Hubungkan sesi sensor baru terlebih dahulu.' });
+      }
       const selected = resolveSelectablePuzzleSet(body.puzzleSet);
       if (!selected) {
         return sendJson(res, 400, { error: 'Puzzle set tidak valid.' });
@@ -946,8 +1025,11 @@ const server = http.createServer(async (req, res) => {
       activePuzzleSetKey = selected.key;
       activePuzzlesDir = selected.dir;
       resetSession();
+      setSessionId = crypto.randomUUID();
+      setSessionStatus = 'idle';
       return sendJson(res, 200, {
         ok: true,
+        ...sessionState(),
         puzzleSet: activePuzzleSetKey,
         setConfig: loadActiveSetConfig(),
         puzzleCount: loadAllPuzzles().length,
@@ -968,11 +1050,16 @@ const server = http.createServer(async (req, res) => {
         researchSessionId: linkedResearchSessionId,
         researchStudyEnded,
         researchSetOpen,
+        pendingReviewAttemptId,
+        ...sessionState(),
       });
     }
 
     // POST /api/session/reset  -> reset the active session timer (e.g. going back to start)
     if (req.method === 'POST' && pathname === '/api/session/reset') {
+      if (setSessionStatus === 'active' || researchSetOpen) {
+        return sendJson(res, 409, { error: 'Set aktif harus ditutup melalui Akhiri set.' });
+      }
       resetSession();
       return sendJson(res, 200, { ok: true });
     }
@@ -986,14 +1073,17 @@ const server = http.createServer(async (req, res) => {
     // POST /api/puzzles/:id/check  -> grade a submitted line order
     let match = pathname.match(/^\/api\/puzzles\/([^/]+)\/check$/);
     if (req.method === 'POST' && match) {
-      const puzzle = findPuzzleById(match[1]);
-      if (!puzzle) return sendJson(res, 404, { error: 'Puzzle not found' });
       let body;
       try {
         body = await readJsonBody(req);
       } catch (e) {
         return sendJson(res, 400, { error: 'Invalid JSON body' });
       }
+      if (wrongSetSession(body.setSessionId) || setSessionStatus !== 'active' || researchStudyEnded) {
+        return sendJson(res, 409, { error: 'Sesi set tidak aktif. Pilih set baru dari menu awal.' });
+      }
+      const puzzle = findPuzzleById(match[1]);
+      if (!puzzle) return sendJson(res, 404, { error: 'Puzzle not found' });
       // A check arriving while the clock is still frozen (e.g. the rating
       // request never got through) means the player has moved on: unfreeze
       // before measuring elapsed time, so it excludes the frozen period.
@@ -1037,6 +1127,7 @@ const server = http.createServer(async (req, res) => {
         // rating endpoint directly (that endpoint also checks REVIEW_MODE).
         if (REVIEW_MODE) {
           result.attemptId = attemptId;
+          if (result.correct || isTimeout) pendingReviewAttemptId = attemptId;
           // The rating dialog is about to open on the client: freeze the
           // exam clock while it is. Only pause when the dialog will actually
           // appear — i.e. correct answer or timeout. Wrong-answer submissions
@@ -1067,22 +1158,29 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 400, { error: 'Invalid JSON body' });
       }
       const rating = Number(body.rating);
+      if (wrongSetSession(body.setSessionId)) {
+        return sendJson(res, 409, { error: 'Rating berasal dari sesi set yang sudah berganti.' });
+      }
       if (!Number.isInteger(rating) || rating < 1 || rating > 10) {
         return sendJson(res, 400, { error: 'rating must be an integer from 1 to 10' });
       }
-      // The dialog is closing either way, so unfreeze the clock first and hand
-      // the (possibly shifted) session start back so the client can resync.
-      resumeSession(Date.now());
+      // A failed write leaves the dialog open for retry and the exam paused.
       const updated = updateAttemptRating(match[1], rating);
       if (!updated) {
         return sendJson(res, 404, { error: 'Attempt not found.', sessionStartedAtMs, sessionDeadlineMs });
       }
+      resumeSession(Date.now());
+      if (pendingReviewAttemptId === match[1]) pendingReviewAttemptId = null;
       return sendJson(res, 200, { ok: true, sessionStartedAtMs, sessionDeadlineMs });
     }
 
     // GET /api/puzzles/:id  -> puzzle detail (solution stripped, lines shuffled)
     match = pathname.match(/^\/api\/puzzles\/([^/]+)$/);
     if (req.method === 'GET' && match) {
+      const requestedSession = url.searchParams.get('setSessionId');
+      if ((requestedSession !== null && wrongSetSession(requestedSession)) || setSessionStatus === 'ended' || researchStudyEnded) {
+        return sendJson(res, 409, { error: 'Set sudah ditutup atau berganti. Pilih set dari menu awal.' });
+      }
       const puzzle = findPuzzleById(match[1]);
       if (!puzzle) return sendJson(res, 404, { error: 'Puzzle not found' });
       // Loading a puzzle means the player moved on from any rating dialog.
@@ -1093,7 +1191,8 @@ const server = http.createServer(async (req, res) => {
         sessionStartedAtMs = Date.now();
         sessionDeadlineMs = timeLimitMs === null ? null : sessionStartedAtMs + timeLimitMs;
       }
-      return sendJson(res, 200, toClientPuzzle(puzzle));
+      setSessionStatus = 'active';
+      return sendJson(res, 200, { ...toClientPuzzle(puzzle), ...sessionState() });
     }
 
     // Static files (index.html, styles.css, app.js, ...)

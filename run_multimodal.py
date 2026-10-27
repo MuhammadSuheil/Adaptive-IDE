@@ -49,7 +49,8 @@ def setup_session_directory(output_root: Path, participant: str, task: str) -> P
             session_dir = output_root / f"{session_name}_{suffix}"
 
 
-def print_banner(session_dir: Path, participant: str, task: str, duration: float | None, mock_hrv: bool = False):
+def print_banner(session_dir: Path, participant: str, task: str, duration: float | None,
+                 mock_hrv: bool = False, skip_eye: bool = False, skip_hrv: bool = False):
     print("=" * 65)
     print("      ADAPTIVE IDE — MULTIMODAL COGNITIVE LOAD SUITE")
     print("=" * 65)
@@ -65,9 +66,17 @@ def print_banner(session_dir: Path, participant: str, task: str, duration: float
         print("  1. Simulator sensor HRV aktif (tidak memerlukan armband fisik).")
     else:
         print("  1. Pastikan sensor detak jantung (HW9) terpasang.")
-    print("  2. Kalibrasi mata dan baseline HRV berjalan bersamaan. Kurangi gerakan tubuh.")
-    print("  3. Setelah mata selesai, layar HRV menampilkan sisa baseline jika belum siap.")
-    print("  4. Pengerjaan Tugas: Mulai ngoding.")
+    if skip_eye:
+        print("  2. Mode HRV saja: baseline otomatis dimulai setelah sensor tersambung.")
+        print("  3. Pengerjaan tugas dimulai setelah baseline HRV siap.")
+    elif skip_hrv:
+        print("  2. Mode eye saja: atur posisi pada preview, lalu tekan Q untuk kalibrasi mata.")
+        print("  3. Pengerjaan tugas dimulai setelah kalibrasi mata siap.")
+    else:
+        print("  2. HW9 tersambung saat startup; baseline belum berjalan selama preview kamera.")
+        print("  3. Setelah kamera dan aliran RR siap, tekan Q pada preview untuk mulai kedua kalibrasi.")
+        print("  4. Jika kalibrasi mata diulang, baseline HRV tetap berjalan tanpa reset.")
+        print("  5. Pengerjaan tugas dimulai setelah kedua kalibrasi siap.")
     print("  Tekan Ctrl+C kapan saja untuk mengakhiri sesi lebih awal.")
     print("=" * 65 + "\n")
 
@@ -131,7 +140,8 @@ def main(argv=None):
     except OSError as error:
         print(f"[Orchestrator] Gagal membuat folder sesi: {error}", file=sys.stderr)
         return 1
-    print_banner(session_dir, args.participant, args.task, args.duration, mock_hrv=args.mock_hrv)
+    print_banner(session_dir, args.participant, args.task, args.duration, mock_hrv=args.mock_hrv,
+                 skip_eye=args.skip_eye, skip_hrv=args.skip_hrv)
 
     processes = []
     python_bin = sys.executable

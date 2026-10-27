@@ -12,6 +12,12 @@ ROOT = Path(__file__).resolve().parents[1]
 EYE_ROOT = ROOT / 'eye_tracking_prototype'
 
 
+def close_eye_files(app):
+    app.csv_file.close()
+    if app.compact_csv_file is not None:
+        app.compact_csv_file.close()
+
+
 class EyeIntegrationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -55,6 +61,72 @@ class EyeIntegrationTests(unittest.TestCase):
         app.calibrate_until_ready.assert_not_called()
         app.cleanup.assert_called_once()
 
+    def test_preview_q_waits_for_rr_and_writes_shared_start(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = self.eye.EyeTrackerApp.__new__(self.eye.EyeTrackerApp)
+            app.cfg = Mock(display_refresh_fps=15)
+            app.session_dir = directory
+            app.wait_for_hrv = True
+            app.exit_requested = False
+            app.stream = None
+            app.screen_w, app.screen_h = 1280, 720
+            app.read_frame = Mock(return_value=(True, self.eye.np.zeros((480, 640, 3), dtype='uint8')))
+            status = Path(directory) / 'hrv_calib_status.json'
+            marker = Path(directory) / 'calibration_start.json'
+            status.write_text(json.dumps({'phase': 'waiting_for_start', 'start_ready': False}))
+            calls = []
+
+            def key(_delay):
+                calls.append(1)
+                if len(calls) == 1:
+                    return ord('q')
+                self.assertFalse(marker.exists())
+                status.write_text(json.dumps({'phase': 'waiting_for_start', 'start_ready': True}))
+                return ord('q') if len(calls) == 3 else -1
+
+            with patch.object(self.eye.cv2, 'namedWindow'), \
+                 patch.object(self.eye.cv2, 'setWindowProperty'), \
+                 patch.object(self.eye.cv2, 'imshow'), \
+                 patch.object(self.eye.cv2, 'getWindowProperty', return_value=1), \
+                 patch.object(self.eye.cv2, 'destroyWindow'), \
+                 patch.object(self.eye.cv2, 'waitKey', side_effect=key):
+                self.assertTrue(app.run_camera_preparation())
+            self.assertEqual(len(calls), 3)
+            data = json.loads(marker.read_text())
+            self.assertEqual(data['started_at_utc'], app.calibration_started_at.isoformat())
+
+    def test_failed_start_marker_keeps_preview_open_for_retry(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = self.eye.EyeTrackerApp.__new__(self.eye.EyeTrackerApp)
+            app.cfg = Mock(display_refresh_fps=15)
+            app.session_dir = directory
+            app.wait_for_hrv = True
+            app.exit_requested = False
+            app.stream = None
+            app.screen_w, app.screen_h = 1280, 720
+            app.read_frame = Mock(return_value=(True, self.eye.np.zeros((480, 640, 3), dtype='uint8')))
+            (Path(directory) / 'hrv_calib_status.json').write_text(json.dumps(
+                {'phase': 'waiting_for_start', 'start_ready': True}))
+            original = Path.replace
+            attempts = []
+
+            def replace(path, target):
+                attempts.append(1)
+                if len(attempts) == 1:
+                    raise PermissionError('test write failure')
+                return original(path, target)
+
+            with patch.object(self.eye.cv2, 'namedWindow'), \
+                 patch.object(self.eye.cv2, 'setWindowProperty'), \
+                 patch.object(self.eye.cv2, 'imshow') as show, \
+                 patch.object(self.eye.cv2, 'getWindowProperty', return_value=1), \
+                 patch.object(self.eye.cv2, 'destroyWindow'), \
+                 patch.object(self.eye.cv2, 'waitKey', side_effect=[ord('q'), ord('q')]), \
+                 patch.object(Path, 'replace', replace):
+                self.assertTrue(app.run_camera_preparation())
+                self.assertEqual(show.call_count, 2)
+            self.assertTrue((Path(directory) / 'calibration_start.json').is_file())
+
     def test_launcher_arguments_create_shared_csv(self):
         with tempfile.TemporaryDirectory() as directory:
             session = Path(directory) / 'shared'
@@ -63,7 +135,7 @@ class EyeIntegrationTests(unittest.TestCase):
             def fake_run(app):
                 apps.append(app)
                 app.csv_file.flush()
-                app.csv_file.close()
+                close_eye_files(app)
 
             with patch.object(self.eye, 'WebcamStream'), \
                  patch.object(self.eye.vision.FaceLandmarker, 'create_from_options'), \
@@ -106,7 +178,7 @@ class EyeIntegrationTests(unittest.TestCase):
                     self.assertEqual(row['iris_valid'], 'False')
                     self.assertEqual(row['capture_frame_id'], '100')
                 finally:
-                    app.csv_file.close()
+                    close_eye_files(app)
 
     def test_standalone_keeps_original_filenames(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -121,7 +193,7 @@ class EyeIntegrationTests(unittest.TestCase):
                 self.assertTrue(Path(app.csv_path).name.startswith('session_standalone_'))
                 self.assertTrue(app.json_path.endswith('_summary.json'))
             finally:
-                app.csv_file.close()
+                close_eye_files(app)
 
     def test_blink_and_one_closed_eye_do_not_reach_mapper_or_filter(self):
         for left, right in ((.15, .15), (.1, .4)):
@@ -154,7 +226,7 @@ class EyeIntegrationTests(unittest.TestCase):
                         self.assertEqual(row['iris_valid'], 'False')
                         self.assertIsNone(app.latest_result['sm_x'])
                     finally:
-                        app.csv_file.close()
+                        close_eye_files(app)
 
     def test_calibration_audit_preserves_manual_decision_and_attempts(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -173,7 +245,7 @@ class EyeIntegrationTests(unittest.TestCase):
                 self.assertEqual(data['attempts'][1]['decision'], 'accepted_manual')
                 self.assertEqual(data['config']['webcam']['fourcc'], 'MJPG')
             finally:
-                app.csv_file.close()
+                close_eye_files(app)
 
     def test_interrupt_flushes_app_through_cleanup(self):
         with patch.object(self.eye, 'EyeTrackerApp') as factory:
@@ -192,6 +264,7 @@ class EyeIntegrationTests(unittest.TestCase):
 
     def test_hrv_screen_opens_only_after_eye_validation_is_accepted(self):
         app = self.eye.EyeTrackerApp.__new__(self.eye.EyeTrackerApp)
+        app.cfg = Mock(hp_enabled=True)
         app.exit_requested = False
         app.save_calibration_audit = Mock()
         steps = Mock()
@@ -247,7 +320,8 @@ class EyeIntegrationTests(unittest.TestCase):
     def test_eye_only_does_not_wait_for_hrv(self):
         app = self.eye.EyeTrackerApp.__new__(self.eye.EyeTrackerApp)
         app.wait_for_hrv = False
-        with patch.object(self.eye, 'cv2') as ui:
+        with tempfile.TemporaryDirectory() as directory, patch.object(self.eye, 'cv2') as ui:
+            app.session_dir = directory
             self.assertTrue(app.wait_for_hrv_calibration())
         ui.namedWindow.assert_not_called()
 

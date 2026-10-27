@@ -17,17 +17,34 @@ Panduan ini ditujukan untuk operator penelitian yang menjalankan CodeArrange, ey
 
 ## Menghubungkan sesi sensor
 
-1. Jalankan sistem perekaman multimodal eye tracking dan HRV.
+1. Jalankan `run_multimodal.py` untuk perekaman eye tracking dan HRV. HW9 akan
+   disambungkan dan preview kamera ditampilkan; baseline HRV belum dimulai.
 2. Tunggu sampai sistem menampilkan **ID Sesi sensor** dan folder sesi sudah dibuat. Salin ID tersebut persis seperti yang ditampilkan.
-3. Di halaman awal CodeArrange, tempel ID pada kolom **ID Sesi Sensor (untuk penelitian)**, lalu tekan **Hubungkan**.
+3. Di halaman awal CodeArrange, tempel ID pada kolom **ID Sensor**, lalu tekan **Hubungkan**.
 4. Pastikan status halaman menunjukkan bahwa CodeArrange terhubung ke ID sesi yang benar.
-5. Setelah terhubung, pilih set soal dari dropdown **Pilih Set Soal**, kemudian tekan **Mulai**.
+5. Pada preview kamera, atur posisi peserta dan tunggu status HRV siap. Tekan **Q**
+   di jendela preview untuk memulai kalibrasi mata dan baseline HRV bersamaan.
+   Menunggu di preview tidak menghabiskan batas waktu baseline. Jika kalibrasi mata
+   perlu diulang, baseline HRV tetap berjalan tanpa reset.
+6. Tunggu kedua kalibrasi selesai. Setelah sensor masuk tahap perekaman tugas dan
+   ID sesi sudah terhubung, pilih set dari **Pilih Set Soal**, kemudian tekan **Mulai**.
 
 CodeArrange tidak menghubungkan sesi sensor secara otomatis. Jika peserta mulai sebelum ID sesi dihubungkan, soal tetap dapat dikerjakan dan attempt tetap dicatat, tetapi event penelitian untuk pengerjaan tersebut tidak tercatat ke sesi sensor. Karena itu, operator perlu memastikan status terhubung sebelum menekan **Mulai**.
 
 ## Perpindahan set dan jeda
 
 Setelah peserta menyelesaikan satu set, gunakan **Kembali ke Menu Awal**. Di menu awal, pilih set berikutnya lalu tekan **Mulai**. Server tetap berjalan sehingga tidak perlu dihentikan atau dijalankan ulang.
+
+Jika perlu menghentikan set sebelum selesai, klik **Akhiri set** di bagian atas
+halaman soal, lalu konfirmasi. Jawaban yang belum disubmit tidak dinilai; attempt
+yang sudah disubmit tetap tersimpan. Setelah penutupan berhasil, timer berhenti
+dan halaman kembali ke menu dengan pesan **“Set telah diakhiri. Silakan pilih set
+berikutnya.”** Tombol ini juga dapat digunakan tanpa sensor. Selama soal sedang
+dimuat, jawaban disubmit, rating terbuka, atau penutupan diproses, tombol dinonaktifkan.
+
+**Akhiri set** menutup satu set. **Akhiri sesi penelitian** hanya ada di menu awal
+untuk menutup seluruh penandaan penelitian setelah semua set selesai. Kedua tombol
+tersebut tetap membiarkan server CodeArrange dan perekaman sensor berjalan.
 
 Perekaman sensor berjalan terus selama jeda antarset. Jangan menghentikan sensor saat peserta beristirahat. Jeda setelah set ditutup dan sebelum set berikutnya dimulai akan diberi fase `rest` saat data sensor dianalisis.
 
@@ -66,6 +83,13 @@ Periksa pesan pada halaman, pastikan ID sesi benar dan folder tersedia, lalu tek
 **Penanda akhir set gagal disimpan**
 
 Pastikan server CodeArrange masih aktif dan folder sesi sensor masih dapat diakses. Dari menu awal tekan **Coba simpan akhir set**. Jika masih gagal, jangan pilih set baru; catat kendala dan minta bantuan tim teknis agar batas aktivitas tetap jelas.
+
+Jika yang gagal adalah **Akhiri set** di tengah soal, halaman tetap menampilkan
+soal dan mempertahankan susunannya. Pesan kegagalan muncul di halaman soal.
+Jika server memastikan set masih aktif, peserta bisa melanjutkan atau mencoba
+**Akhiri set** lagi. Jika status belum dapat dipastikan karena jaringan terputus,
+pengerjaan dikunci sementara; gunakan **Coba akhiri set** untuk memeriksa ulang.
+Refresh akan membaca status server agar set yang sudah ditutup tidak dibuka kembali.
 
 **Sesi tanpa eye tracking/HRV**
 

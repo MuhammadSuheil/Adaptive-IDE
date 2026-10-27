@@ -162,17 +162,42 @@ When multiple server instances are started from the same project folder (e.g. on
 
 ## Review mode
 
-When started with `--review`, a dialog prompts the participant to rate each puzzle's difficulty on a scale of 1 (very easy) to 10 (very hard) immediately following each attempt (including timeouts).
+When started with `--review`, a dialog prompts the participant to rate the puzzle's difficulty on a scale of 1 (very easy) to 10 (very hard) after a correct submission or a timeout.
 - The exam session timer is **paused** while the rating dialog is open, so rating deliberation does not penalize exam time.
 - Clicking a rating submits `POST /api/attempts/:attemptId/rating`, updating the rating in place across both `attempts.csv` and the active `<puzzle-set>.csv`.
 - The dialog state is persisted in `sessionStorage`, so refreshing the browser preserves the dialog.
+- A failed rating save leaves the dialog open for retry. The server also exposes the pending rating so refresh after the final puzzle does not lose it.
+
+## Mengakhiri set dan penelitian
+
+Klik **Akhiri set** di halaman soal untuk menghentikan set aktif tanpa menilai
+jawaban yang belum disubmit. Setelah konfirmasi dan penutupan berhasil, timer
+berhenti, progres set dibersihkan, dan menu menampilkan **“Set telah diakhiri.
+Silakan pilih set berikutnya.”** Attempt sebelumnya tetap tersimpan. Tombol ini
+bekerja dengan maupun tanpa sensor dan dinonaktifkan selama pemuatan, submit,
+rating, atau penutupan sedang berlangsung.
+
+Jika sesi sensor terhubung, penutupan manual mencatat satu `set_ended` dengan
+outcome `stopped_manually`. Perekaman sensor tetap berjalan sehingga jeda dan
+set berikutnya dapat dicatat. Tombol **Akhiri sesi penelitian** di menu awal
+digunakan setelah seluruh penelitian selesai untuk mencatat `study_ended`.
+Server Node.js tetap berjalan sampai dihentikan dari terminal.
+
+Kegagalan penutupan ditampilkan di halaman yang aktif dan susunan soal tetap
+disimpan. Jika respons hilang, aplikasi memeriksa status server. Ketika status
+belum dapat dipastikan, gunakan **Coba akhiri set**; refresh tidak menghidupkan
+kembali set yang sudah ditutup.
+
+Uji alur penutupan set dapat dijalankan dari folder `codearrange-web` dengan
+`npm test`. Pengujian server memakai salinan sementara dan tidak menulis ke log
+peserta yang ada.
 
 ## Sinkronisasi sesi penelitian dengan sensor
 
 Untuk mengaitkan event CodeArrange dengan rekaman Eye Tracking/HRV:
 
 1. Jalankan `run_multimodal.py` terlebih dahulu dan salin **ID Sesi sensor** yang ditampilkan.
-2. Buka CodeArrange, masukkan ID tersebut pada bagian **ID Sesi Sensor**, lalu pilih **Hubungkan**. Server memeriksa bahwa folder sesi itu sudah ada sebelum menerima event.
+2. Buka CodeArrange, masukkan ID tersebut pada bagian **ID Sensor**, lalu pilih **Hubungkan**. Server memeriksa bahwa folder sesi itu sudah ada sebelum menerima event.
 3. Mulai set seperti biasa. CodeArrange mencatat waktu set/soal mulai, setiap submit/timeout, akhir set, dan tombol **Akhiri sesi penelitian** ke `sessions/<session-id>/task_events.csv`.
 4. Setelah tugas terakhir, tekan **Akhiri sesi penelitian**, kemudian hentikan proses sensor. Fusi yang dijalankan saat sensor berhenti memberi label fase pada `eye_tracking.csv`, `eye_tracking_compact.csv`, `hrv.csv`, dan `rr_raw.csv`, serta memberi detail set/soal dan komposisi window pada `multimodal_timeline.csv`.
 
@@ -195,16 +220,28 @@ server restart:
 - `GET /api/puzzle-sets` lists each direct puzzle subfolder containing JSON,
   ordered by `master_config.json` and then alphabetically.
 - `POST /api/session/select-set` with `{ "puzzleSet": "medium" }` selects a
-  valid set and resets its timer and browser session. It is rejected while a
+  valid set and resets its timer and browser session. It returns a new
+  `setSessionId` and `setSessionStatus: "idle"`. It is rejected while a set or
   review rating dialog is active.
+- Each selection has its own `setSessionId`, independent of the sensor session
+  ID. Status progresses from `idle` to `active` on the first puzzle load, then
+  `ended` on completion, timeout, or manual closure. A new selection is required
+  before loading another puzzle after closure.
+- `POST /api/session/end-set` with `{ "setSessionId": "...", "puzzleId": "..." }`
+  ends the set without grading; `puzzleId` is optional. The default outcome is
+  `stopped_manually`; the normal completion flow also uses `completed`,
+  `timed_out`, or recovery outcome `interrupted`. A success response contains
+  `{ ok, setSessionId, setSessionStatus: "ended", outcome, endedAtMs }`.
+  Repeating a request for an already-closed ID returns its original result,
+  including after another set is selected. Failed event writes leave the set active.
 
 | Method | Path | Description |
 |---|---|---|
-| GET | `/api/config` | `{ playerName, puzzleSet, setConfig, reviewMode, sessionStartedAtMs, sessionDeadlineMs, sessionPausedAtMs }` — locked server configuration and exam session state. |
+| GET | `/api/config` | Player/configuration, timer state, `setSessionId`, `setSessionStatus`, `pendingReviewAttemptId`, and research linkage/status. Used to reconcile refresh and a lost closure response. |
 | GET | `/api/puzzles` | List of `{ id, title, type, mode, description }` for every puzzle in the active puzzle set. |
-| GET | `/api/puzzles/:id` | One puzzle's `{ id, title, type, mode, description, lines }`. Lines are shuffled, `code` has full original indentation. Solutions and explanations are never exposed here. |
-| POST | `/api/puzzles/:id/check` | Body `{ "order": [<line ids>], "timeMs"?: number, "submissionType"?: string }`. Grades the submission, logs the attempt, and returns `{ correct, correctPositions, total, submittedCount, perLine, wrongLines, explanation, attemptId? }`. `attemptId` is provided only in review mode. |
-| POST | `/api/attempts/:attemptId/rating` | Review mode only (`403` otherwise). Body `{ "rating": <integer 1-10> }`. Updates that attempt's row in both `attempts.csv` and the set log in place, and unfreezes the exam clock. |
+| GET | `/api/puzzles/:id?setSessionId=...` | Puzzle data plus the set session ID/status. Rejects a closed or mismatched set session. Lines are shuffled; solutions/explanations are stripped. |
+| POST | `/api/puzzles/:id/check` | Body `{ "setSessionId": "...", "order": [<line ids>], "timeMs"?: number, "submissionType"?: string }`. Grades/logs an active set only. Returns correctness, per-line feedback, explanation, and review-only `attemptId`. |
+| POST | `/api/attempts/:attemptId/rating` | Review mode only (`403` otherwise). Body `{ "setSessionId": "...", "rating": <integer 1-10> }`. Updates the existing attempt and resumes the paused clock after a successful save. |
 
 ## Puzzle sets (subfolders under `puzzles/`)
 

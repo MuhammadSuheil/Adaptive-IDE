@@ -18,13 +18,13 @@ def to_wib(timestamp):
 
 if __package__:
     from .config import (BASELINE_TARGET_SECONDS, BASELINE_MAX_SECONDS,
-                         MEDIAN_THRESHOLD_MS, WINDOW_SECONDS, STEP_SECONDS)
+                         MEDIAN_THRESHOLD_MS, WINDOW_SECONDS, STEP_SECONDS, RR_GAP_SECONDS)
     from .record_rr import SESSION_ROOT, record_sensor
     from .preprocess_rr import RRPreprocessor, preprocess_rows
     from .calculate_hrv import HRV_COLUMNS, LiveHRV, calculate_hrv
 else:
     from config import (BASELINE_TARGET_SECONDS, BASELINE_MAX_SECONDS,
-                        MEDIAN_THRESHOLD_MS, WINDOW_SECONDS, STEP_SECONDS)
+                        MEDIAN_THRESHOLD_MS, WINDOW_SECONDS, STEP_SECONDS, RR_GAP_SECONDS)
     from record_rr import SESSION_ROOT, record_sensor
     from preprocess_rr import RRPreprocessor, preprocess_rows
     from calculate_hrv import HRV_COLUMNS, LiveHRV, calculate_hrv
@@ -82,9 +82,14 @@ class SessionCalibration:
         self.processed = []
         self.result = None
         self.hrv_file = None
-        self.phase = "calibration"
-        # Baseline starts immediately; only task recording waits for both sensors.
+        self.phase = "waiting_for_start" if wait_for_eye else "calibration"
         self.wait_for_eye = wait_for_eye
+        self.calibration_start_elapsed = None if wait_for_eye else 0.0
+        self.calibration_started_at = None
+        self.recording_origin = None
+        self.last_rr_elapsed = None
+        self.current_elapsed = 0.0
+        self.start_error = ""
         self.last_print = -1
         self.last_status_update = -1.0
         self.task_start = None
@@ -97,6 +102,8 @@ class SessionCalibration:
         temp_file = self.session / "hrv_calib_status.json.tmp"
         remaining = max(0.0, self.target_seconds - duration)
         text = f"Kalibrasi: {min(elapsed, self.maximum_seconds):.0f}/{self.maximum_seconds:g} detik | RR diterima: {duration:.1f}/{self.target_seconds:g} detik"
+        if self.phase == "waiting_for_start":
+            text = "HW9 terhubung. Baseline menunggu Q pada preview kamera."
         payload = {
             "phase": self.phase,
             "status": status,
@@ -106,7 +113,12 @@ class SessionCalibration:
             "target_seconds": float(self.target_seconds),
             "remaining_seconds": round(float(remaining), 1),
             "text": text,
+            "start_ready": (self.phase == "waiting_for_start" and self.last_rr_elapsed is not None
+                            and 0 <= self.current_elapsed - self.last_rr_elapsed <= RR_GAP_SECONDS),
+            "start_error": self.start_error,
         }
+        if self.calibration_started_at is not None:
+            payload["calibration_started_at_utc"] = self.calibration_started_at.isoformat()
         if self.result is not None:
             payload["hrv_calibration_completed_at_utc"] = self.result.get("calibration_completed_at_utc")
         if getattr(self, "both_calibrated_at_utc", None):
@@ -120,6 +132,8 @@ class SessionCalibration:
     def start(self, session):
         self.session = Path(session)
         self.started_at = datetime.now(timezone.utc)
+        if not self.wait_for_eye:
+            self.calibration_started_at = self.started_at
         self.hrv_file = (self.session / "hrv.csv").open("w", newline="", encoding="utf-8")
         self.hrv_writer = csv.DictWriter(
             self.hrv_file,
@@ -128,11 +142,28 @@ class SessionCalibration:
         self.hrv_writer.writeheader()
 
         self.hrv_file.flush()
-        self.update_calib_status("calibrating", 0.0, 0.0)
+        self.update_calib_status("waiting_for_start" if self.wait_for_eye else "calibrating", 0.0, 0.0)
+        if self.wait_for_eye:
+            print("HW9 terhubung. Menunggu aliran RR dan Q pada preview kamera untuk mulai baseline.")
         print(f"Duduk tenang. Target {self.target_seconds:g} detik RR diterima, "
               f"batas waktu {self.maximum_seconds:g} detik.")
 
     def receive(self, rows):
+        if not rows:
+            return
+        self.current_elapsed = float(rows[0]["elapsed_seconds"])
+        if self.recording_origin is None:
+            self.recording_origin = (datetime.fromisoformat(rows[0]["received_at"])
+                                     - timedelta(seconds=self.current_elapsed))
+            if not self.wait_for_eye:
+                self.calibration_started_at = self.recording_origin.astimezone(timezone.utc)
+        for row in rows:
+            rr = float(row["rr_original_ms"])
+            if math.isfinite(rr) and 300 <= rr <= 2000 and str(row.get("contact_detected", "")).lower() != "false":
+                self.last_rr_elapsed = self.current_elapsed
+        if self.calibration_start_elapsed is None and not self.try_start_calibration(self.current_elapsed):
+            self.last_status_update = -1.0
+            return
         if self.task_start is not None:
             for _, packet_rows in groupby(rows, key=lambda row: row["packet_id"]):
                 # Waktu UTC, ID, dan RR tetap asli. Elapsed dimulai ulang dari
@@ -146,27 +177,58 @@ class SessionCalibration:
                 processed = self.task_preprocessor.process_packet(packet)
                 self.task_hrv.add(processed, arrived, self.task_preprocessor.recovering)
         elif self.result is None:
-            self.rows.extend(row for row in rows if row["elapsed_seconds"] <= self.maximum_seconds)
+            # Only internal baseline copies use time since Q; raw timestamps stay intact.
+            self.rows.extend(dict(row, elapsed_seconds=row["elapsed_seconds"] - self.calibration_start_elapsed)
+                             for row in rows
+                             if 0 <= row["elapsed_seconds"] - self.calibration_start_elapsed <= self.maximum_seconds)
+
+    def try_start_calibration(self, elapsed):
+        """Consume the shared trigger once, without restarting on eye retries."""
+        if self.calibration_start_elapsed is not None:
+            return True
+        if self.recording_origin is None:
+            return False
+        marker = self.session / "calibration_start.json"
+        try:
+            payload = json.loads(marker.read_text(encoding="utf-8"))
+            started = datetime.fromisoformat(payload["started_at_utc"])
+            if started.utcoffset() is None:
+                raise ValueError("Timestamp pemicu harus menyertakan zona waktu")
+            offset = (started - self.recording_origin).total_seconds()
+            if not math.isfinite(offset) or offset < 0 or offset > elapsed + 0.1:
+                raise ValueError("Waktu pemicu berada di luar rentang sesi")
+        except FileNotFoundError:
+            return False
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            self.start_error = f"Penanda mulai kalibrasi tidak valid: {error}"
+            return False
+        self.calibration_started_at = started.astimezone(timezone.utc)
+        self.calibration_start_elapsed = offset
+        self.phase = "calibration"
+        self.last_status_update = -1.0
+        self.start_error = ""
+        print("\nQ diterima. Kalibrasi baseline HRV dimulai bersamaan dengan kalibrasi mata.")
+        return True
 
     def progress(self, elapsed):
         # Maksimal lima menit data: gunakan ulang fungsi offline yang sama agar
         # aturan filter identik. Hanya proses ulang jika ada RR baru.
         if len(self.processed) != len(self.rows):
             self.processed = list(preprocess_rows(self.rows))
-        return baseline_data(self.processed, elapsed, self.maximum_seconds)
+        if self.calibration_start_elapsed is None:
+            return [], 0.0
+        return baseline_data(self.processed, elapsed - self.calibration_start_elapsed, self.maximum_seconds)
 
     def make_result(self, status, reason, elapsed, used, duration):
-        if self.rows:
-            first = self.rows[0]
-            origin = datetime.fromisoformat(first["received_at"]) - timedelta(seconds=first["elapsed_seconds"])
-            calibration_completed_at = origin + timedelta(seconds=elapsed)
-        else:
-            calibration_completed_at = self.started_at + timedelta(seconds=elapsed)
+        origin = self.recording_origin or self.started_at
+        calibration_completed_at = origin + timedelta(seconds=elapsed)
         return {
             "status": status, "reason": reason, "condition": "seated_rest",
             "target_rr_seconds": self.target_seconds,
             "maximum_elapsed_seconds": self.maximum_seconds,
             "calibration_end_elapsed_seconds": elapsed,
+            "calibration_elapsed_seconds": elapsed - self.calibration_start_elapsed,
+            "calibration_started_at_utc": self.calibration_started_at.isoformat(),
             "calibration_completed_at_utc": calibration_completed_at.astimezone(timezone.utc).isoformat(),
             "accepted_rr_seconds": duration,
             # Baseline satu RMSSD/SDNN dari RR kalibrasi, bukan rata-rata window.
@@ -175,11 +237,8 @@ class SessionCalibration:
 
     def save_baseline(self, used):
         """Baseline juga hasil HRV, sehingga disimpan pada CSV HRV yang sama."""
-        elapsed = self.result["calibration_end_elapsed_seconds"]
-        origin = self.started_at
-        if self.rows:
-            first = self.rows[0]
-            origin = datetime.fromisoformat(first["received_at"]) - timedelta(seconds=first["elapsed_seconds"])
+        elapsed = self.result["calibration_elapsed_seconds"]
+        origin = self.calibration_started_at
         features = calculate_hrv(used)
         if self.result["status"] != "ready":
             features["rmssd_ms"] = features["sdnn_ms"] = None
@@ -201,6 +260,12 @@ class SessionCalibration:
 
     def tick(self, elapsed):
         """Dipanggil timer perekam, termasuk ketika sensor sama sekali tidak mengirim RR."""
+        self.current_elapsed = elapsed
+        if self.calibration_start_elapsed is None and not self.try_start_calibration(elapsed):
+            if elapsed - self.last_status_update >= .5:
+                self.last_status_update = elapsed
+                self.update_calib_status("waiting_for_start", 0.0, 0.0)
+            return False
         if self.result is not None:
             if self.result["status"] == "unavailable":
                 return True
@@ -212,12 +277,13 @@ class SessionCalibration:
             return self.task_duration is not None and elapsed - self.task_start >= self.task_duration
 
         used, duration = self.progress(elapsed)
-        if elapsed - self.last_status_update >= 0.5 or int(elapsed) != self.last_print:
-            self.last_status_update = elapsed
-            self.update_calib_status("calibrating", elapsed, duration)
-        if int(elapsed) != self.last_print:
-            self.last_print = int(elapsed)
-            print(f"\rKalibrasi: {min(elapsed, self.maximum_seconds):.0f}/{self.maximum_seconds:g} detik "
+        baseline_elapsed = elapsed - self.calibration_start_elapsed
+        if baseline_elapsed - self.last_status_update >= 0.5 or int(baseline_elapsed) != self.last_print:
+            self.last_status_update = baseline_elapsed
+            self.update_calib_status("calibrating", baseline_elapsed, duration)
+        if int(baseline_elapsed) != self.last_print:
+            self.last_print = int(baseline_elapsed)
+            print(f"\rKalibrasi: {min(baseline_elapsed, self.maximum_seconds):.0f}/{self.maximum_seconds:g} detik "
                   f"| RR diterima: {duration:.1f}/{self.target_seconds:g} detik   ", end="", flush=True)
 
         features = calculate_hrv(used)
@@ -228,14 +294,14 @@ class SessionCalibration:
             print(f"\nBaseline siap: RMSSD {features['rmssd_ms']:.2f} ms, SDNN {features['sdnn_ms']:.2f} ms.")
             if self.wait_for_eye and not (self.session / "eye_calibration_ready").is_file():
                 self.phase = "waiting_for_eye"
-                self.update_calib_status("ready", elapsed, duration)
+                self.update_calib_status("ready", baseline_elapsed, duration)
                 print("Baseline HRV siap. Menunggu kalibrasi mata selesai sebelum mulai tugas.")
             else:
                 self.start_task(elapsed)
-        elif elapsed >= self.maximum_seconds:
+        elif baseline_elapsed >= self.maximum_seconds:
             self.result = self.make_result("unavailable", "timeout", elapsed, used, duration)
             self.save_baseline(used)
-            self.update_calib_status("unavailable", elapsed, duration)
+            self.update_calib_status("unavailable", baseline_elapsed, duration)
             print("\nBaseline belum tersedia. Jalankan ulang perintah untuk mengulang kalibrasi dalam sesi baru.")
             return True
         return False
@@ -244,9 +310,7 @@ class SessionCalibration:
         """Mulai analisis tugas di memori, terpisah dari riwayat kalibrasi."""
         self.task_start = elapsed
         self.phase = "task"
-        first = self.rows[0]
-        origin = (datetime.fromisoformat(first["received_at"])
-                  - timedelta(seconds=first["elapsed_seconds"]) + timedelta(seconds=elapsed))
+        origin = (self.recording_origin or self.started_at) + timedelta(seconds=elapsed)
         self.task_hrv.origin = origin
         hrv_ready = datetime.fromisoformat(self.result["calibration_completed_at_utc"])
         eye_marker = self.session / "eye_calibration_ready"
@@ -256,7 +320,7 @@ class SessionCalibration:
             eye_ready = origin
         both_ready = max(hrv_ready, eye_ready).astimezone(timezone.utc)
         self.both_calibrated_at_utc = both_ready.isoformat()
-        self.update_calib_status("ready", self.result["calibration_end_elapsed_seconds"],
+        self.update_calib_status("ready", self.result["calibration_elapsed_seconds"],
                                  self.result["accepted_rr_seconds"])
         print("Perekaman tugas dimulai. Silakan mulai coding; Ctrl+C untuk berhenti.")
         print(f"Preprocessing otomatis. HRV pertama setelah {self.window_seconds:g} detik, "
@@ -303,10 +367,14 @@ class SessionCalibration:
             if self.task_start is not None and reason != "recording_error":
                 self.publish_hrv(elapsed - self.task_start)
             if self.result is None and self.hrv_file is not None:
+                if self.calibration_start_elapsed is None:
+                    self.update_calib_status("not_started", 0.0, 0.0)
+                    print("\nSesi dihentikan sebelum Q; baseline HRV belum dimulai.")
+                    return
                 used, duration = self.progress(elapsed)
                 self.result = self.make_result("unavailable", reason, elapsed, used, duration)
                 self.save_baseline(used)
-                self.update_calib_status("unavailable", elapsed, duration)
+                self.update_calib_status("unavailable", elapsed - self.calibration_start_elapsed, duration)
                 print("\nKalibrasi terhenti sebelum selesai. Ulangi dengan menjalankan sesi baru.")
         finally:
             if self.hrv_file is not None:
@@ -321,7 +389,7 @@ def main(argv=None):
     parser.add_argument("--output", type=Path, default=SESSION_ROOT, help="Folder induk sesi")
     parser.add_argument("--session-dir", type=Path, help="Folder sesi spesifik")
     parser.add_argument("--wait-for-eye", action="store_true",
-                        help="Baseline langsung berjalan; mulai tugas setelah kalibrasi mata juga selesai")
+                        help="Tunggu pemicu Q dari preview mata; mulai tugas setelah kedua kalibrasi selesai")
     parser.add_argument("--mock", action="store_true", help="Gunakan mock/simulasi sensor HRV tanpa perangkat fisik")
     parser.add_argument("--target-baseline", type=float, default=None,
                         help="Target durasi RR kalibrasi baseline dalam detik (default: 120)")

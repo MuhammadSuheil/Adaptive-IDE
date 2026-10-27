@@ -43,6 +43,11 @@ This repository contains the software components and research context for develo
      ```powershell
      python run_multimodal.py --participant P01 --task coding_task
      ```
+     HW9 terhubung saat startup, tetapi baseline HRV belum berjalan selama preview
+     kamera. Setelah kamera dan aliran RR siap, tekan **Q** pada preview untuk
+     memulai kalibrasi mata dan baseline HRV bersama-sama. Waktu menunggu preview
+     tidak mengurangi batas waktu baseline. Jika kalibrasi mata perlu diulang,
+     baseline HRV tetap berjalan; tahap tugas menunggu kedua kalibrasi selesai.
      **Mock Test:**
      python run_multimodal.py --participant P01 --task coding_test --mock-hrv --target-baseline 60
 

@@ -401,6 +401,7 @@ class EyeTrackerApp:
         window = "Persiapan Kalibrasi"
         width, preview_height = self.screen_w, self.screen_h
         frame_ready = False
+        preview_error = ""
         cv2.namedWindow(window, cv2.WINDOW_NORMAL)
         cv2.setWindowProperty(window, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         delay = max(1, round(1000 / max(float(self.cfg.display_refresh_fps), 1)))
@@ -426,15 +427,28 @@ class EyeTrackerApp:
                         return False
                 font_scale = max(.5, min(width / 900, preview_height / 600))
                 thickness = max(1, round(font_scale * 2))
-                prompt = "Press Q to Enter"
+                hrv_status = (self.get_hrv_calib_status() or {}) if getattr(self, "wait_for_hrv", False) else {}
+                hrv_ready = (not getattr(self, "wait_for_hrv", False)
+                             or (hrv_status.get("phase") == "waiting_for_start"
+                                 and hrv_status.get("start_ready") is True))
+                prompt = preview_error or ("Tekan Q untuk mulai kalibrasi" if hrv_ready
+                                            else "Menunggu HRV siap sebelum menekan Q")
+                margin = max(10, round(preview_height * .03))
                 (text_width, text_height), baseline = cv2.getTextSize(
                     prompt, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness)
-                margin = max(10, round(preview_height * .03))
+                if text_width > width - 2 * margin:
+                    font_scale *= (width - 2 * margin) / text_width
+                    (text_width, text_height), baseline = cv2.getTextSize(
+                        prompt, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness)
                 text_x = max(0, (width - text_width) // 2)
                 text_y = preview_height - margin - baseline
-                cv2.rectangle(canvas, (0, max(0, text_y - text_height - margin)),
+                cv2.rectangle(canvas, (0, max(0, text_y - 2 * text_height - 2 * margin)),
                               (width, preview_height), (25, 25, 25), -1)
-                color = (255, 255, 255) if frame_ready else (130, 130, 130)
+                color = (255, 255, 255) if frame_ready and hrv_ready else (180, 180, 180)
+                if getattr(self, "wait_for_hrv", False):
+                    status_text = "HRV siap; baseline belum dimulai" if hrv_ready else "Menunggu koneksi HW9 dan aliran RR..."
+                    cv2.putText(canvas, status_text, (max(10, margin), text_y - text_height - margin),
+                                cv2.FONT_HERSHEY_SIMPLEX, font_scale * .65, color, 1, cv2.LINE_AA)
                 cv2.putText(canvas, prompt, (text_x, text_y),
                             cv2.FONT_HERSHEY_SIMPLEX, font_scale, color, thickness, cv2.LINE_AA)
                 cv2.imshow(window, canvas)
@@ -442,7 +456,13 @@ class EyeTrackerApp:
                 if key == 27 or cv2.getWindowProperty(window, cv2.WND_PROP_VISIBLE) < 1:
                     self.exit_requested = True
                     return False
-                if key in (ord('q'), ord('Q')) and frame_ready:
+                if key in (ord('q'), ord('Q')) and frame_ready and hrv_ready:
+                    try:
+                        self.signal_calibration_start()
+                    except (OSError, ValueError, KeyError, TypeError) as error:
+                        preview_error = "Gagal menyimpan penanda. Tekan Q untuk mencoba lagi."
+                        print(f"[EyeTrack] {preview_error} Detail: {error}")
+                        continue
                     return True
             return False
         finally:
@@ -450,6 +470,23 @@ class EyeTrackerApp:
                 cv2.destroyWindow(window)
             except cv2.error:
                 pass
+
+    def signal_calibration_start(self):
+        """Publish the Q trigger once; eye retries do not publish a new start."""
+        if getattr(self, "calibration_started_at", None) is not None:
+            return
+        started = datetime.now(timezone.utc)
+        if getattr(self, "wait_for_hrv", False):
+            marker = Path(self.session_dir) / "calibration_start.json"
+            if marker.exists():
+                started = datetime.fromisoformat(json.loads(marker.read_text(encoding="utf-8"))["started_at_utc"])
+                if started.utcoffset() is None:
+                    raise ValueError("Timestamp pemicu harus menyertakan zona waktu")
+            else:
+                temporary = marker.with_suffix(".json.tmp")
+                temporary.write_text(json.dumps({"started_at_utc": started.isoformat()}), encoding="utf-8")
+                temporary.replace(marker)
+        self.calibration_started_at = started
 
     def run_head_positioning_gate(self):
         if not self.cfg.hp_enabled:
@@ -1995,8 +2032,10 @@ class EyeTrackerApp:
 
     def save_calibration_audit(self):
         path = Path(self.json_path).with_name(Path(self.json_path).stem + '_calibration.json')
+        started = getattr(self, 'calibration_started_at', None)
         with path.open('w', encoding='utf-8') as output:
             json.dump({'schema_version': '1.0', 'config': self.cfg.data,
+                       'calibration_started_at_utc': started.isoformat() if started else None,
                        'attempts': self.calibration_audit}, output, indent=2)
 
     def cleanup(self):

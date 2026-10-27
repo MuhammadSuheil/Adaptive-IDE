@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css?v=9" />
+  <link rel="stylesheet" href="/styles.css?v=10" />
 </head>
 <body>
   <header>
@@ -46,7 +46,7 @@
         <div class="start-actions">
           <button id="start-btn">Mulai</button>
           <button id="retry-research-end" class="secondary hidden" type="button">Coba simpan akhir set</button>
-          <button id="end-study-start-btn" class="secondary" type="button" disabled>Akhiri sesi pengerjaan</button>
+          <button id="end-study-start-btn" class="secondary" type="button" disabled>Akhiri sesi penelitian</button>
         </div>
         <p id="start-error" class="feedback error"></p>
       </div>
@@ -61,8 +61,9 @@
           <span id="active-puzzle-type" class="type-badge"></span>
         </span>
         <span id="timer">0:00</span>
-        <button id="end-study-puzzle-btn" class="secondary" type="button" disabled>Akhiri sesi pengerjaan</button>
+        <button id="end-study-puzzle-btn" class="secondary" type="button" disabled>Akhiri set</button>
       </div>
+      <p id="set-session-feedback" class="feedback hidden" role="status" aria-live="polite"></p>
 
       <section class="description-box">
         <h2>Deskripsi</h2>
@@ -106,6 +107,6 @@
     </div>
   </div>
 
-  <script src="/app.js?v=9"></script>
+  <script src="/app.js?v=10"></script>
 </body>
 </html>
