@@ -15,6 +15,11 @@ from hrv_monitor_prototype.record_rr import RRRecorder
 class CalibrationSequenceTests(unittest.TestCase):
     origin = datetime(2026, 9, 24, tzinfo=timezone.utc)
 
+    def start_at_origin(self, monitor, session):
+        monitor.start(session)
+        (Path(session) / 'calibration_start.json').write_text(json.dumps(
+            {'started_at_utc': self.origin.isoformat()}), encoding='utf-8')
+
     def send_rr(self, calibration, recorder, elapsed):
         recorder.record(bytes([0x16, 60, 0, 4]),
                         (self.origin + timedelta(seconds=elapsed)).isoformat(),
@@ -28,7 +33,7 @@ class CalibrationSequenceTests(unittest.TestCase):
             monitor = SessionCalibration(target_seconds=3, maximum_seconds=5,
                                          task_duration=25, wait_for_eye=True)
             recorder = RRRecorder(raw)
-            monitor.start(session)
+            self.start_at_origin(monitor, session)
             try:
                 for elapsed in (1, 2, 3):
                     self.send_rr(monitor, recorder, elapsed)
@@ -51,9 +56,9 @@ class CalibrationSequenceTests(unittest.TestCase):
             with (session / 'hrv.csv').open() as stream:
                 baseline, task = list(csv.DictReader(stream))
             self.assertEqual(float(baseline['window_seconds']), 3)
-            self.assertEqual(baseline['window_start'], self.origin.isoformat())
-            self.assertEqual(task['window_start'], (self.origin + timedelta(seconds=600)).isoformat())
-            self.assertEqual(task['window_end'], (self.origin + timedelta(seconds=625)).isoformat())
+            self.assertEqual(datetime.fromisoformat(baseline['window_start']), self.origin)
+            self.assertEqual(datetime.fromisoformat(task['window_start']), self.origin + timedelta(seconds=600))
+            self.assertEqual(datetime.fromisoformat(task['window_end']), self.origin + timedelta(seconds=625))
             self.assertEqual(task['status'], 'ready')
 
     def test_eye_finishes_first_without_resetting_hrv_progress(self):
@@ -61,7 +66,7 @@ class CalibrationSequenceTests(unittest.TestCase):
             session = Path(directory)
             monitor = SessionCalibration(target_seconds=3, maximum_seconds=5, wait_for_eye=True)
             recorder = RRRecorder(raw)
-            monitor.start(session)
+            self.start_at_origin(monitor, session)
             try:
                 self.send_rr(monitor, recorder, 1)
                 status = json.loads((session / 'hrv_calib_status.json').read_text())
@@ -76,17 +81,20 @@ class CalibrationSequenceTests(unittest.TestCase):
             finally:
                 monitor.finish(3, 'stopped')
 
-    def test_no_rr_timeout_includes_time_spent_on_eye_calibration(self):
-        with tempfile.TemporaryDirectory() as directory:
+    def test_no_rr_timeout_after_q_includes_time_spent_on_eye_calibration(self):
+        with tempfile.TemporaryDirectory() as directory, io.StringIO() as raw:
             monitor = SessionCalibration(target_seconds=3, maximum_seconds=5, wait_for_eye=True)
             monitor.start(directory)
             try:
-                self.assertFalse(monitor.tick(4.9))
-                self.assertTrue(monitor.tick(5))
+                self.send_rr(monitor, RRRecorder(raw), 1)
+                (Path(directory) / 'calibration_start.json').write_text(json.dumps(
+                    {'started_at_utc': (self.origin + timedelta(seconds=1)).isoformat()}))
+                self.assertFalse(monitor.tick(5.9))
+                self.assertTrue(monitor.tick(6))
                 self.assertEqual(monitor.result['reason'], 'timeout')
                 self.assertIsNone(monitor.task_start)
             finally:
-                monitor.finish(5, 'monitor_finished')
+                monitor.finish(6, 'monitor_finished')
 
     def test_standalone_starts_task_without_eye_signal(self):
         with tempfile.TemporaryDirectory() as directory, io.StringIO() as raw:

@@ -1,0 +1,55 @@
+event_id,session_id,attempt_id,event_type,event_time_ms,event_time_wib,server_received_at_utc,puzzle_set,difficulty_level,puzzle_id,puzzle_title,submission_type,outcome
+84ecef25-ea2a-4c46-8b60-4d46b4ca5ec0,20261026_143707_P01_coding_task,,session_linked,1793000342137,2026-10-26T14:39:02.137+07:00,2026-10-26T07:39:02.137Z,,easy,,,,
+605ddfec-12bd-4c3f-ae21-492071a0f7bc,20261026_143707_P01_coding_task,,set_started,1793000377425,2026-10-26T14:39:37.425+07:00,2026-10-26T07:39:37.426Z,easy-1,easy,,,,
+95fa8619-4943-4adc-aed0-340492528e01,20261026_143707_P01_coding_task,,puzzle_started,1793000377435,2026-10-26T14:39:37.435+07:00,2026-10-26T07:39:37.439Z,easy-1,easy,variables,Variabel,,
+34bd366c-7621-4468-b7ad-a73ff8813376,20261026_143707_P01_coding_task,,puzzle_started,1793000418993,2026-10-26T14:40:18.993+07:00,2026-10-26T07:40:18.996Z,easy-1,easy,even_odd,Bilangan Genap atau Ganjil,,
+1df992d1-fdd9-4194-b2c8-9c29906e50fb,20261026_143707_P01_coding_task,,puzzle_started,1793000503309,2026-10-26T14:41:43.309+07:00,2026-10-26T07:41:43.313Z,easy-1,easy,even_odd,Bilangan Genap atau Ganjil,,
+b6f68e2a-5035-411e-b896-001b69467d51,20261026_143707_P01_coding_task,,puzzle_started,1793000529895,2026-10-26T14:42:09.895+07:00,2026-10-26T07:42:09.899Z,easy-1,easy,find_max,Mencari Nilai Maksimum,,
+ee75f2f2-1f3d-4056-afe7-3963f38453f1,20261026_143707_P01_coding_task,,puzzle_started,1793000545918,2026-10-26T14:42:25.918+07:00,2026-10-26T07:42:25.921Z,easy-1,easy,even_odd,Bilangan Genap atau Ganjil,,
+fad86ce5-39fc-49d9-a331-16b33742a63b,20261026_143707_P01_coding_task,,puzzle_started,1793000547174,2026-10-26T14:42:27.174+07:00,2026-10-26T07:42:27.177Z,easy-1,easy,variables,Variabel,,
+07285428-c9e7-439b-9a54-baf6e2b7dd66,20261026_143707_P01_coding_task,,puzzle_started,1793000565975,2026-10-26T14:42:45.975+07:00,2026-10-26T07:42:45.979Z,easy-1,easy,even_odd,Bilangan Genap atau Ganjil,,
+d81f6beb-ca2a-4c61-8a8e-1d576b9525c4,20261026_143707_P01_coding_task,,puzzle_started,1793000569681,2026-10-26T14:42:49.681+07:00,2026-10-26T07:42:49.683Z,easy-1,easy,even_odd,Bilangan Genap atau Ganjil,,
+7fc398f8-8708-49d8-9b3f-535af2a50bb5,20261026_143707_P01_coding_task,,puzzle_started,1793000601767,2026-10-26T14:43:21.767+07:00,2026-10-26T07:43:21.770Z,easy-1,easy,find_max,Mencari Nilai Maksimum,,
+cd28e20f-41b8-4969-848b-f1586c292ccb,20261026_143707_P01_coding_task,32d31ac2-1948-4fe7-9a07-f19c999b98ce,attempt_submitted,1793000677582,2026-10-26T14:44:37.582+07:00,2026-10-26T07:44:37.590Z,easy-1,easy,find_max,Mencari Nilai Maksimum,timeout,incorrect
+8c63691b-ea35-43fd-b0de-edd4ca8d47d6,20261026_143707_P01_coding_task,,set_ended,1793000677597,2026-10-26T14:44:37.597+07:00,2026-10-26T07:44:37.598Z,easy-1,easy,,,,timed_out
+d513b487-830f-429d-bf6d-27c6b4cd69d1,20261026_143707_P01_coding_task,,rating_started,1793000677608,2026-10-26T14:44:37.608+07:00,2026-10-26T07:44:37.608Z,easy-1,easy,,,,
+d4ba702a-a7c6-4adb-9503-4c790ad31381,20261026_143707_P01_coding_task,,rating_ended,1793000680546,2026-10-26T14:44:40.546+07:00,2026-10-26T07:44:40.546Z,easy-1,easy,,,,
+cdcf8b21-b6f9-4b32-bb07-481907aafa5d,20261026_143707_P01_coding_task,,set_started,1793000695312,2026-10-26T14:44:55.312+07:00,2026-10-26T07:44:55.314Z,medium,medium,,,,
+b1a2afd6-dba1-4bff-95a6-2032bedbbfce,20261026_143707_P01_coding_task,,puzzle_started,1793000695322,2026-10-26T14:44:55.322+07:00,2026-10-26T07:44:55.326Z,medium,medium,reverse_array,2. Membalik Array di Tempat,,
+922a642d-3601-4e90-9dcb-6fdca033f086,20261026_143707_P01_coding_task,,puzzle_started,1793000829342,2026-10-26T14:47:09.342+07:00,2026-10-26T07:47:09.347Z,medium,medium,count_vowels,Menghitung Huruf Vokal,,
+1d925eaf-847d-4087-9112-7772fff77b26,20261026_143707_P01_coding_task,,puzzle_started,1793000933475,2026-10-26T14:48:53.475+07:00,2026-10-26T07:48:53.479Z,medium,medium,linear_search,Linear Search,,
+a00aceed-dc57-457e-b910-038acedbee10,20261026_143707_P01_coding_task,,puzzle_started,1793001064744,2026-10-26T14:51:04.744+07:00,2026-10-26T07:51:04.747Z,medium,medium,string_reverse,Membalik String,,
+f1af6872-3623-469e-a4ee-5b2fe6de129e,20261026_143707_P01_coding_task,,puzzle_started,1793001086024,2026-10-26T14:51:26.024+07:00,2026-10-26T07:51:26.028Z,medium,medium,matrix_addition,Penjumlahan Matriks,,
+29a91851-3a42-411d-8530-f59132b3bb94,20261026_143707_P01_coding_task,,puzzle_started,1793001134817,2026-10-26T14:52:14.817+07:00,2026-10-26T07:52:14.820Z,medium,medium,palindrome_check,Pemeriksaan Palindrom,,
+8cba02fe-ff3d-4fa6-8580-f1ae55432c34,20261026_143707_P01_coding_task,,puzzle_started,1793001310262,2026-10-26T14:55:10.262+07:00,2026-10-26T07:55:10.265Z,medium,medium,bubble_sort,Bubble Sort,,
+453dae94-8ab0-4664-b6c9-7da37573d8ae,20261026_143707_P01_coding_task,,puzzle_started,1793001319411,2026-10-26T14:55:19.411+07:00,2026-10-26T07:55:19.413Z,medium,medium,palindrome_check,Pemeriksaan Palindrom,,
+f1e4495d-2b6f-42de-8282-092ad0184ad8,20261026_143707_P01_coding_task,7cc96c61-d108-4fa6-849e-d5ca282caa59,attempt_submitted,1793001324732,2026-10-26T14:55:24.732+07:00,2026-10-26T07:55:24.737Z,medium,medium,palindrome_check,Pemeriksaan Palindrom,manual,incorrect
+d6986dcb-4047-4669-9a0a-366251fc88b7,20261026_143707_P01_coding_task,,puzzle_started,1793001337477,2026-10-26T14:55:37.477+07:00,2026-10-26T07:55:37.480Z,medium,medium,matrix_addition,Penjumlahan Matriks,,
+c93be75d-15b8-4c9e-a587-370dec422c79,20261026_143707_P01_coding_task,a35a9b69-4a93-4ee3-b55b-a44f61169b66,attempt_submitted,1793001343485,2026-10-26T14:55:43.485+07:00,2026-10-26T07:55:43.489Z,medium,medium,matrix_addition,Penjumlahan Matriks,manual,incorrect
+bd683952-245a-4eb7-b51d-6bf829980821,20261026_143707_P01_coding_task,,puzzle_started,1793001345996,2026-10-26T14:55:45.996+07:00,2026-10-26T07:55:46.002Z,medium,medium,string_reverse,Membalik String,,
+543d34b7-a287-43b9-9b2e-252390621321,20261026_143707_P01_coding_task,650a69a8-7e10-4506-949d-fbe9942a13b0,attempt_submitted,1793001347999,2026-10-26T14:55:47.999+07:00,2026-10-26T07:55:48.003Z,medium,medium,string_reverse,Membalik String,manual,incorrect
+9f46eff2-0ccf-439b-b309-abd563095dd4,20261026_143707_P01_coding_task,,puzzle_started,1793001357068,2026-10-26T14:55:57.068+07:00,2026-10-26T07:55:57.079Z,medium,medium,linear_search,Linear Search,,
+c19c92a0-0f06-4f11-9f01-8c8609607fc3,20261026_143707_P01_coding_task,46db05f3-0d61-4b6b-84fc-926296df99f1,attempt_submitted,1793001360218,2026-10-26T14:56:00.218+07:00,2026-10-26T07:56:00.223Z,medium,medium,linear_search,Linear Search,manual,correct
+98fc84d8-0721-4868-af7e-1cd43d08d741,20261026_143707_P01_coding_task,,rating_started,1793001360242,2026-10-26T14:56:00.242+07:00,2026-10-26T07:56:00.242Z,medium,medium,,,,
+95042eee-6c2a-460c-bb09-352b11558a36,20261026_143707_P01_coding_task,,rating_ended,1793001365786,2026-10-26T14:56:05.786+07:00,2026-10-26T07:56:05.788Z,medium,medium,,,,
+6f40e093-4eac-4d15-9730-55ecb7022f2a,20261026_143707_P01_coding_task,,puzzle_started,1793001369745,2026-10-26T14:56:09.745+07:00,2026-10-26T07:56:09.750Z,medium,medium,string_reverse,Membalik String,,
+1ba913ed-1be6-43bf-8d53-4e88c112ec55,20261026_143707_P01_coding_task,,puzzle_started,1793001370484,2026-10-26T14:56:10.484+07:00,2026-10-26T07:56:10.486Z,medium,medium,matrix_addition,Penjumlahan Matriks,,
+e61eec25-92f8-4229-a4a4-73eb2be5076b,20261026_143707_P01_coding_task,,puzzle_started,1793001371142,2026-10-26T14:56:11.142+07:00,2026-10-26T07:56:11.148Z,medium,medium,palindrome_check,Pemeriksaan Palindrom,,
+6817536a-6b88-4d2a-96cb-8e6f61483d85,20261026_143707_P01_coding_task,,puzzle_started,1793001380049,2026-10-26T14:56:20.049+07:00,2026-10-26T07:56:20.051Z,medium,medium,bubble_sort,Bubble Sort,,
+69fd02a6-a376-4b10-8639-dbbd9171e0b2,20261026_143707_P01_coding_task,,puzzle_started,1793001380989,2026-10-26T14:56:20.989+07:00,2026-10-26T07:56:20.995Z,medium,medium,binary_search,Binary Search,,
+ce677865-d18e-4a91-8b76-d7709ec0bf4b,20261026_143707_P01_coding_task,,puzzle_started,1793001387194,2026-10-26T14:56:27.194+07:00,2026-10-26T07:56:27.198Z,medium,medium,bubble_sort,Bubble Sort,,
+e49f32f4-a32b-4c26-9c66-08a0d593224c,20261026_143707_P01_coding_task,,puzzle_started,1793001393484,2026-10-26T14:56:33.484+07:00,2026-10-26T07:56:33.489Z,medium,medium,palindrome_check,Pemeriksaan Palindrom,,
+f563806f-f1df-4681-8c31-35e152b60503,20261026_143707_P01_coding_task,,puzzle_started,1793001395063,2026-10-26T14:56:35.063+07:00,2026-10-26T07:56:35.068Z,medium,medium,bubble_sort,Bubble Sort,,
+ebd1868c-008b-4217-8521-e06423aea6a5,20261026_143707_P01_coding_task,966af918-cb7e-46e1-8357-9492f09547cb,attempt_submitted,1793001420888,2026-10-26T14:57:00.888+07:00,2026-10-26T07:57:00.896Z,medium,medium,bubble_sort,Bubble Sort,timeout,incorrect
+2b53d992-a12a-48b6-947e-6603858ffa0b,20261026_143707_P01_coding_task,,set_ended,1793001420912,2026-10-26T14:57:00.912+07:00,2026-10-26T07:57:00.913Z,medium,medium,,,,timed_out
+c9e64cc5-de44-4c6f-9aa6-a06cc94b025d,20261026_143707_P01_coding_task,,rating_started,1793001420934,2026-10-26T14:57:00.934+07:00,2026-10-26T07:57:00.935Z,medium,medium,,,,
+10a3e7b6-e880-4fa7-be91-45062c2b7ace,20261026_143707_P01_coding_task,,rating_ended,1793001423294,2026-10-26T14:57:03.294+07:00,2026-10-26T07:57:03.295Z,medium,medium,,,,
+deba6500-a989-48c4-bdfc-4e67ea92c48c,20261026_143707_P01_coding_task,,set_started,1793001428122,2026-10-26T14:57:08.122+07:00,2026-10-26T07:57:08.123Z,hard,hard,,,,
+8ad9977d-9db8-4c39-a2cc-be0b1f202a39,20261026_143707_P01_coding_task,,puzzle_started,1793001428131,2026-10-26T14:57:08.131+07:00,2026-10-26T07:57:08.133Z,hard,hard,fibonacci_iterative,Fibonacci Iteratif,,
+440cf61e-d617-4679-a8aa-3a5d10857ec9,20261026_143707_P01_coding_task,ce4b017c-bb41-4cc0-b20c-06e555fa54ca,attempt_submitted,1793001610629,2026-10-26T15:00:10.629+07:00,2026-10-26T08:00:10.631Z,hard,hard,fibonacci_iterative,Fibonacci Iteratif,manual,incorrect
+6d1ffc42-2173-45b2-9b0a-e71c1018f54a,20261026_143707_P01_coding_task,,puzzle_started,1793001618165,2026-10-26T15:00:18.165+07:00,2026-10-26T08:00:18.165Z,hard,hard,anagram_check,Pemeriksaan Anagram,,
+65c70514-52d8-49f6-9b52-36f0bb78216a,20261026_143707_P01_coding_task,2f79709e-f2df-4a81-9e30-9aae0c59edb3,attempt_submitted,1793001697357,2026-10-26T15:01:37.357+07:00,2026-10-26T08:01:37.359Z,hard,hard,anagram_check,Pemeriksaan Anagram,manual,incorrect
+0e6e176d-d6b5-4ce8-9a1a-83cc7d2a4250,20261026_143707_P01_coding_task,,puzzle_started,1793001699993,2026-10-26T15:01:39.993+07:00,2026-10-26T08:01:39.994Z,hard,hard,merge_sorted_arrays,Menggabungkan Array Terurut,,
+3c898bd8-20b3-4f82-907a-5030971f9cd0,20261026_143707_P01_coding_task,7b378422-be12-45a4-ac26-f9f8bae0f680,attempt_submitted,1793002337775,2026-10-26T15:12:17.775+07:00,2026-10-26T08:12:17.777Z,hard,hard,merge_sorted_arrays,Menggabungkan Array Terurut,timeout,incorrect
+db51f3b7-b07f-4c54-a951-8337508d1b72,20261026_143707_P01_coding_task,,set_ended,1793002337782,2026-10-26T15:12:17.782+07:00,2026-10-26T08:12:17.783Z,hard,hard,,,,timed_out
+f6093ee1-6ed8-426d-936a-f54f31dd3398,20261026_143707_P01_coding_task,,rating_started,1793002337787,2026-10-26T15:12:17.787+07:00,2026-10-26T08:12:17.788Z,hard,hard,,,,

@@ -26,12 +26,20 @@ cd E:\Skripsi\ngodong\Adaptive-IDE
 Peserta duduk tenang selama kalibrasi. Ketika baseline siap, terminal memberikan
 instruksi untuk mulai coding. Tekan Ctrl+C untuk mengakhiri sesi.
 
-Pada sesi gabungan melalui `run_multimodal.py`, baseline HRV langsung berjalan
-bersamaan dengan kalibrasi mata. Setelah validasi mata diterima, layar khusus HRV
+Pada sesi gabungan melalui `run_multimodal.py`, HW9 tersambung dan RR mentah mulai
+direkam saat startup. Baseline HRV baru dihitung ketika peserta menekan **Q** pada
+preview kamera, bersamaan dengan awal kalibrasi mata. Q hanya diterima setelah
+kamera dan aliran RR siap. Selama menunggu preview, durasi dan batas waktu baseline
+belum berjalan. RR sebelum Q dan interval yang melintasi batas Q tidak masuk baseline.
+Jika kalibrasi mata gagal atau diulang, baseline HRV tetap berjalan tanpa reset.
+Setelah validasi mata diterima, layar khusus HRV
 menampilkan sisa RR yang dibutuhkan tanpa mengulang progres sebelumnya. Jika
 baseline sudah siap, layar ini dilewati. Target tetap 120 detik RR dengan batas
-300 detik sejak perekaman HRV dimulai. Panel HRV tidak menutupi titik kalibrasi mata.
-Tugas dimulai setelah kedua kalibrasi siap; mode HRV saja tidak menunggu mata.
+300 detik sejak pemicu Q. Panel HRV tidak menutupi titik kalibrasi mata.
+Tugas dimulai setelah kedua kalibrasi siap; mode HRV saja memulai baseline otomatis
+setelah sensor terhubung. Folder sesi tetap menggunakan nama dan lokasi yang sama;
+`calibration_start.json` di dalamnya menyimpan waktu pemicu bersama. Jika preview
+ditutup sebelum Q, tidak ada hasil baseline yang ditulis ke `hrv.csv`.
 
 ```powershell
 # Otomatis berhenti setelah 180 detik tugas, di luar durasi kalibrasi.
@@ -68,7 +76,8 @@ Lokasi folder dicetak di terminal setelah sensor tersambung.
 - `rr_units`: nilai asli BLE dalam unit 1/1024 detik.
 - `rr_original_ms`: konversi RR menjadi milidetik, `rr_units × 1000 / 1024`.
 - `contact_detected`: status kontak jika didukung sensor.
-- `phase`: `calibration` atau `task`; pada sesi gabungan, `waiting_for_eye`
+- `phase`: `waiting_for_start` selama persiapan sebelum Q, lalu `calibration`
+  atau `task`; pada sesi gabungan, `waiting_for_eye`
   menandai RR setelah baseline siap tetapi mata belum selesai. RR pada fase tunggu
   ini hanya disimpan sebagai raw, tidak menambah baseline atau window tugas.
 - `session_id` mengidentifikasi folder sensor; `study_phase` diisi setelah fusi

@@ -14,6 +14,7 @@ hrv_monitor_prototype/sessions/**
 sessions/*
 !sessions/saved_session/
 !sessions/saved_session/**
+sessions/saved_session/**/eye_crops/
 
 __pycache__/
 eye_tracking_prototype/modules/__pycache__

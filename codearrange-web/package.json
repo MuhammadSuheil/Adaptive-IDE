@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "test": "node --test tests/*.test.js",
     "create-puzzle": "node scripts/create-puzzle.js"
   },
   "engines": {

@@ -1,0 +1,1 @@
+{"phase": "task", "status": "ready", "elapsed_seconds": 199.9, "maximum_seconds": 300.0, "accepted_rr_seconds": 122.5, "target_seconds": 120.0, "remaining_seconds": 0.0, "text": "Kalibrasi: 200/300 detik | RR diterima: 122.5/120 detik", "hrv_calibration_completed_at_utc": "2026-10-27T07:28:51.149967+00:00", "both_calibrated_at_utc": "2026-10-27T07:28:51.149967+00:00"}

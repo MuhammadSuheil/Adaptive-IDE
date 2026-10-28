@@ -116,6 +116,8 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
                 try:
                     timestamp = datetime.now(INDONESIA_WESTERN_TIME).isoformat()
                     elapsed = time.monotonic() - origin
+                    if monitor is not None and getattr(monitor, "phase", "raw") == "waiting_for_start":
+                        monitor.tick(elapsed)  # Apply Q before stamping this packet's phase.
                     phase = getattr(monitor, "phase", "raw")
                     relative = (monitor.timestamp_relative(elapsed, phase)
                                 if monitor is not None and hasattr(monitor, "timestamp_relative") else "")
@@ -210,6 +212,8 @@ async def record_sensor(name="HW9", address=None, duration=None, output=SESSION_
                 try:
                     timestamp = datetime.now(INDONESIA_WESTERN_TIME).isoformat()
                     elapsed = time.monotonic() - origin
+                    if monitor is not None and getattr(monitor, "phase", "raw") == "waiting_for_start":
+                        monitor.tick(elapsed)  # Apply Q before stamping this packet's phase.
                     phase = getattr(monitor, "phase", "raw")
                     relative = (monitor.timestamp_relative(elapsed, phase)
                                 if monitor is not None and hasattr(monitor, "timestamp_relative") else "")

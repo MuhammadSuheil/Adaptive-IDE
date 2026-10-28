@@ -69,6 +69,22 @@ class StudyEventSyncTests(unittest.TestCase):
         self.assertEqual(context_at(4000, events, 100)["study_phase"], "rest")
         self.assertEqual(context_at(9000, events, 100)["study_phase"], "interrupted")
 
+    def test_manual_end_excludes_rest_and_mixed_windows_before_next_set(self):
+        ended = event(2000, "set_ended", "easy-1", "easy", "q1")
+        ended["outcome"] = "stopped_manually"
+        events = [event(1000, "set_started", "easy-1", "easy"),
+                  event(1100, "puzzle_started", "easy-1", "easy", "q1"), ended,
+                  event(4000, "set_started", "medium", "medium"),
+                  event(4100, "puzzle_started", "medium", "medium", "q2")]
+        self.assertEqual(context_at(1900, events)["study_phase"], "active_task")
+        self.assertEqual(context_at(2000, events)["study_phase"], "rest")
+        self.assertEqual(context_at(3500, events)["study_phase"], "rest")
+        self.assertEqual(context_at(4200, events)["puzzle_set"], "medium")
+        labels = summarize_segments(interval_segments(1500, 4500, events))
+        self.assertEqual(labels["study_phase"], "mixed")
+        parts = json.loads(labels["window_phase_mix"])
+        self.assertEqual([part["duration_seconds"] for part in parts], [.5, 2.0, .1, .4])
+
     def test_submission_feedback_and_rating_are_not_active_task(self):
         events = [
             event(1000, "set_started", "easy-1", "easy"),
