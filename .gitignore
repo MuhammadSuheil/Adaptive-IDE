@@ -15,6 +15,7 @@ sessions/*
 !sessions/saved_session/
 !sessions/saved_session/**
 sessions/saved_session/**/eye_crops/
+sessions/saved_session/**/eye_crops.zip
 
 __pycache__/
 eye_tracking_prototype/modules/__pycache__
