@@ -1,0 +1,20 @@
+subject_session,eye_timestamp_regressions,eye_timestamp_duplicates,capture_id_duplicates,event_id_duplicates,event_session_ids_consistent,eye_stored_phase_vs_final_ledger_mismatch,eye_stored_difficulty_vs_final_ledger_mismatch,phase_mismatch_pairs,timeline_eye_count_mismatches,timeline_task_hrv_row_count_matches,timeline_hrv_status_mismatches,timeline_rmssd_mismatches,classified_windows_with_unready_hrv,classified_windows_with_onscreen_under_45pct
+Andrean,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,6.0,0.0
+Andreas,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,2.0,69.0
+Athaya,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,7.0,11.0
+Baithar,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,19.0,206.0
+Fabian,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,1.0,1.0
+faqih,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,14.0,2.0
+ikhsan,0,0,0,0,True,749,0,"{""interrupted->post_task"": 749}",0.0,True,0.0,0.0,24.0,23.0
+irfan,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,12.0,382.0
+kaka,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,121.0,64.0
+Rafi,0,0,0,0,True,0,0,{},,,,,,
+raina,0,0,0,0,True,409,0,"{""interrupted->post_task"": 409}",0.0,True,0.0,0.0,5.0,85.0
+Ramadhan,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,4.0,1.0
+Ramadhan-2,0,0,0,0,True,1990,0,"{""interrupted->post_task"": 1990}",0.0,True,0.0,0.0,13.0,337.0
+sam,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,10.0,13.0
+Savitri,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,3.0,7.0
+Shakilla,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,7.0,3.0
+Siti,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,67.0,380.0
+Sullivan,0,0,0,0,True,435,0,"{""interrupted->post_task"": 435}",0.0,True,0.0,0.0,233.0,199.0
+Tio,0,0,0,0,True,0,0,{},0.0,True,0.0,0.0,49.0,30.0
