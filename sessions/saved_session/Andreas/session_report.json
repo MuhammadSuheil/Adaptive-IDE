@@ -1,0 +1,66 @@
+{
+  "session_name": "20261030_105505_P01_coding_task",
+  "study_session_status": "interrupted",
+  "study_event_count": 109,
+  "study_events_file": "task_events.csv",
+  "analyzed_at": "2026-10-30T11:32:56.346049+07:00",
+  "baseline": {
+    "rmssd_ms": 20.460631048608263,
+    "sdnn_ms": 43.69702941432034,
+    "status": "ready"
+  },
+  "total_windows": 404,
+  "task_summary_by_set": {
+    "easy-1": {
+      "difficulty_level": "easy",
+      "window_count": 23,
+      "average_cognitive_load_score": 28.5
+    },
+    "medium": {
+      "difficulty_level": "medium",
+      "window_count": 66,
+      "average_cognitive_load_score": 31.9
+    },
+    "hard": {
+      "difficulty_level": "hard",
+      "window_count": 91,
+      "average_cognitive_load_score": 23.8
+    }
+  },
+  "excluded_window_count": {
+    "mixed": 218,
+    "feedback": 4,
+    "rating": 0,
+    "rest": 0,
+    "pre_task": 0,
+    "post_task": 0,
+    "interrupted": 2,
+    "unlabeled": 0,
+    "baseline": 0,
+    "other_phase": 0,
+    "sensor_quality": 0
+  },
+  "task_state_breakdown_count": {
+    "FOCUSED": 0,
+    "CONFUSED": 143,
+    "SCANNING": 0,
+    "OVERLOADED": 7,
+    "DISTRACTED": 30
+  },
+  "state_breakdown_count": {
+    "FOCUSED": 0,
+    "CONFUSED": 322,
+    "SCANNING": 0,
+    "OVERLOADED": 13,
+    "DISTRACTED": 69
+  },
+  "state_breakdown_percent": {
+    "FOCUSED": 0.0,
+    "CONFUSED": 79.7,
+    "SCANNING": 0.0,
+    "OVERLOADED": 3.2,
+    "DISTRACTED": 17.1
+  },
+  "average_cognitive_load_score": 27.4,
+  "timeline_file": "multimodal_timeline.csv"
+}
