@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "window_seconds": 25,
+  "step_seconds": 5,
+  "eye_coverage_bin_ms": 100,
+  "gaze_clip_margin_fraction": 0.1,
+  "baseline_min_coverage": 0.8,
+  "quality": {
+    "good": {
+      "min_eye_temporal_coverage": 0.95,
+      "min_face_ear_ratio": 0.95,
+      "min_valid_gaze_ratio": 0.9,
+      "min_iris_available_ratio": 0.9,
+      "max_clipping_ratio": 0.05
+    },
+    "acceptable": {
+      "min_eye_temporal_coverage": 0.8,
+      "min_face_ear_ratio": 0.8,
+      "min_valid_gaze_ratio": 0.7,
+      "min_iris_available_ratio": 0.7,
+      "max_clipping_ratio": 0.2
+    }
+  },
+  "participant_review_groups": {
+    "proposed_good": ["Andrean", "Fabian", "Faqih", "Ikhsan", "Kaka"],
+    "questionable": ["Andreas", "Athaya", "Rafi", "Raina", "Sam", "Savitri", "Shakilla", "Tio"]
+  },
+  "participant_notes": {
+    "Ikhsan": "Team reports glasses; do not infer that glasses caused measurement errors.",
+    "Shakilla": "Team reports a laptop camera at 30 FPS; medium only. Use observed camera metadata, not the requested FPS.",
+    "Ramadhan": "Two recordings of one participant; interrupted first recording and repeated medium in the second. Keep both in the same evaluation group."
+  },
+  "repeated_difficulties_by_session": {
+    "Ramadhan-2": ["medium"]
+  }
+}

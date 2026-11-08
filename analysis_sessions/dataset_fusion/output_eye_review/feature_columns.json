@@ -1,0 +1,32 @@
+{
+  "target": "difficulty_level",
+  "group": "participant_id",
+  "features": [
+    "rmssd_ms",
+    "sdnn_ms",
+    "rmssd_baseline_ratio",
+    "blink_count",
+    "blink_rate_per_minute",
+    "ear_left_mean",
+    "ear_left_std",
+    "ear_right_mean",
+    "ear_right_std",
+    "iris_size_estimate_mean",
+    "iris_size_estimate_std",
+    "iris_size_delta_mean",
+    "iris_size_delta_std",
+    "head_pitch_mean",
+    "head_pitch_std",
+    "head_yaw_mean",
+    "head_yaw_std",
+    "gaze_x_norm_mean",
+    "gaze_x_norm_std",
+    "gaze_y_norm_mean",
+    "gaze_y_norm_std",
+    "eye_state_fixation_ratio",
+    "eye_state_saccade_ratio",
+    "eye_state_transition_ratio",
+    "eye_state_unclassified_ratio",
+    "eye_state_other_ratio"
+  ]
+}

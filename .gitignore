@@ -11,6 +11,7 @@ hrv_monitor_prototype/sessions/**
 !hrv_monitor_prototype/sessions/saved_session
 !hrv_monitor_prototype/sessions/saved_session/**
 
+/graphify-out
 sessions/*
 !sessions/saved_session/
 !sessions/saved_session/**
@@ -19,7 +20,8 @@ sessions/saved_session/**/eye_crops.zip
 
 __pycache__/
 eye_tracking_prototype/modules/__pycache__
-eyebeam
+AGENTS.md
+/.codex
 
 # Code Arrange
 codearrange-web/logs/**

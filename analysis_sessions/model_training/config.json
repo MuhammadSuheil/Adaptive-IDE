@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "primary_hrv_weight": 0.6,
+  "sensitivity_hrv_weight": 0.5,
+  "reference_eye_weights": {"blink_suppression": 0.5, "fixation_proportion": 0.5},
+  "band_quantiles": [0.2, 0.4, 0.6, 0.8],
+  "include_head_pose_context": true,
+  "seed": 42
+}

@@ -1,0 +1,75 @@
+column,role,unit,description
+window_id,metadata,,"Unique source session ID and source window boundaries, separated by |."
+participant_id,metadata,,Participant grouping key; both Ramadhan recordings use Ramadhan.
+session_id,metadata,,"Original sensor session ID, independent of archive folder name."
+session_folder,metadata,,Selected archive directory name.
+team_review_group,metadata,,"Team eye-quality cohort, matched case-insensitively. proposed_good permits good_only/good_acceptable; questionable permits good_acceptable; unreviewed permits all_data only. Window checks still apply."
+participant_note,metadata,,"Team-provided acquisition context, not a sensor-derived conclusion."
+repeated_task,metadata,,True for session/difficulty pairs marked as repeated in config.
+window_start,metadata,,Original timezone-aware HRV window start; excluded eye endpoint.
+window_end,metadata,,Original timezone-aware HRV window end; included eye endpoint.
+window_seconds,metadata,,Window duration in seconds; v1 requires 25 seconds.
+study_phase,metadata,,Final-ledger phase; retained dataset rows are entirely active_task.
+difficulty_level,target,,TARGET: easy/medium/hard task condition; not independently measured experienced cognitive load.
+puzzle_set,metadata,,Ledger set provenance; mixed if the interval crosses sets.
+puzzle_id,metadata,,Ledger puzzle provenance; mixed if the interval crosses questions.
+window_phase_mix,metadata,,Ledger segment provenance; not a predictor.
+hrv_status,metadata,,Recorded readiness status; unready numbers are masked.
+hrv_reason,metadata,,Recorded HRV readiness explanation.
+hrv_coverage,metadata,,Recorded accepted-RR duration / window duration.
+hrv_rr_count,metadata,,Recorded usable RR count.
+hrv_rr_pairs,metadata,,Recorded usable adjacent-RR pair count.
+hrv_data_age_seconds,metadata,,Recorded age of the latest usable RR interval.
+hrv_usable,metadata,,"Ready status and finite, nonnegative RMSSD/SDNN; required for good/acceptable tiers."
+baseline_rmssd_ms,metadata,,"Positive ready session baseline, blank when coverage is below configured minimum."
+baseline_coverage,metadata,,"Recorded baseline accepted-RR coverage, irrespective of baseline eligibility."
+baseline_usable,metadata,,Whether baseline qualifies for the ratio feature; not required for raw-HRV eligibility.
+eye_frames_count,metadata,,"Observed frames in (start, end]."
+eye_temporal_coverage,metadata,,"Fraction of 100-ms bins occupied by at least one eye row, using right-closed bins anchored at window start."
+face_ear_ratio,metadata,,"Fraction of observed rows with a face and both EAR values in [0, 1]."
+valid_gaze_ratio,metadata,,"Fraction of observed rows with a face, valid gaze status and finite raw/smoothed gaze coordinates."
+iris_available_ratio,metadata,,"Fraction of observed rows with a face, valid nonblinking iris-size estimate in eye_width_ratio mode."
+clipping_ratio_valid,metadata,,"Fraction of valid-gaze rows at a recorded raw-coordinate clamp, using configured margin; blank without valid gaze."
+on_screen_ratio,metadata,,Recorded on_screen status fraction; not treated as an accuracy measure.
+blink_counter_discontinuities,metadata,,"Rows with a missing, negative, fractional or decreasing blink counter, including unavailable predecessors."
+observed_eye_fps,metadata,,Observed window row count / duration; not nominal device FPS.
+capture_fps_mean,metadata,,"Mean logged capture_fps in the window, when available."
+screen_width_px,metadata,,Screen width saved with calibration; used to normalize x.
+screen_height_px,metadata,,Screen height saved with calibration; used to normalize y.
+camera_width_px,metadata,,"Actual camera width reported in session summary, not requested width."
+camera_height_px,metadata,,"Actual camera height reported in session summary, not requested height."
+camera_reported_fps,metadata,,Driver-reported FPS; not proof of actual capture rate.
+camera_observed_capture_fps,metadata,,Observed capture rate saved in session summary.
+gaze_validation_passed,metadata,,Original last held-out validation decision; blank if absent. Not an input to window tier assignment.
+gaze_validation_median_px,metadata,,Last held-out median error of point mean predictions; not a frame-level error quantile.
+gaze_validation_p95_px,metadata,,Last held-out P95 error of point mean predictions; not a frame-level error quantile.
+gaze_validation_max_corner_px,metadata,,Last held-out maximum corner error.
+quality_tier,metadata,,Operational completeness/clipping tier; good does not certify spatial accuracy or mental-state validity.
+good_failed_criteria,metadata,,Semicolon-delimited failed good rules; empty when good.
+acceptable_failed_criteria,metadata,,Semicolon-delimited failed acceptable rules; empty when acceptable rules pass.
+rmssd_ms,feature,ms,Recorded time-domain HRV; unavailable unless status is ready and both HRV measures are finite and nonnegative.
+sdnn_ms,feature,ms,Recorded time-domain HRV; not a cognitive-state label.
+rmssd_baseline_ratio,feature,ratio,Window RMSSD / positive ready baseline RMSSD with sufficient baseline coverage.
+blink_count,feature,events,Increments in the session blink counter at reopening timestamps; blank if a counter discontinuity is observed.
+blink_rate_per_minute,feature,events/minute,"Blink count * 60 / full window duration; partial recordings can undercount, see coverage."
+ear_left_mean,feature,ratio,"Left eye aspect ratio; face present and value in [0, 1]. Window mean; std uses ddof=1."
+ear_left_std,feature,ratio,"Left eye aspect ratio; face present and value in [0, 1]. Window std; std uses ddof=1."
+ear_right_mean,feature,ratio,"Right eye aspect ratio; face present and value in [0, 1]. Window mean; std uses ddof=1."
+ear_right_std,feature,ratio,"Right eye aspect ratio; face present and value in [0, 1]. Window std; std uses ddof=1."
+iris_size_estimate_mean,feature,eye_width_ratio,"Landmark iris-size estimate, not pupil diameter; valid, nonblinking frames only. Window mean; std uses ddof=1."
+iris_size_estimate_std,feature,eye_width_ratio,"Landmark iris-size estimate, not pupil diameter; valid, nonblinking frames only. Window std; std uses ddof=1."
+iris_size_delta_mean,feature,relative_change,Recorded iris-size change; requires a ready iris baseline. Window mean; std uses ddof=1.
+iris_size_delta_std,feature,relative_change,Recorded iris-size change; requires a ready iris baseline. Window std; std uses ddof=1.
+head_pitch_mean,feature,degrees,Recorded head-pitch estimate; face present. Window mean; std uses ddof=1.
+head_pitch_std,feature,degrees,Recorded head-pitch estimate; face present. Window std; std uses ddof=1.
+head_yaw_mean,feature,degrees,Recorded head-yaw estimate; face present. Window mean; std uses ddof=1.
+head_yaw_std,feature,degrees,Recorded head-yaw estimate; face present. Window std; std uses ddof=1.
+gaze_x_norm_mean,feature,screen_width,"Smoothed gaze x / screen width; valid finite gaze, including outside-screen/clipped estimates. Window mean; std uses ddof=1."
+gaze_x_norm_std,feature,screen_width,"Smoothed gaze x / screen width; valid finite gaze, including outside-screen/clipped estimates. Window std; std uses ddof=1."
+gaze_y_norm_mean,feature,screen_height,"Smoothed gaze y / screen height; valid finite gaze, including outside-screen/clipped estimates. Window mean; std uses ddof=1."
+gaze_y_norm_std,feature,screen_height,"Smoothed gaze y / screen height; valid finite gaze, including outside-screen/clipped estimates. Window std; std uses ddof=1."
+eye_state_fixation_ratio,feature,ratio,Frame proportion of algorithmic Fixation Eye_State among valid-gaze frames; not an independently validated eye event.
+eye_state_saccade_ratio,feature,ratio,Frame proportion of algorithmic Saccade Eye_State among valid-gaze frames; not an independently validated eye event.
+eye_state_transition_ratio,feature,ratio,Frame proportion of algorithmic Transition Eye_State among valid-gaze frames; not an independently validated eye event.
+eye_state_unclassified_ratio,feature,ratio,Frame proportion of algorithmic Unclassified Eye_State among valid-gaze frames; not an independently validated eye event.
+eye_state_other_ratio,feature,ratio,Frame proportion of algorithmic other Eye_State among valid-gaze frames; not an independently validated eye event.

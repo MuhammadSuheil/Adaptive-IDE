@@ -1,0 +1,3 @@
+-r requirements.txt
+IPython>=8
+ipykernel>=6
