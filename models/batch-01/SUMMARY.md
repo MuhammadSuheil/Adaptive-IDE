@@ -12,6 +12,10 @@ Prosedur pemilihan pipeline melalui nested validation pada exp12 menghasilkan ac
 
 Penanganan imbalance, perubahan fitur, pergantian algoritma, riwayat fitur, dua tahap klasifikasi, dan dua cara fusi sensor sudah diuji. **Penambahan rekaman Low asli dan perubahan panjang/langkah window sensor mentah belum diuji.** Hasil yang lemah juga mencakup Medium dan High, sehingga kekurangan Low belum menjelaskan seluruh kesalahan.
 
+## Versi dataset dan pekerjaan sesudah batch ini
+
+Batch-01 tetap memakai v1: 25 detik/step 5, hanya active-task, target dari difficulty. Seluruh hasil dan angka dalam laporan ini tidak diubah. Dataset v1 sudah dipindahkan byte-identik ke `analysis_sessions/dataset_fusion/output/v1_active_task/`. [Dataset v2](../../analysis_sessions/dataset_fusion/output/v2_session_phase/QUALITY_REPORT.md) kemudian disiapkan dengan tiga panjang window serta label berdasarkan fase sesi; belum ada training model v2. Ikuti [plan batch-02](../batch-02/PLAN.md) untuk evaluasi berikutnya, bukan notebook v1 langsung pada target baru.
+
 ## Kesesuaian implementasi dengan konteks penelitian
 
 **Inti pemodelan batch-01 sudah sesuai dengan konteks yang diluruskan:** classifier memprediksi CL per window dari fitur eye tracking dan HRV. Model tidak memasukkan nama/ID peserta, ID soal, nama set, atau batas waktu set sebagai fitur. Kolom `difficulty_level` menjadi sumber label, bukan input prediksi. Pemisahan test menurut peserta dan penyimpanan hasil per peserta tidak berarti kita melatih classifier personal.
@@ -72,7 +76,7 @@ Batas waktu set memang berbeda: easy 5 menit, medium 12 menit, dan hard 15 menit
 
 Pelurusan ini tidak mengubah jumlah data, prediksi, atau skor batch-01. Acuan tujuan dan peran kolom terdapat pada [konteks penelitian](../README.md#konteks-penelitian-dan-peran-kolom).
 
-Sumber: [ringkasan dataset yang dipakai run](outputs/exp12/20261114T083026316937Z_full_final_77bd4e91/dataset_summary.json), [laporan kualitas dataset](../../analysis_sessions/dataset_fusion/output/QUALITY_REPORT.md), dan [builder dataset](../../analysis_sessions/dataset_fusion/build_dataset.py).
+Sumber: [ringkasan dataset yang dipakai run](outputs/exp12/20261114T083026316937Z_full_final_77bd4e91/dataset_summary.json), [laporan kualitas dataset](../../analysis_sessions/dataset_fusion/output/v1_active_task/QUALITY_REPORT.md), dan [builder dataset](../../analysis_sessions/dataset_fusion/build_dataset.py).
 
 ### Arti label dan tujuan model
 
@@ -94,7 +98,7 @@ Pemisahan berdasarkan peserta mengukur kemampuan model pada programmer yang tida
 | Gaze | Mean dan standard deviation koordinat gaze ternormalisasi X/Y |
 | Eye state | Rasio fixation, saccade, transition, unclassified, dan other |
 
-Identitas peserta, ID sesi, ID soal, timestamp, kesulitan tugas, dan penanda kualitas tidak menjadi fitur prediksi pada konfigurasi dasar. Runtime memakai sebagian metadata untuk membagi fold, membentuk ID window, dan mereset riwayat temporal. Daftar dasar 26 fitur sensor juga tersedia pada [allowlist dataset](../../analysis_sessions/dataset_fusion/output/feature_columns.json); fitur aktual tiap run/fold tercatat dalam artefak preprocessing.
+Identitas peserta, ID sesi, ID soal, timestamp, kesulitan tugas, dan penanda kualitas tidak menjadi fitur prediksi pada konfigurasi dasar. Runtime memakai sebagian metadata untuk membagi fold, membentuk ID window, dan mereset riwayat temporal. Daftar dasar 26 fitur sensor juga tersedia pada [allowlist dataset](../../analysis_sessions/dataset_fusion/output/v1_active_task/feature_columns.json); fitur aktual tiap run/fold tercatat dalam artefak preprocessing.
 
 Metadata tetap disimpan bersama fitur dalam CSV untuk keperluan operasional dan audit. Batch-01 memakai allowlist sensor, bukan seluruh kolom CSV. Perbedaan fitur antarrekaman yang dibahas dalam laporan merujuk pada nilai sensor, bukan akibat model memasukkan nama peserta. Menghapus kolom identitas tidak menghilangkan perbedaan sensor tersebut.
 

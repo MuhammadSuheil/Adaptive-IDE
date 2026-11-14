@@ -9,13 +9,13 @@ Protokol menetapkan batas waktu easy **5 menit**, medium **12 menit**, dan hard 
 | Peran | Kolom/contoh | Penggunaan |
 |---|---|---|
 | Fitur prediksi `X` | RMSSD, SDNN, EAR, kedipan, iris, head pose, gaze, eye state | Daftar eksplisit fitur sensor dan transformasinya; bukan seluruh kolom CSV |
-| Label `y` | `difficulty_level`: `easy`, `medium`, `hard` | Dipetakan menjadi Low, Medium, High saat training/evaluasi; tidak menjadi input prediksi |
+| Label `y` | V2: `cognitive_load_label` (`Low`, `Medium`, `High`) | Target langsung; `difficulty_level` tetap metadata, bukan target kedua atau input prediksi |
 | Metadata identitas | `participant_id`, `session_id`, `window_id` | Pengelompokan train/test, deduplikasi, dan penelusuran sumber; bukan fitur model utama |
 | Metadata konteks/kualitas | Timestamp, `puzzle_id`, `puzzle_set`, fase, coverage, validasi gaze | Alignment, filtering, batas riwayat, audit, dan pelaporan; bukan otomatis fitur prediksi |
 
-Label CL saat ini mengikuti kesulitan tugas sebagai proxy. Tujuan aplikasi tetap klasifikasi CL dalam pemrograman, dengan batas validitas label tersebut dicatat. Jangan memasukkan nama set, ID soal, kesulitan, atau batas waktu set ke `X` untuk menaikkan skor dengan informasi yang mengungkap label.
+Label v2 mengikuti protokol fase/difficulty: active easy/practice/demo, pre-task setelah kalibrasi, feedback, rating, jeda, dan post-task diberi Low; active medium diberi Medium dan hard diberi High. Rating/feedback setelah medium/hard juga Low. Kalibrasi dan interval tanpa konteks yang dapat ditelusuri dikeluarkan. Seluruh window harus mempunyai satu target yang sama, meskipun fase/soalnya boleh berbeda. Jangan memasukkan nama set, ID soal, kesulitan, atau batas waktu set ke `X` untuk menaikkan skor dengan informasi yang mengungkap label.
 
-Tiga CSV di `analysis_sessions/dataset_fusion/output` tetap menyimpan fitur, target, dan metadata bersama. Keberadaan metadata di CSV tidak berarti model memakainya. [Allowlist dataset](../analysis_sessions/dataset_fusion/output/feature_columns.json) menetapkan 26 fitur sensor yang juga dipakai sebagai allowlist dasar batch-01. Salinan allowlist pada kode pemodelan lama sudah dihapus bersama `models/shared`. Tidak diperlukan penghapusan metadata, penambahan label duplikat, atau perubahan CSV hanya untuk pelurusan konteks ini.
+Output dipisahkan menjadi `v1_active_task` (13 artefak lama byte-identik, termasuk dataset batch-01) dan `v2_session_phase` (window 15/25/45 detik, step 5). Ketiga view CSV di setiap varian menyimpan fitur, target, dan metadata bersama. [Allowlist v2 25 detik](../analysis_sessions/dataset_fusion/output/v2_session_phase/window_25s_step_5s/feature_columns.json) menetapkan 26 fitur sensor, tidak termasuk ID, difficulty, fase, atau target. [Laporan v2](../analysis_sessions/dataset_fusion/output/v2_session_phase/QUALITY_REPORT.md) mencatat distribusi dan rekonstruksi RR. Jangan memakai pemetaan difficulty milik notebook lama pada CSV v2; target Low dapat berada pada rating setelah hard. Kode pemodelan lama `models/shared` tetap dihapus.
 
 Pemisahan berbasis peserta merupakan pengaman evaluasi model sensor, bukan perubahan tujuan menjadi analisis perorangan. Nilai sensor tetap dapat membawa variasi antarrekaman walaupun nama peserta tidak menjadi input. Menghapus ID peserta tidak menghilangkan variasi itu dan akan menghilangkan kunci pengelompokan jika tidak disimpan terpisah.
 
@@ -33,7 +33,7 @@ Satu `batch` adalah satu rangkaian penelitian/pemodelan; `exp` adalah percobaan 
 | batch-01 | Baseline dan rangkaian exp01 sampai exp12 | [SUMMARY.md](batch-01/SUMMARY.md) |
 | batch-02 | Evaluasi mandiri dataset terbaru: fitur sensor, window, balancing, dan model; belum training | [PLAN.md](batch-02/PLAN.md) |
 
-Rencana batch-02 sudah tersedia. Dataset tambahannya masih menunggu pengambilan/penerimaan data; notebook dan training baru belum dibuat. Rangkaian setelahnya dapat memakai nama `batch-03` bila nanti disepakati.
+Rencana batch-02 sudah tersedia dan sudah disesuaikan dengan builder/tiga varian dataset v2 yang selesai dibuat. Rekaman Low tambahan masih menunggu pengambilan/penerimaan data; notebook dan training baru belum dibuat. Rangkaian setelahnya dapat memakai nama `batch-03` bila nanti disepakati.
 
 Batch-02 tidak membandingkan skor dengan batch-00/batch-01 atau menguji sebelum–sesudah penambahan Low. Seluruh dataset terbaru menjadi sumber evaluasi dan baseline batch-02. Manifest fold yang sama digunakan untuk membandingkan konfigurasi di dalam batch tersebut; hasil batch lama tetap menjadi arsip.
 

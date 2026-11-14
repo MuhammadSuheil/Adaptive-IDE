@@ -483,6 +483,10 @@ def publish_artifact(source, destination):
 def build_dataset(input_dir, output_dir, config_path=DEFAULT_CONFIG, subjects=None):
     input_dir, output_dir = Path(input_dir).resolve(), Path(output_dir).resolve()
     config_path = Path(config_path).resolve()
+    if output_dir == Path(__file__).with_name("output").resolve():
+        raise ValueError("The output root contains versioned bundles. Use build_dataset_v2.py or a separate explicit output path.")
+    if output_dir.name == "v1_active_task" and output_dir.exists():
+        raise FileExistsError("v1_active_task is an immutable archive; use a separate rebuild directory.")
     if output_dir.is_relative_to(input_dir) or input_dir.is_relative_to(output_dir) or Path(__file__).resolve().is_relative_to(output_dir):
         raise ValueError("Output must be separate from source sessions and must not contain the builder itself.")
     config = load_config(config_path)
@@ -530,7 +534,7 @@ def build_dataset(input_dir, output_dir, config_path=DEFAULT_CONFIG, subjects=No
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, default=ROOT / "sessions/saved_session")
-    parser.add_argument("--output", type=Path, default=Path(__file__).with_name("output"))
+    parser.add_argument("--output", type=Path, required=True, help="Separate v1 rebuild directory; the versioned output root/archive are protected.")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--subjects", nargs="+", help="Optional exact archive folder names; default includes every unique acquisition.")
     args = parser.parse_args()

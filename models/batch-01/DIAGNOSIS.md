@@ -1,5 +1,9 @@
 # Diagnosis Batch 01 dan Prioritas Batch Berikutnya
 
+## Cakupan versi
+
+Seluruh angka diagnosis ini merujuk dataset v1 dan hasil batch-01 yang tetap diarsipkan. Dataset v2 kemudian dibangun dengan aturan fase dan target `cognitive_load_label` yang baru; angka v1 di bawah bukan distribusi terkini v2. Pekerjaan dataset sudah selesai, sedangkan evaluasi model v2 dan penerimaan Low tambahan belum dijalankan. Rencana lanjutan terbaru ada pada [batch-02](../batch-02/PLAN.md).
+
 ## Ringkasan keputusan
 
 **Batch-01 sudah selesai dieksekusi. Hasilnya belum cukup baik untuk menyatakan model mampu mengklasifikasikan cognitive load tiga tingkat lintas programmer.** Dua hal ini perlu dibedakan: penyelesaian eksperimen dan keberhasilan model.
@@ -39,7 +43,7 @@ Untuk batch berikutnya, pertahankan inti sensor-only tersebut. Model utama per-w
 
 Jadi kita tidak mempunyai bukti bahwa batch-01 gagal karena classifier dilatih dengan tujuan mengenali peserta atau konteks lama yang keliru. Yang perlu diperbaiki adalah ketergantungan temporal untuk penggunaan umum, interpretasi protokol dalam laporan, dan masalah sensor/representasi yang sudah diaudit. Pelurusan konteks tidak membatalkan skor lama dan tidak membenarkan perubahan angka hasil tanpa eksperimen baru.
 
-Bukti tersimpan: [allowlist dasar dataset](../../analysis_sessions/dataset_fusion/output/feature_columns.json), [pilihan setiap fold exp12](outputs/exp12/20261114T083026316937Z_full_final_77bd4e91/selected_candidates.json), dan [konfigurasi refit akhir](outputs/exp12/20261114T083026316937Z_full_final_77bd4e91/final_model_config.json). Saat audit, pemeriksaan juga memakai `models/shared/estimators.py` dan `models/shared/experiments/features.py`. Tim kemudian menghapus seluruh `models/shared`; hasil inspeksi di atas merupakan catatan audit sebelum penghapusan, bukan klaim bahwa sumber tersebut masih tersedia.
+Bukti tersimpan: [allowlist dasar dataset](../../analysis_sessions/dataset_fusion/output/v1_active_task/feature_columns.json), [pilihan setiap fold exp12](outputs/exp12/20261114T083026316937Z_full_final_77bd4e91/selected_candidates.json), dan [konfigurasi refit akhir](outputs/exp12/20261114T083026316937Z_full_final_77bd4e91/final_model_config.json). Saat audit, pemeriksaan juga memakai `models/shared/estimators.py` dan `models/shared/experiments/features.py`. Tim kemudian menghapus seluruh `models/shared`; hasil inspeksi di atas merupakan catatan audit sebelum penghapusan, bukan klaim bahwa sumber tersebut masih tersedia.
 
 ## 1. Cakupan dan cara membaca tingkat bukti
 
@@ -202,7 +206,7 @@ Fitur iris juga bukan diameter pupil. Kode menghitung geometri landmark iris rel
 
 Kegagalan ini membatasi kepercayaan pada makna beberapa fitur. Namun exp03 tanpa gaze/eye-state tidak memperbaiki macro-F1 XGBoost, sehingga kita belum dapat menyatakan gaze adalah satu-satunya penyebab skor rendah. Menghapus semua peserta yang gagal validasi juga akan menyisakan satu peserta pada cohort ini dan menghilangkan evaluasi lintas peserta yang layak.
 
-Sumber: [sensor_admission.csv](diagnostics/results/sensor_admission.csv), [laporan kualitas dataset](../../analysis_sessions/dataset_fusion/output/QUALITY_REPORT.md), [audit sensor terdahulu](../../analysis_sessions/20261029_saved_session_audit/AUDIT.md), [agregasi dataset](../../analysis_sessions/dataset_fusion/build_dataset.py), dan [implementasi geometri mata](../../eye_tracking_prototype/eye_tracking_prototype.py).
+Sumber: [sensor_admission.csv](diagnostics/results/sensor_admission.csv), [laporan kualitas dataset](../../analysis_sessions/dataset_fusion/output/v1_active_task/QUALITY_REPORT.md), [audit sensor terdahulu](../../analysis_sessions/20261029_saved_session_audit/AUDIT.md), [agregasi dataset](../../analysis_sessions/dataset_fusion/build_dataset.py), dan [implementasi geometri mata](../../eye_tracking_prototype/eye_tracking_prototype.py).
 
 ## 6. Baseline HRV diterima recorder, tetapi ditolak aturan dataset
 
@@ -300,7 +304,7 @@ Label yang dipakai tetap berasal dari kesulitan tugas. Laporan kualitas dataset 
 
 Meningkatkan accuracy pada label tugas dan memvalidasi bahwa label mewakili cognitive load merupakan dua pekerjaan berbeda. Tujuan akhir tetap klasifikasi CL pada pemrograman secara umum. Evaluasi aktivitas di luar CodeArrange belum tersedia.
 
-Sumber: [task_order.csv](diagnostics/results/task_order.csv) dan [definisi target pada laporan dataset](../../analysis_sessions/dataset_fusion/output/QUALITY_REPORT.md).
+Sumber: [task_order.csv](diagnostics/results/task_order.csv) dan [definisi target pada laporan dataset](../../analysis_sessions/dataset_fusion/output/v1_active_task/QUALITY_REPORT.md).
 
 ## 10. Daftar masalah menurut kekuatan bukti
 
@@ -358,7 +362,7 @@ Selaraskan interpretasi dan kebijakan baseline HRV: ready recorder, usable build
 
 Pertahankan 25 detik/step 5 sebagai kontrol. Tentukan kandidat pendek/panjang yang terbatas setelah memeriksa jumlah pasangan RR, coverage, dan kestabilan RMSSD/SDNN. Simulasi geometri dalam laporan ini membantu menghitung biaya kehilangan data, tetapi belum memilih pemenang. Eksperimen ini mengubah interval sensor, bukan menyamakan batas waktu easy/medium/hard yang memang berbeda dalam protokol.
 
-Hitung ulang fitur dari sumber, bukan mengubah kolom `window_seconds` atau merata-ratakan RMSSD lama agar seolah-olah menjadi window baru. Jaga batas active_task. Jangan memasukkan rating/rest sebagai Low.
+Penghitungan ulang fitur dari RR/eye mentah sudah dilaksanakan pada dataset v2, dengan varian 15/25/45 detik dan step 5. Protokol v2 memberi Low pada easy/practice/demo aktif serta pre-task setelah kalibrasi, feedback, rating, jeda, dan post-task; active medium/hard tetap Medium/High. Semua bagian window harus memiliki target yang sama. Lihat [laporan v2](../../analysis_sessions/dataset_fusion/output/v2_session_phase/QUALITY_REPORT.md). Ini persiapan dataset, bukan hasil training atau perubahan angka batch-01.
 
 Pertimbangkan perbedaan kebutuhan temporal eye dan HRV jika satu panjang window tidak memberi kompromi yang baik. Detail alignment dan aturan labelnya perlu ditetapkan sebelum implementasi. Evaluasi harus memisahkan perubahan mutu fitur dari perubahan cohort test.
 

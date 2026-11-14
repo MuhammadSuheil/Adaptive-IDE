@@ -83,7 +83,7 @@ Bank sudah tersedia, tetapi pilot manusia belum dilakukan. Uji empat set pada du
 
 Catat waktu dan jumlah percobaan per soal, instruksi yang membingungkan, kenyamanan setelah setiap set, kebutuhan istirahat, serta window sensor yang lolos. Revisi soal yang memerlukan materi di luar standar easy atau sering menimbulkan salah tafsir. Jangan mengubah kunci hanya untuk menerima jawaban yang tidak sesuai instruksi.
 
-Pipeline dataset saat ini memakai window HRV 25 detik dengan step 5 detik dan mensyaratkan seluruh rentang berada dalam active_task dengan difficulty yang jelas. Window yang melewati feedback, rating, atau istirahat dikeluarkan. Soal cepat tetap menghasilkan data mentah, tetapi belum tentu menghasilkan window HRV terpilih.
+Dataset v1 (arsip batch-01) memakai window HRV 25 detik/step 5 dengan syarat active_task. Dataset v2 sekarang menghitung ulang window 15/25/45 detik dari RR dan eye mentah. Active easy/practice/demo, feedback, rating, jeda, dan pre/post-task setelah kalibrasi diberi Low; active medium/hard tetap Medium/High. Window boleh melintasi fase bila target seluruh rentangnya sama. Baseline dan interval tidak terlacak dikeluarkan. Lihat [laporan v2](../../analysis_sessions/dataset_fusion/output/v2_session_phase/QUALITY_REPORT.md); banyaknya soal/baris tidak dengan sendirinya menentukan mutu HRV.
 
 Jangan memperpanjang feedback, memaksa peserta menunggu, atau menambah jebakan untuk mengejar row. Pertahankan batas fase yang benar. Setelah pilot, periksa durasi aktif dan window berkualitas yang tersedia sebelum memperkirakan hasil dari maksimal delapan peserta.
 

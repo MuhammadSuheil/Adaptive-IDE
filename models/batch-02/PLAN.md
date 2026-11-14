@@ -2,11 +2,11 @@
 
 ## Status dan tujuan
 
-Dokumen ini merencanakan pekerjaan setelah [diagnosis batch-01](../batch-01/DIAGNOSIS.md). Notebook, pipeline baru, dan training batch-02 belum dibuat atau dijalankan. Dataset tambahan Low juga belum tersedia pada saat penyusunan rencana. Tahap pertama adalah menerima dan memvalidasi pembaruan data, bukan membuat baris sintetis sebagai pengganti rekaman baru.
+Dokumen ini merencanakan pekerjaan setelah [diagnosis batch-01](../batch-01/DIAGNOSIS.md). Builder dataset v2 serta CSV window 15/25/45 detik sudah dibuat dari rekaman yang tersedia; arsip v1 tetap byte-identik. Notebook, pipeline pemodelan, dan training batch-02 belum dibuat atau dijalankan. Dataset tambahan Low juga belum tersedia pada saat penyusunan rencana. Tahap pertama adalah menerima dan memvalidasi pembaruan data, bukan membuat baris sintetis sebagai pengganti rekaman baru.
 
 **Batch-02 mengevaluasi dataset terbaru secara mandiri.** Data yang sudah diperbarui menjadi sumber seluruh eksperimen batch ini. Tidak ada eksperimen sebelum–sesudah penambahan Low, kewajiban mengulang dataset lama, atau perbandingan skor dengan batch-00/batch-01. Diagnosis lama hanya membantu menetapkan hipotesis; data dan hasil lama tetap menjadi arsip. Perbandingan model, fitur, window, dan balancing dilakukan di dalam batch-02 dengan kontrak evaluasi yang sama.
 
-Tujuan tetap **satu classifier Low/Medium/High per window dari fitur eye tracking dan HRV selama aktivitas pemrograman**. Kita tidak membuat model pengenal peserta, model pengenal soal, atau classifier terpisah untuk setiap orang. CodeArrange merupakan instrumen pengambilan data. Label saat ini mengikuti kesulitan tugas sebagai proxy CL.
+Tujuan tetap **satu classifier Low/Medium/High per window dari fitur eye tracking dan HRV selama aktivitas pemrograman**. Kita tidak membuat model pengenal peserta, model pengenal soal, atau classifier terpisah untuk setiap orang. CodeArrange merupakan instrumen pengambilan data. Target v2 mengikuti protokol fase sesi: active easy/practice/demo serta pre-task setelah kalibrasi, feedback, rating, jeda, dan post-task diberi Low; active medium diberi Medium dan hard diberi High. Rating/feedback setelah medium/hard juga Low. Kalibrasi dan interval yang tidak terlacak dikeluarkan.
 
 Rencana operator adalah sekitar **5 anggota tim sebagai peserta baru terhadap cohort batch-01**, dengan kemungkinan tambahan **2–3 peserta lama**, semuanya mengerjakan easy. Jumlah akhir dan identitas yang berulang dikonfirmasi melalui daftar sesi saat data diterima. Tidak ada kewajiban mengambil ulang medium/high pada batch ini.
 
@@ -34,10 +34,10 @@ Protokol easy 5 menit, medium 12 menit, dan hard 15 menit tetap menjadi konteks 
 | Sejumlah fitur memiliki perbedaan antarrekaman yang kuat | Apakah fitur yang lebih relatif/dinamis mentransfer lebih baik? | Uji pengurangan mean geometris dan normalisasi yang tersedia sebelum prediksi |
 | Validasi gaze asli gagal pada 12/13 peserta cohort | Apakah model memerlukan gaze/eye-state atau bisa mengandalkan kelompok lain? | Pisahkan sensor/kelompok fitur tanpa membuang peserta secara otomatis |
 | Baseline ready recorder belum tentu usable menurut builder | Bagaimana menangani rasio/baseline yang tidak layak secara konsisten? | Audit baseline, kontrol tanpa rasio, serta fallback yang terdefinisi |
-| Window 25 detik mengeluarkan banyak blok Low pendek | Apakah kompromi mutu HRV dan keterwakilan data lebih baik pada window lain? | Hitung ulang RR/eye mentah dan laporkan coverage, bukan skor pada subset yang lebih mudah saja |
+| Window v1 mengeluarkan blok pendek serta seluruh fase nonpengerjaan | Bagaimana mutu HRV dan keterwakilan target pada window v2? | Pakai varian 15/25/45 yang sudah dihitung dari RR/eye mentah; evaluasi coverage dan model |
 | Riwayat exp09 dan dua pilihan fold exp12 memakai reset soal | Apakah riwayat generik yang kausal membantu tanpa konteks CodeArrange? | Uji reset berdasarkan stream, waktu, dan gap |
 | Pemilihan 154 kandidat belum memperbaiki hasil outer | Apakah bank kecil dengan kontrol lebih mudah dipilih secara stabil? | Batasi recipe dan evaluasi keseluruhan prosedur pemilihan |
-| Label berasal dari kesulitan tugas dan urutannya tetap | Seberapa jauh klaim CL dan transfer tugas dapat dibuat? | Pertahankan batas proxy; jangan mengubah label berdasarkan prediksi |
+| Target v2 mengikuti fase/difficulty; urutan tugas lama tetap | Bagaimana hasil model pada target protokol terbaru? | Bekukan pemetaan fase dan laporkan komposisi fase tiap target; jangan mengganti label berdasarkan prediksi |
 
 Temuan tersebut tidak menetapkan satu penyebab tunggal. Batch-02 menguji perbaikan yang terarah; tidak menjanjikan angka accuracy tertentu.
 
@@ -45,8 +45,8 @@ Temuan tersebut tidak menetapkan satu penyebab tunggal. Batch-02 menguji perbaik
 
 | Tahap | Pekerjaan | Syarat melanjutkan |
 |---|---|---|
-| A | Bekukan data lama dan terima rekaman Low baru | Sumber, identitas lintas sesi, dan provenance lengkap |
-| B | Bangun dataset baru dan kontrak evaluasi | Tidak ada duplikasi/kebocoran; label, fase, dan kualitas lolos pemeriksaan |
+| A | Arsip v1 sudah dibekukan; terima rekaman Low baru | Sumber, identitas lintas sesi, dan provenance lengkap |
+| B | Builder/tiga window v2 sudah siap; rebuild versi penerimaan jika sumber bertambah, lalu buat kontrak evaluasi | Tidak ada duplikasi/kebocoran; label, fase, dan kualitas lolos pemeriksaan |
 | C | Bangun baseline pada dataset terbaru | Prediksi dan metrik dapat ditelusuri; manifest fold dibekukan untuk eksperimen batch-02 |
 | D | Uji representasi sensor dan baseline | Recipe fitur serta fallback jelas; tidak menggunakan label/future test |
 | E | Uji window dan riwayat generik | Fitur benar-benar dihitung ulang; coverage dan kausalitas dilaporkan |
@@ -64,16 +64,28 @@ Dataset batch-01 adalah `good_acceptable.csv` dengan 2.294 window dan SHA256:
 
 `bbb4c93eca30aab6b896db887dfbb981abffe118fce385d0f9bd3d28e786247e`
 
-Sebelum memperbarui path dataset aktif, simpan salinan byte-identik CSV lama beserta manifest, konfigurasi, dan allowlist di penyimpanan versi yang tidak ditimpa. Verifikasi hash setelah menyalin. Jangan mengandalkan nama file yang sama untuk membuktikan versi data sama.
+Seluruh 13 artefak output lama sudah diarsipkan byte-identik di `analysis_sessions/dataset_fusion/output/v1_active_task/`, termasuk tiga CSV, manifest, laporan, dan allowlist. Hash di atas tetap berlaku. Output aktif berada di `output/v2_session_phase/`, dengan tiga varian window dan manifest baru. Jangan menimpa arsip atau memakai nama file yang sama sebagai bukti kesamaan versi.
 
 Istilah dalam rencana:
 
 | Nama | Isi |
 |---|---|
 | D0 | Snapshot dataset lama pada window 25 detik/step 5 detik; hanya arsip, bukan kondisi training batch-02 |
-| D1 | Dataset terbaru: rekaman lama dan Low tambahan yang lolos deduplikasi serta pemeriksaan kualitas |
+| D1 | Versi dataset v2 yang disahkan untuk training setelah Low tambahan diterima; build v2 saat ini baru memuat sumber yang sudah tersedia |
 
 Jika rebuild mengubah nilai sensor/label baris lama, catat perubahan beserta alasannya sebagai versi reprocessing. Terapkan aturan builder secara konsisten pada sumber yang mendukungnya. Tidak perlu membuat kondisi training D0 atau kontrol sebelum–sesudah; catatan perubahan dipakai untuk audit dan reproduksi D1.
+
+### Status dataset v2 yang sudah tersedia
+
+Build awal memakai 19 rekaman unik dari 18 orang; view good+acceptable tetap memuat 13 orang sesuai admission kualitas yang berlaku. Ini belum termasuk pengambilan Low tambahan.
+
+| Window / step | Low | Medium | High | Total good_acceptable |
+|---|---:|---:|---:|---:|
+| 15 / 5 detik | 732 | 1.105 | 1.174 | 3.011 |
+| 25 / 5 detik | 666 | 968 | 1.077 | 2.711 |
+| 45 / 5 detik | 614 | 650 | 854 | 2.118 |
+
+Angka ini adalah hasil pembangunan dataset, bukan hasil model dan bukan pemilihan window terbaik. Jumlah target Low berubah karena aturan fase v2 dan panjang window. Laporan induk merinci komposisi fase, kualitas, durasi unik, dan window yang dikeluarkan. Build belum menetapkan manifest fold batch-02.
 
 ### 4.2 Satukan identitas tanpa menjadikannya fitur
 
@@ -89,18 +101,19 @@ Registry juga mencatat asal pengambilan lama/tambahan, perangkat, kondisi baseli
 
 - Ada eye tracking, RR mentah, HRV, ledger tugas, serta metadata kalibrasi/baseline yang diperlukan.
 - Timestamp dapat disejajarkan pada waktu absolut; origin elapsed yang berbeda tidak disamakan secara buta.
-- Label Low hanya berasal dari interval easy yang benar-benar `active_task`. Practice, rating, feedback, dan istirahat tidak diubah menjadi Low.
+- Terapkan target `cognitive_load_label` v2: active easy/practice/demo → Low; active medium → Medium; active hard → High. Pre-task setelah kedua kalibrasi selesai, feedback, rating, jeda, dan post-task → Low, termasuk setelah medium/hard. Interval setelah event penutupan set tanpa akhir penelitian memiliki konteks `interrupted` dan target Low. Baseline/kalibrasi dan interval tidak terlacak dikeluarkan.
+- Seluruh rentang window harus memiliki target yang sama. Campuran fase easy + rating boleh Low; medium + rating dikeluarkan. Gunakan `window_phase_mix` dan `window_label_mix`, bukan majority vote.
 - Identitas sesi antarfile cocok dan `window_id` unik. Salinan folder tidak menambah jumlah pengukuran.
 - Baseline diperiksa berdasarkan status, coverage, durasi, dan kondisi pengambilannya. Jangan menyamakan baseline HRV yang bersamaan dengan kalibrasi mata dengan istirahat terpisah tanpa catatan.
 - Gaze diperiksa terpisah dari kelengkapan frame. Gagal gaze tidak otomatis membatalkan HRV atau semua fitur mata nonspasial.
 - Gunakan standar penerimaan yang sama pada rekaman lama/baru. Jika aturan berubah, dokumentasikan versinya dan periksa penerapannya pada seluruh sumber, tanpa eksperimen skor sebelum–sesudah.
-- Laporkan jumlah Low yang benar-benar lolos, durasi unik, blok aktif, dan jumlah rekaman. Jumlah baris atau tercapainya rasio 1:1:1 bukan satu-satunya ukuran kecukupan.
+- Laporkan jumlah target yang lolos, durasi unik, komposisi fase, dan jumlah rekaman untuk tiap varian window. Jumlah baris atau tercapainya rasio 1:1:1 bukan satu-satunya ukuran kecukupan.
 
 Data Low tambahan dari tim dapat dipakai. Risiko yang perlu diaudit adalah keterikatan label dengan asal pengambilan: sebagian besar label Low baru berasal dari sesi/perangkat/kelompok baru, sedangkan Medium/High berasal dari rekaman lama. Menyimpan asal data di luar `X` tidak otomatis menghilangkan perbedaan nilai sensor akibat kondisi tersebut.
 
 ### 4.4 Pembaruan CSV dan skema
 
-Pertahankan bentuk sensor + target + metadata. Allowlist predictor tetap eksplisit. `difficulty_level` dipetakan menjadi Low/Medium/High pada pemodelan; tidak perlu mengganti arti label atau menambahkan kolom target duplikat agar nama terlihat seperti CL.
+Skema v2 sudah memakai `cognitive_load_label` sebagai satu-satunya target. `difficulty_level`, fase, set, soal, identitas, dan waktu tetap metadata sumber, bukan predictor. Rating setelah hard berlabel Low: jangan membentuk ulang y dari difficulty atau membuang baris karena target berbeda dari kesulitan set. Allowlist tetap 26 fitur sensor. `baseline_recorder_ready`, `baseline_usable`, dan `baseline_rejection_reason` memisahkan status recorder dari kelayakan rasio.
 
 Bangun versi baru `all_data`, `good_acceptable`, dan `good_only` secara konsisten bila memakai builder tiga view yang sama. Fokus training utama tetap good+acceptable. View good-only tidak dianggap validasi spasial gaze dan tidak otomatis menggantikan cohort test.
 
@@ -108,7 +121,9 @@ Rekaman baru harus ditinjau dalam kebijakan admission, karena builder lama memak
 
 Pertahankan metadata asal dalam registry/sidecar atau kolom metadata baru yang terdokumentasi. Metadata tambahan bukan fitur default. Tidak ada interpolasi sensor atau Low sintetis pada tahap penerimaan dataset.
 
-**Keluaran penerimaan:** snapshot D0, versi D1, registry lintas sesi, hash sumber/hasil, laporan distribusi/kualitas, daftar perubahan baris lama, dan manifest evaluasi. Full training dihentikan jika identitas tidak jelas, label tidak dapat ditelusuri, atau sumber baru belum lengkap.
+**Sudah tersedia:** arsip D0, builder v2, tiga varian CSV, dictionary/allowlist, hash sumber/hasil, laporan distribusi/kualitas/durasi unik, serta audit replay HRV. Lihat [laporan v2](../../analysis_sessions/dataset_fusion/output/v2_session_phase/QUALITY_REPORT.md).
+
+**Penerimaan yang masih diperlukan:** registry lintas sesi dan review rekaman tambahan, versi D1 gabungan, audit ulang sumber/hasil, serta manifest evaluasi. Full training dihentikan jika identitas tidak jelas, label tidak dapat ditelusuri, atau sumber baru belum lengkap.
 
 ## 5. Kontrak evaluasi
 
@@ -218,9 +233,9 @@ Seluruh normalisasi tetap mendukung satu classifier umum. Status baseline disimp
 
 Bandingkan StandardScaler dan RobustScaler secara terbatas pada satu recipe referensi. Native missing-value handling XGBoost/HGB dapat menjadi kontrol implementasi, tetapi tidak boleh sekaligus mengubah fitur dan cohort tanpa pencatatan.
 
-### Exp04: penghitungan ulang window mentah
+### Exp04: evaluasi varian window yang sudah disiapkan
 
-Builder lama secara eksplisit mengunci 25 detik/step 5 detik. Karena itu, perlu jalur builder versi baru yang terpisah dari arsip. Mengubah `window_seconds` pada CSV, merata-ratakan RMSSD lama, atau sekadar mengganti config bukan eksperimen window yang sah.
+[Builder v2](../../analysis_sessions/dataset_fusion/build_dataset_v2.py) sudah menghitung window 15/25/45 detik dari RR dan eye mentah, terpisah dari arsip. Notebook Exp04 mengonsumsi CSV tiap varian, bukan menghitung ulang fitur pada setiap fold. Rebuild hanya diperlukan jika sumber, konfigurasi, atau implementasi berubah; gunakan folder versi baru. Mengubah `window_seconds` pada CSV, merata-ratakan RMSSD lama, atau sekadar mengganti config bukan eksperimen window yang sah.
 
 Kandidat awal adalah 15, 25, dan 45 detik dengan step 5 detik. Window 25 menjadi kontrol. Panjang 10/60 detik hanya boleh ditambahkan melalui perubahan registry yang terdokumentasi sebelum hasil outer dibuka, bila audit sensor menunjukkan alasan. Jumlah baris terbesar tidak menjadi kriteria memilih window.
 
@@ -243,7 +258,7 @@ Guard awal untuk kandidat model utama: minimal 80% coverage total dan Low terhad
 
 Window/step dipilih di inner validation dari kandidat yang telah memenuhi kontrak. Penurunan step menambah overlap, bukan otomatis informasi independen. Jika menguji step 10 detik sebagai pengurangan redundansi, cocokkan endpoint test dan pisahkan eksperimen itu dari perubahan panjang window.
 
-Multi-resolution eye/HRV tetap opsi lanjutan, bukan solusi otomatis kehilangan Low. HRV panjang yang harus murni active_task tetap membutuhkan span panjang. Membolehkan HRV melewati feedback/rest akan mengubah definisi konteks dan memerlukan rancangan terpisah, bukan jalan pintas untuk menambah baris.
+Multi-resolution eye/HRV tetap opsi lanjutan. Pada v2, window boleh melintasi feedback/rest bila semua bagiannya berlabel Low. Perpindahan target Medium/High ke Low tetap memotong kelayakan window. Jadi window panjang masih dapat kehilangan endpoint di batas target, meskipun tidak lagi disyaratkan satu fase active_task.
 
 ### Exp05: riwayat kausal tanpa konteks soal
 
@@ -369,7 +384,7 @@ Root dataset:
 
 `drive/MyDrive/Penelitian-Adaptive-IDE/Dataset`
 
-Pada implementasi, letakkan snapshot/version dataset di bawah root tersebut dengan hash yang jelas. Dataset aktif boleh bernama `good_acceptable.csv`, tetapi setiap run harus menunjuk versi dan hash tertentu. Salinan D0 harus sudah aman sebelum path aktif diperbarui.
+Salin struktur versi output ke root Dataset, misalnya `drive/MyDrive/Penelitian-Adaptive-IDE/Dataset/v2_session_phase/window_25s_step_5s/good_acceptable.csv`, beserta allowlist dan manifest induknya. Varian 15 dan 45 memakai subfolder masing-masing. Saat data tambahan masuk, bangun folder versi penerimaan baru dan ubah konfigurasi path; jangan overwrite v1 atau mencampur CSV/allowlist antarversi. Setiap run memverifikasi hash serta target v2 sebelum training.
 
 Struktur berikut merupakan rancangan, bukan file yang sudah dibuat:
 
@@ -415,11 +430,11 @@ CSV/JSON/Markdown dan figure dapat masuk Git sesuai [aturan models](../.gitignor
 
 1. Baca [konteks penelitian](../README.md#konteks-penelitian-dan-peran-kolom), [ringkasan batch-01](../batch-01/SUMMARY.md), dan [diagnosis](../batch-01/DIAGNOSIS.md) sebelum mengubah pipeline.
 2. Konfirmasi penerimaan sekitar lima anggota tim baru dan sesi easy peserta lama yang benar-benar tersedia. Jangan mengarang identitas/kelas untuk melengkapi tabel.
-3. Bekukan D0 dan buat registry lintas sesi sebelum rebuild. Jangan merusak reproduksi batch-01 ketika CSV aktif diganti.
-4. Selesaikan tahap A–B, lalu turunkan rencana ini menjadi definisi notebook, registry kandidat, dan tes implementasi yang lengkap. Belum ada otorisasi dari dokumen ini untuk menganggap kode atau training sudah selesai.
+3. D0 sudah diarsipkan di v1_active_task dan builder v2 sudah diuji. Buat registry lintas sesi serta review admission tambahan sebelum rebuild versi penerimaan; jangan mengubah arsip batch-01.
+4. Lanjutkan penerimaan A–B yang belum selesai: data tambahan, registry, admission, dan manifest evaluasi. Jangan membuat ulang builder/window yang sudah tersedia tanpa perubahan sumber/config. Notebook, registry kandidat pemodelan, dan training tetap belum dikerjakan.
 5. Jalankan baseline D1 pada exp01 sebelum menilai perubahan lain. Gunakan manifest batch-02 yang sama antarkonfigurasi; jangan menambahkan evaluasi sebelum–sesudah atau pembandingan batch-00/batch-01.
 6. Jangan menambahkan ID/difficulty/set/time limit ke fitur untuk mengejar accuracy. Peserta dipakai untuk menjaga pemisahan data, bukan sasaran classifier.
-7. Jangan menghapus peserta tanpa Low, mengubah protokol 5/12/15 menit, mengganti label, atau melonggarkan mutu sensor diam-diam untuk meningkatkan skor.
+7. Jangan menghapus peserta tanpa Low, mengubah catatan protokol sumber lama, melabel ulang di luar pemetaan v2, atau melonggarkan mutu sensor untuk meningkatkan skor. Easy tambahan tanpa timer adalah protokol pengambilan baru, bukan perubahan catatan lama.
 8. Jangan menjalankan lagi 12 eksperimen lama tanpa perubahan yang jelas, membuat launcher Run All lintas eksperimen, atau mengubah source batch-01 demi batch baru.
 9. Catat keputusan, kandidat yang tidak eligible, hasil negatif, dan perubahan versi. Model optimal berarti terbaik dalam cakupan pengujian yang sah, bukan skor maksimum setelah banyak percobaan pada test yang sama.
 
@@ -433,4 +448,4 @@ Rencana memakai bukti lokal pada diagnosis dan kode sumber yang ditautkan, serta
 - [Muñoz dkk., validitas HRV ultra-short](https://pmc.ncbi.nlm.nih.gov/articles/PMC4586373/) dan [Burma dkk., reliabilitas/validitas HRV ultra-short](https://pubmed.ncbi.nlm.nih.gov/33856258/): durasi perlu dinilai menurut fitur dan kondisi, bukan diasumsikan universal.
 - [Probability calibration](https://scikit-learn.org/stable/modules/calibration.html): score dan probabilitas tidak dapat dipertukarkan tanpa dasar.
 
-Tidak ada hasil eksperimen batch-02 pada dokumen ini. Pemilihan kandidat, kelayakan window/baseline, dan jumlah fold evaluasi seluruh D1 baru dapat difinalkan setelah dataset serta registry sesi tersedia.
+Tidak ada hasil model batch-02 pada dokumen ini. Dataset v2 awal dan audit teknis window/baseline sudah tersedia; pemilihan kandidat, penerimaan sumber tambahan, jumlah fold D1, dan pengujian model tetap menunggu tahap berikutnya.

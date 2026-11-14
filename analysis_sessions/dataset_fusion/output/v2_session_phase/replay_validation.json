@@ -1,0 +1,348 @@
+[
+  {
+    "session_folder": "Andrean",
+    "cached_windows": 399,
+    "exact_replay_windows": 396,
+    "endpoint_publication_differences": 3,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-30T10:18:24.532408+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 39,
+        "recomputed_rr_count": 41
+      },
+      {
+        "window_end": "2026-10-30T10:20:39.532408+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 37,
+        "recomputed_rr_count": 38
+      },
+      {
+        "window_end": "2026-10-30T10:21:19.532408+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 34,
+        "recomputed_rr_count": 36
+      }
+    ]
+  },
+  {
+    "session_folder": "Andreas",
+    "cached_windows": 404,
+    "exact_replay_windows": 403,
+    "endpoint_publication_differences": 1,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-30T11:12:31.882321+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 33,
+        "recomputed_rr_count": 34
+      }
+    ]
+  },
+  {
+    "session_folder": "Athaya",
+    "cached_windows": 399,
+    "exact_replay_windows": 399,
+    "endpoint_publication_differences": 0,
+    "unexplained_windows": 0,
+    "differences": []
+  },
+  {
+    "session_folder": "Baithar",
+    "cached_windows": 426,
+    "exact_replay_windows": 426,
+    "endpoint_publication_differences": 0,
+    "unexplained_windows": 0,
+    "differences": []
+  },
+  {
+    "session_folder": "Fabian",
+    "cached_windows": 405,
+    "exact_replay_windows": 401,
+    "endpoint_publication_differences": 4,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-30T14:22:19.202412+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 31,
+        "recomputed_rr_count": 32
+      },
+      {
+        "window_end": "2026-10-30T14:24:44.202412+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 30,
+        "recomputed_rr_count": 31
+      },
+      {
+        "window_end": "2026-10-30T14:26:04.202412+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 30,
+        "recomputed_rr_count": 32
+      },
+      {
+        "window_end": "2026-10-30T14:26:54.202412+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 28,
+        "recomputed_rr_count": 29
+      }
+    ]
+  },
+  {
+    "session_folder": "faqih",
+    "cached_windows": 409,
+    "exact_replay_windows": 408,
+    "endpoint_publication_differences": 1,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-28T09:20:21.048894+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 29,
+        "recomputed_rr_count": 30
+      }
+    ]
+  },
+  {
+    "session_folder": "ikhsan",
+    "cached_windows": 335,
+    "exact_replay_windows": 335,
+    "endpoint_publication_differences": 0,
+    "unexplained_windows": 0,
+    "differences": []
+  },
+  {
+    "session_folder": "irfan",
+    "cached_windows": 407,
+    "exact_replay_windows": 406,
+    "endpoint_publication_differences": 1,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-28T13:33:58.505518+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 38,
+        "recomputed_rr_count": 39
+      }
+    ]
+  },
+  {
+    "session_folder": "kaka",
+    "cached_windows": 452,
+    "exact_replay_windows": 449,
+    "endpoint_publication_differences": 3,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-27T15:30:28.524268+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 33,
+        "recomputed_rr_count": 34
+      },
+      {
+        "window_end": "2026-10-27T15:31:23.524268+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 36,
+        "recomputed_rr_count": 37
+      },
+      {
+        "window_end": "2026-10-27T15:34:13.524268+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 35,
+        "recomputed_rr_count": 37
+      }
+    ]
+  },
+  {
+    "session_folder": "Rafi",
+    "cached_windows": 411,
+    "exact_replay_windows": 410,
+    "endpoint_publication_differences": 1,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-28T14:22:41.877171+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 31,
+        "recomputed_rr_count": 32
+      }
+    ]
+  },
+  {
+    "session_folder": "raina",
+    "cached_windows": 397,
+    "exact_replay_windows": 394,
+    "endpoint_publication_differences": 3,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-28T15:39:53.451687+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 35,
+        "recomputed_rr_count": 36
+      },
+      {
+        "window_end": "2026-10-28T15:41:33.451687+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 35,
+        "recomputed_rr_count": 36
+      },
+      {
+        "window_end": "2026-10-28T15:43:43.451687+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 33,
+        "recomputed_rr_count": 34
+      }
+    ]
+  },
+  {
+    "session_folder": "Ramadhan",
+    "cached_windows": 63,
+    "exact_replay_windows": 63,
+    "endpoint_publication_differences": 0,
+    "unexplained_windows": 0,
+    "differences": []
+  },
+  {
+    "session_folder": "Ramadhan-2",
+    "cached_windows": 348,
+    "exact_replay_windows": 347,
+    "endpoint_publication_differences": 1,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-28T11:53:13.072814+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 39,
+        "recomputed_rr_count": 41
+      }
+    ]
+  },
+  {
+    "session_folder": "sam",
+    "cached_windows": 210,
+    "exact_replay_windows": 209,
+    "endpoint_publication_differences": 1,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-26T14:46:59.761831+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 35,
+        "recomputed_rr_count": 36
+      }
+    ]
+  },
+  {
+    "session_folder": "Savitri",
+    "cached_windows": 408,
+    "exact_replay_windows": 402,
+    "endpoint_publication_differences": 6,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-30T13:36:34.306487+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 52,
+        "recomputed_rr_count": 54
+      },
+      {
+        "window_end": "2026-10-30T13:38:49.306487+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 54,
+        "recomputed_rr_count": 57
+      },
+      {
+        "window_end": "2026-10-30T13:40:24.306487+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 55,
+        "recomputed_rr_count": 57
+      },
+      {
+        "window_end": "2026-10-30T13:40:29.306487+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 55,
+        "recomputed_rr_count": 57
+      },
+      {
+        "window_end": "2026-10-30T13:41:09.306487+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 51,
+        "recomputed_rr_count": 53
+      },
+      {
+        "window_end": "2026-10-30T13:41:49.306487+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 52,
+        "recomputed_rr_count": 54
+      }
+    ]
+  },
+  {
+    "session_folder": "Shakilla",
+    "cached_windows": 155,
+    "exact_replay_windows": 152,
+    "endpoint_publication_differences": 3,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-28T09:59:13.228796+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 33,
+        "recomputed_rr_count": 34
+      },
+      {
+        "window_end": "2026-10-28T09:59:58.228796+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 32,
+        "recomputed_rr_count": 33
+      },
+      {
+        "window_end": "2026-10-28T10:05:13.228796+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 31,
+        "recomputed_rr_count": 32
+      }
+    ]
+  },
+  {
+    "session_folder": "Siti",
+    "cached_windows": 397,
+    "exact_replay_windows": 396,
+    "endpoint_publication_differences": 1,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-28T10:59:50.696616+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 33,
+        "recomputed_rr_count": 35
+      }
+    ]
+  },
+  {
+    "session_folder": "Sullivan",
+    "cached_windows": 233,
+    "exact_replay_windows": 233,
+    "endpoint_publication_differences": 0,
+    "unexplained_windows": 0,
+    "differences": []
+  },
+  {
+    "session_folder": "Tio",
+    "cached_windows": 431,
+    "exact_replay_windows": 430,
+    "endpoint_publication_differences": 1,
+    "unexplained_windows": 0,
+    "differences": [
+      {
+        "window_end": "2026-10-27T14:30:36.149967+07:00",
+        "reason": "live_timer_before_endpoint_packet",
+        "cached_rr_count": 43,
+        "recomputed_rr_count": 45
+      }
+    ]
+  }
+]
