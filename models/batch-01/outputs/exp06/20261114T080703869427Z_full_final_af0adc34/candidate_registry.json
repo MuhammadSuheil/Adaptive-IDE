@@ -1,0 +1,80 @@
+[
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_control",
+    "model": "xgboost",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      {
+        "id": "c01",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      },
+      {
+        "id": "c02",
+        "k": 3,
+        "ratio": 1.0,
+        "sampler": "ros"
+      }
+    ],
+    "id": "xgboost_balanced",
+    "model": "xgboost",
+    "scaler": "standard",
+    "tune": true,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_control",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      {
+        "id": "c01",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      },
+      {
+        "id": "c02",
+        "k": 3,
+        "ratio": 1.0,
+        "sampler": "ros"
+      }
+    ],
+    "id": "logistic_balanced",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": true,
+    "variant": "clean"
+  }
+]

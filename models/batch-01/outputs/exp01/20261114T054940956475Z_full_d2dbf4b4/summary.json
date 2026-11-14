@@ -1,0 +1,10 @@
+{
+  "completed_at": "2026-11-14T05:50:07.700040+00:00",
+  "completed_units": 26,
+  "evaluated_folds": 13,
+  "mode": "full",
+  "prediction_rows": 4588,
+  "scheduled_folds": 13,
+  "status": "complete",
+  "total_folds": 13
+}

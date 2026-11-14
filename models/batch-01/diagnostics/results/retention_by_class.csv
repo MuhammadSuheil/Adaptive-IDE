@@ -1,0 +1,4 @@
+difficulty_level,active_seconds,active_spans,shorter_than_25s_spans,shorter_than_25s_seconds,pure_25s_windows_before_quality,retained_windows,retained_union_seconds,poor_windows_removed,retained_fraction_of_active_time
+easy,3050.437,72,27,451.775,296,249,2005.0,47,0.6572828745520723
+medium,8470.904,123,17,262.02,1108,968,6985.0,140,0.8245873167728025
+hard,8741.347831054687,102,15,246.6278310546875,1260,1077,7255.0,183,0.8299635411172797

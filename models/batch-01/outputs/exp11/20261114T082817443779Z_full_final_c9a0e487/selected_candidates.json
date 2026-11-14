@@ -1,0 +1,1692 @@
+[
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "cceca03d4c22fce05cb5ff482389286f5ead3d92de3192b739c5578e66a117ac",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0,
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "ffd7558a774bdb167d5f89d3edf94604dc847e1b0ac60931dd15700afa1119ae",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "xgboost_late",
+    "score": 0.3186935426188943,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4befaab472702f3c2911ec8b972467c3a858558d56096109b0ee9f3f3e24386c",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.5,
+      "id": "c02"
+    },
+    "error": null,
+    "fit_key": "01c60a0aaa029e0373bd0032bb96431cd34104f94d05c8e8a104dec3be6e87d5",
+    "fold_id": "fold_00",
+    "id": "c02",
+    "model": "logistic_late",
+    "score": 0.3716521044370466,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "34a428d3ac19846479c43969ed912ac0070321cdbb810657db818db86c30d536",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 1,
+      "id": "c04"
+    },
+    "error": null,
+    "fit_key": "afb3e604a30770406c021ad8de40ee20bcc81e831feca9d6cf268e3e7f839dcf",
+    "fold_id": "fold_01",
+    "id": "c04",
+    "model": "xgboost_late",
+    "score": 0.3169096422937758,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "e51f58930ade932ace85a4959f209aec754c0fdc557dfaac7b80a95e27859b89",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.25,
+      "id": "c01"
+    },
+    "error": null,
+    "fit_key": "ca5dcdcacf0298c642c5869c95218cf8d45cd4f9e116587f6a6e25da1c2015e5",
+    "fold_id": "fold_01",
+    "id": "c01",
+    "model": "logistic_late",
+    "score": 0.3409189385392482,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4cce39a5630eba7be5bfb5aca26a89d665f356b2243b7ecddd2cc817cdb60988",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.75,
+      "id": "c03"
+    },
+    "error": null,
+    "fit_key": "a06b94b2871f848fb86d52dc6172d45aaac9db315dc78c0baa15d8993dd65ab8",
+    "fold_id": "fold_02",
+    "id": "c03",
+    "model": "xgboost_late",
+    "score": 0.28659766566949046,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3310b3bf3838751139d2a39ff54f1c8546f0e854c25e02d4e7800099b77f7a43",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0,
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "a161a8dc429cd5cdbad9a1fa1502b529b384171719c93133906457561608f206",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "logistic_late",
+    "score": 0.3441012484261126,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "166802853cd376749da8126247136c15a3a8548e56dcb5adebf8e531dc6a7450",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 1,
+      "id": "c04"
+    },
+    "error": null,
+    "fit_key": "6c2fed10e62bfa42a53d2dc01c81547a8d7903a0c8354b4fcb66e40c268a84e9",
+    "fold_id": "fold_03",
+    "id": "c04",
+    "model": "xgboost_late",
+    "score": 0.300738071563666,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "97204803a50484e8f5500a0932b63f27ca3e3c3c861895fb931887d792f5dc5c",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0,
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "2605fd68fef5a25e8e854806619960217c7a3c3bbce1f6c2a025af450802d8ad",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "logistic_late",
+    "score": 0.31637414136295317,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "c52df52f3d83d0f41d64a0af91edf87a0bacf8d674e9ac51db7ecdd1d621e77b",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 1,
+      "id": "c04"
+    },
+    "error": null,
+    "fit_key": "64865803e2b8dd826ecc4b3a6173738b7cbe75774602fff94a7326981482a0f2",
+    "fold_id": "fold_04",
+    "id": "c04",
+    "model": "xgboost_late",
+    "score": 0.3093316478919949,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "7ac36d013b317eb9e00669440a6426297c38691bb1204a7b481d0f896a8fbf11",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0,
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3b3a9b96723c8484038dd7ea3e45780ca5e3ed5d25dddb67b91523a3e997a8ce",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "logistic_late",
+    "score": 0.3197473120570984,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "48161b16d74b8ef29ec7cc1bd5d4df7eedd139e5e439da3ae29ba70cca363e7b",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0,
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "810aae024b1a2f9417ade5786ff36dd1c98c3dfa8eb38c38fb56408e421b6771",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "xgboost_late",
+    "score": 0.3077331997960893,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4107d46a36aeda0c918442f8a224e2236a1eaf1e8cab77433209a0a7a894899f",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.5,
+      "id": "c02"
+    },
+    "error": null,
+    "fit_key": "d186ba818e6661f35813884cec8193633cd3aef03c651f8f22cb3d4fb7215d21",
+    "fold_id": "fold_05",
+    "id": "c02",
+    "model": "logistic_late",
+    "score": 0.3570061134970439,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "c34ab0a04a1b4885f1d211de28818eb46997fa6ddceb2abb6e1bfefd4a46945f",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.75,
+      "id": "c03"
+    },
+    "error": null,
+    "fit_key": "43080b6f0e02d82299f8841be04b518f48c84bbd8bad210bbc11414521f50abd",
+    "fold_id": "fold_06",
+    "id": "c03",
+    "model": "xgboost_late",
+    "score": 0.33294078364032764,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "05a863e52485a34f16b8146ff065e2c583d6a0eaf819ca1591e960a4a22f2f85",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.75,
+      "id": "c03"
+    },
+    "error": null,
+    "fit_key": "cd70a04cf39aa393e31867f148eef927f2fcaf6b019e1d55d30eec5e8578c8cf",
+    "fold_id": "fold_06",
+    "id": "c03",
+    "model": "logistic_late",
+    "score": 0.35785559114842225,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "26bcabc08f974f97d90e4733a293be8ed80015dce34393e8bf26bf3abd726548",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.25,
+      "id": "c01"
+    },
+    "error": null,
+    "fit_key": "33550fea2d94f8ba8ce358cf4473eb05f6687d6ff2a6b4d52a094aa228e2c75b",
+    "fold_id": "fold_07",
+    "id": "c01",
+    "model": "xgboost_late",
+    "score": 0.3054200098133737,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "53946eef87e553f3642f2f253da757cc3487eb8b4da1e33ebe3c19b13f2ae335",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0,
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "a665d1e213197adde035f9caf6f4f32c5e4b181613c60a2f4eb996300ac6f9c1",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "logistic_late",
+    "score": 0.3406734335639785,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4e80a8bd44aef9bd9469844cef5326444c065cb100b8fde3e99d1b37a9692f69",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 1,
+      "id": "c04"
+    },
+    "error": null,
+    "fit_key": "28b3917f4a8791f1bf358af0c9996b5d52d5d093801cf2c7a4e81742c52a14f2",
+    "fold_id": "fold_08",
+    "id": "c04",
+    "model": "xgboost_late",
+    "score": 0.2862284300530957,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "05bbd5a3cf0b1ada8031a2efc6858a6595ae10c270dee37bcedde3e807a556b9",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.75,
+      "id": "c03"
+    },
+    "error": null,
+    "fit_key": "979ebe8429c1a32a27bd8318e798439ddd7dc2f783d351e72b8274867604ece8",
+    "fold_id": "fold_08",
+    "id": "c03",
+    "model": "logistic_late",
+    "score": 0.378018176473996,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3ab9d7d6832a8676c95583b70cc2b5fa30e12c62ea68b925d1ebd154a6222877",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 1,
+      "id": "c04"
+    },
+    "error": null,
+    "fit_key": "f7d57f57eb66a1154361d49c0117ae6ab49fa05acd1e3e2cbe90062f16b697f7",
+    "fold_id": "fold_09",
+    "id": "c04",
+    "model": "xgboost_late",
+    "score": 0.2976433404738516,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4de0ac39a6eb750c22dcc57bd5af5267e193436fc26f7594d5bf655d9ddaa603",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.25,
+      "id": "c01"
+    },
+    "error": null,
+    "fit_key": "fb241ad7756915fe543f76c25b40cdb1d6e6b02dcf94a2013b73baf199118482",
+    "fold_id": "fold_09",
+    "id": "c01",
+    "model": "logistic_late",
+    "score": 0.3432929851751951,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "dacafdcf205e16ef699c74df84783ed7f1bb62bb2a85479c54b2790b5ca31b82",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 1,
+      "id": "c04"
+    },
+    "error": null,
+    "fit_key": "42f42b0d0490f15819a8aef1954ecc516aedda273fd867d47be5b660285d7414",
+    "fold_id": "fold_10",
+    "id": "c04",
+    "model": "xgboost_late",
+    "score": 0.30507430204892466,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "68a4b7b598bf40b8247dbb73572765578f3e5d805607180639a9c98b3d2e5d68",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.75,
+      "id": "c03"
+    },
+    "error": null,
+    "fit_key": "3426c62ce745b9ca6580a96c86106dd00921502bfe3ee3fd4d67ea3769695201",
+    "fold_id": "fold_10",
+    "id": "c03",
+    "model": "logistic_late",
+    "score": 0.3305767797553778,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "b256b9c0d84b5d1865c5ea05cfcdeb6e2c5e2129d1cb36a55d8d0bedd2989668",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 1,
+      "id": "c04"
+    },
+    "error": null,
+    "fit_key": "256c5f3cfa435459cff16ad5542ac2f7dd7102a1f30ff777c0b6714354787483",
+    "fold_id": "fold_11",
+    "id": "c04",
+    "model": "xgboost_late",
+    "score": 0.3172879616963064,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "5cf486669552243a346a64ae1f481a877203c5001f900bcface0dcbe37d36198",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.5,
+      "id": "c02"
+    },
+    "error": null,
+    "fit_key": "5eda608de652a30ffc43b32a3724a23453776a385aab290bb9fe93573d2d7bbf",
+    "fold_id": "fold_11",
+    "id": "c02",
+    "model": "logistic_late",
+    "score": 0.32438914203590047,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "2a2c915504056f0ac0f7e774ad3511086a188d0a577c5599a4b2d254ff7d3f94",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "xgboost_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_early",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 1,
+      "id": "c04"
+    },
+    "error": null,
+    "fit_key": "5dc38de459eb9693e0a1c2be7f8bd5c2dd1ea516b0dc1a672e66716a2e8ac0cb",
+    "fold_id": "fold_12",
+    "id": "c04",
+    "model": "xgboost_late",
+    "score": 0.33546592269734193,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "xgboost_late",
+      "model": "xgboost",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "84181db38815c128844136e671c51f75f9b28473fbcf732308af347eca3ebcc5",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "logistic_early",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_early",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "alpha": 0.25,
+      "id": "c01"
+    },
+    "error": null,
+    "fit_key": "46ccac355a87fb554684499afa647c7ac2267f18ef290765d1a254d6f3eb090f",
+    "fold_id": "fold_12",
+    "id": "c01",
+    "model": "logistic_late",
+    "score": 0.38025828486882923,
+    "spec": {
+      "candidates": [
+        {
+          "alpha": 0,
+          "id": "c00"
+        },
+        {
+          "alpha": 0.25,
+          "id": "c01"
+        },
+        {
+          "alpha": 0.5,
+          "id": "c02"
+        },
+        {
+          "alpha": 0.75,
+          "id": "c03"
+        },
+        {
+          "alpha": 1,
+          "id": "c04"
+        }
+      ],
+      "id": "logistic_late",
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "tune": true,
+      "variant": "clean"
+    }
+  }
+]

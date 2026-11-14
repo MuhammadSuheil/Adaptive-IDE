@@ -1,0 +1,68 @@
+[
+  {
+    "candidates": [
+      {
+        "id": "c00",
+        "selection": null
+      },
+      {
+        "id": "c01",
+        "selection": "corr0.90"
+      },
+      {
+        "id": "c02",
+        "selection": "corr0.95"
+      },
+      {
+        "id": "c03",
+        "selection": "mi8"
+      },
+      {
+        "id": "c04",
+        "selection": "mi12"
+      },
+      {
+        "id": "c05",
+        "selection": "mi16"
+      }
+    ],
+    "id": "xgboost_selection",
+    "model": "xgboost",
+    "scaler": "standard",
+    "tune": true,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00",
+        "selection": null
+      },
+      {
+        "id": "c01",
+        "selection": "corr0.90"
+      },
+      {
+        "id": "c02",
+        "selection": "corr0.95"
+      },
+      {
+        "id": "c03",
+        "selection": "mi8"
+      },
+      {
+        "id": "c04",
+        "selection": "mi12"
+      },
+      {
+        "id": "c05",
+        "selection": "mi16"
+      }
+    ],
+    "id": "logistic_selection",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": true,
+    "variant": "clean"
+  }
+]

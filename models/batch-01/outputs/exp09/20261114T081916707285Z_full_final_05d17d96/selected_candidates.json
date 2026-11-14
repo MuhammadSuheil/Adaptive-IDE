@@ -1,0 +1,1874 @@
+[
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "cceca03d4c22fce05cb5ff482389286f5ead3d92de3192b739c5578e66a117ac",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "1027ca62f4830ff7647e626d24952fe40dfaaa02c6988a6d7ed5818e73a131ee",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "1e622ef91f1d622a1259e700ac2f5930840ebd1c61ec297dcad805e29e92b539",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4befaab472702f3c2911ec8b972467c3a858558d56096109b0ee9f3f3e24386c",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "a86c28f5f4e28e2156b1e04684bbb6c461d73b879085fcdde7e766ffdd527538",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "cdac365aa467580919449bbdc5c2feba502888adb8707010db841046fbe2501e",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "34a428d3ac19846479c43969ed912ac0070321cdbb810657db818db86c30d536",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "631504e66b615d1a1fa97b121a9d7c4d8e365f1166ee7538e9b6e87221c44ed4",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4ad231deb79e970392e8430a97449a2a89cb76d984b8c272555821863762c069",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "e51f58930ade932ace85a4959f209aec754c0fdc557dfaac7b80a95e27859b89",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "444e11c8e3aa6894c498a7476bc0b59d6bb3501a6a10e5a41432384573852dc6",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "b065da445721748fdb6a08a7ea0b4726b6eeab8108757fc3c3ee454cb0f71698",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4cce39a5630eba7be5bfb5aca26a89d665f356b2243b7ecddd2cc817cdb60988",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "df82667fb7e62559d1431289cbe7c214ee6383695bf1bc52a8454f6d5f1ef380",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "38a9509aa4185114c427281abcc5e91d602e946e683d2e79f161d02a1272b788",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3310b3bf3838751139d2a39ff54f1c8546f0e854c25e02d4e7800099b77f7a43",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "1a02f6d1b0f8fdc07042b303f1bdee4ecbafaef486bcbbc4cf787485e412ddbe",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "230f1fc5b20fb81db01bb5fb89c95691bae4b51261cececa9b81a18fa1d70bdf",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "166802853cd376749da8126247136c15a3a8548e56dcb5adebf8e531dc6a7450",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "a763b06da2b3e26060b3c0181313628163728f0c03e1f55b885c46f27bbcfc20",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "ad716f9602d97c887965e0d7192be3466bcd84d0b5bf2b9e0205b09cfd3ab9e5",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "97204803a50484e8f5500a0932b63f27ca3e3c3c861895fb931887d792f5dc5c",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4858bb408cce6acfa91c9889148d4b5eb9e4cfc88a0d92c363ce7c4aba47b500",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "67053d3bbb143b1c0ef74425d0da404b5a42d30df8e81d2f2a075b42041bfef4",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "c52df52f3d83d0f41d64a0af91edf87a0bacf8d674e9ac51db7ecdd1d621e77b",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "a19776946087bfa39652b0282b2958268c095bde5bd7f5d3af69b942fb0b9bda",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "cdf221e7ef0936a22e63ac1a83f5bf920eb36c6a51a5e02e7c91e83fc20c3eff",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "7ac36d013b317eb9e00669440a6426297c38691bb1204a7b481d0f896a8fbf11",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "1cbe601d2834023a71ed0ca28227866b1ee3b7c45b164de67c4b63fa32883f20",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "cd83e66d38eccf0aa23f42ec6aa3c4188a083101a3d968102b195423cf18e6cb",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "48161b16d74b8ef29ec7cc1bd5d4df7eedd139e5e439da3ae29ba70cca363e7b",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "230271cc01c785c05394439fad476ca73dc9297a8fc264545019f453d6212255",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "11fa6327829fa1889e38913269be3fca33043366d3b0732723036e1f21af536c",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4107d46a36aeda0c918442f8a224e2236a1eaf1e8cab77433209a0a7a894899f",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "57ac6ece2175506716019668b9685da7adaebb89b5c93c5d51fafc997fc531b5",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "79485fed230c163b301549bb27c4cab010c67d014970d250587ddb4d4153e4aa",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "c34ab0a04a1b4885f1d211de28818eb46997fa6ddceb2abb6e1bfefd4a46945f",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "222b732c55ecfa429fbf774ac9a29ac4513804a4eefcd75690d87a7933e1c61b",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "262e8a3ebb3da4ae8298dcd716b3a667dfd3059e14a1bf79973526b99a08c760",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "05a863e52485a34f16b8146ff065e2c583d6a0eaf819ca1591e960a4a22f2f85",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "c3291b4eae79ead8df6e05f59e388c5d2326e475e7aa3e27277a484e0a6f332b",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "a483f9e26d3dae7a1c789303755c93a2e0d5aeb3d19578468e90a9d3cfa3a6b9",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "26bcabc08f974f97d90e4733a293be8ed80015dce34393e8bf26bf3abd726548",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "a1a813b0c4eb1e1ff80387553d72889a5ce4a52956985f15d6ed2775d4f7aa2b",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "78b7c5ea74d5a068262f36e0dd5787c08c301e97155120eb33e3c4b5bd71951e",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "53946eef87e553f3642f2f253da757cc3487eb8b4da1e33ebe3c19b13f2ae335",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "d20738a03e63a33f3f45c534b63bb2e4df9661b032eb6f1d6f9772ea2da6dbd4",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "58622ce141a5cc79dd68f8939fdc2181263d8015931e1d069c11b185757964e9",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4e80a8bd44aef9bd9469844cef5326444c065cb100b8fde3e99d1b37a9692f69",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3c0b294189918becd38a329c7e3391cf9327ad01745166345fb05b5df53eb8a4",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "be95c8946b941b68db43d42983123648bded0bac91fbb4fc984ce03fc6defd99",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "05bbd5a3cf0b1ada8031a2efc6858a6595ae10c270dee37bcedde3e807a556b9",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "f7f8db1aed3d78db315daf865864ef9b453f5be6d96e03671a3cb52e17ecc7c8",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "99fe7320c52656651086d5286535811e8c15db6492af842caf115746dc93be95",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3ab9d7d6832a8676c95583b70cc2b5fa30e12c62ea68b925d1ebd154a6222877",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "45bcee5559f73865e42a532b25dd017fb0032ca0a8b776f5c3351cac807f4b5b",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "00c3916cfe9d8dd591405ce009131a145434bd9cb7a42e74be165e159cc270e9",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4de0ac39a6eb750c22dcc57bd5af5267e193436fc26f7594d5bf655d9ddaa603",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "b08329158f27a17aee63667271a5f95dea51d999edc45595d38ca841113e2404",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "2453c1373029350fe72c30e1aad122b2189c1fbb4572fb207823ccfd51ed4954",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "dacafdcf205e16ef699c74df84783ed7f1bb62bb2a85479c54b2790b5ca31b82",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "324dcc220b7828130f09e5e2a8e92b61c7a50884ca017ed372cf52b69f56f75e",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "402d785488cf16ca5655b4cbd5c6fe37a4e25314d222e0e45f36db25ef671c14",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "68a4b7b598bf40b8247dbb73572765578f3e5d805607180639a9c98b3d2e5d68",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "78d037f7745f06ad81395bed2c491753669ae1edcf055fafdfbabb38f6bedf43",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "7c51358c10ba59cf901623d79e84886fe82b43d3ad169cbb8c2fca9914fda425",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "b256b9c0d84b5d1865c5ea05cfcdeb6e2c5e2129d1cb36a55d8d0bedd2989668",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3acb7b3b2cb5881796ed923716bf81c6bfd7a8ae9c3f3227ab4fa2907e68c9d5",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "1dd28f0463e971f3572064ab5f00b05889b5bd7a988488e3b415d724cae0f617",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "5cf486669552243a346a64ae1f481a877203c5001f900bcface0dcbe37d36198",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "f07d5d3315db1c4465589e98c5d198b40d6266e6f8bf8bbae1e134ca544b27dd",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "503ae89b46440f310c009ffe5fe45b6074f51a3695ebac6b41fb638915c631a5",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "2a2c915504056f0ac0f7e774ad3511086a188d0a577c5599a4b2d254ff7d3f94",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "xgboost_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history0",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "43e285d1171f0836d06695061cac0420fbeb692e1e5e1a1190d0601397646705",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "xgboost_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history3",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "a7f47fd45267c0c17a1dd8bbf24e7edb243045dc9e20f7dc6e5176ab14ccbb84",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "xgboost_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_history5",
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "84181db38815c128844136e671c51f75f9b28473fbcf732308af347eca3ebcc5",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "logistic_history0",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history0",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 0,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "9921867d332b7928b570873e90e7b1164318edf0a00ef2b0865fc2b619c3e726",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "logistic_history3",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history3",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "7ab6993d3c78dde34f2a1a5dd5d8087b8ba523dec14845fa3bd5e55a9beec74d",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "logistic_history5",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_history5",
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 5,
+      "tune": false,
+      "variant": "clean"
+    }
+  }
+]

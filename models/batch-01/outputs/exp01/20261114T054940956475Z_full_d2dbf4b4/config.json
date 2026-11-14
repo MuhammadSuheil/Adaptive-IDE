@@ -1,0 +1,31 @@
+{
+  "dataset_path": "/content/drive/.shortcut-targets-by-id/1UUN1XmTGZ26yyLZDlQJn_pKn7-zFwLGg/Penelitian-Adaptive-IDE/Dataset/good_acceptable.csv",
+  "dummy": {
+    "strategy": "most_frequent"
+  },
+  "label_map": {
+    "easy": 0,
+    "hard": 2,
+    "medium": 1
+  },
+  "mode": "full",
+  "protocol": "lopo_good_acceptable_v1",
+  "seed": 42,
+  "xgboost": {
+    "colsample_bytree": 1.0,
+    "device": "cpu",
+    "eval_metric": "mlogloss",
+    "learning_rate": 0.05,
+    "max_depth": 3,
+    "min_child_weight": 1,
+    "n_estimators": 300,
+    "n_jobs": 2,
+    "num_class": 3,
+    "objective": "multi:softprob",
+    "random_state": 42,
+    "reg_alpha": 0,
+    "reg_lambda": 1,
+    "subsample": 1.0,
+    "tree_method": "hist"
+  }
+}

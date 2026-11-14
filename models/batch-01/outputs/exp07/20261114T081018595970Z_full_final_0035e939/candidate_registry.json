@@ -1,0 +1,116 @@
+[
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_control",
+    "model": "xgboost",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "smote"
+      },
+      {
+        "id": "c01",
+        "k": 5,
+        "ratio": 0.5,
+        "sampler": "smote"
+      },
+      {
+        "id": "c02",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "smote"
+      },
+      {
+        "id": "c03",
+        "k": 5,
+        "ratio": 0.75,
+        "sampler": "smote"
+      },
+      {
+        "id": "c04",
+        "k": 3,
+        "ratio": 1.0,
+        "sampler": "smote"
+      },
+      {
+        "id": "c05",
+        "k": 5,
+        "ratio": 1.0,
+        "sampler": "smote"
+      }
+    ],
+    "id": "xgboost_balanced",
+    "model": "xgboost",
+    "scaler": "standard",
+    "tune": true,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_control",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "smote"
+      },
+      {
+        "id": "c01",
+        "k": 5,
+        "ratio": 0.5,
+        "sampler": "smote"
+      },
+      {
+        "id": "c02",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "smote"
+      },
+      {
+        "id": "c03",
+        "k": 5,
+        "ratio": 0.75,
+        "sampler": "smote"
+      },
+      {
+        "id": "c04",
+        "k": 3,
+        "ratio": 1.0,
+        "sampler": "smote"
+      },
+      {
+        "id": "c05",
+        "k": 5,
+        "ratio": 1.0,
+        "sampler": "smote"
+      }
+    ],
+    "id": "logistic_balanced",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": true,
+    "variant": "clean"
+  }
+]

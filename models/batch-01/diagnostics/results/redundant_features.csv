@@ -1,0 +1,3 @@
+feature_a,feature_b,expected_multiplier,max_absolute_residual,pearson_r
+blink_count,blink_rate_per_minute,2.4,7.105427357601002e-15,0.9999999999999989
+iris_size_estimate_std,iris_size_delta_std,1.0,1.0061396160665481e-16,1.0

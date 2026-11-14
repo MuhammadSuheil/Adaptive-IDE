@@ -1,0 +1,21 @@
+{
+  "candidate": {
+    "id": "c014",
+    "pipeline": {
+      "model": "svm",
+      "scaler": "standard",
+      "variant": "original"
+    },
+    "settings": {
+      "C": 10,
+      "gamma": 0.1
+    }
+  },
+  "note": "Group-CV selection; final model trained on all available data. Not a new generalization score.",
+  "seed": 42,
+  "selection": {
+    "error": null,
+    "id": "c014",
+    "score": 0.3522626937652682
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "cache_hits": 13,
+  "completed_at": "2026-11-14T08:01:41.773886+00:00",
+  "completed_outer_units": 169,
+  "elapsed_seconds": 130.24135150000802,
+  "evaluated_folds": 13,
+  "experiment": "exp04",
+  "fit_count": 156,
+  "mode": "full",
+  "prediction_rows": 29822,
+  "status": "complete"
+}

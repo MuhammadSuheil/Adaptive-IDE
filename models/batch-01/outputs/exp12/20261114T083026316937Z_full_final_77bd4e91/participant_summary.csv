@@ -1,0 +1,4 @@
+,accuracy,accuracy,balanced_accuracy,balanced_accuracy,macro_f1_present_classes,macro_f1_present_classes
+,mean,std,mean,std,mean,std
+model,,,,,,
+nested_selection,0.31548788554975205,0.17876868447864488,0.2848411847734061,0.13689894865622035,0.23165109493964808,0.12196749620842974

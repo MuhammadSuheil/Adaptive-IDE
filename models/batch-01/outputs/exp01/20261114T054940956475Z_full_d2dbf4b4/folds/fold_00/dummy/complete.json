@@ -1,0 +1,11 @@
+{
+  "fold_id": "fold_00",
+  "model": "dummy",
+  "sha256": {
+    "metrics.json": "729cba4b03823d5ecc544e899b3a0563bedec697db7093889a4c9a758a341890",
+    "pipeline.joblib": "5b19a5ec6a8c9422596bf3b95d5d5b936e38b9daa09bad98f3e0d76b9290de8f",
+    "predictions.csv": "e1f77fdd6ac860642885d579aa3055246f790372689ccfb0909f99b0274d32e4",
+    "preprocessing.json": "c20516cfc63c836f73cbd4310ab39710e3bf22b692d317ad6a9ff3e08fde0b0c"
+  },
+  "status": "complete"
+}

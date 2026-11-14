@@ -1,0 +1,104 @@
+{
+  "class_counts": {
+    "easy": 249,
+    "hard": 1077,
+    "medium": 968
+  },
+  "missing_features": {
+    "blink_count": 0,
+    "blink_rate_per_minute": 0,
+    "ear_left_mean": 0,
+    "ear_left_std": 0,
+    "ear_right_mean": 0,
+    "ear_right_std": 0,
+    "eye_state_fixation_ratio": 0,
+    "eye_state_other_ratio": 0,
+    "eye_state_saccade_ratio": 0,
+    "eye_state_transition_ratio": 0,
+    "eye_state_unclassified_ratio": 0,
+    "gaze_x_norm_mean": 0,
+    "gaze_x_norm_std": 0,
+    "gaze_y_norm_mean": 0,
+    "gaze_y_norm_std": 0,
+    "head_pitch_mean": 0,
+    "head_pitch_std": 0,
+    "head_yaw_mean": 0,
+    "head_yaw_std": 0,
+    "iris_size_delta_mean": 0,
+    "iris_size_delta_std": 0,
+    "iris_size_estimate_mean": 0,
+    "iris_size_estimate_std": 0,
+    "rmssd_baseline_ratio": 193,
+    "rmssd_ms": 0,
+    "sdnn_ms": 0
+  },
+  "participant_class_counts": {
+    "Andrean": {
+      "easy": 25,
+      "hard": 136,
+      "medium": 86
+    },
+    "Andreas": {
+      "easy": 10,
+      "hard": 65,
+      "medium": 55
+    },
+    "Athaya": {
+      "easy": 16,
+      "hard": 91,
+      "medium": 59
+    },
+    "Fabian": {
+      "easy": 45,
+      "hard": 117,
+      "medium": 81
+    },
+    "Rafi": {
+      "easy": 28,
+      "hard": 143,
+      "medium": 101
+    },
+    "Savitri": {
+      "easy": 7,
+      "hard": 110,
+      "medium": 78
+    },
+    "Shakilla": {
+      "easy": 0,
+      "hard": 0,
+      "medium": 88
+    },
+    "Tio": {
+      "easy": 14,
+      "hard": 104,
+      "medium": 75
+    },
+    "faqih": {
+      "easy": 29,
+      "hard": 116,
+      "medium": 81
+    },
+    "ikhsan": {
+      "easy": 0,
+      "hard": 118,
+      "medium": 94
+    },
+    "kaka": {
+      "easy": 13,
+      "hard": 39,
+      "medium": 54
+    },
+    "raina": {
+      "easy": 12,
+      "hard": 38,
+      "medium": 21
+    },
+    "sam": {
+      "easy": 50,
+      "hard": 0,
+      "medium": 95
+    }
+  },
+  "participants": 13,
+  "rows": 2294
+}

@@ -1,0 +1,1666 @@
+[
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "cceca03d4c22fce05cb5ff482389286f5ead3d92de3192b739c5578e66a117ac",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "cceca03d4c22fce05cb5ff482389286f5ead3d92de3192b739c5578e66a117ac",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "xgboost_balanced",
+    "score": 0.3333610567942256,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4befaab472702f3c2911ec8b972467c3a858558d56096109b0ee9f3f3e24386c",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "4befaab472702f3c2911ec8b972467c3a858558d56096109b0ee9f3f3e24386c",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.3601298419938416,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "34a428d3ac19846479c43969ed912ac0070321cdbb810657db818db86c30d536",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "34a428d3ac19846479c43969ed912ac0070321cdbb810657db818db86c30d536",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "xgboost_balanced",
+    "score": 0.27736656892696016,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "e51f58930ade932ace85a4959f209aec754c0fdc557dfaac7b80a95e27859b89",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "e51f58930ade932ace85a4959f209aec754c0fdc557dfaac7b80a95e27859b89",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.3635221784928824,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4cce39a5630eba7be5bfb5aca26a89d665f356b2243b7ecddd2cc817cdb60988",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "4cce39a5630eba7be5bfb5aca26a89d665f356b2243b7ecddd2cc817cdb60988",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "xgboost_balanced",
+    "score": 0.29005641260712894,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3310b3bf3838751139d2a39ff54f1c8546f0e854c25e02d4e7800099b77f7a43",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "3310b3bf3838751139d2a39ff54f1c8546f0e854c25e02d4e7800099b77f7a43",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.33986614885178085,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "166802853cd376749da8126247136c15a3a8548e56dcb5adebf8e531dc6a7450",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "166802853cd376749da8126247136c15a3a8548e56dcb5adebf8e531dc6a7450",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "xgboost_balanced",
+    "score": 0.29520265756031455,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "97204803a50484e8f5500a0932b63f27ca3e3c3c861895fb931887d792f5dc5c",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "97204803a50484e8f5500a0932b63f27ca3e3c3c861895fb931887d792f5dc5c",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.3235091805953501,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "c52df52f3d83d0f41d64a0af91edf87a0bacf8d674e9ac51db7ecdd1d621e77b",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c03",
+      "weight": 4
+    },
+    "error": null,
+    "fit_key": "e1b6dce7d0aa191503b04b17267f2cee47cb382535f6bf7eb653ba6d5e53a8ee",
+    "fold_id": "fold_04",
+    "id": "c03",
+    "model": "xgboost_balanced",
+    "score": 0.3174870811228841,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "7ac36d013b317eb9e00669440a6426297c38691bb1204a7b481d0f896a8fbf11",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "7ac36d013b317eb9e00669440a6426297c38691bb1204a7b481d0f896a8fbf11",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.2931515025316153,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "48161b16d74b8ef29ec7cc1bd5d4df7eedd139e5e439da3ae29ba70cca363e7b",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c01",
+      "weight": "balanced"
+    },
+    "error": null,
+    "fit_key": "340117882fcd3e559a55eb0af2ef9c0c5e5bd68fca2619a5622cd26e3e8c21be",
+    "fold_id": "fold_05",
+    "id": "c01",
+    "model": "xgboost_balanced",
+    "score": 0.3235872657586633,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4107d46a36aeda0c918442f8a224e2236a1eaf1e8cab77433209a0a7a894899f",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "4107d46a36aeda0c918442f8a224e2236a1eaf1e8cab77433209a0a7a894899f",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.33299648520100855,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "c34ab0a04a1b4885f1d211de28818eb46997fa6ddceb2abb6e1bfefd4a46945f",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c01",
+      "weight": "balanced"
+    },
+    "error": null,
+    "fit_key": "c872d521330ab0fd55d7654628a948d08f91e0358663f99cacf9a55b8f93ce16",
+    "fold_id": "fold_06",
+    "id": "c01",
+    "model": "xgboost_balanced",
+    "score": 0.31209269608332807,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "05a863e52485a34f16b8146ff065e2c583d6a0eaf819ca1591e960a4a22f2f85",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "05a863e52485a34f16b8146ff065e2c583d6a0eaf819ca1591e960a4a22f2f85",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.3237428226035534,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "26bcabc08f974f97d90e4733a293be8ed80015dce34393e8bf26bf3abd726548",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "26bcabc08f974f97d90e4733a293be8ed80015dce34393e8bf26bf3abd726548",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "xgboost_balanced",
+    "score": 0.31711651821432835,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "53946eef87e553f3642f2f253da757cc3487eb8b4da1e33ebe3c19b13f2ae335",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "53946eef87e553f3642f2f253da757cc3487eb8b4da1e33ebe3c19b13f2ae335",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.31785255279614644,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4e80a8bd44aef9bd9469844cef5326444c065cb100b8fde3e99d1b37a9692f69",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "4e80a8bd44aef9bd9469844cef5326444c065cb100b8fde3e99d1b37a9692f69",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "xgboost_balanced",
+    "score": 0.3066699983328924,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "05bbd5a3cf0b1ada8031a2efc6858a6595ae10c270dee37bcedde3e807a556b9",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "05bbd5a3cf0b1ada8031a2efc6858a6595ae10c270dee37bcedde3e807a556b9",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.33224399548174816,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3ab9d7d6832a8676c95583b70cc2b5fa30e12c62ea68b925d1ebd154a6222877",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c02",
+      "weight": 2
+    },
+    "error": null,
+    "fit_key": "f6f44948b84d54dbf87e845db8f9a2d00c07decbdea64edad730890ddab8b0cb",
+    "fold_id": "fold_09",
+    "id": "c02",
+    "model": "xgboost_balanced",
+    "score": 0.31278167466531687,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4de0ac39a6eb750c22dcc57bd5af5267e193436fc26f7594d5bf655d9ddaa603",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "4de0ac39a6eb750c22dcc57bd5af5267e193436fc26f7594d5bf655d9ddaa603",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.34918076262116715,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "dacafdcf205e16ef699c74df84783ed7f1bb62bb2a85479c54b2790b5ca31b82",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c01",
+      "weight": "balanced"
+    },
+    "error": null,
+    "fit_key": "55f62cb3a53d78e18af875a4b577f2b87e8e6ce574e27750e530b8280ae4aecf",
+    "fold_id": "fold_10",
+    "id": "c01",
+    "model": "xgboost_balanced",
+    "score": 0.283488377142609,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "68a4b7b598bf40b8247dbb73572765578f3e5d805607180639a9c98b3d2e5d68",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "68a4b7b598bf40b8247dbb73572765578f3e5d805607180639a9c98b3d2e5d68",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.3278722200461331,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "b256b9c0d84b5d1865c5ea05cfcdeb6e2c5e2129d1cb36a55d8d0bedd2989668",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "b256b9c0d84b5d1865c5ea05cfcdeb6e2c5e2129d1cb36a55d8d0bedd2989668",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "xgboost_balanced",
+    "score": 0.2621170765601688,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "5cf486669552243a346a64ae1f481a877203c5001f900bcface0dcbe37d36198",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "5cf486669552243a346a64ae1f481a877203c5001f900bcface0dcbe37d36198",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.3049940314461778,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "2a2c915504056f0ac0f7e774ad3511086a188d0a577c5599a4b2d254ff7d3f94",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "xgboost_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "xgboost_control",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "2a2c915504056f0ac0f7e774ad3511086a188d0a577c5599a4b2d254ff7d3f94",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "xgboost_balanced",
+    "score": 0.3226077251943775,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "xgboost_balanced",
+      "model": "xgboost",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "84181db38815c128844136e671c51f75f9b28473fbcf732308af347eca3ebcc5",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "logistic_control",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "logistic_control",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": false,
+      "variant": "clean"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00",
+      "weight": "none"
+    },
+    "error": null,
+    "fit_key": "84181db38815c128844136e671c51f75f9b28473fbcf732308af347eca3ebcc5",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "logistic_balanced",
+    "score": 0.3601781515900105,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00",
+          "weight": "none"
+        },
+        {
+          "id": "c01",
+          "weight": "balanced"
+        },
+        {
+          "id": "c02",
+          "weight": 2
+        },
+        {
+          "id": "c03",
+          "weight": 4
+        },
+        {
+          "id": "c04",
+          "weight": 8
+        }
+      ],
+      "id": "logistic_balanced",
+      "model": "logistic",
+      "scaler": "standard",
+      "tune": true,
+      "variant": "clean"
+    }
+  }
+]

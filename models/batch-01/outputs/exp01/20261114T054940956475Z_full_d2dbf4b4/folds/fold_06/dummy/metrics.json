@@ -1,0 +1,43 @@
+{
+  "classes": [
+    {
+      "f1": null,
+      "label": "Low",
+      "precision": null,
+      "recall": null,
+      "support": 0
+    },
+    {
+      "f1": 0.0,
+      "label": "Medium",
+      "precision": 0.0,
+      "recall": 0.0,
+      "support": 88
+    },
+    {
+      "f1": null,
+      "label": "High",
+      "precision": null,
+      "recall": null,
+      "support": 0
+    }
+  ],
+  "fit_seconds": 0.018158308000010948,
+  "metrics": {
+    "accuracy": 0.0,
+    "balanced_accuracy": 0.0,
+    "macro_f1": 0.0,
+    "macro_f1_present_classes": 0.0,
+    "windows": 88
+  },
+  "predict_seconds": 0.008068460000004052,
+  "resampling": null,
+  "test_class_counts": {
+    "medium": 88
+  },
+  "train_class_counts": {
+    "easy": 249,
+    "hard": 1077,
+    "medium": 880
+  }
+}

@@ -1,0 +1,1497 @@
+[
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "766212963139ca4acdc27687fc8da247813681c8bfb1575d778d397f54681238",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "f07bd431616402fad3a4d38a13f731bed51456e5b0d428e5b01bfc610bbd78ad",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "182afd5b0bddc0d63718323ba2ae2fe19cb81249c6f7985ebf162c95e9a1b365",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "5fb84d6e5dedcde5723ccc247babd58ab1e94cfcd6af96818986116d0ab50c76",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3cfdce9b2721f363ae4eadeaae9b79baf10a87a43dda8a5783feddc8a9fba0d0",
+    "fold_id": "fold_00",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "fb89d7e6c1eb4ca8df8e6d290d115e45272f70bfdd255cd48cfa415023769815",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "b0d9183664e3521c6e1cf8234366159d6709116ba98951ab30bf098cb82a3f94",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "d11af83a065b1dfab0d96f2246103faa6beb397501511caaac1e652bb44f4287",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "da45f46e2d1ca310f41e6a9a7aeb40dd68124a5d30aa6e1630c58bc2619c25ed",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "6c7216c91c043fd2dc08d76e64355ae17b26ddc011cd69715251b1eab75205ff",
+    "fold_id": "fold_01",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "c2b3c4507bb82e17b3dfdee37a95038aa01249fb1e794a5030ff5d87d1c33dbb",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "bffaaba740ded8846b8e5e25a79915ff5ad1e638ef62f0f98de698287f5b57de",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "adb4acea76f1bd2ecd8fa8134590fa2e9b53806bf4e7faf628d727e7cce9dc2f",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "b4e18195ec9e1a6f2384edab60b05f255c39000b29087a4f831de53d3bfc483d",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "1e8cec9405048d5caba729c85dd6064f57831ccb33180754fd8cea851dec64f4",
+    "fold_id": "fold_02",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "ab6ccc5c28f49d4af2533a3329ad2f33f0481456b1cc3fa26b76cea7f3a127d7",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "95fe4d80723b51a24080fcb49cc787f8781bb05a3021c1ad1c4dbcbc5decafd9",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "fbc9978461d1601041ea28ead8d280750f1f5e95cbff3e0aaca43732fd7b568b",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "5688988f81895c68d6b77d4f596aef1175c2733e54825b09a1e3df1fcd81036b",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "fa2816822bb74bd682156ceded79d2308c8124644f5ff8f8a81287e79abb538f",
+    "fold_id": "fold_03",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "c688cf9398717e54026707f285e77f79d74e5737f0e5171486b9e7108bbb1b43",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "8e2cf15caafe8d7c780bad33a736718711d54766599140a8f8bafc255ed2ffc7",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "ad4250132f84417796e72c9954bc607f0238f7c49331677d72e5351bdd0f15e9",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "dd10b86af67340d8d3648c061768d273d90565df17037f698e25751a469656fe",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "7693a192482356aa87c44d9a1008b519ad67f3c18f69c1724772595c89dc45ca",
+    "fold_id": "fold_04",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "08d305e3041a5780cd4920775b96dfc5fc1e4088365e772752fc471fc5cec883",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "f433bd7cfb8a60294a1130d765d46416e3e2ca9a0cfea89037d36bcdae29eef0",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "f7e177c379f9b8e0cc9f1029a577daf81cae54aa0550572d79cc20d04ef739c4",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "6ee7d0633b59b56057aca96309fe6aa7718cc8dbe32d05d7a45b6e61d39351ad",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "158763c415bf6f17f8b3f1dbf4936ddae939a7d1ba4c420ce943025233acc63d",
+    "fold_id": "fold_05",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "f0dc14dcc1d32f8e54e74009e47b368be1eb761439c17ef45983133df9a797f5",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "40abbe1d50a9e42e655fc1eceddaee66118eab38251566e2da2840bad49ce714",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "bd5435ffc3e8de2f7d798f0ac12186fa092b4b523b21d383102b8e89924e1bc9",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "16b640a810582eb8288dde0a43ff6809623045de08876727631bb6406f03001e",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "1f18a47ccdcb28930faafeea1efe0b5443391e7488196df6f8b797328f29dc07",
+    "fold_id": "fold_06",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "4280c31dc2baaa1a9180945b7c5a09d45299f238f903309664329981c28ed090",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "46e2d076769b83d1ac70d4018644b51ceddde7ebedaaf6cbf3ae2ff89f0ba072",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "6d7fcf868d036d95769533f2af22e4d0ce57bedaff9e3cb837baf9bf1a47ca90",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "589b274d0bf45bd3f5bdc7007598ddbf2719aedefee9631f8be428e8c632a5c1",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "e4e6598a12bbbe4dc695581f4fa10140b66629d28f1c7ce87ef6a9a4435c2ba2",
+    "fold_id": "fold_07",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "d0785ac42f07e8c9253cd5d008bdb5d02e8b6092bdbb709471fe57687710738f",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "f1cb7c07608c34c77f190f7e02c2264265f32396e72bcc20928967f8a2875f31",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "e8f0e0fa9741115fe900a6c142370f2f7c7fbdb166617f56f6fb9c1e905073ea",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "e0d0a2bdda9acb8afb48805e9dff2392ac9a0bd8f92a13b518284b41fd98842f",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "ef7ddf9c7844764965f1c8778371a56e3d9caa1d9c640ce053375c37759428e6",
+    "fold_id": "fold_08",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "3ba5b3b4023d9cc02b84d60e055acdab131a941c58f9fbee3dd898faa759a9e0",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "994b91e0eab797a421c4905a266122e00968e37384f76a0c1caa9c61628b6c0f",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "d2f20d6c55d3104724b4074217eb551bafb3e6df7c235aa5a226a4e8a246845a",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "11e5b8fbe18cf344c2c8d05f2430b825e5ba27f6c7ad7bc1882d623c8e2b5a0d",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "1de5dd414c6bfd9037f293fc3c851d37e8fefb60cb72eca99a2e25624b6eab77",
+    "fold_id": "fold_09",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "79f70e6a5c9bda4cbd25dce6c24740bb8b3fb1c4fa71f6d01b9691c549682255",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "397ff262b3ba778b8fda0cde24700c50c8f9618ddf19cf222f82d00ae9aba15d",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "041a3b31a1a9f23cdf529d94b9a66f2dce2f779ec5571b9dbcf3ad114e99494c",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "d934002b8c1f165287ff4cfc51caaeafb0860db9ea04bf2871c9ceaff7fd5924",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "586ee668091537e054dac9b1b4761fd49e74e2728b225a14d764739c3914d2ee",
+    "fold_id": "fold_10",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "cd2de7168437e0479ffdb5de2fd1b63e66e7f3516a71adc9d69d082bd124ec50",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "b5cda92ecd4b4f28f49bfd5b3e06324f7ab71f4e7486b72013cd4f99e5255ff0",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "525289328da981e250b5d74cc0ecb676428926ec0a764e70a3b8e014ea9d612e",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "dd21580a8aab8e9d1d82c6744f94962325037573c734e2b520a2d4f68c06fbe5",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "a2d83f12503a3ea636a8af4a24174dcb7db292cc08eab220b73a652947cc35ff",
+    "fold_id": "fold_11",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "337f1cce94fe60c13f03b50cb74276a161fe1b9c209fc807d63b9dd4b30b2795",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "original",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "original",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "original"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "ce423b105bc28a9db7a0bd81c46956b59525a22ce46c4ffd5626d26655c01361",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "hrv",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "hrv",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "hrv"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "a7619466b8956686c248e1fefb09315a427274be2c90572eaa06ebfe8effb128",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "eye",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "eye",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "eye"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "d9a6c5c6cf642438b7be07ec14f37b688e3ab92da875fd5305721e29ec19db09",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "no_gaze_state",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_gaze_state",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_gaze_state"
+    }
+  },
+  {
+    "candidate": {
+      "id": "c00"
+    },
+    "error": null,
+    "fit_key": "24383c3b32d6f5aee686766afee78a5d9dc9deb1d0b6ffd31171dbc4a41be603",
+    "fold_id": "fold_12",
+    "id": "c00",
+    "model": "no_iris",
+    "score": 0.0,
+    "spec": {
+      "candidates": [
+        {
+          "id": "c00"
+        }
+      ],
+      "id": "no_iris",
+      "model": "xgboost",
+      "scaler": null,
+      "tune": false,
+      "variant": "no_iris"
+    }
+  }
+]

@@ -1,0 +1,158 @@
+[
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_original",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "original"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_clean",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_ear",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "ear"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_absolute",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "absolute"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_ratio",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "ratio"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_log",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "log"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_original",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "original"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_clean",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_ear",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "ear"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_absolute",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "absolute"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_ratio",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "ratio"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_log",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "log"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_clean_robust",
+    "model": "logistic",
+    "scaler": "robust",
+    "tune": false,
+    "variant": "clean"
+  }
+]

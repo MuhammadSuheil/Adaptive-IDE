@@ -1,0 +1,45 @@
+{
+  "classes": [
+    {
+      "f1": 0.18181818181818182,
+      "label": "Low",
+      "precision": 0.12903225806451613,
+      "recall": 0.3076923076923077,
+      "support": 13
+    },
+    {
+      "f1": 0.49504950495049505,
+      "label": "Medium",
+      "precision": 0.5319148936170213,
+      "recall": 0.46296296296296297,
+      "support": 54
+    },
+    {
+      "f1": 0.26865671641791045,
+      "label": "High",
+      "precision": 0.32142857142857145,
+      "recall": 0.23076923076923078,
+      "support": 39
+    }
+  ],
+  "fit_seconds": 2.103389554000046,
+  "metrics": {
+    "accuracy": 0.3584905660377358,
+    "balanced_accuracy": 0.3338081671415005,
+    "macro_f1": 0.3151748010621958,
+    "macro_f1_present_classes": 0.3151748010621958,
+    "windows": 106
+  },
+  "predict_seconds": 0.013759477999997216,
+  "resampling": null,
+  "test_class_counts": {
+    "easy": 13,
+    "hard": 39,
+    "medium": 54
+  },
+  "train_class_counts": {
+    "easy": 236,
+    "hard": 1038,
+    "medium": 914
+  }
+}

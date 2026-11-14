@@ -26,7 +26,17 @@ On Windows, published files inherit their destination folder's normal permission
 | `good_acceptable.csv` | Good + acceptable windows from those five and the eight listed questionable participants only |
 | `all_data.csv` | All pure active-task windows, including poor/missing-sensor windows |
 
-The target column is **`difficulty_level`: easy / medium / hard**. This is task condition, a proxy for cognitive demand, not independently measured experienced cognitive load. Do not rename those classes to low/medium/high mental load or use the old sensor-rule cognitive labels as ground truth. Task order, experience and camera conditions may confound prediction.
+The target column is **`difficulty_level`: easy / medium / hard**. Training maps these values to Low / Medium / High as the study's cognitive-load proxy. Keep the original task-condition values in the source CSV and document this mapping; it does not create independently measured cognitive-state ground truth. Do not use the old sensor-rule cognitive labels as ground truth. Task order, experience and camera conditions may confound prediction.
+
+## Research context and column roles
+
+The intended application is one cognitive-load classifier using eye-tracking and HRV features per window during programming, not participant identification or one classifier per person. CodeArrange supplies the acquisition tasks and event/label provenance. Participant, session, question and quality columns can remain in the same CSV without becoming predictors. The authoritative context is recorded in [models/README.md](../../models/README.md#konteks-penelitian-dan-peran-kolom).
+
+The protocol deliberately allocates **5 minutes to easy, 12 to medium and 15 to hard**. These are set time limits, not mandatory actual working durations. The operator also confirms that some participants intentionally skipped easy because of collection-time constraints. Unequal duration and absent classes are therefore not automatically recorder or cleaning failures. A zero class count still needs session-level interpretation: an omitted task, a short active interval or quality filtering can each produce no retained windows. Do not invent rows, relabel rest as Low or drop participants merely because their protocol omitted easy.
+
+Keep four roles separate: sensor features as `X`; `difficulty_level` mapped to CL as `y`; IDs for grouping/deduplication; context/quality metadata for alignment, filtering and audit. Use `feature_columns.json` as an explicit predictor allowlist rather than selecting all numeric columns. Grouping by participant protects evaluation of the sensor model; participant ID is not a prediction feature. CodeArrange set/question IDs, difficulty and configured time limits must not reveal the answer through model inputs.
+
+No source CSV/schema change is needed for this clarification. Preserve all three datasets, their metadata, labels and shared-row provenance. Any future temporal predictor must distinguish offline question-based history resets from generic time/stream boundaries available outside CodeArrange. Baseline-based sensor normalization, when valid and available before prediction, does not imply a separate personal classifier.
 
 One row combines recorded HRV with eye measurements over exactly the same **25-second interval**, anchored to the source HRV windows with a **5-second step** (80% overlap). Eye endpoints are `(start, end]`; timestamps are absolute and timezone-aware. Skipped HRV grid points are allowed, but duplicates, reversed times, off-grid steps and incompatible durations are rejected. No new HRV rows are invented and no sensor values are interpolated. Changing the configuration does not recompute windows from RR data.
 

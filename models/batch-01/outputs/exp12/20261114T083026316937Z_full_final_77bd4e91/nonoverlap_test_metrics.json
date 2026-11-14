@@ -1,0 +1,33 @@
+{
+  "classes": [
+    {
+      "f1": 0.12080536912751678,
+      "label": "Low",
+      "precision": 0.10843373493975904,
+      "recall": 0.13636363636363635,
+      "support": 66
+    },
+    {
+      "f1": 0.3784860557768924,
+      "label": "Medium",
+      "precision": 0.3584905660377358,
+      "recall": 0.4008438818565401,
+      "support": 237
+    },
+    {
+      "f1": 0.3283582089552239,
+      "label": "High",
+      "precision": 0.3632075471698113,
+      "recall": 0.29961089494163423,
+      "support": 257
+    }
+  ],
+  "metrics": {
+    "accuracy": 0.32321428571428573,
+    "balanced_accuracy": 0.27893947105393685,
+    "macro_f1": 0.27588321128654436,
+    "macro_f1_present_classes": 0.27588321128654436,
+    "windows": 560
+  },
+  "note": "Test thinning only; HRV features not recomputed"
+}

@@ -1,0 +1,38 @@
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Berlaku untuk semua batch: hasil evaluasi CSV/JSON/TXT/MD dan grafik tetap masuk Git.
+# Jangan abaikan folder models/ atau folds/ pada output: ada metadata di dalamnya.
+
+# Bobot/pipeline model terlatih. Simpan melalui penyimpanan artefak terpisah.
+*.joblib
+*.pkl
+*.pickle
+*.onnx
+*.h5
+*.hdf5
+*.keras
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.ubj
+*.cbm
+
+# Cache training, environment lokal, dan file sementara.
+_final_cache/
+.venv*/
+venv/
+env/
+catboost_info/
+*.whl
+*.tmp
+writer.lock
+
+# Figure evaluasi PNG/SVG ikut Git pada seluruh batch, termasuk exp01.
+# Pengecualian dibatasi gambar; bobot model/cache tetap diabaikan.
+!batch-*/outputs/**/figures/
+!batch-*/outputs/**/figures/**/*.png
+!batch-*/outputs/**/figures/**/*.svg

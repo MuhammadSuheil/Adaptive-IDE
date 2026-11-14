@@ -1,0 +1,14 @@
+participant_alias,recorded_set_order,first_order_easy_medium_hard
+P01,easy > medium > hard,True
+P02,easy > medium > hard,True
+P03,easy > medium > hard,True
+P04,easy > medium > hard,True
+P05,easy > medium > hard,True
+P06,easy > medium > hard,True
+P07,medium,False
+P08,easy > medium > hard,True
+P09,easy > medium > hard,True
+P10,medium > hard,False
+P11,easy > medium > hard,True
+P12,easy > medium > hard,True
+P13,easy > medium > hard,True

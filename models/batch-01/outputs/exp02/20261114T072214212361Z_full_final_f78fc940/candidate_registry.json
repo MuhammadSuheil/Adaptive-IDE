@@ -1,0 +1,464 @@
+[
+  {
+    "candidates": [
+      {
+        "C": 0.001,
+        "id": "c00"
+      },
+      {
+        "C": 0.01,
+        "id": "c01"
+      },
+      {
+        "C": 0.1,
+        "id": "c02"
+      },
+      {
+        "C": 1,
+        "id": "c03"
+      },
+      {
+        "C": 10,
+        "id": "c04"
+      },
+      {
+        "C": 100,
+        "id": "c05"
+      }
+    ],
+    "id": "logistic",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": true,
+    "variant": "original"
+  },
+  {
+    "candidates": [
+      {
+        "C": 0.1,
+        "gamma": "scale",
+        "id": "c00"
+      },
+      {
+        "C": 0.1,
+        "gamma": 0.01,
+        "id": "c01"
+      },
+      {
+        "C": 0.1,
+        "gamma": 0.1,
+        "id": "c02"
+      },
+      {
+        "C": 1,
+        "gamma": "scale",
+        "id": "c03"
+      },
+      {
+        "C": 1,
+        "gamma": 0.01,
+        "id": "c04"
+      },
+      {
+        "C": 1,
+        "gamma": 0.1,
+        "id": "c05"
+      },
+      {
+        "C": 10,
+        "gamma": "scale",
+        "id": "c06"
+      },
+      {
+        "C": 10,
+        "gamma": 0.01,
+        "id": "c07"
+      },
+      {
+        "C": 10,
+        "gamma": 0.1,
+        "id": "c08"
+      },
+      {
+        "C": 100,
+        "gamma": "scale",
+        "id": "c09"
+      },
+      {
+        "C": 100,
+        "gamma": 0.01,
+        "id": "c10"
+      },
+      {
+        "C": 100,
+        "gamma": 0.1,
+        "id": "c11"
+      }
+    ],
+    "id": "svm",
+    "model": "svm",
+    "scaler": "standard",
+    "tune": true,
+    "variant": "original"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "min_samples_leaf": 1
+      },
+      {
+        "id": "c01",
+        "max_depth": null,
+        "max_features": 0.7,
+        "min_samples_leaf": 1
+      },
+      {
+        "id": "c02",
+        "max_depth": 4,
+        "max_features": "sqrt",
+        "min_samples_leaf": 3
+      },
+      {
+        "id": "c03",
+        "max_depth": null,
+        "max_features": 0.7,
+        "min_samples_leaf": 8
+      },
+      {
+        "id": "c04",
+        "max_depth": null,
+        "max_features": 0.7,
+        "min_samples_leaf": 3
+      },
+      {
+        "id": "c05",
+        "max_depth": 8,
+        "max_features": 0.7,
+        "min_samples_leaf": 1
+      },
+      {
+        "id": "c06",
+        "max_depth": 8,
+        "max_features": "sqrt",
+        "min_samples_leaf": 8
+      },
+      {
+        "id": "c07",
+        "max_depth": 8,
+        "max_features": 0.7,
+        "min_samples_leaf": 3
+      },
+      {
+        "id": "c08",
+        "max_depth": 4,
+        "max_features": 0.7,
+        "min_samples_leaf": 8
+      },
+      {
+        "id": "c09",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "min_samples_leaf": 3
+      },
+      {
+        "id": "c10",
+        "max_depth": 4,
+        "max_features": 0.7,
+        "min_samples_leaf": 3
+      },
+      {
+        "id": "c11",
+        "max_depth": 8,
+        "max_features": 0.7,
+        "min_samples_leaf": 8
+      }
+    ],
+    "id": "random_forest",
+    "model": "random_forest",
+    "scaler": null,
+    "tune": true,
+    "variant": "original"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "min_samples_leaf": 1
+      },
+      {
+        "id": "c01",
+        "max_depth": null,
+        "max_features": 0.7,
+        "min_samples_leaf": 1
+      },
+      {
+        "id": "c02",
+        "max_depth": 4,
+        "max_features": "sqrt",
+        "min_samples_leaf": 3
+      },
+      {
+        "id": "c03",
+        "max_depth": null,
+        "max_features": 0.7,
+        "min_samples_leaf": 8
+      },
+      {
+        "id": "c04",
+        "max_depth": null,
+        "max_features": 0.7,
+        "min_samples_leaf": 3
+      },
+      {
+        "id": "c05",
+        "max_depth": 8,
+        "max_features": 0.7,
+        "min_samples_leaf": 1
+      },
+      {
+        "id": "c06",
+        "max_depth": 8,
+        "max_features": "sqrt",
+        "min_samples_leaf": 8
+      },
+      {
+        "id": "c07",
+        "max_depth": 8,
+        "max_features": 0.7,
+        "min_samples_leaf": 3
+      },
+      {
+        "id": "c08",
+        "max_depth": 4,
+        "max_features": 0.7,
+        "min_samples_leaf": 8
+      },
+      {
+        "id": "c09",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "min_samples_leaf": 3
+      },
+      {
+        "id": "c10",
+        "max_depth": 4,
+        "max_features": 0.7,
+        "min_samples_leaf": 3
+      },
+      {
+        "id": "c11",
+        "max_depth": 8,
+        "max_features": 0.7,
+        "min_samples_leaf": 8
+      }
+    ],
+    "id": "extra_trees",
+    "model": "extra_trees",
+    "scaler": null,
+    "tune": true,
+    "variant": "original"
+  },
+  {
+    "candidates": [
+      {
+        "colsample_bytree": 1.0,
+        "id": "c00",
+        "learning_rate": 0.05,
+        "max_depth": 3,
+        "min_child_weight": 1,
+        "reg_lambda": 1,
+        "subsample": 1.0
+      },
+      {
+        "colsample_bytree": 1.0,
+        "id": "c01",
+        "learning_rate": 0.05,
+        "max_depth": 5,
+        "min_child_weight": 1,
+        "reg_lambda": 1,
+        "subsample": 1.0
+      },
+      {
+        "colsample_bytree": 1.0,
+        "id": "c02",
+        "learning_rate": 0.05,
+        "max_depth": 2,
+        "min_child_weight": 1,
+        "reg_lambda": 5,
+        "subsample": 0.8
+      },
+      {
+        "colsample_bytree": 1.0,
+        "id": "c03",
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "min_child_weight": 1,
+        "reg_lambda": 5,
+        "subsample": 0.8
+      },
+      {
+        "colsample_bytree": 1.0,
+        "id": "c04",
+        "learning_rate": 0.03,
+        "max_depth": 5,
+        "min_child_weight": 1,
+        "reg_lambda": 1,
+        "subsample": 0.8
+      },
+      {
+        "colsample_bytree": 0.8,
+        "id": "c05",
+        "learning_rate": 0.03,
+        "max_depth": 3,
+        "min_child_weight": 5,
+        "reg_lambda": 1,
+        "subsample": 0.8
+      },
+      {
+        "colsample_bytree": 0.8,
+        "id": "c06",
+        "learning_rate": 0.03,
+        "max_depth": 2,
+        "min_child_weight": 5,
+        "reg_lambda": 1,
+        "subsample": 1.0
+      },
+      {
+        "colsample_bytree": 0.8,
+        "id": "c07",
+        "learning_rate": 0.1,
+        "max_depth": 5,
+        "min_child_weight": 1,
+        "reg_lambda": 1,
+        "subsample": 1.0
+      },
+      {
+        "colsample_bytree": 0.8,
+        "id": "c08",
+        "learning_rate": 0.05,
+        "max_depth": 3,
+        "min_child_weight": 1,
+        "reg_lambda": 5,
+        "subsample": 0.8
+      },
+      {
+        "colsample_bytree": 1.0,
+        "id": "c09",
+        "learning_rate": 0.05,
+        "max_depth": 3,
+        "min_child_weight": 1,
+        "reg_lambda": 1,
+        "subsample": 0.8
+      },
+      {
+        "colsample_bytree": 1.0,
+        "id": "c10",
+        "learning_rate": 0.05,
+        "max_depth": 2,
+        "min_child_weight": 1,
+        "reg_lambda": 1,
+        "subsample": 0.8
+      },
+      {
+        "colsample_bytree": 1.0,
+        "id": "c11",
+        "learning_rate": 0.03,
+        "max_depth": 3,
+        "min_child_weight": 1,
+        "reg_lambda": 5,
+        "subsample": 0.8
+      }
+    ],
+    "id": "xgboost",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": true,
+    "variant": "original"
+  },
+  {
+    "candidates": [
+      {
+        "depth": 3,
+        "id": "c00",
+        "l2_leaf_reg": 3,
+        "learning_rate": 0.03
+      },
+      {
+        "depth": 3,
+        "id": "c01",
+        "l2_leaf_reg": 10,
+        "learning_rate": 0.03
+      },
+      {
+        "depth": 5,
+        "id": "c02",
+        "l2_leaf_reg": 3,
+        "learning_rate": 0.05
+      },
+      {
+        "depth": 3,
+        "id": "c03",
+        "l2_leaf_reg": 10,
+        "learning_rate": 0.1
+      },
+      {
+        "depth": 3,
+        "id": "c04",
+        "l2_leaf_reg": 10,
+        "learning_rate": 0.05
+      },
+      {
+        "depth": 7,
+        "id": "c05",
+        "l2_leaf_reg": 10,
+        "learning_rate": 0.03
+      },
+      {
+        "depth": 7,
+        "id": "c06",
+        "l2_leaf_reg": 3,
+        "learning_rate": 0.1
+      },
+      {
+        "depth": 7,
+        "id": "c07",
+        "l2_leaf_reg": 10,
+        "learning_rate": 0.05
+      },
+      {
+        "depth": 5,
+        "id": "c08",
+        "l2_leaf_reg": 10,
+        "learning_rate": 0.1
+      },
+      {
+        "depth": 3,
+        "id": "c09",
+        "l2_leaf_reg": 3,
+        "learning_rate": 0.05
+      },
+      {
+        "depth": 5,
+        "id": "c10",
+        "l2_leaf_reg": 10,
+        "learning_rate": 0.05
+      },
+      {
+        "depth": 7,
+        "id": "c11",
+        "l2_leaf_reg": 10,
+        "learning_rate": 0.1
+      }
+    ],
+    "id": "catboost",
+    "model": "catboost",
+    "scaler": null,
+    "tune": true,
+    "variant": "original"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "fold_id": "fold_09",
+  "model": "xgboost",
+  "sha256": {
+    "metrics.json": "12e1a2152e80bd7de9854bd86ff38a718197189171b255067e4238cfb634a157",
+    "pipeline.joblib": "998275d0a4fce997be2c11f238ff0aa3b444737518ee7b9239e3bef7e11dd9f2",
+    "predictions.csv": "4d35a241a292685caaeb6e90ac9bc59973b446450650b4968d7681ce5b4b37b2",
+    "preprocessing.json": "3470f160596560a8813f36b6a494f52513b327589cffeac07fe8a076462196ce"
+  },
+  "status": "complete"
+}
