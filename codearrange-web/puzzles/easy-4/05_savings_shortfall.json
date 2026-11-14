@@ -1,0 +1,81 @@
+{
+  "id": "savings_shortfall",
+  "title": "Kekurangan Tabungan",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Target tabungan 100000 dan saldo 75000. Hitung kekurangannya. Jika hasil pengurangan negatif, ubah menjadi nol. Cetak kekurangan setelah pemeriksaan.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class SavingsShortfall {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int target = 100000;"
+    },
+    {
+      "id": 4,
+      "code": "        int saved = 75000;"
+    },
+    {
+      "id": 5,
+      "code": "        int remaining = target - saved;"
+    },
+    {
+      "id": 6,
+      "code": "        if (remaining < 0) {"
+    },
+    {
+      "id": 7,
+      "code": "            remaining = 0;"
+    },
+    {
+      "id": 8,
+      "code": "        }"
+    },
+    {
+      "id": 9,
+      "code": "        System.out.println(remaining);"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  ]
+}

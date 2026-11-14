@@ -1,0 +1,33 @@
+{
+  "id": "trace_value_swap",
+  "title": "Output Pertukaran Dua Nilai",
+  "type": "basics",
+  "mode": "output",
+  "description": "Susun output sebelum dan setelah pertukaran nilai. Variabel temp menyimpan nilai first sebelum ditimpa.\n\n```java\npublic class TraceValueSwap {\n    public static void main(String[] args) {\n        int first = 3;\n        int second = 8;\n        System.out.println(\"First: \" + first);\n        System.out.println(\"Second: \" + second);\n        int temp = first;\n        first = second;\n        second = temp;\n        System.out.println(\"First: \" + first);\n        System.out.println(\"Second: \" + second);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "First: 3"
+    },
+    {
+      "id": 2,
+      "code": "Second: 8"
+    },
+    {
+      "id": 3,
+      "code": "First: 8"
+    },
+    {
+      "id": 4,
+      "code": "Second: 3"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

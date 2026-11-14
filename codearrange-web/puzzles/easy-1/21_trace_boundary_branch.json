@@ -1,0 +1,28 @@
+{
+  "id": "trace_boundary_branch",
+  "title": "Output Percabangan pada Nilai Batas",
+  "type": "basics",
+  "mode": "output",
+  "description": "Susun output program. Perhatikan bahwa nilai sama dengan batas memenuhi kondisi lebih besar atau sama dengan.\n\n```java\npublic class TraceBoundaryBranch {\n    public static void main(String[] args) {\n        int score = 50;\n        System.out.println(\"Score: \" + score);\n        if (score >= 50) {\n            System.out.println(\"Pass\");\n        } else {\n            System.out.println(\"Fail\");\n        }\n        System.out.println(\"Done\");\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "Score: 50"
+    },
+    {
+      "id": 2,
+      "code": "Pass"
+    },
+    {
+      "id": 3,
+      "code": "Done"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3
+    ]
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "trace_boolean_comparisons",
+  "title": "Output Perbandingan Boolean",
+  "type": "basics",
+  "mode": "output",
+  "description": "Susun output empat perbandingan. AND ditulis && dan hanya true jika kedua syarat benar.\n\n```java\npublic class TraceBooleanComparisons {\n    public static void main(String[] args) {\n        int value = 7;\n        System.out.println(\"Above: \" + (value > 5));\n        System.out.println(\"Even: \" + (value % 2 == 0));\n        System.out.println(\"Inside: \" + (value >= 3 && value <= 9));\n        System.out.println(\"Equal: \" + (value == 9));\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "Above: true"
+    },
+    {
+      "id": 2,
+      "code": "Even: false"
+    },
+    {
+      "id": 3,
+      "code": "Inside: true"
+    },
+    {
+      "id": 4,
+      "code": "Equal: false"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

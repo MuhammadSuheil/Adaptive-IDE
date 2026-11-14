@@ -1,0 +1,99 @@
+{
+  "id": "combined_duration",
+  "title": "Total Durasi Dua Kegiatan",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Jumlahkan durasi kegiatan 35 dan 50 menit. Ubah hasilnya ke detik, lalu cetak total menit diikuti total detik.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class CombinedDuration {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int firstMinutes = 35;"
+    },
+    {
+      "id": 4,
+      "code": "        int secondMinutes = 50;"
+    },
+    {
+      "id": 5,
+      "code": "        int totalMinutes = firstMinutes + secondMinutes;"
+    },
+    {
+      "id": 6,
+      "code": "        int totalSeconds = totalMinutes * 60;"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(totalMinutes);"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(totalSeconds);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ]
+  ]
+}

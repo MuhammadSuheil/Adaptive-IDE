@@ -1,0 +1,147 @@
+{
+  "id": "weighted_score",
+  "title": "Nilai Akhir Berbobot",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Hitung kontribusi tugas bernilai 80 dengan bobot 0.25 dan ujian bernilai 60 dengan bobot 0.75. Cetak kontribusi tugas, kontribusi ujian, lalu jumlah keduanya.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class WeightedScore {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        double assignmentPart = 80 * 0.25;"
+    },
+    {
+      "id": 4,
+      "code": "        double examPart = 60 * 0.75;"
+    },
+    {
+      "id": 5,
+      "code": "        double finalScore = assignmentPart + examPart;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(assignmentPart);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(examPart);"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(finalScore);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      5,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      6,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      6,
+      4,
+      7,
+      5,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      7,
+      5,
+      8,
+      9,
+      10
+    ]
+  ]
+}

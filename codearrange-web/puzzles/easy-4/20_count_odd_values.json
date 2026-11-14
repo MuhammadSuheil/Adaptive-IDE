@@ -1,0 +1,87 @@
+{
+  "id": "count_odd_values",
+  "title": "Menghitung Bilangan Ganjil dalam Array",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Telusuri array dan hitung elemen yang sisa pembagiannya oleh 2 tidak nol. Cetak jumlah bilangan ganjil setelah loop.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class CountOddValues {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] values = {2, 5, 7, 8};"
+    },
+    {
+      "id": 4,
+      "code": "        int count = 0;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < values.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            if (values[i] % 2 != 0) {"
+    },
+    {
+      "id": 7,
+      "code": "                count++;"
+    },
+    {
+      "id": 8,
+      "code": "            }"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "        System.out.println(count);"
+    },
+    {
+      "id": 11,
+      "code": "    }"
+    },
+    {
+      "id": 12,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  ]
+}

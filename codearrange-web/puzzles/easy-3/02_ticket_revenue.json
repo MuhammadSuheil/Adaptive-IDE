@@ -1,0 +1,147 @@
+{
+  "id": "ticket_revenue",
+  "title": "Pendapatan Dua Kategori Tiket",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Hitung pendapatan dari 3 tiket dewasa seharga 20000 dan 2 tiket anak seharga 10000. Cetak pendapatan dewasa, pendapatan anak, lalu totalnya.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class TicketRevenue {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int adultRevenue = 3 * 20000;"
+    },
+    {
+      "id": 4,
+      "code": "        int childRevenue = 2 * 10000;"
+    },
+    {
+      "id": 5,
+      "code": "        int total = adultRevenue + childRevenue;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(adultRevenue);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(childRevenue);"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      5,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      6,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      6,
+      4,
+      7,
+      5,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      7,
+      5,
+      8,
+      9,
+      10
+    ]
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "array_index_labels",
+  "title": "Indeks dan Nilai Elemen Array",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Telusuri array dari awal sampai akhir. Pada setiap langkah, cetak indeks, tanda titik dua, dan nilai elemen pada satu baris.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class ArrayIndexLabels {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] values = {4, 7, 9};"
+    },
+    {
+      "id": 4,
+      "code": "        int length = values.length;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            System.out.println(i + \": \" + values[i]);"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(\"Done\");"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

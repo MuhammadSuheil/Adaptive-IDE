@@ -1,0 +1,99 @@
+{
+  "id": "triangle_area",
+  "title": "Luas Segitiga",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Kalikan alas 9 dengan tinggi 4, lalu bagi hasilnya dengan 2.0. Cetak hasil perkalian alas dan tinggi terlebih dahulu, kemudian luas.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class TriangleArea {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int base = 9;"
+    },
+    {
+      "id": 4,
+      "code": "        int height = 4;"
+    },
+    {
+      "id": 5,
+      "code": "        int product = base * height;"
+    },
+    {
+      "id": 6,
+      "code": "        double area = product / 2.0;"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(product);"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(area);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ]
+  ]
+}

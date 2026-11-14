@@ -1,0 +1,47 @@
+[
+  {
+    "set": "easy-3",
+    "puzzleId": "daily_deposits",
+    "order": [1, 2, 3, 4, 5, 7, 6, 8, 9, 10, 11],
+    "correct": true,
+    "note": "day++ boleh mendahului setoran tetap di dalam while: nilai setoran tidak memakai day dan total tetap 20000."
+  },
+  {
+    "set": "easy-1",
+    "puzzleId": "minutes_to_hours",
+    "order": [1, 2, 3, 5, 4, 6, 7, 8, 9],
+    "correct": true,
+    "note": "Perhitungan sisa menit boleh mendahului perhitungan jam; keduanya hanya membaca minutes."
+  },
+  {
+    "set": "easy-2",
+    "puzzleId": "while_multiple_sum",
+    "order": [1, 2, 3, 4, 5, 7, 6, 8, 9, 10, 11],
+    "correct": false,
+    "note": "value += 3 tidak boleh mendahului total += value: jumlah berubah dari 30 menjadi 42."
+  },
+  {
+    "set": "easy-4",
+    "puzzleId": "inventory_transactions",
+    "order": [1, 2, 3, 4, 5, 7, 6, 8, 9, 10],
+    "correct": false,
+    "sameOutput": true,
+    "note": "Hasil akhir kebetulan sama, tetapi instruksi menentukan pengurangan rusak sebelum pengurangan terjual."
+  },
+  {
+    "set": "easy-4",
+    "puzzleId": "savings_shortfall",
+    "order": [1, 2, 3, 4, 5, 9, 6, 7, 8, 10, 11],
+    "correct": false,
+    "sameOutput": true,
+    "note": "Instruksi meminta pencetakan setelah pemeriksaan. Pencetakan sebelum if hanya cocok karena contoh tidak memasuki cabang."
+  },
+  {
+    "set": "easy-4",
+    "puzzleId": "savings_shortfall",
+    "order": [1, 2, 4, 3, 5, 9, 6, 7, 8, 10, 11],
+    "correct": false,
+    "sameOutput": true,
+    "note": "Pertukaran deklarasi sah, tetapi pencetakan sebelum pemeriksaan tetap melanggar instruksi."
+  }
+]

@@ -1,0 +1,63 @@
+{
+  "id": "inventory_transactions",
+  "title": "Stok Setelah Tiga Perubahan",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Stok awal 20 mendapat tambahan 8 barang, lalu berkurang 3 karena rusak dan 10 karena terjual, dalam urutan tersebut. Cetak stok setelah barang masuk, kemudian stok akhir.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class InventoryTransactions {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int stock = 20;"
+    },
+    {
+      "id": 4,
+      "code": "        stock += 8;"
+    },
+    {
+      "id": 5,
+      "code": "        System.out.println(stock);"
+    },
+    {
+      "id": 6,
+      "code": "        stock -= 3;"
+    },
+    {
+      "id": 7,
+      "code": "        stock -= 10;"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(stock);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

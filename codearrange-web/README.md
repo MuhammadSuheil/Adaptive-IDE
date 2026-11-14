@@ -12,6 +12,19 @@ Zero external dependencies — the server uses only Node's built-in
 
 - Node.js 18+
 
+## Easy question bank
+
+`easy-1` through `easy-4` contain 25 exercises each: 17 code-arrangement,
+4 output, and 4 debugging exercises per set. All four easy sets have no
+time limit and hide the timer UI. Start the server once, then select each
+set from the home screen. See the [catalog and pilot guide](../.md/notes/persiapan_100_soal_easy.md)
+before collecting research data.
+
+Run `npm test` for the web/bank checks. Maintainers with JDK 11+ can also
+run `node scripts/validate-easy-java.js` to compile and execute every
+accepted Java solution and the debugging controls. Java is not required
+to run the website.
+
 ## Running it
 
 The server takes two required arguments and one optional flag:

@@ -1,0 +1,63 @@
+{
+  "id": "double_array_values",
+  "title": "Mengalikan Elemen Array dengan Dua",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Ubah setiap elemen array dengan mengalikannya dua. Setelah loop, cetak elemen pertama dan terakhir, masing-masing pada satu baris.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class DoubleArrayValues {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] values = {3, 5, 7};"
+    },
+    {
+      "id": 4,
+      "code": "        for (int i = 0; i < values.length; i++) {"
+    },
+    {
+      "id": 5,
+      "code": "            values[i] *= 2;"
+    },
+    {
+      "id": 6,
+      "code": "        }"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(values[0]);"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(values[values.length - 1]);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "trace_array_update",
+  "title": "Output Perubahan Elemen Array",
+  "type": "arrays",
+  "mode": "output",
+  "description": "Susun output sebelum dan setelah dua elemen array diubah.\n\n```java\npublic class TraceArrayUpdate {\n    public static void main(String[] args) {\n        int[] values = {2, 5, 8};\n        System.out.println(values[0]);\n        values[0] += 4;\n        System.out.println(values[0]);\n        values[2] = values[0] + 1;\n        System.out.println(values[2]);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "2"
+    },
+    {
+      "id": 2,
+      "code": "6"
+    },
+    {
+      "id": 3,
+      "code": "7"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3
+    ]
+  ]
+}

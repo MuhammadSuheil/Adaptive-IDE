@@ -1,0 +1,69 @@
+{
+  "id": "circle_circumference",
+  "title": "Keliling Lingkaran",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Gunakan pendekatan pi = 3.14 dan jari-jari 25.0. Hitung diameter, lalu keliling dengan pi * diameter. Cetak diameter, kemudian keliling.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class CircleCircumference {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        double radius = 25.0;"
+    },
+    {
+      "id": 4,
+      "code": "        double diameter = 2.0 * radius;"
+    },
+    {
+      "id": 5,
+      "code": "        double circumference = 3.14 * diameter;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(diameter);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(circumference);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9
+    ]
+  ]
+}

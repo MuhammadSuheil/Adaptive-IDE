@@ -1,0 +1,99 @@
+{
+  "id": "elapsed_minutes",
+  "title": "Selisih Waktu Dalam Menit",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Kegiatan dimulai pada menit ke-90 dan selesai pada menit ke-155, dihitung dari titik awal yang sama. Hitung selisihnya, lalu ubah selisih ke detik. Cetak menit, kemudian detik.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class ElapsedMinutes {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int start = 90;"
+    },
+    {
+      "id": 4,
+      "code": "        int finish = 155;"
+    },
+    {
+      "id": 5,
+      "code": "        int minutes = finish - start;"
+    },
+    {
+      "id": 6,
+      "code": "        int seconds = minutes * 60;"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(minutes);"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(seconds);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ]
+  ]
+}

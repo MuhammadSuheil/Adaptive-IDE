@@ -1,0 +1,107 @@
+{
+  "id": "fix_purchase_total",
+  "title": "Perbaiki Total Harga Belanja",
+  "type": "basics",
+  "mode": "debug",
+  "description": "Hitung total harga 4 barang seharga 7000 per barang. Cetak jumlah barang, lalu total harga.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixPurchaseTotal {\n    public static void main(String[] args) {\n        int quantity = 4;\n        int unitPrice = 7000;\n        int total = quantity + unitPrice;\n        System.out.println(quantity);\n        System.out.println(total);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixPurchaseTotal {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int quantity = 4;"
+    },
+    {
+      "id": 4,
+      "code": "        int unitPrice = 7000;"
+    },
+    {
+      "id": 5,
+      "code": "        int total = quantity * unitPrice;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(quantity);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    },
+    {
+      "id": 10,
+      "code": "        int total = quantity + unitPrice;"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      6,
+      4,
+      5,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      5,
+      7,
+      8,
+      9
+    ]
+  ],
+  "explanation": "Total harga adalah jumlah barang dikali harga satuan, bukan penjumlahan keduanya."
+}

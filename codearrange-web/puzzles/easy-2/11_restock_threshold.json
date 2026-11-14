@@ -1,0 +1,75 @@
+{
+  "id": "restock_threshold",
+  "title": "Penambahan Stok di Bawah Batas",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Mulai dengan stok 3. Jika stok kurang dari 5, tambahkan 10. Setelah pemeriksaan selesai, cetak stok akhirnya.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class RestockThreshold {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int stock = 3;"
+    },
+    {
+      "id": 4,
+      "code": "        int minimum = 5;"
+    },
+    {
+      "id": 5,
+      "code": "        if (stock < minimum) {"
+    },
+    {
+      "id": 6,
+      "code": "            stock += 10;"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(stock);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

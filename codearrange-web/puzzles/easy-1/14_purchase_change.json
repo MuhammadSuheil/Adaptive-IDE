@@ -1,0 +1,289 @@
+{
+  "id": "purchase_change",
+  "title": "Total Harga dan Uang Kembalian",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Hitung total harga 3 barang seharga 12000 per barang, lalu hitung kembalian dari pembayaran 50000. Cetak total harga, kemudian kembalian pada baris berikutnya.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class PurchaseChange {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int quantity = 3;"
+    },
+    {
+      "id": 4,
+      "code": "        int unitPrice = 12000;"
+    },
+    {
+      "id": 5,
+      "code": "        int total = quantity * unitPrice;"
+    },
+    {
+      "id": 6,
+      "code": "        int payment = 50000;"
+    },
+    {
+      "id": 7,
+      "code": "        int change = payment - total;"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 9,
+      "code": "        System.out.println(change);"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      7,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      8,
+      6,
+      7,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      8,
+      7,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      3,
+      6,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      3,
+      6,
+      4,
+      5,
+      8,
+      7,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      8,
+      7,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      8,
+      6,
+      7,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      5,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      5,
+      8,
+      7,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      6,
+      3,
+      5,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      6,
+      3,
+      5,
+      8,
+      7,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      6,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      6,
+      3,
+      4,
+      5,
+      8,
+      7,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      6,
+      4,
+      3,
+      5,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      6,
+      4,
+      3,
+      5,
+      8,
+      7,
+      9,
+      10,
+      11
+    ]
+  ]
+}

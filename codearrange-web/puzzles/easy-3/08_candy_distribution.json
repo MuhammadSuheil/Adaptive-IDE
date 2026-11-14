@@ -1,0 +1,123 @@
+{
+  "id": "candy_distribution",
+  "title": "Pembagian Permen dan Sisanya",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Bagikan 23 permen secara merata kepada 5 anak menggunakan pembagian bulat. Cetak bagian setiap anak, kemudian jumlah permen tersisa.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class CandyDistribution {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int candies = 23;"
+    },
+    {
+      "id": 4,
+      "code": "        int children = 5;"
+    },
+    {
+      "id": 5,
+      "code": "        int each = candies / children;"
+    },
+    {
+      "id": 6,
+      "code": "        int remaining = candies % children;"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(each);"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(remaining);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      5,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

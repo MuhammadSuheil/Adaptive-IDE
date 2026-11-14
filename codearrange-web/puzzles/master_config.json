@@ -6,12 +6,18 @@
   },
   "easy-1": {
     "difficultyLevel": "easy",
-    "timeLimitMinutes": 5,
     "showTimerUI": "off"
   },
   "easy-2": {
     "difficultyLevel": "easy",
-    "timeLimitMinutes": 5,
+    "showTimerUI": "off"
+  },
+  "easy-3": {
+    "difficultyLevel": "easy",
+    "showTimerUI": "off"
+  },
+  "easy-4": {
+    "difficultyLevel": "easy",
     "showTimerUI": "off"
   },
   "medium": {

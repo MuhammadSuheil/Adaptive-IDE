@@ -1,0 +1,303 @@
+{
+  "variables": {
+    "stdout": "25 19.99\n"
+  },
+  "even_odd": {
+    "stdout": "Odd\n"
+  },
+  "find_max": {
+    "stdout": "Max: 12\n"
+  },
+  "fix_even_sum": {
+    "stdout": "30\n"
+  },
+  "print_2d_array": {
+    "stdout": "2 5\n4 1\n9 8\n"
+  },
+  "for_loop_sum": {
+    "stdout": "55\n"
+  },
+  "array_copy_manual": {
+    "stdout": "",
+    "probe": "if (!java.util.Arrays.equals(source, dest)) throw new AssertionError(\"Array copy mismatch\");"
+  },
+  "simple_ifelse": {
+    "stdout": "Pass\n"
+  },
+  "string_concat": {
+    "stdout": "Java Programming\n"
+  },
+  "basic_while_loop": {
+    "stdout": "5\n4\n3\n2\n1\n"
+  },
+  "basic_for_loop": {
+    "stdout": "Count: 1\nCount: 2\nCount: 3\nCount: 4\nCount: 5\n"
+  },
+  "array_sum": {
+    "stdout": "Sum: 20\n"
+  },
+  "factorial_iterative": {
+    "stdout": "Factorial: 120\n"
+  },
+  "purchase_change": {
+    "stdout": "36000\n14000\n"
+  },
+  "minutes_to_hours": {
+    "stdout": "2\n15\n"
+  },
+  "rectangle_measurements": {
+    "stdout": "40\n26\n"
+  },
+  "three_scores_average": {
+    "stdout": "240\n80.0\n"
+  },
+  "fixed_discount": {
+    "stdout": "10000\n65000\n"
+  },
+  "stock_availability": {
+    "stdout": "Ready\n"
+  },
+  "trace_variable_updates": {
+    "stdout": "4\n7\n14\n9\n"
+  },
+  "trace_boundary_branch": {
+    "stdout": "Score: 50\nPass\nDone\n"
+  },
+  "trace_while_counter": {
+    "stdout": "1\n2\n3\n4\n"
+  },
+  "fix_inclusive_limit": {
+    "stdout": "1\n2\n3\n4\nDone\n"
+  },
+  "fix_purchase_total": {
+    "stdout": "4\n28000\n"
+  },
+  "fix_first_array_index": {
+    "stdout": "3\n9\n"
+  },
+  "celsius_conversion": {
+    "stdout": "30.0\n86.0\n"
+  },
+  "combined_duration": {
+    "stdout": "85\n5100\n"
+  },
+  "service_bill": {
+    "stdout": "12000\n22000\n"
+  },
+  "account_balance": {
+    "stdout": "125000\n85000\n"
+  },
+  "triangle_area": {
+    "stdout": "36\n18.0\n"
+  },
+  "circle_circumference": {
+    "stdout": "50.0\n157.0\n"
+  },
+  "weighted_score": {
+    "stdout": "20.0\n45.0\n65.0\n"
+  },
+  "restock_threshold": {
+    "stdout": "13\n"
+  },
+  "multiple_of_five": {
+    "stdout": "Multiple\n"
+  },
+  "inclusive_range": {
+    "stdout": "Inside\n"
+  },
+  "smaller_of_two": {
+    "stdout": "3\n"
+  },
+  "even_step_loop": {
+    "stdout": "2\n4\n6\n8\nDone\n"
+  },
+  "sum_of_squares": {
+    "stdout": "14\n"
+  },
+  "while_multiple_sum": {
+    "stdout": "30\n"
+  },
+  "count_negative_values": {
+    "stdout": "2\n"
+  },
+  "double_array_values": {
+    "stdout": "6\n14\n"
+  },
+  "trim_name": {
+    "stdout": "Rina\n4\n"
+  },
+  "trace_odd_numbers": {
+    "stdout": "1\n3\n5\n7\n"
+  },
+  "trace_string_access": {
+    "stdout": "4\nK\nD\nE\n"
+  },
+  "trace_array_update": {
+    "stdout": "2\n6\n7\n"
+  },
+  "trace_while_step_two": {
+    "stdout": "8\n6\n4\n2\n"
+  },
+  "fix_while_step": {
+    "stdout": "1\n2\n3\n4\nDone\n"
+  },
+  "fix_pass_threshold": {
+    "stdout": "Pass\n"
+  },
+  "fix_array_accumulator": {
+    "stdout": "9\n"
+  },
+  "fix_last_character": {
+    "stdout": "3\nA\n"
+  },
+  "centimeters_to_meters": {
+    "stdout": "2\n45\n"
+  },
+  "ticket_revenue": {
+    "stdout": "60000\n20000\n80000\n"
+  },
+  "shipping_cost": {
+    "stdout": "12000\n17000\n"
+  },
+  "attendance_percentage": {
+    "stdout": "18\n90.0\n"
+  },
+  "elapsed_minutes": {
+    "stdout": "65\n3900\n"
+  },
+  "candy_distribution": {
+    "stdout": "4\n3\n"
+  },
+  "unit_price": {
+    "stdout": "4\n4500.0\n"
+  },
+  "number_sign": {
+    "stdout": "Negative\n"
+  },
+  "member_discount": {
+    "stdout": "45000\n"
+  },
+  "fan_temperature": {
+    "stdout": "On\n"
+  },
+  "array_index_labels": {
+    "stdout": "0: 4\n1: 7\n2: 9\nDone\n"
+  },
+  "count_passing_values": {
+    "stdout": "2\n"
+  },
+  "array_minimum": {
+    "stdout": "1\n"
+  },
+  "array_product": {
+    "stdout": "24\n"
+  },
+  "daily_deposits": {
+    "stdout": "20000\n"
+  },
+  "uppercase_word": {
+    "stdout": "JAVA\n4\n"
+  },
+  "word_prefix": {
+    "stdout": "PRO\n3\n"
+  },
+  "trace_arithmetic_steps": {
+    "stdout": "6\n18\n9\n13\n"
+  },
+  "trace_boolean_comparisons": {
+    "stdout": "Above: true\nEven: false\nInside: true\nEqual: false\n"
+  },
+  "trace_partial_array": {
+    "stdout": "6\n9\n12\n15\n"
+  },
+  "trace_text_separators": {
+    "stdout": "A-B\nB:A\nAB!\n"
+  },
+  "fix_average_denominator": {
+    "stdout": "4.0\n"
+  },
+  "fix_complete_array_copy": {
+    "stdout": "8\n"
+  },
+  "fix_difference_operator": {
+    "stdout": "45\n27\n"
+  },
+  "fix_last_array_index": {
+    "stdout": "2\n9\n"
+  },
+  "parking_fee": {
+    "stdout": "6000\n11000\n"
+  },
+  "discount_then_tax": {
+    "stdout": "80000\n8000.0\n88000.0\n"
+  },
+  "inventory_transactions": {
+    "stdout": "28\n15\n"
+  },
+  "savings_shortfall": {
+    "stdout": "25000\n"
+  },
+  "hours_to_days": {
+    "stdout": "2\n5\n"
+  },
+  "combined_group_average": {
+    "stdout": "380\n76.0\n"
+  },
+  "full_groups": {
+    "stdout": "6\n3\n"
+  },
+  "two_eligibility_conditions": {
+    "stdout": "Eligible\n"
+  },
+  "larger_of_two": {
+    "stdout": "12\n"
+  },
+  "boolean_light_status": {
+    "stdout": "Light on\n"
+  },
+  "multiplication_table": {
+    "stdout": "3\n6\n9\n12\nDone\n"
+  },
+  "for_running_total": {
+    "stdout": "1\n3\n6\n10\nDone\n"
+  },
+  "increment_array_values": {
+    "stdout": "5\n9\n"
+  },
+  "count_odd_values": {
+    "stdout": "2\n"
+  },
+  "sum_prices_above_threshold": {
+    "stdout": "27000\n"
+  },
+  "replace_separator": {
+    "stdout": "AA BB\n5\n"
+  },
+  "last_string_character": {
+    "stdout": "3\nE\n"
+  },
+  "trace_filtered_array": {
+    "stdout": "6\n8\n9\n7\n"
+  },
+  "trace_value_swap": {
+    "stdout": "First: 3\nSecond: 8\nFirst: 8\nSecond: 3\n"
+  },
+  "trace_while_running_total": {
+    "stdout": "1\n3\n6\n10\n"
+  },
+  "trace_discount_branch": {
+    "stdout": "Before: 60000\nDiscount: 10000\nAfter: 50000\n"
+  },
+  "fix_fractional_division": {
+    "stdout": "7\n3.5\n"
+  },
+  "fix_minimum_initialization": {
+    "stdout": "4\n"
+  },
+  "fix_cumulative_cost": {
+    "stdout": "7000\n15000\n"
+  },
+  "fix_odd_counter": {
+    "stdout": "3\n"
+  }
+}

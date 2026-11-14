@@ -1,0 +1,28 @@
+{
+  "id": "trace_discount_branch",
+  "title": "Output Rincian Potongan Harga",
+  "type": "basics",
+  "mode": "output",
+  "description": "Susun output harga awal, informasi potongan, dan harga akhir. Potongan berlaku jika harga setidaknya 50000.\n\n```java\npublic class TraceDiscountBranch {\n    public static void main(String[] args) {\n        int price = 60000;\n        System.out.println(\"Before: \" + price);\n        if (price >= 50000) {\n            price -= 10000;\n            System.out.println(\"Discount: 10000\");\n        }\n        System.out.println(\"After: \" + price);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "Before: 60000"
+    },
+    {
+      "id": 2,
+      "code": "Discount: 10000"
+    },
+    {
+      "id": 3,
+      "code": "After: 50000"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3
+    ]
+  ]
+}

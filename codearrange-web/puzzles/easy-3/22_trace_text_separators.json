@@ -1,0 +1,28 @@
+{
+  "id": "trace_text_separators",
+  "title": "Output Teks dan Pemisah",
+  "type": "basics",
+  "mode": "output",
+  "description": "Susun output program yang menggabungkan String dengan tanda pemisah. Tidak ada spasi tambahan selain yang ada di dalam literal.\n\n```java\npublic class TraceTextSeparators {\n    public static void main(String[] args) {\n        String left = \"A\";\n        String right = \"B\";\n        System.out.println(left + \"-\" + right);\n        System.out.println(right + \":\" + left);\n        System.out.println(left + right + \"!\");\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "A-B"
+    },
+    {
+      "id": 2,
+      "code": "B:A"
+    },
+    {
+      "id": 3,
+      "code": "AB!"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3
+    ]
+  ]
+}

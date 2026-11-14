@@ -1,0 +1,33 @@
+{
+  "id": "trace_filtered_array",
+  "title": "Output Penyaringan Array",
+  "type": "loops",
+  "mode": "output",
+  "description": "Susun output program yang hanya mencetak elemen lebih besar dari 5.\n\n```java\npublic class TraceFilteredArray {\n    public static void main(String[] args) {\n        int[] values = {2, 6, 8, 3, 9, 7};\n        for (int i = 0; i < values.length; i++) {\n            if (values[i] > 5) {\n                System.out.println(values[i]);\n            }\n        }\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "6"
+    },
+    {
+      "id": 2,
+      "code": "8"
+    },
+    {
+      "id": 3,
+      "code": "9"
+    },
+    {
+      "id": 4,
+      "code": "7"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "id": "array_product",
+  "title": "Hasil Perkalian Elemen Array",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Mulai dengan hasil 1, lalu kalikan setiap elemen array ke hasil tersebut dengan satu for loop. Cetak hasil akhir setelah loop.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class ArrayProduct {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] values = {2, 3, 4};"
+    },
+    {
+      "id": 4,
+      "code": "        int product = 1;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < values.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            product *= values[i];"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(product);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

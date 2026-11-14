@@ -1,6 +1,6 @@
 {
   "id": "fix_even_sum",
-  "title": "4. Perbaiki Penjumlahan Bilangan Genap",
+  "title": "Perbaiki Penjumlahan Bilangan Genap",
   "type": "loops",
   "mode": "debug",
   "description": "Program ini seharusnya mencetak jumlah bilangan genap dari 1 sampai 10 (output yang diharapkan: 30), namun program mencetak 25. Temukan bug dan susun kembali program yang sudah diperbaiki.\n```\npublic class EvenSum {\n    public static void main(String[] args) {\n        int total = 0;\n        for (int i = 1; i < 10; i++) {\n            if (i % 2 == 1) {\n                total += i;\n            }\n        }\n        System.out.println(total);\n    }\n}\n```",

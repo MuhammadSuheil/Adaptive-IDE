@@ -1,0 +1,68 @@
+{
+  "id": "fix_complete_array_copy",
+  "title": "Perbaiki Penyalinan Seluruh Array",
+  "type": "loops",
+  "mode": "debug",
+  "description": "Salin semua elemen source ke dest. Setelah loop, cetak elemen terakhir dest. Elemen terakhir tidak boleh tertinggal.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixCompleteArrayCopy {\n    public static void main(String[] args) {\n        int[] source = {2, 5, 8};\n        int[] dest = new int[source.length];\n        for (int i = 0; i < source.length - 1; i++) {\n            dest[i] = source[i];\n        }\n        System.out.println(dest[dest.length - 1]);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixCompleteArrayCopy {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] source = {2, 5, 8};"
+    },
+    {
+      "id": 4,
+      "code": "        int[] dest = new int[source.length];"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < source.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            dest[i] = source[i];"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(dest[dest.length - 1]);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    },
+    {
+      "id": 11,
+      "code": "        for (int i = 0; i < source.length - 1; i++) {"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ],
+  "explanation": "Batas i < source.length memproses semua indeks hingga length - 1."
+}

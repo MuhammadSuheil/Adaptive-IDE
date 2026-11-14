@@ -1,13 +1,13 @@
 {
-  "id": "array_copy_manual",
-  "title": "Menyalin Array Secara Manual",
+  "id": "multiplication_table",
+  "title": "Tabel Perkalian Pendek",
   "type": "loops",
   "mode": "arrange",
-  "description": "Salin elemen array ke array lain.",
+  "description": "Cetak hasil 3 dikali 1 sampai 4 dengan satu for loop, satu hasil per baris. Setelah loop selesai, cetak Done.",
   "lines": [
     {
       "id": 1,
-      "code": "public class ArrayCopyManual {"
+      "code": "public class MultiplicationTable {"
     },
     {
       "id": 2,
@@ -15,23 +15,23 @@
     },
     {
       "id": 3,
-      "code": "        int[] source = {1, 2, 3, 4, 5};"
+      "code": "        int number = 3;"
     },
     {
       "id": 4,
-      "code": "        int[] dest = new int[source.length];"
+      "code": "        for (int i = 1; i <= 4; i++) {"
     },
     {
       "id": 5,
-      "code": "        for (int i = 0; i < source.length; i++) {"
+      "code": "            System.out.println(number * i);"
     },
     {
       "id": 6,
-      "code": "            dest[i] = source[i];"
+      "code": "        }"
     },
     {
       "id": 7,
-      "code": "        }"
+      "code": "        System.out.println(\"Done\");"
     },
     {
       "id": 8,

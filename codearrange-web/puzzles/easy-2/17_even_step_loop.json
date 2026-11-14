@@ -1,12 +1,13 @@
 {
-  "id": "for_loop_sum",
-  "title": "3. Penjumlahan 1 sampai 10 dengan Loop",
+  "id": "even_step_loop",
+  "title": "Bilangan Genap dengan Langkah Dua",
   "type": "loops",
-  "description": "Buatlah program menggunakan for loop untuk menjumlahkan angka 1 sampai 10, lalu cetak jumlah totalnya (55).",
+  "mode": "arrange",
+  "description": "Cetak bilangan genap dari 2 sampai 8 dengan penambahan dua pada setiap langkah. Setelah loop, cetak Done.",
   "lines": [
     {
       "id": 1,
-      "code": "public class LoopSum {"
+      "code": "public class EvenStepLoop {"
     },
     {
       "id": 2,
@@ -14,15 +15,15 @@
     },
     {
       "id": 3,
-      "code": "        int total = 0;"
+      "code": "        int limit = 8;"
     },
     {
       "id": 4,
-      "code": "        for (int i = 1; i <= 10; i++) {"
+      "code": "        for (int value = 2; value <= limit; value += 2) {"
     },
     {
       "id": 5,
-      "code": "            total += i;"
+      "code": "            System.out.println(value);"
     },
     {
       "id": 6,
@@ -30,7 +31,7 @@
     },
     {
       "id": 7,
-      "code": "        System.out.println(total);"
+      "code": "        System.out.println(\"Done\");"
     },
     {
       "id": 8,

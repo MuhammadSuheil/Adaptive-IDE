@@ -1,0 +1,80 @@
+{
+  "id": "celsius_conversion",
+  "title": "Konversi Suhu Celsius",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Ubah suhu 30 derajat Celsius menjadi Fahrenheit dengan rumus celsius * 9.0 / 5.0 + 32. Cetak suhu awal, lalu hasil konversi.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class CelsiusConversion {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        double celsius = 30.0;"
+    },
+    {
+      "id": 4,
+      "code": "        double scaled = celsius * 9.0 / 5.0;"
+    },
+    {
+      "id": 5,
+      "code": "        double fahrenheit = scaled + 32.0;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(celsius);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(fahrenheit);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      6,
+      4,
+      5,
+      7,
+      8,
+      9
+    ]
+  ]
+}

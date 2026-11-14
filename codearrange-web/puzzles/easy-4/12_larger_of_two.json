@@ -1,0 +1,81 @@
+{
+  "id": "larger_of_two",
+  "title": "Nilai Terbesar dari Dua Bilangan",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Bandingkan 12 dan 8 menggunakan if-else. Cetak nilai yang lebih besar, menggunakan satu println pada setiap cabang.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class LargerOfTwo {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int first = 12;"
+    },
+    {
+      "id": 4,
+      "code": "        int second = 8;"
+    },
+    {
+      "id": 5,
+      "code": "        if (first > second) {"
+    },
+    {
+      "id": 6,
+      "code": "            System.out.println(first);"
+    },
+    {
+      "id": 7,
+      "code": "        } else {"
+    },
+    {
+      "id": 8,
+      "code": "            System.out.println(second);"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  ]
+}

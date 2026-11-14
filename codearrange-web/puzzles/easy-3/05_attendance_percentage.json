@@ -1,0 +1,102 @@
+{
+  "id": "attendance_percentage",
+  "title": "Persentase Kehadiran",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Hitung persentase 18 kehadiran dari 20 pertemuan dengan hadir * 100.0 / jumlah pertemuan. Cetak jumlah kehadiran, kemudian persentasenya.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class AttendancePercentage {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int attended = 18;"
+    },
+    {
+      "id": 4,
+      "code": "        int meetings = 20;"
+    },
+    {
+      "id": 5,
+      "code": "        double percentage = attended * 100.0 / meetings;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(attended);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(percentage);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      6,
+      4,
+      5,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      5,
+      7,
+      8,
+      9
+    ]
+  ]
+}

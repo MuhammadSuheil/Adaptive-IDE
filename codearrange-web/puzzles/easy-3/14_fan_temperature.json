@@ -1,0 +1,81 @@
+{
+  "id": "fan_temperature",
+  "title": "Status Kipas Berdasarkan Suhu",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Kipas menyala jika suhu mencapai 30 atau lebih. Untuk suhu 32, cetak On atau Off menggunakan if-else.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FanTemperature {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int temperature = 32;"
+    },
+    {
+      "id": 4,
+      "code": "        int threshold = 30;"
+    },
+    {
+      "id": 5,
+      "code": "        if (temperature >= threshold) {"
+    },
+    {
+      "id": 6,
+      "code": "            System.out.println(\"On\");"
+    },
+    {
+      "id": 7,
+      "code": "        } else {"
+    },
+    {
+      "id": 8,
+      "code": "            System.out.println(\"Off\");"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  ]
+}

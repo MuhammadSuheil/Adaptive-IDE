@@ -1,0 +1,92 @@
+{
+  "id": "fix_odd_counter",
+  "title": "Perbaiki Penghitung Bilangan Ganjil",
+  "type": "loops",
+  "mode": "debug",
+  "description": "Hitung bilangan ganjil pada array dengan satu loop. Sisa bagi 2 yang tidak nol menunjukkan bilangan ganjil. Cetak penghitung setelah loop.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixOddCounter {\n    public static void main(String[] args) {\n        int[] values = {1, 3, 6, 7};\n        int count = 0;\n        for (int i = 0; i < values.length; i++) {\n            if (values[i] % 2 == 0) {\n                count++;\n            }\n        }\n        System.out.println(count);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixOddCounter {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] values = {1, 3, 6, 7};"
+    },
+    {
+      "id": 4,
+      "code": "        int count = 0;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < values.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            if (values[i] % 2 != 0) {"
+    },
+    {
+      "id": 7,
+      "code": "                count++;"
+    },
+    {
+      "id": 8,
+      "code": "            }"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "        System.out.println(count);"
+    },
+    {
+      "id": 11,
+      "code": "    }"
+    },
+    {
+      "id": 12,
+      "code": "}"
+    },
+    {
+      "id": 13,
+      "code": "            if (values[i] % 2 == 0) {"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  ],
+  "explanation": "Kondisi != 0 memilih bilangan ganjil. Kondisi == 0 justru menghitung bilangan genap."
+}

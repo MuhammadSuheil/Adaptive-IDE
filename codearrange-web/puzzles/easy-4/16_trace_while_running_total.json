@@ -1,0 +1,33 @@
+{
+  "id": "trace_while_running_total",
+  "title": "Output Jumlah Berjalan dengan While",
+  "type": "loops",
+  "mode": "output",
+  "description": "Susun output total yang dicetak setelah setiap penambahan. Perhatikan bahwa penghitung baru bertambah sesudah pencetakan.\n\n```java\npublic class TraceWhileRunningTotal {\n    public static void main(String[] args) {\n        int count = 1;\n        int total = 0;\n        while (count <= 4) {\n            total += count;\n            System.out.println(total);\n            count++;\n        }\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "1"
+    },
+    {
+      "id": 2,
+      "code": "3"
+    },
+    {
+      "id": 3,
+      "code": "6"
+    },
+    {
+      "id": 4,
+      "code": "10"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

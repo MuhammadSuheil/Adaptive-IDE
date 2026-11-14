@@ -1,0 +1,69 @@
+{
+  "id": "shipping_cost",
+  "title": "Ongkir Berdasarkan Berat",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Hitung ongkir berat 4 kilogram dengan biaya 3000 per kilogram, lalu tambahkan biaya tetap 5000. Cetak biaya berdasarkan berat dan total ongkir.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class ShippingCost {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int weight = 4;"
+    },
+    {
+      "id": 4,
+      "code": "        int variableCost = weight * 3000;"
+    },
+    {
+      "id": 5,
+      "code": "        int total = variableCost + 5000;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(variableCost);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9
+    ]
+  ]
+}

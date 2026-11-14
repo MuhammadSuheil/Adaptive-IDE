@@ -1,0 +1,74 @@
+{
+  "id": "fix_last_character",
+  "title": "Perbaiki Akses Karakter Terakhir",
+  "type": "basics",
+  "mode": "debug",
+  "description": "Hitung indeks karakter terakhir String, ambil karakternya dengan charAt(), lalu cetak indeks dan karakter tersebut.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixLastCharacter {\n    public static void main(String[] args) {\n        String word = \"JAVA\";\n        int lastIndex = word.length();\n        char last = word.charAt(lastIndex);\n        System.out.println(lastIndex);\n        System.out.println(last);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixLastCharacter {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        String word = \"JAVA\";"
+    },
+    {
+      "id": 4,
+      "code": "        int lastIndex = word.length() - 1;"
+    },
+    {
+      "id": 5,
+      "code": "        char last = word.charAt(lastIndex);"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(lastIndex);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(last);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    },
+    {
+      "id": 10,
+      "code": "        int lastIndex = word.length();"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9
+    ]
+  ],
+  "explanation": "Karakter terakhir berada pada indeks length() - 1. Indeks length() berada di luar String."
+}

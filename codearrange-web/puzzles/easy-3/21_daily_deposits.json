@@ -1,0 +1,107 @@
+{
+  "id": "daily_deposits",
+  "title": "Akumulasi Setoran Tetap dengan While",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Selama 4 hari, tambahkan setoran 5000 per hari ke saldo awal nol. Gunakan while dengan penghitung hari mulai 1. Cetak total setelah loop.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class DailyDeposits {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int day = 1;"
+    },
+    {
+      "id": 4,
+      "code": "        int total = 0;"
+    },
+    {
+      "id": 5,
+      "code": "        while (day <= 4) {"
+    },
+    {
+      "id": 6,
+      "code": "            total += 5000;"
+    },
+    {
+      "id": 7,
+      "code": "            day++;"
+    },
+    {
+      "id": 8,
+      "code": "        }"
+    },
+    {
+      "id": 9,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10,
+      11
+    ]
+  ]
+}

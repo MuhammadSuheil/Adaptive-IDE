@@ -1,0 +1,33 @@
+{
+  "id": "trace_arithmetic_steps",
+  "title": "Output Aritmetika Berurutan",
+  "type": "basics",
+  "mode": "output",
+  "description": "Susun output setiap tahap perubahan variabel. Semua operasi dilakukan berurutan dari atas ke bawah.\n\n```java\npublic class TraceArithmeticSteps {\n    public static void main(String[] args) {\n        int value = 6;\n        System.out.println(value);\n        value *= 3;\n        System.out.println(value);\n        value /= 2;\n        System.out.println(value);\n        value += 4;\n        System.out.println(value);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "6"
+    },
+    {
+      "id": 2,
+      "code": "18"
+    },
+    {
+      "id": 3,
+      "code": "9"
+    },
+    {
+      "id": 4,
+      "code": "13"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "id": "fix_while_step",
+  "title": "Perbaiki Langkah Penghitung While",
+  "type": "loops",
+  "mode": "debug",
+  "description": "Program harus mencetak 1, 2, 3, dan 4, kemudian Done. Penghitung bertambah tepat satu pada setiap langkah.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixWhileStep {\n    public static void main(String[] args) {\n        int count = 1;\n        while (count <= 4) {\n            System.out.println(count);\n            count += 2;\n        }\n        System.out.println(\"Done\");\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixWhileStep {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int count = 1;"
+    },
+    {
+      "id": 4,
+      "code": "        while (count <= 4) {"
+    },
+    {
+      "id": 5,
+      "code": "            System.out.println(count);"
+    },
+    {
+      "id": 6,
+      "code": "            count++;"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(\"Done\");"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    },
+    {
+      "id": 11,
+      "code": "            count += 2;"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ],
+  "explanation": "count++ menambah satu. Penambahan dua melewatkan beberapa bilangan."
+}

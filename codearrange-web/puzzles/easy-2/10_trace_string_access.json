@@ -1,0 +1,33 @@
+{
+  "id": "trace_string_access",
+  "title": "Output Panjang dan Karakter String",
+  "type": "basics",
+  "mode": "output",
+  "description": "Susun output program. Indeks karakter dimulai dari nol.\n\n```java\npublic class TraceStringAccess {\n    public static void main(String[] args) {\n        String word = \"KODE\";\n        System.out.println(word.length());\n        System.out.println(word.charAt(0));\n        System.out.println(word.charAt(2));\n        System.out.println(word.charAt(3));\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "4"
+    },
+    {
+      "id": 2,
+      "code": "K"
+    },
+    {
+      "id": 3,
+      "code": "D"
+    },
+    {
+      "id": 4,
+      "code": "E"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

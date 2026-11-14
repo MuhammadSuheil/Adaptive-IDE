@@ -1,0 +1,68 @@
+{
+  "id": "inclusive_range",
+  "title": "Nilai Dalam Rentang",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Periksa apakah nilai 75 berada dalam rentang 60 sampai 90, termasuk kedua batas. Gunakan AND, lalu cetak Inside atau Outside.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class InclusiveRange {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int value = 75;"
+    },
+    {
+      "id": 4,
+      "code": "        boolean inside = value >= 60 && value <= 90;"
+    },
+    {
+      "id": 5,
+      "code": "        if (inside) {"
+    },
+    {
+      "id": 6,
+      "code": "            System.out.println(\"Inside\");"
+    },
+    {
+      "id": 7,
+      "code": "        } else {"
+    },
+    {
+      "id": 8,
+      "code": "            System.out.println(\"Outside\");"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  ]
+}

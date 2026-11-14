@@ -1,0 +1,75 @@
+{
+  "id": "parking_fee",
+  "title": "Biaya Parkir Bertahap",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Kendaraan parkir 4 jam. Jam pertama dikenai 5000 dan setiap jam berikutnya 2000. Hitung biaya tambahan, lalu cetak biaya tambahan dan totalnya.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class ParkingFee {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int hours = 4;"
+    },
+    {
+      "id": 4,
+      "code": "        int extraHours = hours - 1;"
+    },
+    {
+      "id": 5,
+      "code": "        int extraCost = extraHours * 2000;"
+    },
+    {
+      "id": 6,
+      "code": "        int total = 5000 + extraCost;"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(extraCost);"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ]
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "id": "boolean_light_status",
+  "title": "Status Lampu dari Boolean",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Variabel switchOn bernilai true. Salin nilainya ke variabel lightOn, lalu cetak Light on jika true atau Light off jika false.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class BooleanLightStatus {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        boolean switchOn = true;"
+    },
+    {
+      "id": 4,
+      "code": "        boolean lightOn = switchOn;"
+    },
+    {
+      "id": 5,
+      "code": "        if (lightOn) {"
+    },
+    {
+      "id": 6,
+      "code": "            System.out.println(\"Light on\");"
+    },
+    {
+      "id": 7,
+      "code": "        } else {"
+    },
+    {
+      "id": 8,
+      "code": "            System.out.println(\"Light off\");"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  ]
+}

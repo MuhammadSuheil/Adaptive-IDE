@@ -53,6 +53,34 @@ class StudyEventSyncTests(unittest.TestCase):
         self.assertEqual(hard["puzzle_id"], "q3")
         self.assertEqual(context_at(8100, self.events, 100)["study_phase"], "post_task")
 
+    def test_four_easy_sets_keep_feedback_rating_and_breaks_out_of_active_windows(self):
+        events = [event(0, "session_linked")]
+        for index in range(4):
+            start = 1000 + index * 100000
+            puzzle_set = f"easy-{index + 1}"
+            puzzle = f"question_{index + 1}"
+            events.extend([
+                event(start, "set_started", puzzle_set, "easy"),
+                event(start + 100, "puzzle_started", puzzle_set, "easy", puzzle),
+                event(start + 40100, "attempt_submitted", puzzle_set, "easy", puzzle),
+                event(start + 40200, "rating_started", puzzle_set, "easy", puzzle),
+                event(start + 42000, "rating_ended", puzzle_set, "easy", puzzle),
+                event(start + 43000, "set_ended", puzzle_set, "easy", puzzle),
+            ])
+        events.append(event(450000, "study_ended"))
+        for index in range(4):
+            start = 1000 + index * 100000
+            active = summarize_segments(interval_segments(start + 1000, start + 26000, events))
+            self.assertEqual(active["study_phase"], "active_task")
+            self.assertEqual(active["difficulty_level"], "easy")
+            self.assertEqual(active["puzzle_set"], f"easy-{index + 1}")
+            self.assertEqual(context_at(start + 40150, events)["study_phase"], "feedback")
+            self.assertEqual(context_at(start + 41000, events)["study_phase"], "rating")
+            mixed = summarize_segments(interval_segments(start + 30000, start + 55000, events))
+            self.assertEqual(mixed["study_phase"], "mixed")
+            self.assertEqual(context_at(start + 50000, events)["study_phase"],
+                             "rest" if index < 3 else "post_task")
+
     def test_hrv_window_reports_phase_proportions_at_boundaries(self):
         segments = interval_segments(2500, 5500, self.events, 100)
         labels = summarize_segments(segments)

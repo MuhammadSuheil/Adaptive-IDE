@@ -1,0 +1,33 @@
+{
+  "id": "trace_odd_numbers",
+  "title": "Output Deret Bilangan Ganjil",
+  "type": "loops",
+  "mode": "output",
+  "description": "Susun output perulangan yang dimulai dari 1 dan bertambah dua.\n\n```java\npublic class TraceOddNumbers {\n    public static void main(String[] args) {\n        for (int value = 1; value <= 7; value += 2) {\n            System.out.println(value);\n        }\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "1"
+    },
+    {
+      "id": 2,
+      "code": "3"
+    },
+    {
+      "id": 3,
+      "code": "5"
+    },
+    {
+      "id": 4,
+      "code": "7"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "id": "rectangle_measurements",
+  "title": "Luas dan Keliling Persegi Panjang",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Hitung luas dan keliling persegi panjang dengan panjang 8 dan lebar 5. Cetak luas terlebih dahulu, kemudian keliling.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class RectangleMeasurements {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int length = 8;"
+    },
+    {
+      "id": 4,
+      "code": "        int width = 5;"
+    },
+    {
+      "id": 5,
+      "code": "        int area = length * width;"
+    },
+    {
+      "id": 6,
+      "code": "        int perimeter = 2 * (length + width);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(area);"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(perimeter);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      5,
+      7,
+      8,
+      9,
+      10
+    ]
+  ]
+}

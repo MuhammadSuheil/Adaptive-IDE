@@ -1,0 +1,33 @@
+{
+  "id": "trace_partial_array",
+  "title": "Output Sebagian Elemen Array",
+  "type": "loops",
+  "mode": "output",
+  "description": "Susun output loop yang dimulai dari indeks 1. Indeks array dimulai dari nol.\n\n```java\npublic class TracePartialArray {\n    public static void main(String[] args) {\n        int[] values = {3, 6, 9, 12, 15};\n        for (int i = 1; i < values.length; i++) {\n            System.out.println(values[i]);\n        }\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "6"
+    },
+    {
+      "id": 2,
+      "code": "9"
+    },
+    {
+      "id": 3,
+      "code": "12"
+    },
+    {
+      "id": 4,
+      "code": "15"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

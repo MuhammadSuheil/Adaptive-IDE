@@ -1,0 +1,78 @@
+{
+  "id": "fix_minimum_initialization",
+  "title": "Perbaiki Inisialisasi Minimum",
+  "type": "loops",
+  "mode": "debug",
+  "description": "Cari minimum array bilangan positif. Nilai minimum awal harus berasal dari elemen pertama, lalu periksa elemen berikutnya dan cetak hasil setelah loop.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixMinimumInitialization {\n    public static void main(String[] args) {\n        int[] values = {7, 4, 9};\n        int minimum = 0;\n        for (int i = 1; i < values.length; i++) {\n            if (values[i] < minimum) {\n                minimum = values[i];\n            }\n        }\n        System.out.println(minimum);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixMinimumInitialization {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] values = {7, 4, 9};"
+    },
+    {
+      "id": 4,
+      "code": "        int minimum = values[0];"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 1; i < values.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            if (values[i] < minimum) {"
+    },
+    {
+      "id": 7,
+      "code": "                minimum = values[i];"
+    },
+    {
+      "id": 8,
+      "code": "            }"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "        System.out.println(minimum);"
+    },
+    {
+      "id": 11,
+      "code": "    }"
+    },
+    {
+      "id": 12,
+      "code": "}"
+    },
+    {
+      "id": 13,
+      "code": "        int minimum = 0;"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  ],
+  "explanation": "Nol bukan anggota array ini dan lebih kecil dari semua elemennya. Gunakan elemen pertama sebagai minimum awal."
+}

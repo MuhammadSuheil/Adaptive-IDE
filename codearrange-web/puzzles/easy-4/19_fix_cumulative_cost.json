@@ -1,0 +1,63 @@
+{
+  "id": "fix_cumulative_cost",
+  "title": "Perbaiki Total Biaya Bertahap",
+  "type": "basics",
+  "mode": "debug",
+  "description": "Biaya awal 5000 ditambah biaya kemasan 2000, kemudian pengiriman 8000. Cetak total setelah kemasan, kemudian total akhir. Biaya sebelumnya tidak boleh hilang.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixCumulativeCost {\n    public static void main(String[] args) {\n        int total = 5000;\n        total += 2000;\n        System.out.println(total);\n        total = 8000;\n        System.out.println(total);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixCumulativeCost {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int total = 5000;"
+    },
+    {
+      "id": 4,
+      "code": "        total += 2000;"
+    },
+    {
+      "id": 5,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 6,
+      "code": "        total += 8000;"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    },
+    {
+      "id": 10,
+      "code": "        total = 8000;"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  ],
+  "explanation": "Gunakan += untuk menambahkan biaya pengiriman ke total sebelumnya, bukan mengganti total."
+}

@@ -1,0 +1,87 @@
+{
+  "id": "sum_prices_above_threshold",
+  "title": "Jumlah Harga yang Memenuhi Ambang",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Jumlahkan hanya harga yang setidaknya 10000 dari array. Gunakan satu loop dan satu if, lalu cetak total setelah loop.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class SumPricesAboveThreshold {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] prices = {5000, 12000, 15000};"
+    },
+    {
+      "id": 4,
+      "code": "        int total = 0;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < prices.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            if (prices[i] >= 10000) {"
+    },
+    {
+      "id": 7,
+      "code": "                total += prices[i];"
+    },
+    {
+      "id": 8,
+      "code": "            }"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 11,
+      "code": "    }"
+    },
+    {
+      "id": 12,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  ]
+}

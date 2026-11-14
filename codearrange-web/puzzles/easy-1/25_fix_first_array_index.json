@@ -1,0 +1,85 @@
+{
+  "id": "fix_first_array_index",
+  "title": "Perbaiki Akses Elemen Pertama",
+  "type": "arrays",
+  "mode": "debug",
+  "description": "Ambil elemen pertama array, lalu cetak jumlah elemen dan nilai pertama tersebut.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixFirstArrayIndex {\n    public static void main(String[] args) {\n        int[] values = {9, 4, 7};\n        int first = values[1];\n        int length = values.length;\n        System.out.println(length);\n        System.out.println(first);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixFirstArrayIndex {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] values = {9, 4, 7};"
+    },
+    {
+      "id": 4,
+      "code": "        int first = values[0];"
+    },
+    {
+      "id": 5,
+      "code": "        int length = values.length;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(length);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(first);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    },
+    {
+      "id": 10,
+      "code": "        int first = values[1];"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      5,
+      4,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      5,
+      6,
+      4,
+      7,
+      8,
+      9
+    ]
+  ],
+  "explanation": "Indeks array Java dimulai dari nol. values[1] mengakses elemen kedua."
+}

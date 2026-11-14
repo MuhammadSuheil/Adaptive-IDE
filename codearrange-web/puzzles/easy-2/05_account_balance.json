@@ -1,0 +1,58 @@
+{
+  "id": "account_balance",
+  "title": "Saldo Setelah Dua Transaksi",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Mulai dengan saldo 100000. Tambahkan setoran 25000, lalu kurangi penarikan 40000. Cetak saldo setelah setoran, kemudian saldo akhir.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class AccountBalance {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int balance = 100000;"
+    },
+    {
+      "id": 4,
+      "code": "        balance += 25000;"
+    },
+    {
+      "id": 5,
+      "code": "        System.out.println(balance);"
+    },
+    {
+      "id": 6,
+      "code": "        balance -= 40000;"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(balance);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  ]
+}

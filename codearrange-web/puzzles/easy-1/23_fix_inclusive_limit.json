@@ -1,0 +1,63 @@
+{
+  "id": "fix_inclusive_limit",
+  "title": "Perbaiki Batas Akhir Perulangan",
+  "type": "loops",
+  "mode": "debug",
+  "description": "Program harus mencetak bilangan 1 sampai 4, termasuk 4, kemudian mencetak Done.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixInclusiveLimit {\n    public static void main(String[] args) {\n        int limit = 4;\n        for (int i = 1; i < limit; i++) {\n            System.out.println(i);\n        }\n        System.out.println(\"Done\");\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixInclusiveLimit {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int limit = 4;"
+    },
+    {
+      "id": 4,
+      "code": "        for (int i = 1; i <= limit; i++) {"
+    },
+    {
+      "id": 5,
+      "code": "            System.out.println(i);"
+    },
+    {
+      "id": 6,
+      "code": "        }"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(\"Done\");"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    },
+    {
+      "id": 10,
+      "code": "        for (int i = 1; i < limit; i++) {"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  ],
+  "explanation": "Kondisi i <= limit menyertakan angka batas; i < limit melewatkannya."
+}

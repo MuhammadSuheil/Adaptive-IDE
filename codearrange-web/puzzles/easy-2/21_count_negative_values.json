@@ -1,0 +1,87 @@
+{
+  "id": "count_negative_values",
+  "title": "Menghitung Bilangan Negatif",
+  "type": "loops",
+  "mode": "arrange",
+  "description": "Telusuri array dengan satu loop. Tambahkan penghitung satu kali untuk setiap elemen yang kurang dari nol, lalu cetak jumlahnya setelah loop.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class CountNegativeValues {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] values = {-2, 4, -1, 0};"
+    },
+    {
+      "id": 4,
+      "code": "        int count = 0;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < values.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            if (values[i] < 0) {"
+    },
+    {
+      "id": 7,
+      "code": "                count++;"
+    },
+    {
+      "id": 8,
+      "code": "            }"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "        System.out.println(count);"
+    },
+    {
+      "id": 11,
+      "code": "    }"
+    },
+    {
+      "id": 12,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  ]
+}

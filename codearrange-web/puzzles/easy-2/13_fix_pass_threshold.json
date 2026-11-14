@@ -1,0 +1,86 @@
+{
+  "id": "fix_pass_threshold",
+  "title": "Perbaiki Batas Kelulusan",
+  "type": "basics",
+  "mode": "debug",
+  "description": "Nilai 50 harus termasuk lulus. Cetak Pass untuk nilai setidaknya 50, atau Fail untuk nilai yang lebih kecil.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixPassThreshold {\n    public static void main(String[] args) {\n        int score = 50;\n        int threshold = 50;\n        if (score > threshold) {\n            System.out.println(\"Pass\");\n        } else {\n            System.out.println(\"Fail\");\n        }\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixPassThreshold {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int score = 50;"
+    },
+    {
+      "id": 4,
+      "code": "        int threshold = 50;"
+    },
+    {
+      "id": 5,
+      "code": "        if (score >= threshold) {"
+    },
+    {
+      "id": 6,
+      "code": "            System.out.println(\"Pass\");"
+    },
+    {
+      "id": 7,
+      "code": "        } else {"
+    },
+    {
+      "id": 8,
+      "code": "            System.out.println(\"Fail\");"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    },
+    {
+      "id": 12,
+      "code": "        if (score > threshold) {"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  ],
+  "explanation": "Operator >= menyertakan nilai yang sama dengan batas kelulusan."
+}

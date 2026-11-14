@@ -1,0 +1,69 @@
+{
+  "id": "replace_separator",
+  "title": "Mengganti Karakter Pemisah",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Gunakan replace untuk mengganti semua tanda minus pada kode dengan spasi. Cetak teks hasil penggantian, kemudian panjangnya.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class ReplaceSeparator {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        String code = \"AA-BB\";"
+    },
+    {
+      "id": 4,
+      "code": "        String spaced = code.replace('-', ' ');"
+    },
+    {
+      "id": 5,
+      "code": "        int length = spaced.length();"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(spaced);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(length);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9
+    ]
+  ]
+}

@@ -1,0 +1,744 @@
+{
+  "variables": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class Variables {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        int age = 25;"
+      },
+      {
+        "id": 4,
+        "code": "        double price = 19.99;"
+      },
+      {
+        "id": 5,
+        "code": "        System.out.println(age + \" \" + price);"
+      },
+      {
+        "id": 6,
+        "code": "    }"
+      },
+      {
+        "id": 7,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      [
+        1,
+        2,
+        4,
+        3,
+        5,
+        6,
+        7
+      ]
+    ]
+  },
+  "even_odd": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class EvenOdd {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        int number = 7;"
+      },
+      {
+        "id": 4,
+        "code": "        if (number % 2 == 0) {"
+      },
+      {
+        "id": 5,
+        "code": "            System.out.println(\"Even\");"
+      },
+      {
+        "id": 6,
+        "code": "        } else {"
+      },
+      {
+        "id": 7,
+        "code": "            System.out.println(\"Odd\");"
+      },
+      {
+        "id": 8,
+        "code": "        }"
+      },
+      {
+        "id": 9,
+        "code": "    }"
+      },
+      {
+        "id": 10,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "find_max": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class FindMax {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        int[] nums = {5, 12, 3, 9};"
+      },
+      {
+        "id": 4,
+        "code": "        int max = nums[0];"
+      },
+      {
+        "id": 5,
+        "code": "        for (int i = 1; i < nums.length; i++) {"
+      },
+      {
+        "id": 6,
+        "code": "            if (nums[i] > max) {"
+      },
+      {
+        "id": 7,
+        "code": "                max = nums[i];"
+      },
+      {
+        "id": 8,
+        "code": "            }"
+      },
+      {
+        "id": 9,
+        "code": "        }"
+      },
+      {
+        "id": 10,
+        "code": "        System.out.println(\"Max: \" + max);"
+      },
+      {
+        "id": 11,
+        "code": "    }"
+      },
+      {
+        "id": 12,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    ]
+  },
+  "fix_even_sum": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class EvenSum {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        int total = 0;"
+      },
+      {
+        "id": 4,
+        "code": "        for (int i = 1; i <= 10; i++) {"
+      },
+      {
+        "id": 5,
+        "code": "            if (i % 2 == 0) {"
+      },
+      {
+        "id": 6,
+        "code": "                total += i;"
+      },
+      {
+        "id": 7,
+        "code": "            }"
+      },
+      {
+        "id": 8,
+        "code": "        }"
+      },
+      {
+        "id": 9,
+        "code": "        System.out.println(total);"
+      },
+      {
+        "id": 10,
+        "code": "    }"
+      },
+      {
+        "id": 11,
+        "code": "}"
+      },
+      {
+        "id": 12,
+        "code": "        for (int i = 1; i < 10; i++) {"
+      },
+      {
+        "id": 13,
+        "code": "            if (i % 2 == 1) {"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    ]
+  },
+  "print_2d_array": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "2 5"
+      },
+      {
+        "id": 2,
+        "code": "4 1"
+      },
+      {
+        "id": 3,
+        "code": "9 8"
+      },
+      {
+        "id": 4,
+        "code": "5 2"
+      },
+      {
+        "id": 5,
+        "code": "1 4"
+      },
+      {
+        "id": 6,
+        "code": "8 9"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3
+      ]
+    ]
+  },
+  "for_loop_sum": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class LoopSum {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        int total = 0;"
+      },
+      {
+        "id": 4,
+        "code": "        for (int i = 1; i <= 10; i++) {"
+      },
+      {
+        "id": 5,
+        "code": "            total += i;"
+      },
+      {
+        "id": 6,
+        "code": "        }"
+      },
+      {
+        "id": 7,
+        "code": "        System.out.println(total);"
+      },
+      {
+        "id": 8,
+        "code": "    }"
+      },
+      {
+        "id": 9,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ]
+    ]
+  },
+  "array_copy_manual": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class ArrayCopyManual {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        int[] source = {1, 2, 3, 4, 5};"
+      },
+      {
+        "id": 4,
+        "code": "        int[] dest = new int[source.length];"
+      },
+      {
+        "id": 5,
+        "code": "        for (int i = 0; i < source.length; i++) {"
+      },
+      {
+        "id": 6,
+        "code": "            dest[i] = source[i];"
+      },
+      {
+        "id": 7,
+        "code": "        }"
+      },
+      {
+        "id": 8,
+        "code": "    }"
+      },
+      {
+        "id": 9,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ]
+    ]
+  },
+  "simple_ifelse": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class SimpleIfElse {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        int score = 85;"
+      },
+      {
+        "id": 4,
+        "code": "        if (score >= 50) {"
+      },
+      {
+        "id": 5,
+        "code": "            System.out.println(\"Pass\");"
+      },
+      {
+        "id": 6,
+        "code": "        } else {"
+      },
+      {
+        "id": 7,
+        "code": "            System.out.println(\"Fail\");"
+      },
+      {
+        "id": 8,
+        "code": "        }"
+      },
+      {
+        "id": 9,
+        "code": "    }"
+      },
+      {
+        "id": 10,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "string_concat": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class StringConcat {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        String first = \"Java\";"
+      },
+      {
+        "id": 4,
+        "code": "        String second = \"Programming\";"
+      },
+      {
+        "id": 5,
+        "code": "        String result = first + \" \" + second;"
+      },
+      {
+        "id": 6,
+        "code": "        System.out.println(result);"
+      },
+      {
+        "id": 7,
+        "code": "    }"
+      },
+      {
+        "id": 8,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      [
+        1,
+        2,
+        4,
+        3,
+        5,
+        6,
+        7,
+        8
+      ]
+    ]
+  },
+  "basic_while_loop": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class BasicWhileLoop {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        int count = 5;"
+      },
+      {
+        "id": 4,
+        "code": "        while (count > 0) {"
+      },
+      {
+        "id": 5,
+        "code": "            System.out.println(count);"
+      },
+      {
+        "id": 6,
+        "code": "            count--;"
+      },
+      {
+        "id": 7,
+        "code": "        }"
+      },
+      {
+        "id": 8,
+        "code": "    }"
+      },
+      {
+        "id": 9,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ]
+    ]
+  },
+  "basic_for_loop": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class BasicForLoop {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        for (int i = 1; i <= 5; i++) {"
+      },
+      {
+        "id": 4,
+        "code": "            System.out.println(\"Count: \" + i);"
+      },
+      {
+        "id": 5,
+        "code": "        }"
+      },
+      {
+        "id": 6,
+        "code": "    }"
+      },
+      {
+        "id": 7,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    ]
+  },
+  "array_sum": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class ArraySum {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        int[] nums = {2, 4, 6, 8};"
+      },
+      {
+        "id": 4,
+        "code": "        int sum = 0;"
+      },
+      {
+        "id": 5,
+        "code": "        for (int i = 0; i < nums.length; i++) {"
+      },
+      {
+        "id": 6,
+        "code": "            sum += nums[i];"
+      },
+      {
+        "id": 7,
+        "code": "        }"
+      },
+      {
+        "id": 8,
+        "code": "        System.out.println(\"Sum: \" + sum);"
+      },
+      {
+        "id": 9,
+        "code": "    }"
+      },
+      {
+        "id": 10,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      [
+        1,
+        2,
+        4,
+        3,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ]
+  },
+  "factorial_iterative": {
+    "lines": [
+      {
+        "id": 1,
+        "code": "public class FactorialIterative {"
+      },
+      {
+        "id": 2,
+        "code": "    public static void main(String[] args) {"
+      },
+      {
+        "id": 3,
+        "code": "        int n = 5;"
+      },
+      {
+        "id": 4,
+        "code": "        long fact = 1;"
+      },
+      {
+        "id": 5,
+        "code": "        for (int i = 1; i <= n; i++) {"
+      },
+      {
+        "id": 6,
+        "code": "            fact = fact * i;"
+      },
+      {
+        "id": 7,
+        "code": "        }"
+      },
+      {
+        "id": 8,
+        "code": "        System.out.println(\"Factorial: \" + fact);"
+      },
+      {
+        "id": 9,
+        "code": "    }"
+      },
+      {
+        "id": 10,
+        "code": "}"
+      }
+    ],
+    "solutions": [
+      [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      [
+        1,
+        2,
+        4,
+        3,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    ]
+  }
+}

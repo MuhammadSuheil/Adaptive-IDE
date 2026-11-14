@@ -1,0 +1,107 @@
+{
+  "id": "fix_difference_operator",
+  "title": "Perbaiki Selisih Dua Nilai",
+  "type": "basics",
+  "mode": "debug",
+  "description": "Hitung selisih nilai awal 45 dengan nilai pengurang 18. Cetak nilai awal, kemudian hasil pengurangannya.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixDifferenceOperator {\n    public static void main(String[] args) {\n        int initial = 45;\n        int reduction = 18;\n        int difference = initial + reduction;\n        System.out.println(initial);\n        System.out.println(difference);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixDifferenceOperator {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int initial = 45;"
+    },
+    {
+      "id": 4,
+      "code": "        int reduction = 18;"
+    },
+    {
+      "id": 5,
+      "code": "        int difference = initial - reduction;"
+    },
+    {
+      "id": 6,
+      "code": "        System.out.println(initial);"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(difference);"
+    },
+    {
+      "id": 8,
+      "code": "    }"
+    },
+    {
+      "id": 9,
+      "code": "}"
+    },
+    {
+      "id": 10,
+      "code": "        int difference = initial + reduction;"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      6,
+      5,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      3,
+      6,
+      4,
+      5,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      6,
+      5,
+      7,
+      8,
+      9
+    ]
+  ],
+  "explanation": "Selisih yang diminta adalah nilai awal dikurangi pengurang, sehingga operatornya minus."
+}

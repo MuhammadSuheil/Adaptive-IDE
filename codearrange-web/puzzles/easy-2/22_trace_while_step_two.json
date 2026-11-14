@@ -1,0 +1,33 @@
+{
+  "id": "trace_while_step_two",
+  "title": "Output While dengan Pengurangan Dua",
+  "type": "loops",
+  "mode": "output",
+  "description": "Susun output loop yang mencetak nilai sebelum menguranginya dua.\n\n```java\npublic class TraceWhileStepTwo {\n    public static void main(String[] args) {\n        int value = 8;\n        while (value >= 2) {\n            System.out.println(value);\n            value -= 2;\n        }\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "8"
+    },
+    {
+      "id": 2,
+      "code": "6"
+    },
+    {
+      "id": 3,
+      "code": "4"
+    },
+    {
+      "id": 4,
+      "code": "2"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}

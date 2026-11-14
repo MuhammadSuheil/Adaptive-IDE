@@ -1,0 +1,99 @@
+{
+  "id": "service_bill",
+  "title": "Tagihan Biaya Dasar dan Pemakaian",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Hitung biaya pemakaian 6 unit seharga 2000 per unit. Tambahkan biaya dasar 10000, lalu cetak biaya pemakaian dan total tagihan.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class ServiceBill {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int units = 6;"
+    },
+    {
+      "id": 4,
+      "code": "        int unitPrice = 2000;"
+    },
+    {
+      "id": 5,
+      "code": "        int usageCost = units * unitPrice;"
+    },
+    {
+      "id": 6,
+      "code": "        int total = 10000 + usageCost;"
+    },
+    {
+      "id": 7,
+      "code": "        System.out.println(usageCost);"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      7,
+      6,
+      8,
+      9,
+      10
+    ]
+  ]
+}

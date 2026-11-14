@@ -1,0 +1,80 @@
+{
+  "id": "fix_array_accumulator",
+  "title": "Perbaiki Akumulasi Array",
+  "type": "loops",
+  "mode": "debug",
+  "description": "Jumlahkan seluruh elemen array, kemudian cetak totalnya setelah loop. Setiap elemen harus ditambahkan ke total sebelumnya.\n\nProgram berikut mempunyai satu kesalahan. Pilih baris yang benar dan susun program yang sudah diperbaiki. Baris yang salah tidak digunakan.\n\n```java\npublic class FixArrayAccumulator {\n    public static void main(String[] args) {\n        int[] values = {2, 3, 4};\n        int total = 0;\n        for (int i = 0; i < values.length; i++) {\n            total = values[i];\n        }\n        System.out.println(total);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class FixArrayAccumulator {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int[] values = {2, 3, 4};"
+    },
+    {
+      "id": 4,
+      "code": "        int total = 0;"
+    },
+    {
+      "id": 5,
+      "code": "        for (int i = 0; i < values.length; i++) {"
+    },
+    {
+      "id": 6,
+      "code": "            total += values[i];"
+    },
+    {
+      "id": 7,
+      "code": "        }"
+    },
+    {
+      "id": 8,
+      "code": "        System.out.println(total);"
+    },
+    {
+      "id": 9,
+      "code": "    }"
+    },
+    {
+      "id": 10,
+      "code": "}"
+    },
+    {
+      "id": 11,
+      "code": "            total = values[i];"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  ],
+  "explanation": "Operator += menambahkan elemen ke total. Penugasan biasa mengganti total sehingga hanya menyisakan elemen terakhir."
+}

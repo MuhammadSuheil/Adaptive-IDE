@@ -1,0 +1,81 @@
+{
+  "id": "stock_availability",
+  "title": "Kecukupan Stok Pesanan",
+  "type": "basics",
+  "mode": "arrange",
+  "description": "Periksa apakah stok 12 mencukupi pesanan 8. Cetak Ready jika stok mencukupi, atau Short jika tidak.",
+  "lines": [
+    {
+      "id": 1,
+      "code": "public class StockAvailability {"
+    },
+    {
+      "id": 2,
+      "code": "    public static void main(String[] args) {"
+    },
+    {
+      "id": 3,
+      "code": "        int stock = 12;"
+    },
+    {
+      "id": 4,
+      "code": "        int ordered = 8;"
+    },
+    {
+      "id": 5,
+      "code": "        if (stock >= ordered) {"
+    },
+    {
+      "id": 6,
+      "code": "            System.out.println(\"Ready\");"
+    },
+    {
+      "id": 7,
+      "code": "        } else {"
+    },
+    {
+      "id": 8,
+      "code": "            System.out.println(\"Short\");"
+    },
+    {
+      "id": 9,
+      "code": "        }"
+    },
+    {
+      "id": 10,
+      "code": "    }"
+    },
+    {
+      "id": 11,
+      "code": "}"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    [
+      1,
+      2,
+      4,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  ]
+}

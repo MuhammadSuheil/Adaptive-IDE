@@ -1,0 +1,33 @@
+{
+  "id": "trace_variable_updates",
+  "title": "Output Pembaruan Variabel",
+  "type": "basics",
+  "mode": "output",
+  "description": "Susun empat baris output sesuai perubahan nilai dari atas ke bawah.\n\n```java\npublic class TraceVariableUpdates {\n    public static void main(String[] args) {\n        int value = 4;\n        System.out.println(value);\n        value += 3;\n        System.out.println(value);\n        value *= 2;\n        System.out.println(value);\n        value -= 5;\n        System.out.println(value);\n    }\n}\n```",
+  "lines": [
+    {
+      "id": 1,
+      "code": "4"
+    },
+    {
+      "id": 2,
+      "code": "7"
+    },
+    {
+      "id": 3,
+      "code": "14"
+    },
+    {
+      "id": 4,
+      "code": "9"
+    }
+  ],
+  "solutions": [
+    [
+      1,
+      2,
+      3,
+      4
+    ]
+  ]
+}
