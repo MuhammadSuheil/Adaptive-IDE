@@ -1,0 +1,30 @@
+[
+  {
+    "fold_id": "fold_06",
+    "model": "logistic_hierarchy",
+    "id": "c00",
+    "score": 0.2855871697095977,
+    "error": null
+  },
+  {
+    "fold_id": "fold_06",
+    "model": "logistic_hierarchy",
+    "id": "c01",
+    "score": 0.28466097183065386,
+    "error": null
+  },
+  {
+    "fold_id": "fold_06",
+    "model": "logistic_hierarchy",
+    "id": "c02",
+    "score": 0.2882752893454385,
+    "error": null
+  },
+  {
+    "fold_id": "fold_06",
+    "model": "logistic_hierarchy",
+    "id": "c03",
+    "score": 0.2849667619399186,
+    "error": null
+  }
+]

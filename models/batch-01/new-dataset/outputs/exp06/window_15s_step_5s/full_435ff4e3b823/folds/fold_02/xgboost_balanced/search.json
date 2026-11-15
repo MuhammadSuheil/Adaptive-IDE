@@ -1,0 +1,23 @@
+[
+  {
+    "fold_id": "fold_02",
+    "model": "xgboost_balanced",
+    "id": "c00",
+    "score": 0.31256979682813096,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "xgboost_balanced",
+    "id": "c01",
+    "score": 0.3219374537999286,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "xgboost_balanced",
+    "id": "c02",
+    "score": 0.3233091426450467,
+    "error": null
+  }
+]

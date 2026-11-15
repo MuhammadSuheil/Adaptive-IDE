@@ -1,0 +1,9 @@
+{
+  "sha256": {
+    "model.joblib": "1577af5cd9b48fddebb14d685605a84967f3639b5b58263e41387e69f3219f91",
+    "predictions.csv": "f45e36782099ba5133eacc07e326feb64a02c6bd0973b70fe3573c1ac431670b",
+    "preprocessing.json": "6c734e7877ad76753b597f1913388a21695a4de55b82f2668aeb62b72fd3cb36",
+    "search.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "selection.json": "56a990fca612a694c7febfbb27c2623d3f4341720e6fd99bc7a3b9430b557ba2"
+  }
+}

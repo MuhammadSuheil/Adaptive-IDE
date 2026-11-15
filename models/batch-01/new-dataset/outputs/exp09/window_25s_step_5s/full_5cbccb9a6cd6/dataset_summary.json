@@ -1,0 +1,38 @@
+{
+  "rows": 2711,
+  "participants": 13,
+  "class_counts": {
+    "Low": 666,
+    "Medium": 968,
+    "High": 1077
+  },
+  "missing_features": {
+    "rmssd_ms": 0,
+    "sdnn_ms": 0,
+    "rmssd_baseline_ratio": 246,
+    "blink_count": 6,
+    "blink_rate_per_minute": 6,
+    "ear_left_mean": 0,
+    "ear_left_std": 0,
+    "ear_right_mean": 0,
+    "ear_right_std": 0,
+    "iris_size_estimate_mean": 0,
+    "iris_size_estimate_std": 0,
+    "iris_size_delta_mean": 0,
+    "iris_size_delta_std": 0,
+    "head_pitch_mean": 0,
+    "head_pitch_std": 0,
+    "head_yaw_mean": 0,
+    "head_yaw_std": 0,
+    "gaze_x_norm_mean": 0,
+    "gaze_x_norm_std": 0,
+    "gaze_y_norm_mean": 0,
+    "gaze_y_norm_std": 0,
+    "eye_state_fixation_ratio": 0,
+    "eye_state_saccade_ratio": 0,
+    "eye_state_transition_ratio": 0,
+    "eye_state_unclassified_ratio": 0,
+    "eye_state_other_ratio": 0
+  },
+  "target": "cognitive_load_label"
+}

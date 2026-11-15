@@ -1,0 +1,44 @@
+[
+  {
+    "fold_id": "fold_12",
+    "model": "xgboost_selection",
+    "id": "c00",
+    "score": 0.31779058798868043,
+    "error": null
+  },
+  {
+    "fold_id": "fold_12",
+    "model": "xgboost_selection",
+    "id": "c01",
+    "score": 0.3384291015780973,
+    "error": null
+  },
+  {
+    "fold_id": "fold_12",
+    "model": "xgboost_selection",
+    "id": "c02",
+    "score": 0.3375477214088982,
+    "error": null
+  },
+  {
+    "fold_id": "fold_12",
+    "model": "xgboost_selection",
+    "id": "c03",
+    "score": 0.28812891991607203,
+    "error": null
+  },
+  {
+    "fold_id": "fold_12",
+    "model": "xgboost_selection",
+    "id": "c04",
+    "score": 0.3044974119257086,
+    "error": null
+  },
+  {
+    "fold_id": "fold_12",
+    "model": "xgboost_selection",
+    "id": "c05",
+    "score": 0.29679964337727477,
+    "error": null
+  }
+]

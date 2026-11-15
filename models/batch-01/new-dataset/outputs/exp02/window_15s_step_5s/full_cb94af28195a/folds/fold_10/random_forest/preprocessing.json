@@ -1,0 +1,118 @@
+{
+  "spec": {
+    "model": "random_forest",
+    "variant": "original",
+    "scaler": null,
+    "temporal": 0,
+    "strategy": "base"
+  },
+  "settings": {
+    "max_depth": null,
+    "max_features": "sqrt",
+    "min_samples_leaf": 3
+  },
+  "strategy": "base",
+  "preprocessing": {
+    "features": [
+      "rmssd_ms",
+      "sdnn_ms",
+      "rmssd_baseline_ratio",
+      "blink_count",
+      "blink_rate_per_minute",
+      "ear_left_mean",
+      "ear_left_std",
+      "ear_right_mean",
+      "ear_right_std",
+      "iris_size_estimate_mean",
+      "iris_size_estimate_std",
+      "iris_size_delta_mean",
+      "iris_size_delta_std",
+      "head_pitch_mean",
+      "head_pitch_std",
+      "head_yaw_mean",
+      "head_yaw_std",
+      "gaze_x_norm_mean",
+      "gaze_x_norm_std",
+      "gaze_y_norm_mean",
+      "gaze_y_norm_std",
+      "eye_state_fixation_ratio",
+      "eye_state_saccade_ratio",
+      "eye_state_transition_ratio",
+      "eye_state_unclassified_ratio"
+    ],
+    "dropped_empty": [],
+    "dropped_constant": [
+      "eye_state_other_ratio"
+    ],
+    "medians": {
+      "rmssd_ms": 31.213526425624103,
+      "sdnn_ms": 31.32996414871755,
+      "rmssd_baseline_ratio": 0.8239041465547885,
+      "blink_count": 2.0,
+      "blink_rate_per_minute": 8.0,
+      "ear_left_mean": 0.502057242171702,
+      "ear_left_std": 0.06873581094923176,
+      "ear_right_mean": 0.5105812250731336,
+      "ear_right_std": 0.06145902403030685,
+      "iris_size_estimate_mean": 0.240519376343877,
+      "iris_size_estimate_std": 0.0035086502460862272,
+      "iris_size_delta_mean": -0.0008876133879105292,
+      "iris_size_delta_std": 0.0035079229555739673,
+      "head_pitch_mean": 7.960491715714718,
+      "head_pitch_std": 0.7232550831479599,
+      "head_yaw_mean": 7.56379311851765,
+      "head_yaw_std": 1.7260535269249384,
+      "gaze_x_norm_mean": 0.37230683118071795,
+      "gaze_x_norm_std": 0.16935486561508206,
+      "gaze_y_norm_mean": 0.5770767553829015,
+      "gaze_y_norm_std": 0.18295086000594463,
+      "eye_state_fixation_ratio": 0.4226117351117351,
+      "eye_state_saccade_ratio": 0.12125694818002511,
+      "eye_state_transition_ratio": 0.18867924528301888,
+      "eye_state_unclassified_ratio": 0.2474958193979933,
+      "eye_state_other_ratio": 0.0
+    },
+    "selected_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+    ],
+    "scaler": null
+  },
+  "resampling": {
+    "sampler": null,
+    "before": {
+      "0": 667,
+      "1": 1035,
+      "2": 1124
+    },
+    "after": {
+      "0": 667,
+      "1": 1035,
+      "2": 1124
+    },
+    "applied": false
+  }
+}

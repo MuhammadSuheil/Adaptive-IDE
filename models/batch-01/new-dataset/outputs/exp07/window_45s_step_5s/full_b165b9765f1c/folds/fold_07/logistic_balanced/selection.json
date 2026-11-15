@@ -1,0 +1,19 @@
+{
+  "candidate": {
+    "id": "c04",
+    "k": 3,
+    "ratio": 1,
+    "sampler": "smote"
+  },
+  "score": 0.3182450229286946,
+  "pipeline": {
+    "model": "logistic",
+    "scaler": "standard",
+    "variant": "clean"
+  },
+  "settings": {
+    "k": 3,
+    "ratio": 1,
+    "sampler": "smote"
+  }
+}

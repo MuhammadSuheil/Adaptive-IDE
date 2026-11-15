@@ -1,0 +1,296 @@
+{
+  "fold_00": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c132",
+        "pipeline": {
+          "model": "xgboost",
+          "scaler": "standard",
+          "temporal": 5,
+          "variant": "clean"
+        },
+        "settings": {}
+      },
+      "score": 0.36952770485415115,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "temporal": 5,
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_01": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c067",
+        "pipeline": {
+          "model": "xgboost",
+          "scaler": null,
+          "variant": "hrv"
+        },
+        "settings": {}
+      },
+      "score": 0.361359854992141,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    }
+  },
+  "fold_02": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c004",
+        "pipeline": {
+          "model": "logistic",
+          "scaler": "standard",
+          "variant": "original"
+        },
+        "settings": {
+          "C": 10
+        }
+      },
+      "score": 0.3997128722144551,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {
+        "C": 10
+      }
+    }
+  },
+  "fold_03": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c000",
+        "pipeline": {
+          "model": "logistic",
+          "scaler": "standard",
+          "variant": "original"
+        },
+        "settings": {
+          "C": 0.001
+        }
+      },
+      "score": 0.36544449524119593,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {
+        "C": 0.001
+      }
+    }
+  },
+  "fold_04": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c067",
+        "pipeline": {
+          "model": "xgboost",
+          "scaler": null,
+          "variant": "hrv"
+        },
+        "settings": {}
+      },
+      "score": 0.3504513621315477,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    }
+  },
+  "fold_05": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c132",
+        "pipeline": {
+          "model": "xgboost",
+          "scaler": "standard",
+          "temporal": 5,
+          "variant": "clean"
+        },
+        "settings": {}
+      },
+      "score": 0.35172110945683227,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "temporal": 5,
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_06": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c131",
+        "pipeline": {
+          "model": "xgboost",
+          "scaler": "standard",
+          "temporal": 3,
+          "variant": "clean"
+        },
+        "settings": {}
+      },
+      "score": 0.3885606626639939,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "temporal": 3,
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_07": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c088",
+        "pipeline": {
+          "model": "xgboost",
+          "scaler": "standard",
+          "variant": "clean"
+        },
+        "settings": {
+          "weight": 4
+        }
+      },
+      "score": 0.3954010540005748,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "weight": 4
+      }
+    }
+  },
+  "fold_08": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c127",
+        "pipeline": {
+          "model": "logistic",
+          "scaler": "standard",
+          "variant": "clean"
+        },
+        "settings": {
+          "selection": "mi8"
+        }
+      },
+      "score": 0.45467752960604385,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "selection": "mi8"
+      }
+    }
+  },
+  "fold_09": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c132",
+        "pipeline": {
+          "model": "xgboost",
+          "scaler": "standard",
+          "temporal": 5,
+          "variant": "clean"
+        },
+        "settings": {}
+      },
+      "score": 0.39227789761767745,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "temporal": 5,
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_10": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c150",
+        "pipeline": {
+          "model": "xgboost",
+          "scaler": "standard",
+          "strategy": "fusion",
+          "variant": "clean"
+        },
+        "settings": {
+          "alpha": 0.75
+        }
+      },
+      "score": 0.3532289795560839,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "fusion",
+        "variant": "clean"
+      },
+      "settings": {
+        "alpha": 0.75
+      }
+    }
+  },
+  "fold_11": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c131",
+        "pipeline": {
+          "model": "xgboost",
+          "scaler": "standard",
+          "temporal": 3,
+          "variant": "clean"
+        },
+        "settings": {}
+      },
+      "score": 0.38966287290024054,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "temporal": 3,
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_12": {
+    "nested_selection": {
+      "candidate": {
+        "id": "c131",
+        "pipeline": {
+          "model": "xgboost",
+          "scaler": "standard",
+          "temporal": 3,
+          "variant": "clean"
+        },
+        "settings": {}
+      },
+      "score": 0.43102050864698965,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "temporal": 3,
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  }
+}

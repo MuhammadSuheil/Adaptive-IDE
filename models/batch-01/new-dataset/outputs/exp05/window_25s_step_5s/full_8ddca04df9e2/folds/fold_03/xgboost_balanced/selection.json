@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "id": "c03",
+    "weight": 4
+  },
+  "score": 0.29246644153863016,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": "standard",
+    "variant": "clean"
+  },
+  "settings": {
+    "weight": 4
+  }
+}

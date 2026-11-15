@@ -1,0 +1,2056 @@
+{
+  "fold_00": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_01": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_02": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_03": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_04": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_05": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_06": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_07": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_08": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_09": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_10": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_11": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  },
+  "fold_12": {
+    "logistic_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "logistic_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_clean_robust": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "robust",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "logistic_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "logistic_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "logistic_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "ratio"
+      },
+      "settings": {}
+    },
+    "xgboost_absolute": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "absolute"
+      },
+      "settings": {}
+    },
+    "xgboost_clean": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_ear": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ear"
+      },
+      "settings": {}
+    },
+    "xgboost_log": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "log"
+      },
+      "settings": {}
+    },
+    "xgboost_original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    },
+    "xgboost_ratio": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "ratio"
+      },
+      "settings": {}
+    }
+  }
+}

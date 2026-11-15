@@ -1,0 +1,9 @@
+{
+  "dataset_path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\analysis_sessions\\dataset_fusion\\output\\v2_session_phase\\window_25s_step_5s\\good_acceptable.csv",
+  "output_root": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs",
+  "experiment": "exp01",
+  "seed": 42,
+  "tree_count": 300,
+  "technical": false,
+  "workers": 3
+}

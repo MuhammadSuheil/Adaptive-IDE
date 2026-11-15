@@ -1,0 +1,16 @@
+{
+  "candidate": {
+    "alpha": 1,
+    "id": "c04"
+  },
+  "score": 0.3387763320073796,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": "standard",
+    "strategy": "fusion",
+    "variant": "clean"
+  },
+  "settings": {
+    "alpha": 1
+  }
+}

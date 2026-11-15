@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "id": "c03",
+    "selection": "mi8"
+  },
+  "score": 0.2814317261611556,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": "standard",
+    "variant": "clean"
+  },
+  "settings": {
+    "selection": "mi8"
+  }
+}

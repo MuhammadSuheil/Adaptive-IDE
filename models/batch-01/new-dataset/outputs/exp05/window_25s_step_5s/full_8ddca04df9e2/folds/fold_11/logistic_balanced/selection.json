@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "id": "c04",
+    "weight": 8
+  },
+  "score": 0.2953882974431434,
+  "pipeline": {
+    "model": "logistic",
+    "scaler": "standard",
+    "variant": "clean"
+  },
+  "settings": {
+    "weight": 8
+  }
+}

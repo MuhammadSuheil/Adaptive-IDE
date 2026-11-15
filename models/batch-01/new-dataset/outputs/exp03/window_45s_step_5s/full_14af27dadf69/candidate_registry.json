@@ -1,0 +1,62 @@
+[
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "original",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "original"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "hrv",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "hrv"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "eye",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "eye"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "no_gaze_state",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "no_gaze_state"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "no_iris",
+    "model": "xgboost",
+    "scaler": null,
+    "tune": false,
+    "variant": "no_iris"
+  }
+]

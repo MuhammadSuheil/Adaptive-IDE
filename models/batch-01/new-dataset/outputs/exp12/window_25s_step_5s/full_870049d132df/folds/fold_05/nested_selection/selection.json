@@ -1,0 +1,18 @@
+{
+  "candidate": {
+    "id": "c080",
+    "pipeline": {
+      "model": "logistic",
+      "scaler": "standard",
+      "variant": "absolute"
+    },
+    "settings": {}
+  },
+  "score": 0.36392492078255745,
+  "pipeline": {
+    "model": "logistic",
+    "scaler": "standard",
+    "variant": "absolute"
+  },
+  "settings": {}
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "fold_id": "fold_10",
+    "model": "logistic",
+    "id": "c00",
+    "score": 0.3282237213375972,
+    "error": null
+  },
+  {
+    "fold_id": "fold_10",
+    "model": "logistic",
+    "id": "c01",
+    "score": 0.32379699671122586,
+    "error": null
+  },
+  {
+    "fold_id": "fold_10",
+    "model": "logistic",
+    "id": "c02",
+    "score": 0.3115411992398809,
+    "error": null
+  },
+  {
+    "fold_id": "fold_10",
+    "model": "logistic",
+    "id": "c03",
+    "score": 0.3050004039699614,
+    "error": null
+  },
+  {
+    "fold_id": "fold_10",
+    "model": "logistic",
+    "id": "c04",
+    "score": 0.30968359011906116,
+    "error": null
+  },
+  {
+    "fold_id": "fold_10",
+    "model": "logistic",
+    "id": "c05",
+    "score": 0.3101291863121147,
+    "error": null
+  }
+]

@@ -1,0 +1,86 @@
+[
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c00",
+    "score": 0.3367728439393784,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c01",
+    "score": 0.32012007519935587,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c02",
+    "score": 0.27486224508537893,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c03",
+    "score": 0.3078974298280439,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c04",
+    "score": 0.32951078300918696,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c05",
+    "score": 0.30186290750750805,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c06",
+    "score": 0.29145743318955725,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c07",
+    "score": 0.30952789234435585,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c08",
+    "score": 0.27833864124739294,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c09",
+    "score": 0.3289413225297611,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c10",
+    "score": 0.2844810885366373,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "extra_trees",
+    "id": "c11",
+    "score": 0.30811664673047207,
+    "error": null
+  }
+]

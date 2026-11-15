@@ -1,0 +1,756 @@
+{
+  "fold_00": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.3612832801192441,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c02",
+        "threshold": 0.35
+      },
+      "score": 0.3283533649274077,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.35
+      }
+    }
+  },
+  "fold_01": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.30425933870402533,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c00",
+        "threshold": null
+      },
+      "score": 0.27590176650019377,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": null
+      }
+    }
+  },
+  "fold_02": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.3371491088116372,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c02",
+        "threshold": 0.35
+      },
+      "score": 0.30624557439140987,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.35
+      }
+    }
+  },
+  "fold_03": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.3352940455795302,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c00",
+        "threshold": null
+      },
+      "score": 0.31362938780964794,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": null
+      }
+    }
+  },
+  "fold_04": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.3556710073276825,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c02",
+        "threshold": 0.35
+      },
+      "score": 0.3131958017680055,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.35
+      }
+    }
+  },
+  "fold_05": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.3019868483304431,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c00",
+        "threshold": null
+      },
+      "score": 0.2930068107356158,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": null
+      }
+    }
+  },
+  "fold_06": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.3558706456710825,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c00",
+        "threshold": null
+      },
+      "score": 0.31025909810079255,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": null
+      }
+    }
+  },
+  "fold_07": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.34162701634688236,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c02",
+        "threshold": 0.35
+      },
+      "score": 0.3335891299399741,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.35
+      }
+    }
+  },
+  "fold_08": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.3417635757682958,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c00",
+        "threshold": null
+      },
+      "score": 0.2755476097954476,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": null
+      }
+    }
+  },
+  "fold_09": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.324602369523829,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c02",
+        "threshold": 0.35
+      },
+      "score": 0.3271212632665969,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.35
+      }
+    }
+  },
+  "fold_10": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.3222302058066138,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c02",
+        "threshold": 0.35
+      },
+      "score": 0.29001709655758073,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.35
+      }
+    }
+  },
+  "fold_11": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.3295060430132601,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.2815377659079155,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    }
+  },
+  "fold_12": {
+    "logistic_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "logistic_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.35116008501792223,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    },
+    "xgboost_direct": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_hierarchy": {
+      "candidate": {
+        "id": "c03",
+        "threshold": 0.5
+      },
+      "score": 0.3162041122618755,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "strategy": "hierarchy",
+        "variant": "clean"
+      },
+      "settings": {
+        "threshold": 0.5
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "id": "c02",
+    "selection": "corr0.95"
+  },
+  "score": 0.2682468315714677,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": "standard",
+    "variant": "clean"
+  },
+  "settings": {
+    "selection": "corr0.95"
+  }
+}

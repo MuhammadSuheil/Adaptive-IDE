@@ -1,0 +1,16 @@
+{
+  "candidate": {
+    "alpha": 0,
+    "id": "c00"
+  },
+  "score": 0.3799323087907516,
+  "pipeline": {
+    "model": "logistic",
+    "scaler": "standard",
+    "strategy": "fusion",
+    "variant": "clean"
+  },
+  "settings": {
+    "alpha": 0
+  }
+}

@@ -3,7 +3,7 @@ window_id,metadata,,"Unique source session ID and source window boundaries, sepa
 participant_id,metadata,,Participant grouping key; both Ramadhan recordings use Ramadhan.
 session_id,metadata,,"Original sensor session ID, independent of archive folder name."
 session_folder,metadata,,Selected archive directory name.
-team_review_group,metadata,,"Team eye-quality cohort, matched case-insensitively. proposed_good permits good_only/good_acceptable; questionable permits good_acceptable; unreviewed permits all_data only. Window checks still apply."
+team_review_group,metadata,,"Historical team review category; metadata only, never a v2 admission gate or predictor."
 participant_note,metadata,,"Team-provided acquisition context, not a sensor-derived conclusion."
 repeated_task,metadata,,True for session/difficulty pairs marked as repeated in config.
 window_start,metadata,,"Timezone-aware recomputed window start, excluded sensor endpoint."

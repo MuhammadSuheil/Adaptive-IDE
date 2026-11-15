@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "id": "c04",
+    "selection": "mi12"
+  },
+  "score": 0.3325449597783386,
+  "pipeline": {
+    "model": "logistic",
+    "scaler": "standard",
+    "variant": "clean"
+  },
+  "settings": {
+    "selection": "mi12"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "id": "c00",
+    "selection": null
+  },
+  "score": 0.31715471321341093,
+  "pipeline": {
+    "model": "logistic",
+    "scaler": "standard",
+    "variant": "clean"
+  },
+  "settings": {
+    "selection": null
+  }
+}

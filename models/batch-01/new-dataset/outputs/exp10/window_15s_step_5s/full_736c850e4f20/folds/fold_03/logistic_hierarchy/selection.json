@@ -1,0 +1,16 @@
+{
+  "candidate": {
+    "id": "c03",
+    "threshold": 0.5
+  },
+  "score": 0.3352940455795302,
+  "pipeline": {
+    "model": "logistic",
+    "scaler": "standard",
+    "strategy": "hierarchy",
+    "variant": "clean"
+  },
+  "settings": {
+    "threshold": 0.5
+  }
+}

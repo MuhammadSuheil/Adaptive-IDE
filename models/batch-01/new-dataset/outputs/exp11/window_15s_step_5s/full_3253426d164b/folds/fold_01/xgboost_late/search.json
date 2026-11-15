@@ -1,0 +1,37 @@
+[
+  {
+    "fold_id": "fold_01",
+    "model": "xgboost_late",
+    "id": "c00",
+    "score": 0.27942002740788546,
+    "error": null
+  },
+  {
+    "fold_id": "fold_01",
+    "model": "xgboost_late",
+    "id": "c01",
+    "score": 0.2796343185751454,
+    "error": null
+  },
+  {
+    "fold_id": "fold_01",
+    "model": "xgboost_late",
+    "id": "c02",
+    "score": 0.30792620462542813,
+    "error": null
+  },
+  {
+    "fold_id": "fold_01",
+    "model": "xgboost_late",
+    "id": "c03",
+    "score": 0.329199951516928,
+    "error": null
+  },
+  {
+    "fold_id": "fold_01",
+    "model": "xgboost_late",
+    "id": "c04",
+    "score": 0.3376917328686922,
+    "error": null
+  }
+]

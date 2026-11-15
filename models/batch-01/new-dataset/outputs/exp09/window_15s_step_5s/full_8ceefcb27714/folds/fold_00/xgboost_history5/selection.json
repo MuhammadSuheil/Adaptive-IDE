@@ -1,0 +1,13 @@
+{
+  "candidate": {
+    "id": "c00"
+  },
+  "score": null,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": "standard",
+    "temporal": 5,
+    "variant": "clean"
+  },
+  "settings": {}
+}

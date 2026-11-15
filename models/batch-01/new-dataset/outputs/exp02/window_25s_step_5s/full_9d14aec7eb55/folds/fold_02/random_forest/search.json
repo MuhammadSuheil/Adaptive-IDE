@@ -1,0 +1,86 @@
+[
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c00",
+    "score": 0.3171259349079434,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c01",
+    "score": 0.2764520115115107,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c02",
+    "score": 0.3107205369240197,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c03",
+    "score": 0.2916072882779361,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c04",
+    "score": 0.2706101149047793,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c05",
+    "score": 0.28560823024486987,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c06",
+    "score": 0.3239265162801998,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c07",
+    "score": 0.288124839790386,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c08",
+    "score": 0.282768741785174,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c09",
+    "score": 0.3199189617905903,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c10",
+    "score": 0.28620794719503095,
+    "error": null
+  },
+  {
+    "fold_id": "fold_02",
+    "model": "random_forest",
+    "id": "c11",
+    "score": 0.30049790006939314,
+    "error": null
+  }
+]

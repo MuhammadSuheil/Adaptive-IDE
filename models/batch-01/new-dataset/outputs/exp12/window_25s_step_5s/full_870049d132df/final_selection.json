@@ -1,0 +1,22 @@
+{
+  "candidate": {
+    "id": "c131",
+    "pipeline": {
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "variant": "clean"
+    },
+    "settings": {}
+  },
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": "standard",
+    "temporal": 3,
+    "variant": "clean"
+  },
+  "settings": {},
+  "inner_macro_f1": 0.36661638424354276,
+  "save_load_check": true,
+  "note": "Full-data group-validation selection and refit; not an additional generalization score."
+}

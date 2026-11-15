@@ -1,0 +1,109 @@
+{
+  "spec": {
+    "model": "xgboost",
+    "variant": "clean",
+    "scaler": "standard",
+    "temporal": 0,
+    "strategy": "base"
+  },
+  "settings": {
+    "k": 5,
+    "ratio": 0.75,
+    "sampler": "smote"
+  },
+  "strategy": "base",
+  "preprocessing": {
+    "features": [
+      "rmssd_ms",
+      "sdnn_ms",
+      "rmssd_baseline_ratio",
+      "blink_rate_per_minute",
+      "ear_left_mean",
+      "ear_left_std",
+      "ear_right_mean",
+      "ear_right_std",
+      "iris_size_estimate_mean",
+      "iris_size_estimate_std",
+      "iris_size_delta_mean",
+      "head_pitch_mean",
+      "head_pitch_std",
+      "head_yaw_mean",
+      "head_yaw_std",
+      "gaze_x_norm_mean",
+      "gaze_x_norm_std",
+      "gaze_y_norm_mean",
+      "gaze_y_norm_std",
+      "eye_state_fixation_ratio",
+      "eye_state_saccade_ratio",
+      "eye_state_transition_ratio",
+      "eye_state_unclassified_ratio"
+    ],
+    "dropped_empty": [],
+    "dropped_constant": [],
+    "medians": {
+      "rmssd_ms": 27.907897738695084,
+      "sdnn_ms": 28.74334263164617,
+      "rmssd_baseline_ratio": 0.8020662157375223,
+      "blink_rate_per_minute": 8.0,
+      "ear_left_mean": 0.5059584308987642,
+      "ear_left_std": 0.07063823583607501,
+      "ear_right_mean": 0.5150761216612301,
+      "ear_right_std": 0.06258997445504873,
+      "iris_size_estimate_mean": 0.24166781611667107,
+      "iris_size_estimate_std": 0.0034204895028298737,
+      "iris_size_delta_mean": 9.078867482240532e-05,
+      "head_pitch_mean": 8.172096877321628,
+      "head_pitch_std": 0.7308403472399708,
+      "head_yaw_mean": 8.849028778077562,
+      "head_yaw_std": 1.6496068661551646,
+      "gaze_x_norm_mean": 0.36957497763985064,
+      "gaze_x_norm_std": 0.1732492639836809,
+      "gaze_y_norm_mean": 0.5551066280119707,
+      "gaze_y_norm_std": 0.18890619571917408,
+      "eye_state_fixation_ratio": 0.4239401496259352,
+      "eye_state_saccade_ratio": 0.119533527696793,
+      "eye_state_transition_ratio": 0.18729096989966554,
+      "eye_state_unclassified_ratio": 0.24925816023738873
+    },
+    "selected_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+    ],
+    "scaler": "standard"
+  },
+  "resampling": {
+    "sampler": "smote",
+    "before": {
+      "0": 673,
+      "1": 994,
+      "2": 1024
+    },
+    "after": {
+      "0": 768,
+      "1": 994,
+      "2": 1024
+    },
+    "applied": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "candidate": {
+    "id": "c06",
+    "max_depth": 8,
+    "max_features": "sqrt",
+    "min_samples_leaf": 8
+  },
+  "score": 0.352829673367222,
+  "pipeline": {
+    "model": "extra_trees",
+    "scaler": null,
+    "variant": "original"
+  },
+  "settings": {
+    "max_depth": 8,
+    "max_features": "sqrt",
+    "min_samples_leaf": 8
+  }
+}

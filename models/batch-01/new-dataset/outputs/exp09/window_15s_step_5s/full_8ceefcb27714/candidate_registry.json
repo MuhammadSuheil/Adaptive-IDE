@@ -1,0 +1,80 @@
+[
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_history0",
+    "model": "xgboost",
+    "scaler": "standard",
+    "temporal": 0,
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_history3",
+    "model": "xgboost",
+    "scaler": "standard",
+    "temporal": 3,
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_history5",
+    "model": "xgboost",
+    "scaler": "standard",
+    "temporal": 5,
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_history0",
+    "model": "logistic",
+    "scaler": "standard",
+    "temporal": 0,
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_history3",
+    "model": "logistic",
+    "scaler": "standard",
+    "temporal": 3,
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_history5",
+    "model": "logistic",
+    "scaler": "standard",
+    "temporal": 5,
+    "tune": false,
+    "variant": "clean"
+  }
+]

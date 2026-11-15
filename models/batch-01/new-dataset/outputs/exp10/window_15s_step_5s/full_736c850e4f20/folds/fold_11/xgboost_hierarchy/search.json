@@ -1,0 +1,30 @@
+[
+  {
+    "fold_id": "fold_11",
+    "model": "xgboost_hierarchy",
+    "id": "c00",
+    "score": 0.2793068026359557,
+    "error": null
+  },
+  {
+    "fold_id": "fold_11",
+    "model": "xgboost_hierarchy",
+    "id": "c01",
+    "score": 0.2751663355452132,
+    "error": null
+  },
+  {
+    "fold_id": "fold_11",
+    "model": "xgboost_hierarchy",
+    "id": "c02",
+    "score": 0.2766141721969312,
+    "error": null
+  },
+  {
+    "fold_id": "fold_11",
+    "model": "xgboost_hierarchy",
+    "id": "c03",
+    "score": 0.2815377659079155,
+    "error": null
+  }
+]

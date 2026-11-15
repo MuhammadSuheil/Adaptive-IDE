@@ -1,0 +1,20 @@
+{
+  "candidate": {
+    "id": "c134",
+    "pipeline": {
+      "model": "logistic",
+      "scaler": "standard",
+      "temporal": 3,
+      "variant": "clean"
+    },
+    "settings": {}
+  },
+  "score": 0.38840500997862487,
+  "pipeline": {
+    "model": "logistic",
+    "scaler": "standard",
+    "temporal": 3,
+    "variant": "clean"
+  },
+  "settings": {}
+}

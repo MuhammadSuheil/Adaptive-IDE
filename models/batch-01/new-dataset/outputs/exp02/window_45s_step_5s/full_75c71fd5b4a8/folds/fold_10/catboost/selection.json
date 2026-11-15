@@ -1,0 +1,19 @@
+{
+  "candidate": {
+    "depth": 5,
+    "id": "c08",
+    "l2_leaf_reg": 10,
+    "learning_rate": 0.1
+  },
+  "score": 0.29001497405080384,
+  "pipeline": {
+    "model": "catboost",
+    "scaler": null,
+    "variant": "original"
+  },
+  "settings": {
+    "depth": 5,
+    "l2_leaf_reg": 10,
+    "learning_rate": 0.1
+  }
+}

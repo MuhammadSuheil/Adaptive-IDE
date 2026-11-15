@@ -1,7 +1,7 @@
 """Recompute aligned sensor windows with session-phase cognitive-load labels.
 
-Raw recordings are read-only. A complete, verified bundle is published by one
-directory rename; an existing bundle is never overwritten.
+Raw recordings are read-only. Complete verified bundles can replace an existing
+v2 output explicitly, with rollback if publication fails.
 """
 from __future__ import annotations
 
@@ -11,7 +11,6 @@ from datetime import datetime, timedelta, timezone
 from itertools import groupby
 import json
 import math
-import os
 from pathlib import Path
 import platform
 import sys
@@ -27,6 +26,11 @@ from analysis_sessions.session_inventory import participant_group, select_sessio
 from fuse_and_analyze import calibration_ready_ms, context_at, summarize_segments
 from hrv_monitor_prototype.calculate_hrv import LiveHRV
 from hrv_monitor_prototype.preprocess_rr import RRPreprocessor
+from analysis_sessions.dataset_fusion.v2_integrity import (
+    ADMISSION_POLICY, quality_views, validate_frame, verify_bundle, guard_output, publish_bundle,
+)
+from analysis_sessions.dataset_fusion.v2_sensor_checks import audit_sensor_samples
+from analysis_sessions.dataset_fusion.v2_documentation import report_sections, render_output_index
 
 WINDOWS = (15, 25, 45)
 LABELS = ('Low', 'Medium', 'High')
@@ -40,6 +44,7 @@ EXTRA_META = {
 }
 META_INFO = {
     **shared.META_INFO,
+    'team_review_group': 'Historical team review category; metadata only, never a v2 admission gate or predictor.',
     'window_start': 'Timezone-aware recomputed window start, excluded sensor endpoint.',
     'window_end': 'Timezone-aware recomputed window end, included sensor endpoint.',
     'window_seconds': 'Actual window length in seconds: 15, 25, or 45.',
@@ -248,6 +253,7 @@ def load_session(directory, config):
                (last_raw-origin).total_seconds(), (float(eye.timestamp_ms.iloc[-1])-origin.timestamp()*1000)/1000)
     replay = replay_rr(raw, origin, stop)
     audit = {'session_folder': directory.name, **audit_replay(raw, original, origin, replay[25])}
+    audit['independent_sensor_check'] = audit_sensor_samples(raw, eye, replay, origin, config)
     return eye, replay, events, ready, metadata, audit
 
 
@@ -300,10 +306,11 @@ def unique_duration(frame):
     return total
 
 
-def export_window(destination, rows, excluded, reports, inventory, seconds):
+def export_window(destination, rows, excluded, reports, inventory, seconds, *, config=None):
     destination.mkdir()
     frame = pd.DataFrame(rows, columns=DATA_COLUMNS).replace([np.inf, -np.inf], np.nan)
-    views = shared.dataset_views(frame)
+    validate_frame(frame, config=config if config is not None else shared.load_config(), seconds=seconds)
+    views = quality_views(frame)
     counts, distribution = {}, []
     for name, view in views.items():
         view.to_csv(destination/f'{name}.csv', index=False)
@@ -337,12 +344,9 @@ def export_window(destination, rows, excluded, reports, inventory, seconds):
     return counts
 
 
-def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subjects=None):
-    input_dir, output_dir = Path(input_dir).resolve(), Path(output_dir).resolve()
-    if output_dir.exists():
-        raise FileExistsError(f'Preserve existing bundle; choose a new version directory: {output_dir}')
-    if output_dir.is_relative_to(input_dir) or input_dir.is_relative_to(output_dir) or Path(__file__).resolve().is_relative_to(output_dir):
-        raise ValueError('Output must be separate from raw sources and builder.')
+def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subjects=None, *, replace=False):
+    input_dir = Path(input_dir).resolve()
+    output_dir = guard_output(input_dir, output_dir, replace=replace)
     config = shared.load_config(config_path)
     sources_before = shared.snapshot(input_dir)
     directories, inventory = select_session_directories(input_dir, subjects)
@@ -362,7 +366,7 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
     with tempfile.TemporaryDirectory(prefix='.fusion-v2-', dir=output_dir.parent) as temporary:
         destination = Path(temporary)/'bundle'
         destination.mkdir()
-        counts = {f'window_{s}s_step_5s': export_window(destination/f'window_{s}s_step_5s', *results[s], inventory, s) for s in WINDOWS}
+        counts = {f'window_{s}s_step_5s': export_window(destination/f'window_{s}s_step_5s', *results[s], inventory, s, config=config) for s in WINDOWS}
         (destination/'replay_validation.json').write_text(json.dumps(audits, indent=2, allow_nan=False)+'\n', encoding='utf-8')
         report_lines = ['# Dataset fusion v2: session phase', '',
             '## Label dan window', '',
@@ -370,7 +374,7 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
             'Setiap bagian interval harus menghasilkan target yang sama. Campuran easy + rating tetap Low; medium + rating tidak masuk dataset. Aturan ini bukan majority vote. Window mixed-phase dapat dipertahankan; `window_phase_mix` dan `window_label_mix` menyimpan rinciannya. Difficulty/set/soal sumber tidak ditimpa agar sama dengan target.', '',
             '## Rekonstruksi sensor', '',
             'Window 15/25/45 detik dihitung ulang dari rr_raw.csv dan eye_tracking.csv dengan step 5 detik, memakai origin task dan grid yang sama per sesi. Tidak ada interpolasi, averaging RMSSD tersimpan, atau perubahan timestamp mentah. RR sebelum task sensor tidak masuk replay. Paket yang tiba setelah endpoint tidak dapat memperbaiki window yang telah lewat. Paket yang tiba tepat di endpoint diproses sebelum window diterbitkan. Recovery menunggu waktu rilisnya; pasangan RMSSD tidak melintasi RR terbuang atau segmen terputus.', '',
-            'Syarat HRV tetap coverage 80%, minimal 10 pasangan, umur data maksimal 3 detik. Aturan eye dan admission peserta identik dengan config v1. good_only memerlukan proposed_good dan tier good; good_acceptable memerlukan proposed_good/questionable dan tier good/acceptable; all_data memuat semua window berlabel termasuk sensor poor. Peserta baru memerlukan review dan pembaruan daftar admission, bukan otomatis diterima.', '',
+            'Syarat HRV tetap coverage 80%, minimal 10 pasangan, umur data maksimal 3 detik. Ambang eye tetap mengikuti config. Admission v2 tidak menggunakan daftar nama: good_only memuat tier good; good_acceptable memuat tier good/acceptable; all_data memuat semua window berlabel termasuk sensor poor. team_review_group hanya metadata historis. Tier menilai kelengkapan/clipping, bukan akurasi spasial gaze; hasil validasi asli tetap dipertahankan.', '',
             'Baseline recorder ready dipisahkan dari baseline usable builder. Rasio hanya tersedia untuk baseline ready dengan RMSSD positif dan coverage minimal 80%. Penolakan tercatat pada baseline_rejection_reason; nilai hilang tetap kosong, bukan nol.', '',
             '## Validasi cache HRV 25 detik', '',
             f"Diperiksa {sum(a['cached_windows'] for a in audits)} window: {sum(a['exact_replay_windows'] for a in audits)} sesuai replay utama; {sum(a['endpoint_publication_differences'] for a in audits)} sesuai urutan timer live sebelum paket tepat di endpoint; tidak ada selisih yang tidak terjelaskan. Semua rincian ada di replay_validation.json. Dataset baru memakai aturan endpoint yang konsisten, tidak menyalin angka cache agar tampak identik.", '',
@@ -379,30 +383,33 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
             for name, c in views.items():
                 report_lines.append(f"| {variant} | {name} | {c['Low']} | {c['Medium']} | {c['High']} | {c['windows']} | {c['participants']} |")
         report_lines += ['', '## Penyaringan window', '',
-            '| Window | Kandidat | Target campuran | Kalibrasi/tidak terlacak | Berlabel, HRV tidak layak | Gagal admission peserta |',
+            '| Window | Kandidat | Target campuran | Kalibrasi/tidak terlacak | Berlabel, HRV tidak layak | Tier poor |',
             '|---|---:|---:|---:|---:|---:|']
         for seconds, (rows, excluded, reports) in results.items():
             mixed = sum(r['exclusion_reason'] == 'mixed_cognitive_labels' for r in excluded)
             unresolved = len(excluded)-mixed
             unusable = sum(not r['hrv_usable'] for r in rows)
-            admission = sum(r['team_review_group'] == 'unreviewed' for r in rows)
-            report_lines.append(f'| {seconds}s | {sum(r["candidate_windows"] for r in reports)} | {mixed} | {unresolved} | {unusable} | {admission} |')
-        report_lines += ['', 'Kolom HRV/admission di atas merupakan diagnostik pada window berlabel dan dapat saling overlap. Tier poor juga dapat berasal dari kualitas eye; rincian kriteria tersimpan di CSV. all_data tidak membuang tier poor. CSV curated menerapkan quality dan admission bersama-sama.', '',
+            poor = sum(r['quality_tier'] == 'poor' for r in rows)
+            report_lines.append(f'| {seconds}s | {sum(r["candidate_windows"] for r in reports)} | {mixed} | {unresolved} | {unusable} | {poor} |')
+        report_lines += ['', 'Kolom HRV/tier poor merupakan diagnostik pada window berlabel dan dapat saling overlap. Tier poor juga dapat berasal dari kualitas eye; rincian kriteria tersimpan di CSV. all_data tidak membuang tier poor. CSV curated hanya menerapkan tier sensor, tanpa pembatasan nama peserta.', '',
             '## Komposisi fase pada Low good_acceptable', '',
             '| Window | Fase sumber | Window Low |', '|---|---|---:|']
         for seconds, (rows, _, _) in results.items():
             frame = pd.DataFrame(rows, columns=DATA_COLUMNS)
-            view = shared.dataset_views(frame)['good_acceptable']
+            view = quality_views(frame)['good_acceptable']
             phases = view.loc[view.cognitive_load_label.eq('Low')].groupby('study_phase').size()
             report_lines += [f'| {seconds}s | {phase} | {count} |' for phase, count in phases.items()]
         report_lines += ['', 'mixed berarti beberapa fase dengan target Low yang sama. Detail per segmen ada pada window_phase_mix; jumlah window bukan durasi unik dan tidak menyatakan semua Low berasal dari pengerjaan easy.', '',
             '## Pemodelan berikutnya', '',
             'Gunakan 26 predictor sensor pada feature_columns.json, bukan semua kolom numerik. Target/difficulty/fase, nama peserta, ID soal, waktu, dan kualitas adalah metadata atau label, bukan X. Identitas tetap dipakai untuk grouping/deduplikasi. Imputasi, scaling, seleksi fitur, class weight dan oversampling dilakukan pada training fold, tidak pada CSV sumber. Belum ada training model atau rekaman Low tambahan pada build ini. Batch-01 tetap arsip; batch-02 memakai evaluasinya sendiri.', '',
             'Window overlap bukan observasi independen. Durasi unik dilaporkan per kelas/rekaman pada class_distribution.csv. Mutu sensor dan komposisi kelas dapat berubah antarwindow; jumlah row terbesar bukan bukti window terbaik. Endpoint pembanding dan manifest evaluasi batch-02 dibuat setelah data tambahan diterima.', '']
+        report_lines += report_sections(results, audits, config)
         (destination/'QUALITY_REPORT.md').write_text('\n'.join(report_lines), encoding='utf-8')
         if shared.snapshot(input_dir) != sources_before:
             raise RuntimeError('Raw sources changed during build; no bundle published.')
-        code_paths = [Path(__file__).resolve(), Path(shared.__file__).resolve(), ROOT/'analysis_sessions/session_inventory.py',
+        code_paths = [Path(__file__).resolve(), Path(shared.__file__).resolve(), Path(__file__).with_name('v2_integrity.py'),
+                      Path(__file__).with_name('v2_sensor_checks.py'), Path(__file__).with_name('v2_documentation.py'),
+                      ROOT/'analysis_sessions/session_inventory.py',
                       ROOT/'fuse_and_analyze.py', ROOT/'hrv_monitor_prototype/calculate_hrv.py',
                       ROOT/'hrv_monitor_prototype/preprocess_rr.py', ROOT/'hrv_monitor_prototype/config.py']
         manifest = {
@@ -412,7 +419,8 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
             'label_policy': {'active_task': ACTIVE_LABELS, 'Low_phases': list(LOW_PHASES), 'window_rule': 'unanimous_target'},
             'quality_configuration': config, 'quality_configuration_sha256': shared.digest(config_path),
             'endpoint_packet_policy': 'include_available_packets_at_endpoint',
-            'dataset_eye_review_groups': shared.DATASET_REVIEW_GROUPS,
+            'admission_policy': ADMISSION_POLICY,
+            'dataset_eye_review_groups': {name: None for name in shared.DATASETS},
             'source_integrity_verified': True, 'source_sha256': sources_before,
             'code_sha256': {str(p.relative_to(ROOT)).replace('\\', '/'): shared.digest(p) for p in code_paths},
             'versions': {'python': platform.python_version(), 'numpy': np.__version__, 'pandas': pd.__version__},
@@ -420,17 +428,13 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
             'output_sha256': shared.snapshot(destination),
         }
         (destination/'manifest.json').write_text(json.dumps(manifest, indent=2, allow_nan=False)+'\n', encoding='utf-8')
-        os.rename(destination, output_dir)
-        try:
-            # A Windows rename retains the private temporary parent's ACL.
-            # Reset AFTER moving, so inheritance comes from the real output
-            # parent, and propagate to every generated child as well.
-            if os.name == 'nt':
-                import subprocess
-                subprocess.run(['icacls', str(output_dir), '/reset', '/T', '/q'], check=True, capture_output=True)
-        except Exception:
-            os.rename(output_dir, destination)
-            raise
+        archive_csv = output_dir.parent/'v1_active_task/good_acceptable.csv'
+        index = Path(temporary)/'README.md'
+        if output_dir.name == 'v2_session_phase' and archive_csv.exists():
+            index.write_text(render_output_index(archive_csv, counts), encoding='utf-8')
+        publish_bundle(destination, output_dir, replace=replace)
+        if index.exists():
+            index.replace(output_dir.parent/'README.md')
     print(json.dumps(counts, indent=2), flush=True)
     return manifest
 
@@ -441,8 +445,9 @@ def main():
     parser.add_argument('--output', type=Path, default=Path(__file__).with_name('output')/'v2_session_phase')
     parser.add_argument('--config', type=Path, default=shared.DEFAULT_CONFIG)
     parser.add_argument('--subjects', nargs='+')
+    parser.add_argument('--replace', action='store_true', help='Replace a verified v2 bundle; restore it if publication fails.')
     args = parser.parse_args()
-    build_dataset(args.input, args.output, args.config, args.subjects)
+    build_dataset(args.input, args.output, args.config, args.subjects, replace=args.replace)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,18 @@
+{
+  "candidate": {
+    "id": "c067",
+    "pipeline": {
+      "model": "xgboost",
+      "scaler": null,
+      "variant": "hrv"
+    },
+    "settings": {}
+  },
+  "score": 0.361359854992141,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": null,
+    "variant": "hrv"
+  },
+  "settings": {}
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "fold_id": "fold_10",
+    "model": "logistic_balanced",
+    "id": "c00",
+    "score": 0.3050002945684271,
+    "error": null
+  },
+  {
+    "fold_id": "fold_10",
+    "model": "logistic_balanced",
+    "id": "c01",
+    "score": 0.30362980080922586,
+    "error": null
+  },
+  {
+    "fold_id": "fold_10",
+    "model": "logistic_balanced",
+    "id": "c02",
+    "score": 0.3023339175783079,
+    "error": null
+  }
+]

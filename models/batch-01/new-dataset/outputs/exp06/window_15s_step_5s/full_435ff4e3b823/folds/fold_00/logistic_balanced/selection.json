@@ -1,0 +1,19 @@
+{
+  "candidate": {
+    "id": "c01",
+    "k": 3,
+    "ratio": 0.75,
+    "sampler": "ros"
+  },
+  "score": 0.3793447890308747,
+  "pipeline": {
+    "model": "logistic",
+    "scaler": "standard",
+    "variant": "clean"
+  },
+  "settings": {
+    "k": 3,
+    "ratio": 0.75,
+    "sampler": "ros"
+  }
+}

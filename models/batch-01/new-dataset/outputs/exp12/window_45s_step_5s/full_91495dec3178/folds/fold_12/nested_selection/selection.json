@@ -1,0 +1,20 @@
+{
+  "candidate": {
+    "id": "c131",
+    "pipeline": {
+      "model": "xgboost",
+      "scaler": "standard",
+      "temporal": 3,
+      "variant": "clean"
+    },
+    "settings": {}
+  },
+  "score": 0.43102050864698965,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": "standard",
+    "temporal": 3,
+    "variant": "clean"
+  },
+  "settings": {}
+}

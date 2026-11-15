@@ -1,0 +1,17 @@
+{
+  "candidate": {
+    "C": 100,
+    "gamma": "scale",
+    "id": "c09"
+  },
+  "score": 0.34069642291864516,
+  "pipeline": {
+    "model": "svm",
+    "scaler": "standard",
+    "variant": "original"
+  },
+  "settings": {
+    "C": 100,
+    "gamma": "scale"
+  }
+}

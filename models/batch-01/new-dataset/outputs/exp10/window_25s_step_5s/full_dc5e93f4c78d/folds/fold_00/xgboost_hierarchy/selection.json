@@ -1,0 +1,16 @@
+{
+  "candidate": {
+    "id": "c02",
+    "threshold": 0.35
+  },
+  "score": 0.3212307478836076,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": "standard",
+    "strategy": "hierarchy",
+    "variant": "clean"
+  },
+  "settings": {
+    "threshold": 0.35
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "candidate": {
+    "C": 1,
+    "gamma": 0.01,
+    "id": "c04"
+  },
+  "score": 0.3563783845600783,
+  "pipeline": {
+    "model": "svm",
+    "scaler": "standard",
+    "variant": "original"
+  },
+  "settings": {
+    "C": 1,
+    "gamma": 0.01
+  }
+}

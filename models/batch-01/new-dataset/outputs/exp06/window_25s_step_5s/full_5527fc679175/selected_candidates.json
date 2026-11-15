@@ -1,0 +1,834 @@
+{
+  "fold_00": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.31715471321341093,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c01",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      },
+      "score": 0.31802300627864216,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_01": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c02",
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      },
+      "score": 0.28913690125811337,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c01",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      },
+      "score": 0.3242727412587307,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_02": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.3750878651412861,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c02",
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      },
+      "score": 0.2731544753429937,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_03": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c01",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      },
+      "score": 0.3097099242259494,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c02",
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      },
+      "score": 0.2964842867635917,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_04": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c01",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      },
+      "score": 0.3110982628037017,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c02",
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      },
+      "score": 0.2548831202676571,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_05": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c01",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      },
+      "score": 0.3321879598210382,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.2939535988660858,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_06": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.28048688586988024,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c02",
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      },
+      "score": 0.3013066634613952,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_07": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c01",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      },
+      "score": 0.33224169770521655,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.29963904043924217,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_08": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.3008609481105277,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c02",
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      },
+      "score": 0.2687380480487102,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_09": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.3572139434775315,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c02",
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      },
+      "score": 0.3232044962195435,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 1,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_10": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.3050002945684271,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c01",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      },
+      "score": 0.3107419390457901,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_11": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.289227298449065,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.3013438179889922,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  },
+  "fold_12": {
+    "logistic_balanced": {
+      "candidate": {
+        "id": "c00",
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      },
+      "score": 0.3047221176890429,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.5,
+        "sampler": "ros"
+      }
+    },
+    "logistic_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "logistic",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    },
+    "xgboost_balanced": {
+      "candidate": {
+        "id": "c01",
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      },
+      "score": 0.33323062863658465,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {
+        "k": 3,
+        "ratio": 0.75,
+        "sampler": "ros"
+      }
+    },
+    "xgboost_control": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": "standard",
+        "variant": "clean"
+      },
+      "settings": {}
+    }
+  }
+}

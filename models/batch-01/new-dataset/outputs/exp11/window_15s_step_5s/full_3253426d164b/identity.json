@@ -1,0 +1,43 @@
+{
+  "dataset_sha256": "e4d3381aefec270a743c511661346139ae11e4823f5713931dfc9abfadd056d3",
+  "manifest_sha256": "2da07ebf28c704e6486b7dcb9bef854497366c58cf237dce066bb0af2f29baa6",
+  "experiment": "exp11",
+  "seed": 42,
+  "trees": 300,
+  "technical": false,
+  "runtime": {
+    "version": "reconstructed-v2-1",
+    "code": {
+      "__init__.py": "a471c934e23487ea684b3d08c015d2e0d5a8e508a27a419363dd37a81863a963",
+      "data.py": "410340a46e294fe6ed13bb906888b89fcf254c5a8377a1008ffbc2dfdc2d0621",
+      "design.py": "b847adb3c7ea4b6d8c8eed7ab679b5c1294c1248f3698547fec2632819b64bd5",
+      "extras.py": "ea4e2bdd4965238e60b11a03a41309e8daec3b574b506ac19b4e4b8583e78af8",
+      "features.py": "d3ce008252e975123956be8e1c1f938af9cfe1c4a19e29d78e4961c604b809c2",
+      "model.py": "5b21d8f11e1c1842656ea84c6ec10ae690c7f288a8bf4f6436120dab839bb096",
+      "reporting.py": "eb89a70c587e069ef861e18f040ef50b698e191809d6411173150d222c51d919",
+      "runner.py": "b1b29888c92c909e94936d1ebb5175ac79c6b95d5e56b09d04bd27ed0bf3f975",
+      "storage.py": "d0e37f4484ea277c6b0c1bb8aff94849a6cab07c347ada6a2a1a127c20e392ad",
+      "design_registry.json": "a05d58f8164243d8baece8c52c16a7c5d795362519ccb75d0157c7416401d824",
+      "model_defaults.json": "86c9d2dcd1758b9768b0d813164115dab1aae77efd467a0ddf6ea694c049ed0f"
+    },
+    "environment": {
+      "python": "3.13.16",
+      "platform": "Windows-11-10.0.26300-SP0",
+      "packages": {
+        "numpy": "2.5.4",
+        "pandas": "3.1.1",
+        "scipy": "1.18.1",
+        "scikit-learn": "1.7.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "imbalanced-learn": "0.14.0",
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.2",
+        "threadpoolctl": "3.8.0",
+        "nbformat": "5.11.1",
+        "nbclient": "0.11.0"
+      }
+    }
+  },
+  "registry_sha256": "7187b608929ab04a5af2c0e2ecf61e434c0835bbe231f32b00e728ca442ce777"
+}

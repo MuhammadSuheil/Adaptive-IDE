@@ -41,13 +41,14 @@ Allowlist setiap varian menetapkan **26 fitur sensor**: RMSSD, SDNN, rasio basel
 
 Estimasi iris bukan diameter pupil; Eye_State adalah keluaran algoritma. Nilai hilang tetap kosong, tidak diganti nol. Imputasi, scaling, seleksi fitur, class weight, ROS, dan SMOTE merupakan pekerjaan training-fold di pemodelan, bukan modifikasi CSV sumber.
 
-Aturan window dan admission peserta tetap mengikuti `config.json`:
+Ambang kualitas window tetap mengikuti `config.json`. Admission v2 menggunakan kualitas window saja:
 
-- `good_only`: tier good dan anggota proposed_good (Andrean, Fabian, Faqih, Ikhsan, Kaka).
-- `good_acceptable`: tier good/acceptable dan anggota proposed_good/questionable (tambahan Andreas, Athaya, Rafi, Raina, Sam, Savitri, Shakilla, Tio).
-- `all_data`: seluruh window berlabel, termasuk tier poor dan peserta unreviewed.
-- Nama cocok tanpa membedakan kapitalisasi. Ramadhan/Ramadhan-2 tetap satu grup orang, dengan baseline per rekaman; salinan acquisition dipilih sekali oleh inventory.
-- Rekaman baru harus ditinjau dan dimasukkan ke admission yang sesuai sebelum masuk dataset curated; status anggota tim bukan keputusan kualitas.
+- `good_only`: seluruh window tier good.
+- `good_acceptable`: seluruh window tier good/acceptable.
+- `all_data`: seluruh window berlabel, termasuk tier poor.
+- `team_review_group` menyimpan penilaian lama sebagai metadata; daftar nama tidak lagi membatasi admission v2. Aturan builder/arsip v1 tidak diubah.
+- Ramadhan/Ramadhan-2 tetap satu grup orang, dengan baseline per rekaman; salinan acquisition dipilih sekali oleh inventory.
+- Rekaman baru memerlukan integritas sumber, readiness kalibrasi, ledger yang dapat ditelusuri, serta pemeriksaan kualitas window yang sama. Tidak perlu memasukkan nama ke daftar admission.
 
 | Kriteria | Good | Acceptable |
 |---|---:|---:|
@@ -81,15 +82,17 @@ python analysis_sessions/dataset_fusion/build_dataset_v2.py
 python -m unittest discover -s analysis_sessions/dataset_fusion -p "test_*.py" -v
 ```
 
-Default sumber: `sessions/saved_session`. Default tujuan: `output/v2_session_phase`. **Jika tujuan sudah ada, builder menolak menimpanya.** Untuk sumber tambahan atau rebuild verifikasi, pilih folder versi baru:
+Default sumber: `sessions/saved_session`. Default tujuan: `output/v2_session_phase`. Tanpa `--replace`, tujuan yang sudah ada tetap ditolak. Untuk memperbarui bundle v2 aktif:
 
 ```powershell
-python analysis_sessions/dataset_fusion/build_dataset_v2.py --output analysis_sessions/dataset_fusion/output_next_version/v2_session_phase
+python analysis_sessions/dataset_fusion/build_dataset_v2.py --replace
 ```
 
 `--input`, `--config`, dan `--subjects` tersedia. Subjects memakai nama folder persis dan tidak mengubah ambang kualitas. Satu build selalu menghasilkan ketiga panjang window, sehingga CSV dan manifest tidak tercampur antar-run.
 
-Hash seluruh sumber diverifikasi sebelum publikasi. Bundle lengkap dibangun pada staging, manifest ditulis terakhir, lalu direktori dipublikasikan melalui satu rename. Kegagalan parsing, replay, integritas sumber, atau penulisan tidak menerbitkan bundle parsial. Pada Windows, file turunan memakai permission normal folder tujuan.
+Hash seluruh sumber diverifikasi sebelum publikasi. Bundle lengkap dibangun pada staging dan diverifikasi sebelum dipasang. Penggantian hanya menerima bundle v2 yang lengkap dan checksum-nya valid; sumber mentah, root output, symlink/junction, dan arsip v1 dilindungi. Bundle lama dipindah sementara untuk rollback dan dihapus setelah pemasangan, checksum, serta permission Windows terverifikasi. Kegagalan pemasangan memulihkan bundle lama; jika rollback juga gagal, lokasi bundle lama ditampilkan dan tidak dihapus.
+
+Validasi memeriksa label/durasi fase, grid waktu, identitas, ambang sensor, baseline, blink, nilai hilang, proporsi eye-state, subset antar-view, serta jumlah baris. `replay_validation.json` juga menyimpan jumlah sampel pemeriksaan pembanding rumus HRV dan agregasi eye pada setiap panjang window; pemeriksaan ini tidak membuktikan akurasi gaze atau ground truth fisiologis.
 
 Builder v1 tetap tersedia untuk audit dengan `--output` eksplisit ke folder rebuild terpisah. Root output versi dan arsip v1 yang sudah ada dilindungi. Logika angka/label historis v1 tidak diubah.
 
@@ -99,4 +102,4 @@ Baca [models/README.md](../../models/README.md) dan [plan batch-02](../../models
 
 `drive/MyDrive/Penelitian-Adaptive-IDE/Dataset/v2_session_phase/window_25s_step_5s/good_acceptable.csv`
 
-Sertakan allowlist dan manifest, bukan CSV saja. Dataset v2 yang sekarang memakai rekaman lama yang tersedia; belum berisi pengambilan Low tambahan. Setelah sumber tambahan, identitas lintas sesi, dan admission disahkan, bangun versi penerimaan baru dan bekukan manifest evaluasi batch-02. Jangan memakai notebook batch-01 langsung pada target v2 atau memakai manifest test good-only v1 sebagai evaluasi seluruh good+acceptable batch-02.
+Sertakan allowlist dan manifest, bukan CSV saja. Dataset v2 memakai rekaman yang tersedia; pengambilan Low tambahan belum termasuk. Setelah sumber tambahan dan identitas lintas sesi diperiksa, rebuild bundle aktif dan bekukan manifest evaluasi batch-02. Hash sumber pada hasil batch-01 tetap menunjukkan dataset saat training dahulu, bukan bundle setelah refresh; penggantian CSV tidak memperbarui model atau skor lama.

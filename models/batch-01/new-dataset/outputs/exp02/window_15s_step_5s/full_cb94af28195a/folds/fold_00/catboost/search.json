@@ -1,0 +1,86 @@
+[
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c00",
+    "score": 0.2947314437059807,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c01",
+    "score": 0.2946105638777304,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c02",
+    "score": 0.30119427745960003,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c03",
+    "score": 0.31546265636521914,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c04",
+    "score": 0.3144100296798345,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c05",
+    "score": 0.31021653894136514,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c06",
+    "score": 0.295435620076875,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c07",
+    "score": 0.2960918845162481,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c08",
+    "score": 0.29822713192179773,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c09",
+    "score": 0.3175140785860277,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c10",
+    "score": 0.2978682325244366,
+    "error": null
+  },
+  {
+    "fold_id": "fold_00",
+    "model": "catboost",
+    "id": "c11",
+    "score": 0.2998711029165346,
+    "error": null
+  }
+]

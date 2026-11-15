@@ -1,0 +1,26 @@
+{
+  "candidate": {
+    "id": "c156",
+    "pipeline": {
+      "model": "logistic",
+      "scaler": "standard",
+      "strategy": "fusion",
+      "variant": "clean"
+    },
+    "settings": {
+      "alpha": 0.75
+    }
+  },
+  "pipeline": {
+    "model": "logistic",
+    "scaler": "standard",
+    "strategy": "fusion",
+    "variant": "clean"
+  },
+  "settings": {
+    "alpha": 0.75
+  },
+  "inner_macro_f1": 0.3780185143118409,
+  "save_load_check": true,
+  "note": "Full-data group-validation selection and refit; not an additional generalization score."
+}

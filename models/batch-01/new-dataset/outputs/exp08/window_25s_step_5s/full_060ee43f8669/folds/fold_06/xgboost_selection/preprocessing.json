@@ -1,0 +1,101 @@
+{
+  "spec": {
+    "model": "xgboost",
+    "variant": "clean",
+    "scaler": "standard",
+    "temporal": 0,
+    "strategy": "base"
+  },
+  "settings": {
+    "selection": "corr0.90"
+  },
+  "strategy": "base",
+  "preprocessing": {
+    "features": [
+      "rmssd_ms",
+      "sdnn_ms",
+      "rmssd_baseline_ratio",
+      "blink_rate_per_minute",
+      "ear_left_mean",
+      "ear_left_std",
+      "iris_size_estimate_mean",
+      "iris_size_estimate_std",
+      "iris_size_delta_mean",
+      "head_pitch_mean",
+      "head_pitch_std",
+      "head_yaw_mean",
+      "head_yaw_std",
+      "gaze_x_norm_mean",
+      "gaze_x_norm_std",
+      "gaze_y_norm_mean",
+      "gaze_y_norm_std",
+      "eye_state_fixation_ratio",
+      "eye_state_saccade_ratio",
+      "eye_state_transition_ratio"
+    ],
+    "dropped_empty": [],
+    "dropped_constant": [],
+    "medians": {
+      "rmssd_ms": 30.48585590863033,
+      "sdnn_ms": 33.52734923536422,
+      "rmssd_baseline_ratio": 0.8275600906239373,
+      "blink_rate_per_minute": 9.6,
+      "ear_left_mean": 0.49263550384054683,
+      "ear_left_std": 0.06972075306182264,
+      "ear_right_mean": 0.5026760680038352,
+      "ear_right_std": 0.06219915012973279,
+      "iris_size_estimate_mean": 0.2410440477967834,
+      "iris_size_estimate_std": 0.00387968849742881,
+      "iris_size_delta_mean": -0.0009572382322528203,
+      "head_pitch_mean": 7.448878291956381,
+      "head_pitch_std": 0.9579721331678557,
+      "head_yaw_mean": 8.195720817816007,
+      "head_yaw_std": 2.3647365596162118,
+      "gaze_x_norm_mean": 0.37276117077642484,
+      "gaze_x_norm_std": 0.1851518866612378,
+      "gaze_y_norm_mean": 0.5665591616600153,
+      "gaze_y_norm_std": 0.19654254344087335,
+      "eye_state_fixation_ratio": 0.42902711323763953,
+      "eye_state_saccade_ratio": 0.12172573189522343,
+      "eye_state_transition_ratio": 0.18914473684210525,
+      "eye_state_unclassified_ratio": 0.24701873935264054
+    },
+    "selected_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21
+    ],
+    "scaler": "standard"
+  },
+  "resampling": {
+    "sampler": null,
+    "before": {
+      "0": 660,
+      "1": 880,
+      "2": 1077
+    },
+    "after": {
+      "0": 660,
+      "1": 880,
+      "2": 1077
+    },
+    "applied": false
+  }
+}

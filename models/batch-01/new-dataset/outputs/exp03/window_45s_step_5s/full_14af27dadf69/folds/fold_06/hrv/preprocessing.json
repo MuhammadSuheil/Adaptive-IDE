@@ -1,0 +1,45 @@
+{
+  "spec": {
+    "model": "xgboost",
+    "variant": "hrv",
+    "scaler": null,
+    "temporal": 0,
+    "strategy": "base"
+  },
+  "settings": {},
+  "strategy": "base",
+  "preprocessing": {
+    "features": [
+      "rmssd_ms",
+      "sdnn_ms",
+      "rmssd_baseline_ratio"
+    ],
+    "dropped_empty": [],
+    "dropped_constant": [],
+    "medians": {
+      "rmssd_ms": 32.167221200069385,
+      "sdnn_ms": 37.437986489716586,
+      "rmssd_baseline_ratio": 0.8443587284628022
+    },
+    "selected_indices": [
+      0,
+      1,
+      2
+    ],
+    "scaler": null
+  },
+  "resampling": {
+    "sampler": null,
+    "before": {
+      "0": 614,
+      "1": 586,
+      "2": 854
+    },
+    "after": {
+      "0": 614,
+      "1": 586,
+      "2": 854
+    },
+    "applied": false
+  }
+}

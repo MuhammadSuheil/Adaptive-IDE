@@ -1,0 +1,156 @@
+{
+  "spec": {
+    "model": "logistic",
+    "variant": "clean",
+    "scaler": "standard",
+    "temporal": 0,
+    "strategy": "fusion"
+  },
+  "settings": {
+    "alpha": 0
+  },
+  "strategy": "fusion",
+  "parts": [
+    {
+      "spec": {
+        "model": "logistic",
+        "variant": "hrv",
+        "scaler": "standard",
+        "temporal": 0,
+        "strategy": "base"
+      },
+      "settings": {},
+      "strategy": "base",
+      "preprocessing": {
+        "features": [
+          "rmssd_ms",
+          "sdnn_ms",
+          "rmssd_baseline_ratio"
+        ],
+        "dropped_empty": [],
+        "dropped_constant": [],
+        "medians": {
+          "rmssd_ms": 32.235480536966634,
+          "sdnn_ms": 34.17307225340275,
+          "rmssd_baseline_ratio": 0.8399722919637622
+        },
+        "selected_indices": [
+          0,
+          1,
+          2
+        ],
+        "scaler": "standard"
+      },
+      "resampling": {
+        "sampler": null,
+        "before": {
+          "0": 608,
+          "1": 914,
+          "2": 1038
+        },
+        "after": {
+          "0": 608,
+          "1": 914,
+          "2": 1038
+        },
+        "applied": false
+      }
+    },
+    {
+      "spec": {
+        "model": "logistic",
+        "variant": "clean_eye",
+        "scaler": "standard",
+        "temporal": 0,
+        "strategy": "base"
+      },
+      "settings": {},
+      "strategy": "base",
+      "preprocessing": {
+        "features": [
+          "blink_rate_per_minute",
+          "ear_left_mean",
+          "ear_left_std",
+          "ear_right_mean",
+          "ear_right_std",
+          "iris_size_estimate_mean",
+          "iris_size_estimate_std",
+          "iris_size_delta_mean",
+          "head_pitch_mean",
+          "head_pitch_std",
+          "head_yaw_mean",
+          "head_yaw_std",
+          "gaze_x_norm_mean",
+          "gaze_x_norm_std",
+          "gaze_y_norm_mean",
+          "gaze_y_norm_std",
+          "eye_state_fixation_ratio",
+          "eye_state_saccade_ratio",
+          "eye_state_transition_ratio",
+          "eye_state_unclassified_ratio"
+        ],
+        "dropped_empty": [],
+        "dropped_constant": [],
+        "medians": {
+          "blink_rate_per_minute": 9.6,
+          "ear_left_mean": 0.5010668813770093,
+          "ear_left_std": 0.07009742003345193,
+          "ear_right_mean": 0.5110482329832458,
+          "ear_right_std": 0.06249648076736666,
+          "iris_size_estimate_mean": 0.24055773314202844,
+          "iris_size_estimate_std": 0.0037338301462976307,
+          "iris_size_delta_mean": -0.0010723983499523661,
+          "head_pitch_mean": 7.910393343035922,
+          "head_pitch_std": 0.9435588186440944,
+          "head_yaw_mean": 7.580944990051346,
+          "head_yaw_std": 2.2518003264651147,
+          "gaze_x_norm_mean": 0.37661275456016513,
+          "gaze_x_norm_std": 0.18173670615709286,
+          "gaze_y_norm_mean": 0.5719361670413872,
+          "gaze_y_norm_std": 0.19525623731579353,
+          "eye_state_fixation_ratio": 0.4263676124002901,
+          "eye_state_saccade_ratio": 0.12174780873036536,
+          "eye_state_transition_ratio": 0.1892720972981613,
+          "eye_state_unclassified_ratio": 0.24718009244208233
+        },
+        "selected_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "scaler": "standard"
+      },
+      "resampling": {
+        "sampler": null,
+        "before": {
+          "0": 608,
+          "1": 914,
+          "2": 1038
+        },
+        "after": {
+          "0": 608,
+          "1": 914,
+          "2": 1038
+        },
+        "applied": false
+      }
+    }
+  ]
+}

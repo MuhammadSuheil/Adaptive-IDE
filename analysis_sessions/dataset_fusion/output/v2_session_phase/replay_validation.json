@@ -24,7 +24,21 @@
         "cached_rr_count": 34,
         "recomputed_rr_count": 36
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 14,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 12,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Andreas",
@@ -39,7 +53,21 @@
         "cached_rr_count": 33,
         "recomputed_rr_count": 34
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 5,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 5,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Athaya",
@@ -47,7 +75,21 @@
     "exact_replay_windows": 399,
     "endpoint_publication_differences": 0,
     "unexplained_windows": 0,
-    "differences": []
+    "differences": [],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 12,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 12,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Baithar",
@@ -55,7 +97,21 @@
     "exact_replay_windows": 426,
     "endpoint_publication_differences": 0,
     "unexplained_windows": 0,
-    "differences": []
+    "differences": [],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 9,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 9,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Fabian",
@@ -88,7 +144,21 @@
         "cached_rr_count": 28,
         "recomputed_rr_count": 29
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 4,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 4,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "faqih",
@@ -103,7 +173,21 @@
         "cached_rr_count": 29,
         "recomputed_rr_count": 30
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "ikhsan",
@@ -111,7 +195,21 @@
     "exact_replay_windows": 335,
     "endpoint_publication_differences": 0,
     "unexplained_windows": 0,
-    "differences": []
+    "differences": [],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "irfan",
@@ -126,7 +224,21 @@
         "cached_rr_count": 38,
         "recomputed_rr_count": 39
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "kaka",
@@ -153,7 +265,21 @@
         "cached_rr_count": 35,
         "recomputed_rr_count": 37
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Rafi",
@@ -168,7 +294,21 @@
         "cached_rr_count": 31,
         "recomputed_rr_count": 32
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "raina",
@@ -195,7 +335,21 @@
         "cached_rr_count": 33,
         "recomputed_rr_count": 34
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 10,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 7,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Ramadhan",
@@ -203,7 +357,21 @@
     "exact_replay_windows": 63,
     "endpoint_publication_differences": 0,
     "unexplained_windows": 0,
-    "differences": []
+    "differences": [],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 12,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 9,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 7,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Ramadhan-2",
@@ -218,7 +386,21 @@
         "cached_rr_count": 39,
         "recomputed_rr_count": 41
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 15,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 14,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "sam",
@@ -233,7 +415,21 @@
         "cached_rr_count": 35,
         "recomputed_rr_count": 36
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Savitri",
@@ -278,7 +474,21 @@
         "cached_rr_count": 52,
         "recomputed_rr_count": 54
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 5,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 5,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Shakilla",
@@ -305,7 +515,21 @@
         "cached_rr_count": 31,
         "recomputed_rr_count": 32
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 13,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 13,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Siti",
@@ -320,7 +544,21 @@
         "cached_rr_count": 33,
         "recomputed_rr_count": 35
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Sullivan",
@@ -328,7 +566,21 @@
     "exact_replay_windows": 233,
     "endpoint_publication_differences": 0,
     "unexplained_windows": 0,
-    "differences": []
+    "differences": [],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      }
+    }
   },
   {
     "session_folder": "Tio",
@@ -343,6 +595,20 @@
         "cached_rr_count": 43,
         "recomputed_rr_count": 45
       }
-    ]
+    ],
+    "independent_sensor_check": {
+      "15": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "25": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      },
+      "45": {
+        "sampled_windows": 16,
+        "mismatches": 0
+      }
+    }
   }
 ]

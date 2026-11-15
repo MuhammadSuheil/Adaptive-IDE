@@ -1,0 +1,42 @@
+{
+  "exp02": {
+    "path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs\\exp02\\window_15s_step_5s\\full_cb94af28195a",
+    "summary_sha256": "33d266f8aa2f63614cd5d2c87026649df95e08f17bacb9e9a16b6d6520cc4897"
+  },
+  "exp03": {
+    "path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs\\exp03\\window_15s_step_5s\\full_88079f045c66",
+    "summary_sha256": "2cc91ba3399c84d3152e3453ab6d35293b846fe98ce8c4514e2b6a4d29ab679b"
+  },
+  "exp04": {
+    "path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs\\exp04\\window_15s_step_5s\\full_d5b43f6b5ec5",
+    "summary_sha256": "d256f92dab82fac7d73369a5629f97afc34d0857ca19fc4a43652cc15d6fa5b5"
+  },
+  "exp05": {
+    "path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs\\exp05\\window_15s_step_5s\\full_c114fe0be8c9",
+    "summary_sha256": "ed5467bfb60a85b38111f0ed9ec667c6e7a76e537c0cbbb87732a9f7586c227e"
+  },
+  "exp06": {
+    "path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs\\exp06\\window_15s_step_5s\\full_435ff4e3b823",
+    "summary_sha256": "38e78187c3630fec52e5fc0787dba28f59c785e2101d3b10676ed758ebf9b634"
+  },
+  "exp07": {
+    "path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs\\exp07\\window_15s_step_5s\\full_f59fc85c6cd6",
+    "summary_sha256": "24861f0d55798d1014735626920ef5fe3346ebe17634d94a1d848cf93df635e7"
+  },
+  "exp08": {
+    "path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs\\exp08\\window_15s_step_5s\\full_287f9bf36c0f",
+    "summary_sha256": "7861df2b7102654d0843964e13e12f2c17c99323f06dab1bd0a45b9601f21548"
+  },
+  "exp09": {
+    "path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs\\exp09\\window_15s_step_5s\\full_8ceefcb27714",
+    "summary_sha256": "7bca28341ef7656502afd36578f32b582fa96bed1869df1cb254142c63f3deb7"
+  },
+  "exp10": {
+    "path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs\\exp10\\window_15s_step_5s\\full_736c850e4f20",
+    "summary_sha256": "ba9d44b489b2731d1387523bf6f10e3e50147e6a75aa3aa8955c03c121755346"
+  },
+  "exp11": {
+    "path": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-01\\new-dataset\\outputs\\exp11\\window_15s_step_5s\\full_3253426d164b",
+    "summary_sha256": "aacac5647b4bac4802a7cf956dc77724fb13902060c7cf9168158e9b5335d42c"
+  }
+}

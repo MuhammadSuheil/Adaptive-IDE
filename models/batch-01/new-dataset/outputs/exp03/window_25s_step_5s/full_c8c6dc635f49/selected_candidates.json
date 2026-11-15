@@ -1,0 +1,808 @@
+{
+  "fold_00": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_01": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_02": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_03": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_04": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_05": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_06": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_07": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_08": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_09": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_10": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_11": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  },
+  "fold_12": {
+    "eye": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "eye"
+      },
+      "settings": {}
+    },
+    "hrv": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "hrv"
+      },
+      "settings": {}
+    },
+    "no_gaze_state": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_gaze_state"
+      },
+      "settings": {}
+    },
+    "no_iris": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "no_iris"
+      },
+      "settings": {}
+    },
+    "original": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "scaler": null,
+        "variant": "original"
+      },
+      "settings": {}
+    }
+  }
+}

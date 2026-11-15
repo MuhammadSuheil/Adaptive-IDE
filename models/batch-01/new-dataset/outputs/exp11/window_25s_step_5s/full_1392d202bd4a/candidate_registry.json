@@ -1,0 +1,86 @@
+[
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "xgboost_early",
+    "model": "xgboost",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "alpha": 0,
+        "id": "c00"
+      },
+      {
+        "alpha": 0.25,
+        "id": "c01"
+      },
+      {
+        "alpha": 0.5,
+        "id": "c02"
+      },
+      {
+        "alpha": 0.75,
+        "id": "c03"
+      },
+      {
+        "alpha": 1,
+        "id": "c04"
+      }
+    ],
+    "id": "xgboost_late",
+    "model": "xgboost",
+    "scaler": "standard",
+    "strategy": "fusion",
+    "tune": true,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "id": "c00"
+      }
+    ],
+    "id": "logistic_early",
+    "model": "logistic",
+    "scaler": "standard",
+    "tune": false,
+    "variant": "clean"
+  },
+  {
+    "candidates": [
+      {
+        "alpha": 0,
+        "id": "c00"
+      },
+      {
+        "alpha": 0.25,
+        "id": "c01"
+      },
+      {
+        "alpha": 0.5,
+        "id": "c02"
+      },
+      {
+        "alpha": 0.75,
+        "id": "c03"
+      },
+      {
+        "alpha": 1,
+        "id": "c04"
+      }
+    ],
+    "id": "logistic_late",
+    "model": "logistic",
+    "scaler": "standard",
+    "strategy": "fusion",
+    "tune": true,
+    "variant": "clean"
+  }
+]

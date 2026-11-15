@@ -1,0 +1,340 @@
+{
+  "fold_00": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_01": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_02": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_03": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_04": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_05": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_06": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_07": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_08": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_09": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_10": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_11": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  },
+  "fold_12": {
+    "dummy": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "dummy",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    },
+    "xgboost": {
+      "candidate": {
+        "id": "c00"
+      },
+      "score": null,
+      "pipeline": {
+        "model": "xgboost",
+        "variant": "original",
+        "scaler": null
+      },
+      "settings": {}
+    }
+  }
+}

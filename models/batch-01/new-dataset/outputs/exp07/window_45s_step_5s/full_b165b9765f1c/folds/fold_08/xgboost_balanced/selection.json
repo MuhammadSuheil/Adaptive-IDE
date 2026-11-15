@@ -1,0 +1,19 @@
+{
+  "candidate": {
+    "id": "c03",
+    "k": 5,
+    "ratio": 0.75,
+    "sampler": "smote"
+  },
+  "score": 0.2680999085377342,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": "standard",
+    "variant": "clean"
+  },
+  "settings": {
+    "k": 5,
+    "ratio": 0.75,
+    "sampler": "smote"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "candidate": {
+    "colsample_bytree": 1,
+    "id": "c11",
+    "learning_rate": 0.03,
+    "max_depth": 3,
+    "min_child_weight": 1,
+    "reg_lambda": 5,
+    "subsample": 0.8
+  },
+  "score": 0.28506930564898786,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": null,
+    "variant": "original"
+  },
+  "settings": {
+    "colsample_bytree": 1,
+    "learning_rate": 0.03,
+    "max_depth": 3,
+    "min_child_weight": 1,
+    "reg_lambda": 5,
+    "subsample": 0.8
+  }
+}

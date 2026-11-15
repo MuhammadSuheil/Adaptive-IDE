@@ -1,0 +1,1080 @@
+[
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c000",
+    "score": 0.30100940092727796,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c001",
+    "score": 0.2885285413822868,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c002",
+    "score": 0.24079308157872767,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c003",
+    "score": 0.3194077632143172,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c004",
+    "score": 0.3380664235024046,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c005",
+    "score": 0.339349089511734,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c006",
+    "score": 0.29511072529771465,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c007",
+    "score": 0.3075953832526351,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c008",
+    "score": 0.26420042679102673,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c009",
+    "score": 0.262696049470243,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c010",
+    "score": 0.28207900622706333,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c011",
+    "score": 0.30384168864044575,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c012",
+    "score": 0.2934580634595839,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c013",
+    "score": 0.2773352053087132,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c014",
+    "score": 0.30590750383707527,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c015",
+    "score": 0.29654146486233474,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c016",
+    "score": 0.2720135635715284,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c017",
+    "score": 0.30368656143436445,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c018",
+    "score": 0.24725592440797228,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c019",
+    "score": 0.2675726547227381,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c020",
+    "score": 0.2644814376941785,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c021",
+    "score": 0.25045482450154194,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c022",
+    "score": 0.25957174435689173,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c023",
+    "score": 0.2585836936165056,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c024",
+    "score": 0.23571768934934087,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c025",
+    "score": 0.2495682163084547,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c026",
+    "score": 0.24684096905688357,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c027",
+    "score": 0.244290535761478,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c028",
+    "score": 0.2389139811507707,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c029",
+    "score": 0.2550294789237359,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c030",
+    "score": 0.2722216593935087,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c031",
+    "score": 0.26353934823505837,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c032",
+    "score": 0.2646337629157613,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c033",
+    "score": 0.2615974372461218,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c034",
+    "score": 0.27330656924349134,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c035",
+    "score": 0.2691678457586966,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c036",
+    "score": 0.2682973016211063,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c037",
+    "score": 0.26044519744200073,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c038",
+    "score": 0.2756863605016718,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c039",
+    "score": 0.26869903744959944,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c040",
+    "score": 0.27776106713016735,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c041",
+    "score": 0.2760036841813573,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c042",
+    "score": 0.26162226097479874,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c043",
+    "score": 0.27156303420671973,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c044",
+    "score": 0.2542628944912029,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c045",
+    "score": 0.27066780052398215,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c046",
+    "score": 0.2755027937295827,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c047",
+    "score": 0.26871639058407715,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c048",
+    "score": 0.24956708103091083,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c049",
+    "score": 0.2760373515420626,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c050",
+    "score": 0.2732042000074086,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c051",
+    "score": 0.2641849230662469,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c052",
+    "score": 0.2512444326122075,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c053",
+    "score": 0.28506930564898786,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c054",
+    "score": 0.26149059082701576,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c055",
+    "score": 0.24592221293822006,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c056",
+    "score": 0.2558387618780042,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c057",
+    "score": 0.26038803423596635,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c058",
+    "score": 0.256874133209318,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c059",
+    "score": 0.26676497438871755,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c060",
+    "score": 0.273171318346448,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c061",
+    "score": 0.26553929638142226,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c062",
+    "score": 0.2628613718262119,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c063",
+    "score": 0.2574750049255465,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c064",
+    "score": 0.2534206698049155,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c065",
+    "score": 0.25192064269709563,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c067",
+    "score": 0.3457084067812568,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c068",
+    "score": 0.21824463905331334,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c069",
+    "score": 0.22737382926212935,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c070",
+    "score": 0.29308281001914177,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c072",
+    "score": 0.26162226097479874,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c073",
+    "score": 0.27724876180912394,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c074",
+    "score": 0.2671894851763334,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c075",
+    "score": 0.22965782516707114,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c076",
+    "score": 0.26162226097479874,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c078",
+    "score": 0.3223308009544201,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c079",
+    "score": 0.2723506098501487,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c080",
+    "score": 0.29739474971991203,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c081",
+    "score": 0.2777802775014795,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c082",
+    "score": 0.27910380244979643,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c083",
+    "score": 0.28790742292233146,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c084",
+    "score": 0.26162226097479874,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c086",
+    "score": 0.25621310399059694,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c087",
+    "score": 0.2589778027917355,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c088",
+    "score": 0.25201776815552185,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c089",
+    "score": 0.2692678944050059,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c092",
+    "score": 0.31411426878808496,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c093",
+    "score": 0.321098367930621,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c094",
+    "score": 0.30790374980095586,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c095",
+    "score": 0.3079084893601023,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c097",
+    "score": 0.26162226097479874,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c098",
+    "score": 0.25741472173633545,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c099",
+    "score": 0.25591863337417553,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c101",
+    "score": 0.3223308009544201,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c102",
+    "score": 0.3248233982724178,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c103",
+    "score": 0.3230091392862272,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c105",
+    "score": 0.26162226097479874,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c106",
+    "score": 0.26162226097479874,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c107",
+    "score": 0.26562440695180684,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c108",
+    "score": 0.2680999085377342,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c109",
+    "score": 0.26564239832546815,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c110",
+    "score": 0.255176689594305,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c112",
+    "score": 0.3223308009544201,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c113",
+    "score": 0.3223308009544201,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c114",
+    "score": 0.32031576559891944,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c115",
+    "score": 0.3160203052497727,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c116",
+    "score": 0.3244620416256401,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c117",
+    "score": 0.31377164899230187,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c119",
+    "score": 0.26845987695231915,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c120",
+    "score": 0.26569649417133273,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c121",
+    "score": 0.2535021944654257,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c122",
+    "score": 0.26951116828215665,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c123",
+    "score": 0.22316556539865987,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c125",
+    "score": 0.35134411805902027,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c126",
+    "score": 0.3484238763409914,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c127",
+    "score": 0.45467752960604385,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c128",
+    "score": 0.3813596658213119,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c129",
+    "score": 0.3466583258927412,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c131",
+    "score": 0.3584221975528787,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c132",
+    "score": 0.36591180280375046,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c134",
+    "score": 0.3314081635445601,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c135",
+    "score": 0.3305251207690232,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c137",
+    "score": 0.2631265233497793,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c138",
+    "score": 0.24835657529887745,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c139",
+    "score": 0.2613417952420333,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c140",
+    "score": 0.2609907933704429,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c142",
+    "score": 0.3216766983459229,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c143",
+    "score": 0.30190558506687326,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c144",
+    "score": 0.3243598726015306,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c145",
+    "score": 0.322869895766361,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c147",
+    "score": 0.2188400797412929,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c148",
+    "score": 0.23211402193943295,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c149",
+    "score": 0.2459599620586238,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c150",
+    "score": 0.32156686329092815,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c151",
+    "score": 0.3457084067812568,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c153",
+    "score": 0.3265281908113633,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c154",
+    "score": 0.3260942512551301,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c155",
+    "score": 0.3146598607857154,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c156",
+    "score": 0.29172758819931005,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c157",
+    "score": 0.31632590091328744,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c162",
+    "score": 0.27724876180912394,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c163",
+    "score": 0.2557959314889809,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c164",
+    "score": 0.2839574351927099,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c165",
+    "score": 0.27722554439770164,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c166",
+    "score": 0.26162226097479874,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c167",
+    "score": 0.25621310399059694,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c168",
+    "score": 0.25741472173633545,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c169",
+    "score": 0.2647281108977205,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c175",
+    "score": 0.26758179351663647,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c176",
+    "score": 0.2740095745345113,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c177",
+    "score": 0.27618438168663967,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c179",
+    "score": 0.27703995519132457,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c180",
+    "score": 0.27752861234237275,
+    "error": null
+  },
+  {
+    "fold_id": "fold_08",
+    "model": "nested_selection",
+    "id": "c181",
+    "score": 0.27981655957149004,
+    "error": null
+  }
+]

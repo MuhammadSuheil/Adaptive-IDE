@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "id": "c04",
+    "selection": "mi12"
+  },
+  "score": 0.3445621433276882,
+  "pipeline": {
+    "model": "xgboost",
+    "scaler": "standard",
+    "variant": "clean"
+  },
+  "settings": {
+    "selection": "mi12"
+  }
+}
