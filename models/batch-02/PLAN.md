@@ -1,392 +1,376 @@
-# Batch 02: Rencana Eksperimen Cognitive Load
+# Batch-02: Rencana Eksperimen Cognitive Load
 
-## Status dan tujuan
+Tanggal revisi: 15 November 2026.
 
-Dokumen ini merencanakan pekerjaan setelah [diagnosis batch-01](../batch-01/DIAGNOSIS.md). Builder dataset v2 serta CSV window 15/25/45 detik sudah dibuat dari rekaman yang tersedia; arsip v1 tetap byte-identik. Notebook, pipeline pemodelan, dan training batch-02 belum dibuat atau dijalankan. Dataset tambahan Low juga belum tersedia pada saat penyusunan rencana. Tahap pertama adalah menerima dan memvalidasi pembaruan data, bukan membuat baris sintetis sebagai pengganti rekaman baru.
+## 1. Status, tujuan, dan syarat mulai
 
-**Batch-02 mengevaluasi dataset terbaru secara mandiri.** Data yang sudah diperbarui menjadi sumber seluruh eksperimen batch ini. Tidak ada eksperimen sebelum–sesudah penambahan Low, kewajiban mengulang dataset lama, atau perbandingan skor dengan batch-00/batch-01. Diagnosis lama hanya membantu menetapkan hipotesis; data dan hasil lama tetap menjadi arsip. Perbandingan model, fitur, window, dan balancing dilakukan di dalam batch-02 dengan kontrak evaluasi yang sama.
+**Full training batch-02 belum dimulai.** Notebook exp00–exp14 dan paket kode bersama telah disiapkan, beserta pemeriksaan teknis tanpa fitting classifier penelitian. Bobot dan hasil evaluasi batch-02 belum tersedia. Baca [README](README.md) dan [catatan validasi](technical_validation/CHECKS.md) untuk penggunaan dan batas pengujian.
 
-Tujuan tetap **satu classifier Low/Medium/High per window dari fitur eye tracking dan HRV selama aktivitas pemrograman**. Kita tidak membuat model pengenal peserta, model pengenal soal, atau classifier terpisah untuk setiap orang. CodeArrange merupakan instrumen pengambilan data. Target v2 mengikuti protokol fase sesi: active easy/practice/demo serta pre-task setelah kalibrasi, feedback, rating, jeda, dan post-task diberi Low; active medium diberi Medium dan hard diberi High. Rating/feedback setelah medium/hard juga Low. Kalibrasi dan interval yang tidak terlacak dikeluarkan.
+Batch ini menghasilkan satu classifier umum Low/Medium/High dari fitur eye tracking dan HRV per window. Identitas hanya membantu pengelompokan evaluasi dan penelusuran sumber. Model tidak menerima nama peserta, difficulty, soal, set, fase, tanggal pengambilan, atau batas waktu CodeArrange sebagai predictor. Model temporal boleh memerlukan waktu dan kunci stream yang tidak mengandung arti identitas.
 
-Rencana operator adalah sekitar **5 anggota tim sebagai peserta baru terhadap cohort batch-01**, dengan kemungkinan tambahan **2–3 peserta lama**, semuanya mengerjakan easy. Jumlah akhir dan identitas yang berulang dikonfirmasi melalui daftar sesi saat data diterima. Tidak ada kewajiban mengambil ulang medium/high pada batch ini.
+Tiga kandidat utama adalah good_acceptable v2 pada window 15, 25, dan 45 detik, semuanya step 5 detik. Ketiganya merupakan representasi alternatif dari sumber yang sama, bukan tiga kumpulan data yang boleh ditumpuk untuk memperbanyak sampel.
 
-Identitas peserta tetap metadata, bukan fitur prediksi. Metadata itu diperlukan untuk mencegah rekaman lama dan rekaman baru orang yang sama berada pada sisi train/test yang berbeda. Menjaga pembagian data bukan perubahan tujuan menjadi pemodelan perorangan.
+### 1.1 Gate penerimaan dataset
 
-## 1. Keputusan dasar
+Training penelitian hanya boleh berjalan setelah empat kondisi berikut terpenuhi:
 
-1. Selesaikan audit data tambahan sebelum full training utama.
-2. Pertahankan data, kode, dan hasil batch-01 sebagai arsip yang tidak ditimpa; tidak perlu melatih ulang atau membandingkan skornya.
-3. Setelah dataset terbaru disahkan, pisahkan pengaruh representasi fitur, window, riwayat, balancing, dan algoritma.
-4. Gunakan model referensi dan manifest test yang sama untuk membandingkan konfigurasi di dalam batch-02.
-5. Pilih parameter dan recipe menggunakan inner validation, bukan outer test atau peserta yang menghasilkan skor terbaik.
-6. Utamakan macro-F1, dengan precision/recall tiap kelas dan coverage. Accuracy tinggi dengan Low yang tidak dikenali tidak cukup.
-7. Batasi pencarian kandidat. Model yang lebih kompleks dan kelas yang sama besar tidak menjamin hasil lebih baik.
-8. Model utama harus dapat memprediksi tanpa nama peserta, ID soal, nama set, difficulty, atau batas waktu CodeArrange.
-
-Protokol easy 5 menit, medium 12 menit, dan hard 15 menit tetap menjadi konteks pengambilan data. Sebagian peserta lama memang sengaja melewati easy. Kita tidak menyebutnya kegagalan recorder, membuang peserta tersebut, atau menyamakan durasi set hanya untuk menyeimbangkan jumlah baris.
-
-## 2. Masalah yang hendak diuji
-
-| Temuan batch-01 | Yang masih perlu diketahui | Pekerjaan batch-02 |
+| Syarat | Status saat revisi ini | Bukti penerimaan |
 |---|---|---|
-| Low sebelumnya hanya 249 window dan kesempatan perekamannya lebih sedikit | Bagaimana distribusi, kualitas, dan kemampuan mengenali Low pada dataset terbaru? | Audit dataset gabungan, lalu ukur ketiga kelas pada evaluasi batch-02 |
-| Model Logistic sudah sering menebak Low, tetapi banyak salah | Apakah masalahnya representasi fitur, penalti training, atau keduanya? | Ablation fitur dan normalisasi sebelum mengulang balancing |
-| Sejumlah fitur memiliki perbedaan antarrekaman yang kuat | Apakah fitur yang lebih relatif/dinamis mentransfer lebih baik? | Uji pengurangan mean geometris dan normalisasi yang tersedia sebelum prediksi |
-| Validasi gaze asli gagal pada 12/13 peserta cohort | Apakah model memerlukan gaze/eye-state atau bisa mengandalkan kelompok lain? | Pisahkan sensor/kelompok fitur tanpa membuang peserta secara otomatis |
-| Baseline ready recorder belum tentu usable menurut builder | Bagaimana menangani rasio/baseline yang tidak layak secara konsisten? | Audit baseline, kontrol tanpa rasio, serta fallback yang terdefinisi |
-| Window v1 mengeluarkan blok pendek serta seluruh fase nonpengerjaan | Bagaimana mutu HRV dan keterwakilan target pada window v2? | Pakai varian 15/25/45 yang sudah dihitung dari RR/eye mentah; evaluasi coverage dan model |
-| Riwayat exp09 dan dua pilihan fold exp12 memakai reset soal | Apakah riwayat generik yang kausal membantu tanpa konteks CodeArrange? | Uji reset berdasarkan stream, waktu, dan gap |
-| Pemilihan 154 kandidat belum memperbaiki hasil outer | Apakah bank kecil dengan kontrol lebih mudah dipilih secara stabil? | Batasi recipe dan evaluasi keseluruhan prosedur pemilihan |
-| Target v2 mengikuti fase/difficulty; urutan tugas lama tetap | Bagaimana hasil model pada target protokol terbaru? | Bekukan pemetaan fase dan laporkan komposisi fase tiap target; jangan mengganti label berdasarkan prediksi |
+| Builder dan integritas dataset diperbaiki | Selesai untuk sumber yang tersedia | Manifest v2, tes builder, validasi sensor/label/subset/checksum |
+| Pengambilan tambahan selesai dan tergabung | Belum selesai | Daftar sesi tambahan yang benar-benar ada dan hash sumbernya masuk manifest hasil rebuild |
+| Proporsi kelas setelah penambahan ditinjau dan disetujui tim | Belum selesai | Jumlah kelas, rasio terbesar/terkecil, durasi unik, dan cakupan rekaman pada ketiga window |
+| Input batch-02 dibekukan | Belum selesai | Release dataset, registry identitas, hash tiga CSV/allowlist, serta manifest split |
 
-Temuan tersebut tidak menetapkan satu penyebab tunggal. Batch-02 menguji perbaikan yang terarah; tidak menjanjikan angka accuracy tertentu.
+Simpan keputusan tersebut dalam `registry/dataset_release.json`: status setiap gate, daftar sesi tambahan, tanggal penerimaan, hash manifest/CSV/allowlist, distribusi aktual, dan persetujuan penanggung jawab data. Default gate tambahan, proporsi, dan pembekuan adalah pending; notebook full harus menolak gate yang belum approved.
 
-## 3. Urutan pekerjaan dan syarat melanjutkan
+Peninjauan proporsi tidak mensyaratkan rasio persis 1:1:1 dan tidak boleh dilakukan dengan membuang data layak dari dataset utama. Penambahan yang direncanakan mencakup easy dan, bila tersedia, medium. Catat hasil pengambilan aktual; jangan menganggap seluruh data baru otomatis Low atau menjanjikan jumlah peserta tertentu. Resampling training merupakan eksperimen terpisah setelah gate ini selesai.
 
-| Tahap | Pekerjaan | Syarat melanjutkan |
-|---|---|---|
-| A | Arsip v1 sudah dibekukan; terima rekaman Low baru | Sumber, identitas lintas sesi, dan provenance lengkap |
-| B | Builder/tiga window v2 sudah siap; rebuild versi penerimaan jika sumber bertambah, lalu buat kontrak evaluasi | Tidak ada duplikasi/kebocoran; label, fase, dan kualitas lolos pemeriksaan |
-| C | Bangun baseline pada dataset terbaru | Prediksi dan metrik dapat ditelusuri; manifest fold dibekukan untuk eksperimen batch-02 |
-| D | Uji representasi sensor dan baseline | Recipe fitur serta fallback jelas; tidak menggunakan label/future test |
-| E | Uji window dan riwayat generik | Fitur benar-benar dihitung ulang; coverage dan kausalitas dilaporkan |
-| F | Uji objective/balancing dan algoritma terbatas | Preprocessing dan pencarian hanya di training |
-| G | Uji opsi lanjutan yang memenuhi syarat | Ada alasan dari inner validation dan kualitas data, bukan keinginan menambah eksperimen |
-| H | Evaluasi prosedur seleksi, refit, dan laporkan | Semua hasil utama lengkap, identitas run cocok, keterbatasan tercatat |
+Audit input, tes sintetis, dan prototipe teknis boleh dikerjakan lebih dahulu. Skornya tidak masuk hasil penelitian batch-02.
 
-Jika suatu opsi tidak memenuhi syarat, simpan status `skipped_not_eligible` beserta alasannya. Jangan membuat skor nol palsu atau mengganti metode gagal secara diam-diam. Audit dan prototipe dapat disiapkan memakai data lama, tetapi hasil utama batch-02 menunggu dataset baru yang lolos penerimaan.
+### 1.2 Acuan dataset terkini, sebelum pengambilan tambahan
 
-## 4. Tahap A–B: persiapan dataset
+| good_acceptable | Low | Medium | High | Total | Orang |
+|---|---:|---:|---:|---:|---:|
+| 15 detik / step 5 | 870 | 1.134 | 1.251 | 3.255 | 17 |
+| 25 detik / step 5 | 797 | 988 | 1.137 | 2.922 | 17 |
+| 45 detik / step 5 | 732 | 657 | 891 | 2.280 | 16 |
 
-### 4.1 Arsipkan data lama dan tetapkan versi dataset terbaru
+Angka ini bukan jumlah final batch-02. Medium merupakan kelas terkecil pada varian 45 detik; balancing tidak lagi boleh dirancang sebagai Low-only.
 
-Dataset batch-01 adalah `good_acceptable.csv` dengan 2.294 window dan SHA256:
+Sumber saat revisi ini mencakup 19 rekaman dari 18 orang. Admission v2 sekarang memakai kualitas window tanpa pembatasan daftar nama. `team_review_group` hanya metadata historis. Ambang kualitas tetap; validasi gaze asli tetap terpisah dari tier kelengkapan/clipping. Rebuild tidak memperbaiki akurasi pengukuran gaze yang gagal.
 
-`bbb4c93eca30aab6b896db887dfbb981abffe118fce385d0f9bd3d28e786247e`
+Baca [pilihan dataset](../../analysis_sessions/dataset_fusion/output/README.md) dan [laporan v2](../../analysis_sessions/dataset_fusion/output/v2_session_phase/QUALITY_REPORT.md) untuk definisi fitur, jumlah seluruh view, serta prosedur menambah sumber. Perbarui bundle aktif dengan builder `--replace`, sesuai prosedur yang sudah diuji. V1 tetap arsip.
 
-Seluruh 13 artefak output lama sudah diarsipkan byte-identik di `analysis_sessions/dataset_fusion/output/v1_active_task/`, termasuk tiga CSV, manifest, laporan, dan allowlist. Hash di atas tetap berlaku. Output aktif berada di `output/v2_session_phase/`, dengan tiga varian window dan manifest baru. Jangan menimpa arsip atau memakai nama file yang sama sebagai bukti kesamaan versi.
+## 2. Dasar revisi dan penggunaan eksperimen sebelumnya
 
-Istilah dalam rencana:
+Bukti acuan: [batch-00 lama](../batch-00/old-dataset/SUMMARY.md), [batch-00 pada sembilan dataset v2](../batch-00/new-dataset/SUMMARY.md), [batch-01 lama](../batch-01/old-dataset/DIAGNOSIS.md), serta [batch-01 v2](../batch-01/new-dataset/SUMMARY.md) dan [diagnosis lanjutannya](../batch-01/new-dataset/DIAGNOSIS.md).
 
-| Nama | Isi |
+Evaluasi batch-01 v2 menggunakan snapshot sebelum pembaruan admission terbaru: 3.011/2.711/2.118 row dan 13 orang. Hasil tersebut bukan hasil model pada tiga CSV aktif di tabel bagian 1.2. Runtime, beberapa script audit, dan sebagian artefak pendukung lama telah dibersihkan; laporan dan output yang masih tersedia menjadi catatan metode, bukan dependency runnable batch-02.
+
+| Temuan yang relevan | Keputusan batch-02 |
 |---|---|
-| D0 | Snapshot dataset lama pada window 25 detik/step 5 detik; hanya arsip, bukan kondisi training batch-02 |
-| D1 | Versi dataset v2 yang disahkan untuk training setelah Low tambahan diterima; build v2 saat ini baru memuat sumber yang sudah tersedia |
+| Macro-F1 nested v2 sebelumnya sekitar 0,314/0,328/0,355 | Buat baseline baru setelah release final; jangan memakai skor arsip sebagai baseline dataset terbaru |
+| Reset/panjang history tanpa sensor mencapai macro-F1 sekitar 0,475 pada 25 detik | Uji kebebasan fitur dari metadata; history harus berasal dari aliran sensor sebelum filter target |
+| XGBoost 25 detik: history soal/fase sekitar 0,363, history aliran sekitar 0,304 | Pertahankan uji temporal, tetapi jangan menyalin reset soal/fase yang lama |
+| Menghapus rasio baseline membantu kedua kontrol pada tiga window | Jadikan kontrol tanpa rasio wajib; jangan menghapus rasio dari CSV sumber |
+| Tahap Medium–High tetap lemah | Tinjau ketiga kelas, bukan menganggap penambahan Low menyelesaikan seluruh kesalahan |
+| Accuracy training XGBoost history sekitar 94–98%, test sekitar 34% | Uji regularisasi, representasi, learning curve, dan model sederhana sebelum menambah kapasitas |
+| Perbedaan antarrekaman dan kegagalan validasi gaze masih ada | Uji kelompok sensor dan fitur relatif/dinamis tanpa menghapus peserta dari hasil model |
 
-Jika rebuild mengubah nilai sensor/label baris lama, catat perubahan beserta alasannya sebagai versi reprocessing. Terapkan aturan builder secara konsisten pada sumber yang mendukungnya. Tidak perlu membuat kondisi training D0 atau kontrol sebelum–sesudah; catatan perubahan dipakai untuk audit dan reproduksi D1.
+Eksperimen lama boleh diulang atau dikombinasikan bila hipotesis dan implementasinya sesuai kontrak baru. Yang dipertahankan: kontrol tabular, ablation sensor, rasio baseline, seleksi fitur training-only, class weight, ROS/SMOTE, fusion, dan klasifikasi supervised bertahap. Yang tidak disalin: split row acak/blok tanpa pemisahan rekaman, imputasi sebelum split, rolling lintas sesi atau history yang direset oleh soal/fase, pemilihan dari outer leaderboard, serta anggapan Low adalah anomaly tanpa evaluasi tiga kelas end-to-end.
 
-### Status dataset v2 yang sudah tersedia
+Batch-02 mengevaluasi dataset terbaru secara mandiri. Tidak ada kewajiban melatih ulang v1, mengalahkan skor batch lama, atau melakukan eksperimen sebelum–sesudah penambahan data. Membandingkan konfigurasi di dalam batch-02 tetap wajib.
 
-Build awal memakai 19 rekaman unik dari 18 orang; view good+acceptable tetap memuat 13 orang sesuai admission kualitas yang berlaku. Ini belum termasuk pengambilan Low tambahan.
+## 3. Kontrak data dan input model
 
-| Window / step | Low | Medium | High | Total good_acceptable |
-|---|---:|---:|---:|---:|
-| 15 / 5 detik | 732 | 1.105 | 1.174 | 3.011 |
-| 25 / 5 detik | 666 | 968 | 1.077 | 2.711 |
-| 45 / 5 detik | 614 | 650 | 854 | 2.118 |
+### 3.1 Target dan pemisahan peran kolom
 
-Angka ini adalah hasil pembangunan dataset, bukan hasil model dan bukan pemilihan window terbaik. Jumlah target Low berubah karena aturan fase v2 dan panjang window. Laporan induk merinci komposisi fase, kualitas, durasi unik, dan window yang dikeluarkan. Build belum menetapkan manifest fold batch-02.
+Gunakan `cognitive_load_label` langsung, dengan urutan kelas tetap Low=0, Medium=1, High=2. Pertahankan protokol v2: active easy/practice/demo dan fase pre-task setelah kalibrasi, feedback, rating, rest, post-task/interrupted yang terlacak menjadi Low; active medium menjadi Medium; active hard menjadi High. Window berlabel harus mempunyai target tunggal sepanjang interval. Kalibrasi/tidak terlacak dan campuran target tidak menjadi row supervised.
 
-### 4.2 Satukan identitas tanpa menjadikannya fitur
+Allowlist awal tetap 26 fitur sensor. Metadata sumber tetap berada dalam CSV/registry, terpisah dari matriks predictor. Jangan membuat ulang target dari difficulty. Jangan mengubah label berdasarkan nilai HRV, prediksi, kemampuan peserta, atau asal kelompok pengambilan.
 
-Buat registry yang menghubungkan `session_id` dan folder sumber ke ID orang yang konsisten. Semua rekaman orang yang sama mendapat grup yang sama, termasuk perbedaan kapitalisasi/alias yang sudah dikonfirmasi operator.
+`all_data` dan `good_only` dipakai untuk audit/sensitivitas kualitas, bukan otomatis memperluas sembilan jalur training. Eksperimen utama menggunakan ketiga good_acceptable final.
 
-Kode [participant_group](../../analysis_sessions/session_inventory.py) saat ini terutama memakai nama folder, menghapus akhiran Copy, dan menangani pengulangan Ramadhan secara khusus. Aturan tersebut belum menjadi pemetaan umum untuk sesi easy tambahan. Nama seperti `Nama_easy_baru` tidak boleh otomatis dianggap orang baru.
+### 3.2 Registry, identitas, dan pembekuan
 
-Jangan mengambil identitas orang hanya dari token `P01` pada nama sesi: token itu berulang pada beberapa rekaman lama. `session_id` menandai rekaman, bukan selalu identitas orang lintas sesi. Pemetaan memerlukan daftar operator, bukan dugaan berdasarkan kemiripan sensor.
+Buat registry sesi dengan session ID, ID orang lintas sesi yang dikonfirmasi operator, folder sumber, asal gelombang pengambilan, perangkat, dan baseline. Beberapa sesi orang yang sama tetap satu grup, termasuk peserta yang kembali. Token P01 dalam session ID bukan ID orang yang unik.
 
-Registry juga mencatat asal pengambilan lama/tambahan, perangkat, kondisi baseline, dan status tugas yang dikerjakan. Informasi ini untuk audit/evaluasi, bukan masuk `X`. Status anggota tim tidak membuktikan tingkat kemampuan tertentu; pengalaman atau keterbiasaan terhadap soal hanya dicatat jika informasinya tersedia.
+Gunakan [inventory sumber](../../analysis_sessions/session_inventory.py), lalu lengkapi alias yang dikonfirmasi untuk sesi tambahan. Jangan menebak identitas dari kemiripan sensor. Tidak adanya Low/Medium/High pada seseorang bukan alasan membuangnya.
 
-### 4.3 Pemeriksaan rekaman baru
+Sesudah gate lulus, salin input yang dipakai ke snapshot run batch-02: tiga CSV, allowlist, manifest, registry, dan hash sumber turunan. Ini snapshot input pemodelan, bukan folder versi dataset publik tambahan. Builder boleh memperbarui path v2 aktif pada kesempatan berikutnya; run yang sudah dimulai harus membaca snapshot yang dibekukan. Perubahan hash menolak resume atau menghasilkan run ID baru.
 
-- Ada eye tracking, RR mentah, HRV, ledger tugas, serta metadata kalibrasi/baseline yang diperlukan.
-- Timestamp dapat disejajarkan pada waktu absolut; origin elapsed yang berbeda tidak disamakan secara buta.
-- Terapkan target `cognitive_load_label` v2: active easy/practice/demo → Low; active medium → Medium; active hard → High. Pre-task setelah kedua kalibrasi selesai, feedback, rating, jeda, dan post-task → Low, termasuk setelah medium/hard. Interval setelah event penutupan set tanpa akhir penelitian memiliki konteks `interrupted` dan target Low. Baseline/kalibrasi dan interval tidak terlacak dikeluarkan.
-- Seluruh rentang window harus memiliki target yang sama. Campuran fase easy + rating boleh Low; medium + rating dikeluarkan. Gunakan `window_phase_mix` dan `window_label_mix`, bukan majority vote.
-- Identitas sesi antarfile cocok dan `window_id` unik. Salinan folder tidak menambah jumlah pengukuran.
-- Baseline diperiksa berdasarkan status, coverage, durasi, dan kondisi pengambilannya. Jangan menyamakan baseline HRV yang bersamaan dengan kalibrasi mata dengan istirahat terpisah tanpa catatan.
-- Gaze diperiksa terpisah dari kelengkapan frame. Gagal gaze tidak otomatis membatalkan HRV atau semua fitur mata nonspasial.
-- Gunakan standar penerimaan yang sama pada rekaman lama/baru. Jika aturan berubah, dokumentasikan versinya dan periksa penerapannya pada seluruh sumber, tanpa eksperimen skor sebelum–sesudah.
-- Laporkan jumlah target yang lolos, durasi unik, komposisi fase, dan jumlah rekaman untuk tiap varian window. Jumlah baris atau tercapainya rasio 1:1:1 bukan satu-satunya ukuran kecukupan.
+### 3.3 Aliran sensor sebelum filter target
 
-Data Low tambahan dari tim dapat dipakai. Risiko yang perlu diaudit adalah keterikatan label dengan asal pengambilan: sebagian besar label Low baru berasal dari sesi/perangkat/kelompok baru, sedangkan Medium/High berasal dari rekaman lama. Menyimpan asal data di luar `X` tidak otomatis menghilangkan perbedaan nilai sensor akibat kondisi tersebut.
+CSV supervised saja tidak cukup untuk membuat history yang bebas dari pola filtering label. Sediakan cache turunan seluruh grid sensor dari RR/eye mentah untuk setiap sesi dan panjang window:
 
-### 4.4 Pembaruan CSV dan skema
+- Satu row per endpoint 5 detik, termasuk endpoint yang tidak mempunyai label tunggal.
+- Kolom input: kunci stream, timestamp/available_at, fitur sensor yang sama, serta validitas sensor yang diperlukan untuk masking nilai.
+- Label dan event CodeArrange disimpan di sidecar untuk joining supervised dan audit; keduanya tidak boleh mengatur pembentukan fitur.
+- Rekonstruksi memakai rumus, origin, endpoint, paket, gap/recovery, serta masking sensor builder v2. Fitur pada window yang sama harus cocok dengan CSV published dalam toleransi numerik builder.
+- Buat cache sekali per hash sumber/konfigurasi/kode. Sumber mentah tidak diubah, dan cache tidak ditulis ke CSV dataset utama.
 
-Skema v2 sudah memakai `cognitive_load_label` sebagai satu-satunya target. `difficulty_level`, fase, set, soal, identitas, dan waktu tetap metadata sumber, bukan predictor. Rating setelah hard berlabel Low: jangan membentuk ulang y dari difficulty atau membuang baris karena target berbeda dari kesulitan set. Allowlist tetap 26 fitur sensor. `baseline_recorder_ready`, `baseline_usable`, dan `baseline_rejection_reason` memisahkan status recorder dari kelayakan rasio.
+Lapisan feature builder menerima stream sensor, bukan dataframe yang sudah disaring menurut label. Setelah fitur statis/temporal selesai, gabungkan label dan pilih endpoint eligible untuk fitting/evaluasi. Gap karena target campuran tidak boleh disamakan dengan sensor terputus.
 
-Bangun versi baru `all_data`, `good_acceptable`, dan `good_only` secara konsisten bila memakai builder tiga view yang sama. Fokus training utama tetap good+acceptable. View good-only tidak dianggap validasi spasial gaze dan tidak otomatis menggantikan cohort test.
+Jika RR/eye mentah atau cache seluruh grid yang terverifikasi tidak tersedia, jalur history/sequence berstatus `skipped_missing_stream`; jangan menggantinya dengan rolling atas CSV filtered. Jalur stateless tetap dapat diuji, tetapi paket batch final harus mencatat cabang yang belum dievaluasi.
 
-Rekaman baru harus ditinjau dalam kebijakan admission, karena builder lama memakai daftar nama peserta. Jangan memasukkan anggota tim ke kelompok kualitas tertentu hanya berdasarkan perannya, atau membiarkan rekaman valid tidak ikut D1 hanya karena namanya belum terdaftar. Perubahan admission harus terdokumentasi dan tidak ditentukan dari skor model.
+## 4. Evaluasi, pemilihan, dan perbandingan window
 
-Pertahankan metadata asal dalam registry/sidecar atau kolom metadata baru yang terdokumentasi. Metadata tambahan bukan fitur default. Tidak ada interpolasi sensor atau Low sintetis pada tahap penerimaan dataset.
+Istilah yang dipakai pada seluruh eksperimen:
 
-**Sudah tersedia:** arsip D0, builder v2, tiga varian CSV, dictionary/allowlist, hash sumber/hasil, laporan distribusi/kualitas/durasi unik, serta audit replay HRV. Lihat [laporan v2](../../analysis_sessions/dataset_fusion/output/v2_session_phase/QUALITY_REPORT.md).
+| Istilah | Arti operasional |
+|---|---|
+| Recipe | Satu konfigurasi lengkap: fitur, transformasi, history, balancing, estimator, parameter, dan aturan prediksi |
+| Outer fold | Satu putaran evaluasi: seluruh rekaman satu orang menjadi test, orang lain menjadi training |
+| Inner fold | Pemisahan grup di dalam outer training untuk memilih recipe tanpa membaca outer test |
+| OOF | Prediksi pada row yang tidak dipakai melatih model pembuat prediksi tersebut; pooled outer OOF menggabungkan hasil seluruh outer fold |
+| Fitting partition | Bagian data yang benar-benar dipakai mempelajari statistik preprocessing atau bobot model pada tahap terkait |
 
-**Penerimaan yang masih diperlukan:** registry lintas sesi dan review rekaman tambahan, versi D1 gabungan, audit ulang sumber/hasil, serta manifest evaluasi. Full training dihentikan jika identitas tidak jelas, label tidak dapat ditelusuri, atau sumber baru belum lengkap.
+### 4.1 Pemisahan grup
 
-## 5. Kontrak evaluasi
+Evaluasi utama memakai leave-one-participant-out pada seluruh orang unik release final. Semua sesi orang held-out dikeluarkan dari fitting. Manifest grup induk merupakan union grup dari ketiga window; setiap window menyimpan daftar train/test window ID-nya sendiri.
 
-### 5.1 Evaluasi utama: seluruh dataset terbaru
+Outer fold dengan nol row test pada suatu window diberi `no_test_support`, tidak diberi skor nol dan tidak dihitung sebagai fold teruji. Orang tersebut tetap tercatat pada manifest dan dapat mempunyai support di window lain. Pool OOF tiap window harus mencakup setiap row eligible tepat sekali.
 
-Gunakan leave-one-participant-out (LOPO) pada seluruh D1. Semua orang yang lolos penerimaan, termasuk anggota tim baru, bergiliran menjadi grup test. Seluruh sesi orang test dikeluarkan dari training, baik rekaman lama maupun easy tambahan. Tidak ada grup test khusus dari cohort lama atau jalur evaluasi sekunder untuk data baru.
+Pada outer training, gunakan StratifiedGroupKFold tiga fold, shuffle=True, seed=42. Bekukan split dan pakai untuk semua kandidat pada window/outer fold yang sama. Setiap fitting partition wajib mempunyai tiga kelas. Jika tiga fold tidak feasible, coba dua fold dengan seed yang sama; jika tetap tidak feasible, hentikan full run dan perbaiki kontrak data. Jangan menggantinya dengan split row acak.
 
-Contoh: saat orang A menjadi test, seluruh window D1 milik A menjadi test dan window orang lain menjadi training. Jika A mempunyai dua sesi, keduanya tetap satu grup. Identitas hanya menentukan pemisahan; classifier menerima fitur sensor.
+Kelas absent pada validation/test bukan kegagalan: simpan support dan hitung skor seleksi dari pooled inner OOF dengan tiga label tetap. Median/scaler/seleksi fitur/sampler/kalibrasi/early stopping hanya memakai training yang sesuai.
 
-Bekukan manifest outer setelah D1 dan registry disahkan. Jumlah outer fold mengikuti jumlah orang unik pada D1, bukan angka 13 dari batch-01 atau jumlah folder sesi. Gunakan manifest yang sama untuk seluruh konfigurasi batch-02. Untuk eksperimen window, pertahankan grup yang sama dan cocokkan waktu prediksi sesuai bagian Exp04.
+### 4.2 Metrik
 
-Pemisahan grup mengikuti prinsip [grouped cross-validation](https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators-for-grouped-data). Seluruh D1 berpartisipasi dalam evaluasi bergilir; kita tidak melatih pada seluruh D1 lalu mengujinya pada baris yang sama.
+Utama: pooled OOF macro-F1 tiga kelas. Wajib melengkapi dengan accuracy, balanced accuracy, precision/recall/F1/support tiap kelas, confusion matrix, log loss bila probabilitas tersedia, serta hasil per stream/orang untuk audit.
 
-### 5.2 Inner validation untuk pemilihan konfigurasi
+Tampilkan metrik pada kelas yang memiliki support; metrik per kelas absent bernilai kosong. Bedakan macro-F1 fixed-three-class pooled dari rata-rata fold/per-orang dengan kelas yang hadir.
 
-Pada training setiap outer fold, buat tiga inner fold berbasis grup. Gunakan seluruh grup training yang tersedia, tanpa membedakan asal lama atau baru. Upayakan distribusi kelas melalui stratified group split dan simpan manifest yang sama untuk semua kandidat pada outer fold tersebut. Semua sesi orang validasi harus keluar dari fitting inner.
+Laporkan train versus test, distribusi prediksi, dan kesalahan Medium–High serta Low–High. Untuk Low, tambahkan recall pada pengerjaan saja, campuran pengerjaan/nonpengerjaan, dan nonpengerjaan saja, berdasarkan segmen berdurasi positif. Pengelompokan ini hanya audit, bukan predictor atau perubahan label.
 
-Periksa cakupan kelas dan kelayakan split sebelum training. Setiap training partition harus memuat tiga kelas. Catat kelas yang tidak ada pada validation partition dan gunakan macro-F1 OOF inner gabungan dengan urutan tiga label tetap sebagai skor seleksi, bukan rata-rata skor fold dengan definisi kelas berbeda. Jika tiga inner fold tidak feasible, revisi jumlah fold secara terdokumentasi sebelum full run; jangan menggantinya dengan split baris acak.
+Bandingkan prediksi dua recipe pada test yang sama. Gunakan paired bootstrap 2.000 kali atas grup orang, seed=42, untuk interval 95% dan selisih skor. Bootstrap ini bersyarat pada prediksi OOF yang tersedia; bukan pengganti pengulangan pengambilan atau validasi eksternal.
 
-Semua fit imputer, scaler, pemilih fitur, sampler, threshold, dan parameter dilakukan pada training inner yang bersangkutan. Outer test hanya untuk evaluasi setelah konfigurasi dipilih.
+### 4.3 Dua laporan window yang tidak boleh dicampur
 
-### 5.3 Cakupan kelas dan arti evaluasi mandiri
+| Laporan | Endpoint dan training | Penggunaan |
+|---|---|---|
+| Native support | Seluruh row good_acceptable masing-masing window; training juga sesuai window | Menilai classifier pada cakupan dataset window tersebut |
+| Paired window | Intersection endpoint absolut yang eligible pada 15/25/45 detik dan labelnya sama | Membandingkan window pada target/test yang sama |
 
-Test orang yang hanya memiliki Low menguji pengenalan Low pada rekaman tersebut, bukan kemampuan tiga kelas lengkap pada orang itu. Laporkan support dan metrik kelas yang tersedia. Evaluasi utama menggabungkan prediksi OOF seluruh D1 untuk menilai ketiga kelas; laporan per orang merupakan audit pelengkap.
+Intersection memakai pasangan session ID dan window_end yang dinormalisasi UTC, bukan window_id yang mencakup panjang interval. Bentuk dari metadata sebelum membaca skor. Simpan jumlah orang, kelas, durasi, dan proporsi retained terhadap masing-masing native support.
 
-Mandiri berarti batch-02 memakai dataset, baseline, manifest, dan hasilnya sendiri. Diagnosis batch-01 boleh menjadi dasar hipotesis, tetapi skor batch-00/batch-01 tidak menjadi pembanding atau syarat keberhasilan. Tidak ada kesimpulan kuantitatif tentang manfaat penambahan Low sebelum–sesudah karena eksperimen tersebut tidak dijalankan.
+Pada exp04, jalankan dua kontrol fixed dengan train dan test sama-sama dibatasi intersection untuk mengisolasi perubahan representasi. Pada seleksi akhir lintas window, training boleh memakai seluruh row eligible kandidat, sedangkan validation/test tetap intersection; tandai bahwa kuantitas training ikut berbeda.
 
-### 5.4 Metrik dan ketidakpastian
+**Jangan menghitung window yang dikeluarkan karena campuran target sebagai kesalahan model atau sensor unavailable.** Itu kehilangan label evaluasi yang tunggal, bukan bukti sensor tidak mampu menghasilkan fitur. Ukur physical feature availability dari stream lengkap menggunakan kualitas sensor saja. Jangan memakai label/difficulty untuk mengatur abstention saat inference.
 
-Metrik utama adalah macro-F1 OOF gabungan tiga kelas. Pelengkap wajib: accuracy, balanced accuracy, precision/recall/F1/support per kelas, confusion matrix, prediksi OOF, coverage, dan hasil per rekaman/orang untuk audit.
+Simpan sensor coverage dan labelable coverage secara terpisah, per kelas bila label acuan tersedia. Evaluasi prediksi pada transisi memakai target acuan 25 detik hanya boleh menjadi analisis tambahan yang diberi nama anchored-target, bukan dicampur dengan skor native 45 detik.
 
-Per-kelas yang tidak mempunyai support dilaporkan tidak tersedia. Macro-F1 gabungan tiga kelas berbeda dari rata-rata macro-F1 per orang dengan kelas yang hadir. Tampilkan nama agregasi secara eksplisit.
+### 4.4 Aturan seleksi dan penyampaian hasil
 
-Untuk perbandingan konfigurasi di dalam batch-02, resample grup orang yang sama dari dua set prediksi OOF dan hitung selisih metrik, bukan resample window independen. Interval bootstrap atas prediksi yang sudah terbentuk bersifat deskriptif/bersyarat dan tidak mencakup semua ketidakpastian pemilihan serta fitting ulang model. Jangan mengklaim signifikansi hanya karena satu skor lebih tinggi.
+Seluruh pilihan berbasis metrik terjadi di inner validation, termasuk fitur, window, history, sampler, parameter, fusion, dan jenis estimator. Exp01–exp13 memberi hasil keluarga/ablation; baris outer tertinggi di antaranya bersifat eksploratif. Exp14 menilai prosedur pemilihan recipe lengkap.
 
-Ini evaluasi internal pada dataset terbaru, bukan test tiga kelas eksternal yang baru. Sebagian rekaman sudah dianalisis sebelumnya; perubahan rencana tidak membuatnya menjadi data yang belum pernah dilihat. Pilihan final membutuhkan validasi lebih lanjut sebelum klaim umum di IDE.
+Bekukan registry kandidat dan aturan pencarian sebelum membuka outer results. Bila registry diubah setelah hasil outer dilihat, beri protocol ID baru dan sebut eksplorasi lanjutan, bukan evaluasi final yang belum pernah dipakai memilih.
 
-## 6. Peta eksperimen
+Primary rank memakai pooled inner macro-F1. Recipe dalam 0,005 dari skor inner terbaik menjadi tie set operasional; pilih tanpa baseline wajib, lalu jumlah fitur lebih sedikit, tanpa history/riwayat lebih pendek, jumlah estimator lebih sedikit, lalu recipe ID alfabetis. Ambang 0,005 adalah aturan kesederhanaan yang ditetapkan sebelum run, bukan uji signifikansi.
 
-Nama exp berikut merupakan pemetaan keluarga eksperimen untuk notebook terpisah. Belum ada notebook yang diimplementasikan. Exp01–exp07 merupakan inti dengan cabang bersyarat; exp08–exp09 opsional; exp10 merupakan seleksi/validasi akhir, bukan kewajiban menambah algoritma.
+Panjang konteks pada tie-break mencakup centering N3 (60 detik) dan GRU (30 detik), bukan hanya kolom history tabular. Pada seleksi lintas window, bila seluruh kriteria termasuk recipe ID sama, pilih window lebih pendek. Aturan ini dibekukan sebelum hasil batch-02 tersedia.
 
-| Eksperimen | Pertanyaan | Perlakuan utama | Pembanding yang dijaga |
+## 5. Preprocessing dan representasi
+
+### 5.1 Kontrol bersama
+
+- Fit seluruh transformasi yang belajar statistik hanya di fitting partition. Jangan menghitung mean, quantile, PCA, MI, atau korelasi dari gabungan train dan test.
+- Drop kolom seluruhnya kosong dan kolom konstan menurut training; simpan nama/keputusannya. Jangan menjatuhkan row test untuk menyembunyikan missing baseline.
+- Jalur median mengisi nilai dari median training; StandardScaler memakai statistik training. RobustScaler memakai median/IQR training, quantile_range=(25,75).
+- Nilai sensor sumber tetap NaN; nol tidak menggantikan pengukuran yang tidak tersedia. Jika tidak ada fitur tersisa, kandidat gagal eksplisit.
+- Kontrol native-NaN pada XGBoost/HGB/CatBoost menjadi recipe terpisah; fitur dan test tetap sama. Jangan sekaligus mengubah sensor dan missing handler tanpa kontrol.
+- Tidak ada outlier removal berdasarkan seluruh dataset. Winsorization hanya eksperimen training-derived: quantile 1%/99% training, satu recipe kontrol, tanpa mengubah CSV.
+- Missing indicator hanya eksperimen terpisah, dibuat dari fitur sensor yang NaN, bukan metadata kualitas/aktivitas. Simpan kontrol missing-only untuk mengetahui apakah prediksi bertumpu pada pola ketersediaan.
+
+### 5.2 Kelompok fitur
+
+| Kode | Definisi |
+|---|---|
+| F0 | Semua 26 fitur pada allowlist |
+| F1 | F0 tanpa blink_count dan eye_state_other_ratio; konstanta training ditangani terpisah |
+| F2 | F1 tanpa seluruh fitur eye berakhiran _mean; menguji statistik variasi yang lebih sedikit membawa offset geometris |
+| F3 | F1 tanpa gaze_x/y dan seluruh proporsi eye_state |
+| F4 | RMSSD, SDNN, rasio baseline, blink rate, mean/std EAR kiri/kanan |
+| F5 | Tiga fitur HRV saja |
+| F6 | Eye F1 saja, tanpa HRV |
+| F7 | F1 tanpa keempat fitur iris |
+
+Rasio baseline yang tidak tersedia tetap kosong. Untuk setiap kelompok yang memuat HRV, buat pasangan dengan/tanpa rmssd_baseline_ratio; eye-only tidak diduplikasi. Simpan daftar fitur efektif per fold. iris_size_delta_std tidak dibuang otomatis hanya karena keputusan pada dataset lama; konstansi/seleksi diperiksa dari training terbaru.
+
+Pilihan normalisasi:
+
+- N0: nilai sumber.
+- N1: tanpa rasio baseline, tetap RMSSD/SDNN absolut.
+- N2: log1p pada RMSSD/SDNN dan log rasio positif yang baseline-nya valid. Nilai rasio nol pada CSV sumber tetap nol; hanya fitur turunan log yang menjadi NaN karena log(0) tidak terdefinisi. Rasio yang memang tidak valid tetap NaN.
+- N3: centering kausal pada mean geometris eye memakai median trailing 60 detik sebelum endpoint sekarang, minimal tiga nilai valid. Belum cukup riwayat menghasilkan NaN pada transformasi relatif; fitur absolut tetap tersedia.
+
+N3 menggunakan aliran sebelum label mask dan hanya masa lalu. Jangan membentuk baseline dari seluruh sesi test. Baseline HRV yang tercatat bersamaan dengan kalibrasi eye tidak dinyatakan sebagai resting baseline terpisah. Baseline eye dari kalibrasi hanya boleh ditambahkan pada revisi registry bila sumber menyediakan statistik dan timestamp yang konsisten; tidak direka dari data test.
+
+## 6. Peta eksperimen dan urutan
+
+Nomor berikut adalah keluarga notebook, bukan kewajiban menjalankan semua kombinasi kartesian. Exp00–exp10 dan exp14 merupakan inti. Exp11 dimulai dari kontrol MLP kecil bila gate dukungan data dan stopping lolos; FT-Transformer, exp12, dan exp13 juga mengikuti gate teknis yang ditetapkan sebelum run. Setiap cabang neural yang eligible dibandingkan dengan MLP kecil pada input yang sama. Tidak ada training pada sembilan view sekaligus.
+
+| ID | Fokus | Perlakuan utama | Window awal |
 |---|---|---|---|
-| exp01 | Bagaimana kemampuan awal pada dataset terbaru? | Dummy, Logistic fixed, XGBoost fixed; tanpa balancing/riwayat | Seluruh D1, fitur sensor, window 25/5, dan manifest batch-02 yang sama |
-| exp02 | Kelompok fitur mana yang mentransfer lebih baik? | Original/clean, dinamis, nonspasial, sensor inti, HRV-only, eye-only | Dataset D1, window 25/5, model referensi tetap |
-| exp03 | Apakah baseline/normalisasi relatif membantu? | Absolut, tanpa rasio, relatif pada baseline valid | Baris test tetap; fallback terdefinisi |
-| exp04 | Apakah window lain memberi kompromi lebih baik? | 15/25/45 detik dari RR/eye mentah; kontrol step 5 | Endpoint waktu D1, mutu sensor, dan coverage eksplisit |
-| exp05 | Apakah riwayat sensor generik membantu? | Tanpa riwayat, riwayat kausal 15/30 detik | Tidak memakai batas soal/label saat inference |
-| exp06 | Apakah objective/balancing membantu pada data baru? | Tanpa balancing, class weight, ROS, SMOTE bersyarat | Test asli dan recipe sensor yang sama |
-| exp07 | Algoritma mana yang paling sesuai setelah representasi dibenahi? | Logistic, SVM, XGBoost, kandidat baru HistGradientBoosting | Bank parameter kecil, inner group validation |
-| exp08 | Apakah fusi prediksi memperbaiki gabungan fitur? | Early fusion vs late fusion sensor | Cabang sensor dan kalibrasi hanya dari training |
-| exp09 | Apakah memanfaatkan urutan label membantu? | Multiclass langsung vs ordinal supervised | Label/fitur/test sama; bukan novelty detection |
-| exp10 | Bagaimana keseluruhan prosedur memilih model bekerja? | Seleksi recipe terbatas, audit, refit, uji inference | Outer test tidak memilih recipe atau seed |
+| exp00 | Penerimaan dan kontrak | Gate dataset, registry, stream, split, invariant, budget | Ketiganya |
+| exp01 | Baseline baru | Dummy, Logistic, XGBoost fixed, Logistic tanpa rasio | Ketiganya |
+| exp02 | Kontribusi sensor | F0–F7 dan pasangan rasio; dua model fixed | 25; konfirmasi kandidat di exp14 untuk 15/45 |
+| exp03 | Normalisasi/missing | N0–N3, Standard/Robust, median/native NaN, missing indicator | 25 |
+| exp04 | Panjang window dan redundansi | Native/paired endpoints, matched training, step 5 versus thinning 10 | Ketiganya |
+| exp05 | History generik | Tanpa history, trailing 15/30 detik; sebelum mask label | Ketiganya |
+| exp06 | Seleksi fitur | Tanpa seleksi, corr 0,95, MI top-8/top-12, PCA 95% | 25 |
+| exp07 | Imbalance/objective | None, class weight, ROS, SMOTE seluruh kelas minoritas; kontrol bobot rekaman | 25 |
+| exp08 | Model/regularisasi | Logistic, SVM, RF, Extra Trees, XGBoost, HGB, CatBoost | 25; konfirmasi di exp14 |
+| exp09 | Fusion dan ensemble kecil | Early/late fusion sensor dan soft vote lintas estimator | 25 |
+| exp10 | Struktur target | Multiclass, ordinal supervised, hierarchy supervised end-to-end | 25 |
+| exp11 | Neural tabular | MLP kecil dan FT-Transformer kecil | 25 |
+| exp12 | Foundation model tabular | TabPFN-2 lokal, checkpoint dibekukan | 25, bersyarat |
+| exp13 | Urutan sensor | GRU kecil dari stream lengkap, tanpa reset soal/fase | 25, bersyarat |
+| exp14 | Seleksi akhir, sensitivitas, refit | Nested recipe per-window dan pemilihan window pada intersection | Ketiganya |
 
-Pada seluruh tahap, kata “fitur/recipe terpilih” berarti pemilihan di training inner pada masing-masing outer fold. Jangan mengambil pemenang global dari outer leaderboard exp02, lalu menganggap evaluasi exp03–exp10 atas pemenang itu bebas bias.
+Exp02–exp13 pada 25 detik mengisolasi hipotesis dengan jumlah run terkendali. Pilihan fitur/algoritma untuk 15/45 tidak boleh disalin dari pemenang outer 25 detik. Exp14 menjalankan aturan screening inner yang sama pada setiap window; reuse cache hanya bila input/split/spec identik.
 
-## 7. Rincian eksperimen inti
+### 6.1 Exp01: baseline yang harus tersedia
 
-### Exp01: baseline mandiri pada dataset terbaru
+Kontrol: Dummy most_frequent, Logistic L2 C=1, XGBoost fixed, serta Logistic F1 tanpa rasio. Jalur utama median-training dan StandardScaler untuk Logistic; tanpa balancing atau history. F0 menjadi baseline semua sensor.
 
-Gunakan Dummy majority-training, Logistic C=1 dengan StandardScaler, dan XGBoost fixed sebagai kontrol pada D1. Logistic/XGBoost tidak memakai balancing atau riwayat. Gunakan allowlist sensor original dan window 25 detik/step 5 detik; perbandingan clean ditempatkan di exp02.
+XGBoost fixed: multiclass softprob, 300 tree, max_depth=3, learning_rate=0,05, min_child_weight=5, reg_lambda=5, reg_alpha=0, subsample=0,8, colsample_bytree=0,8, tree_method=hist, seed=42, dua thread per fit. Kontrol ini baru untuk batch-02; tidak diklaim identik dengan parameter arsip.
 
-Tujuannya memverifikasi pipeline, mengenali pola kesalahan ketiga kelas, dan menyediakan baseline batch-02 untuk eksperimen berikutnya. Semua rekaman D1 mengikuti evaluasi bagian 5. Tidak ada cabang dataset lama, tambahan tim saja, atau tambahan peserta kembali saja.
+Logistic: solver lbfgs, max_iter=5000, tol=1e-4. Ketidak-konvergenan ditandai sebagai kegagalan kandidat, bukan warning yang diabaikan. Dummy memperoleh kelas mayoritas dari training, bukan dipaksa High.
 
-Dummy memilih kelas terbanyak pada training tiap fold, bukan dipaksa selalu High. Distribusi training menentukan pilihan tersebut.
+### 6.2 Exp02–exp03: kontribusi sensor dan representasi
 
-Bekukan environment, parameter fixed, serta manifest batch-02. Tidak perlu menjalankan ulang kontrol D0 atau mencocokkan hasil dengan skor arsip batch-01.
+Gunakan Logistic dan XGBoost fixed saat mengubah fitur. Laporkan apakah penambahan eye membantu HRV, dan sebaliknya. Pisahkan penghapusan iris, gaze/state, serta mean geometris. Gagal validasi gaze tidak otomatis menghapus peserta atau semua fitur eye.
 
-**Keluaran:** macro-F1, accuracy, precision/recall/F1 ketiga kelas, confusion matrix, coverage, dan prediksi OOF D1. Model sensor harus dibandingkan dengan Dummy pada dataset yang sama; banyaknya tebakan Low tidak cukup tanpa melihat ketepatannya.
+Normalisasi, native missing, dan missing indicator dibandingkan dengan pasangan kontrol yang hanya berbeda satu perlakuan. Missing-only bukan kandidat classifier sensor final. Jika informasi penting berasal dari mask, tampilkan hasilnya dan periksa distribusinya menurut fase/gelombang; jangan menyebutnya perbaikan fisiologis.
 
-### Exp02: representasi fitur dan kontribusi sensor
+### 6.3 Exp04: window dan kepadatan row
 
-Mulai dari definisi fitur sensor batch-01. Jangan memilih fitur berdasarkan korelasi seluruh dataset, identitas orang test, atau pemenang outer test.
+Konsumsi tiga CSV yang sudah diverifikasi; jangan merata-ratakan RMSSD lama atau mengganti kolom window_seconds. Terapkan kontrak native/paired bagian 4.3.
 
-| Kode | Definisi awal |
+Kontrol step 10 memakai subset endpoint setiap 10 detik dari origin grid sensor, bukan mengambil setiap row kedua setelah filter. Bandingkan pada test step 5 yang sama untuk menguji pengurangan redundansi training. Jika ingin test step 10 juga, laporkan terpisah sebagai perubahan frekuensi prediksi.
+
+Tambahkan sensitivitas test tanpa overlap dengan pemilihan interval greedy per sesi menggunakan start/end dan tanpa membaca y/prediksi. Laporkan jumlah data yang tersisa; subset ini tidak disebut sampel independen sepenuhnya.
+
+### 6.4 Exp05: history sebelum label mask
+
+Fitur temporal dasar: RMSSD, SDNN, blink rate, EAR kiri/kanan, dan rasio baseline bila recipe memakainya. Untuk horizon 15 atau 30 detik, tambahkan mean, standar deviasi sampel, dan delta terhadap endpoint sebelumnya dari feature yang sama. Jendela trailing memakai endpoint dalam (t-horizon,t], hanya nilai yang sudah tersedia pada t. Minimal satu nilai untuk mean, dua untuk std, dan pasangan valid berjarak maksimal 7,5 detik untuk delta; selain itu NaN.
+
+Reset stream hanya pada rekaman baru atau gap endpoint >7,5 detik. Timestamp tidak meningkat merupakan error input. Validitas/missing diterapkan per fitur; mean lama tidak boleh bertahan melewati horizon. Jangan reset karena soal, submit, rating, difficulty, mixed-label, atau row supervised dibuang. Jangan memakai panjang history/reset flag sebagai predictor default.
+
+Uji wajib: prefix invariance, metadata invariance, mask invariance, batch-versus-streaming parity, dan train/test stream isolation. Mengubah atau menghapus label/annotation tidak boleh mengubah fitur pada sensor/endpoint yang sama. Menambahkan data masa depan tidak mengubah fitur/prediksi masa lalu. Cache transformasi harus memasukkan hash nilai sensor, waktu, stream, serta spec; jangan hanya mengandalkan window_id atau atribut dataframe yang dapat terbawa ke salinan dengan isi berbeda.
+
+### 6.5 Exp06: seleksi fitur training-only
+
+Corr 0,95 menghapus fitur belakangan dalam urutan allowlist jika korelasi Pearson absolut dengan fitur yang sudah dipertahankan melewati 0,95. MI memakai random_state=42, n_neighbors=3, top-8 atau top-12, dibatasi jumlah fitur tersedia. PCA mempertahankan 95% variance training, whiten=False, sesudah imputasi dan scaling.
+
+Simpan fitur/komponen serta stabilitas pilihan antar-fold. Permutation importance dikerjakan sebagai analisis setelah prediksi tersimpan; tidak memakai outer importance untuk memilih fitur lalu menguji ulang pada outer yang sama. Tidak ada keharusan menghapus fitur hanya karena ablation lama tidak menang.
+
+### 6.6 Exp07: balancing yang mengikuti data terbaru
+
+Kontrol tanpa balancing wajib. Class weight memakai n_train/(3*n_class_train), dihitung ulang pada fitting partition dan dinormalisasi rata-rata satu. Untuk estimator tanpa class_weight langsung, gunakan sample_weight; jangan sekaligus menerapkan weight dan resampling pada kontrol awal.
+
+ROS dan SMOTE menambah setiap kelas di bawah jumlah kelas training terbesar sampai jumlah terbesar tersebut. Kelas yang sudah sama tidak berubah. Ini berlaku untuk Low, Medium, atau High; bukan Low-only. Jika tidak ada penambahan, simpan no-op dan deduplikasi.
+
+SMOTE memakai k=3, hanya jika setiap kelas yang akan disintesis memiliki lebih dari tiga sampel asli; jika tidak, kandidat invalid, bukan diam-diam diganti ROS. Tetangga dibentuk setelah median/scaling training, tanpa metadata. Jangan memakai SMOTE pada tensor sequence. Sampel sintetis hanya ada selama fitting; tidak ditulis sebagai rekaman sensor atau diberi identitas orang baru.
+
+Tambahkan kontrol pembobotan rekaman: weight setiap row = 1/jumlah row training pada sesi tersebut, lalu normalisasi rata-rata satu. Jalankan terpisah dari class weight. Tujuannya menguji dominasi rekaman panjang, bukan membuat model personal.
+
+Opsional keputusan kelas: kalikan probabilitas asli dengan salah satu vektor `[1, 1, 1]`, `[1.25, 1, 1]`, `[1, 1.25, 1]`, atau `[1, 1, 1.25]` dalam urutan Low/Medium/High, normalisasi, lalu argmax. Pilih di inner OOF saja. Catat sebagai penyesuaian keputusan, bukan probabilitas terkalibrasi baru. Jangan menyeimbangkan validation/test atau menilai recall tanpa precision dan kelas lain.
+
+### 6.7 Exp08: bank algoritma awal
+
+Parameter yang tidak ditulis mengikuti versi dependency yang dibekukan dan diekspor lengkap pada config. Semua model memakai urutan kelas tetap dan seed 42 jika tersedia.
+
+| Keluarga | Kandidat yang dibekukan |
 |---|---|
-| F0 original | Allowlist 26 fitur; kosong/konstan ditangani di training |
-| F1 clean | Hapus blink_count, iris_size_delta_std, dan eye_state_other_ratio yang redundan/konstan pada data lama; validasi kembali hubungannya pada D1 |
-| F2 dinamis | Dari clean, hapus mean EAR kiri/kanan, mean estimasi iris dan delta iris, serta mean head pitch/yaw; tetap pertahankan statistik perubahan/variasi yang tersedia |
-| F3 nonspasial | Dari clean, keluarkan gaze dan eye-state; tetap memakai HRV dan fitur mata nonspasial |
-| F4 sensor inti | HRV tiga fitur, blink rate, serta mean/std EAR kiri/kanan |
-| F5 HRV-only | RMSSD, SDNN, rasio baseline yang tersedia |
-| F6 eye-only | Fitur mata clean, tanpa HRV |
+| Logistic L2 | C=0,1 / 1 / 10; solver/max_iter seperti exp01 |
+| SVM RBF | C=0,1/1/10 dengan gamma=scale; tambahan C=1,gamma=0,1; probability=False |
+| XGBoost | Fixed exp01; depth=2,min_child_weight=10,lambda=5,lr=0,05; depth=3,min_child_weight=10,lambda=10,lr=0,10; parameter lain mengikuti fixed |
+| HGB | max_iter=300, min_samples_leaf=20, l2_regularization=1; pasangan (max_leaf_nodes,learning_rate)=(7;0,05)/(15;0,05)/(7;0,10); early_stopping=False |
+| CatBoost | iterations=300, lr=0,05, loss MultiClass, use_best_model=False, allow_writing_files=False, CPU; (depth,l2_leaf_reg)=(4,5)/(6,10) |
+| Random Forest | 300 tree, min_samples_leaf=5, max_features=0,7; max_depth=5/None; class_weight=None |
+| Extra Trees | 300 tree, min_samples_leaf=5, max_features=0,7; max_depth=5/None; class_weight=None |
 
-F2 menguji pengurangan mean geometris yang kuat berbeda antarrekaman. F3 menguji kelompok yang bergantung pada pemetaan gaze. Keduanya merupakan hipotesis, bukan penghapusan fitur permanen karena hasil audit deskriptif. Iris tidak disebut diameter pupil.
+SVM memakai decision score pada pelaporan; jangan menamai nilainya probabilitas atau mengaktifkan CV probabilitas row acak tersembunyi. Bila probabilitas SVM diperlukan, gunakan sigmoid calibration dengan split grup di dalam fitting partition dan hitung biaya tambahan.
 
-Pakai Logistic dan XGBoost fixed sebagai referensi agar perbedaan fitur tidak tercampur tuning algoritma. Fitur korelasi/MI otomatis bukan fokus utama karena sudah dicoba tanpa perbaikan; dapat menjadi kontrol terbatas di training bila D1 menunjukkan kebutuhan baru.
+Utamakan pengurangan gap training/test, bukan menaikkan training accuracy. Early stopping boosting tidak boleh memakai outer test atau validation row acak. Kontrol awal di atas tidak memakai early stopping.
 
-Tetap pertahankan satu kontrol dengan semua fitur. Quality tier/perangkat/ID tidak otomatis ditambahkan sebagai predictor. Jumlah fitur aktual setelah filter training dicatat per fold.
+### 6.8 Exp09: fusion dan ensemble
 
-### Exp03: baseline, skala, dan ketidaklengkapan
+Early fusion memakai gabungan fitur. Late fusion menggabungkan p = alpha*p_HRV + (1-alpha)*p_eye, alpha=0,25/0,50/0,75 dipilih inner. Kontrol cabang memakai dua Logistic fixed atau dua XGBoost fixed. Fitting preprocessing setiap cabang tetap training-only.
 
-Pertanyaan pertama adalah perbedaan absolut versus tanpa rasio baseline HRV pada dataset baru. Rasio yang ditolak aturan kualitas tetap kosong. Jangan menurunkan syarat coverage hanya untuk menghilangkan NaN.
+Soft vote memakai dua keluarga estimator berprobabilitas asli terbaik pada inner, bobot sama; keluarkan pasangan dengan keluarga sama. Tidak ada stacking dengan meta-model yang dilatih lalu dinilai pada prediksi training-nya sendiri. Jalur SVM tidak masuk soft vote tanpa kalibrasi grup.
 
-Pertanyaan kedua, bersyarat, adalah representasi relatif dari baseline sensor yang tersedia sebelum tugas/prediksi. Audit terlebih dahulu apakah baseline mata/HRV dapat dibentuk secara konsisten dari sumber lama dan baru. Jika rekaman tidak mendukungnya, catat opsi itu tidak eligible untuk klaim utama; jangan membentuk baseline dari seluruh sesi test.
+Semua recipe harus memprediksi pada test yang sama. Bila input cabang benar-benar tidak tersedia menurut kontrak sensor yang dibekukan, gunakan fallback stateless sensor gabungan fixed tanpa history yang dilatih pada partition yang sama; catat alasan dan frekuensinya. Aturan ketersediaan tidak membaca label atau hasil test. Error fitting, exception implementasi, dan gagalnya validasi bukan alasan mengganti prediksi dengan fallback; kandidat tersebut gagal dan harus diperbaiki atau ditandai invalid.
 
-Kontrak baseline relatif sebelum implementasi:
+### 6.9 Exp10: ordinal dan hierarchy supervised
 
-- Segmen baseline berasal dari waktu yang tersedia sebelum prediksi dan tidak memakai label CL target.
-- Definisi segmen, statistik, minimum coverage, serta waktu tunggunya dibekukan sebelum melihat outer score.
-- Baseline HRV dan baseline geometri mata tidak dianggap sama hanya karena keduanya memakai nama baseline.
-- Normalisasi pembagian memakai penyebut positif yang layak; z-score hanya memakai skala baseline yang tidak mendekati nol. Median/selisih atau rasio dipilih sesuai arti fitur, bukan satu rumus untuk semua kolom.
-- Baseline tidak tersedia memakai fallback yang telah ditetapkan, misalnya fitur absolut atau nilai kosong dengan imputasi training. Jangan diam-diam menghapus test yang sulit.
-- Tidak ada centering dengan mean seluruh orang test, quantile seluruh test, atau adaptasi memakai label test.
+Kontrol adalah multiclass Logistic/XGBoost pada fitur dan test sama.
 
-Seluruh normalisasi tetap mendukung satu classifier umum. Status baseline disimpan untuk audit. Penggunaan flag missing/quality sebagai fitur merupakan eksperimen terpisah jika nanti diperlukan, bukan perubahan default yang bisa memperkenalkan kembali ciri sesi.
+Ordinal Logistic melatih q1=P(y>Low) dan q2=P(y>Medium). Jika q2>q1, proyeksikan keduanya ke rata-ratanya. Bentuk pLow=1-q1, pMedium=q1-q2, pHigh=q2, lalu argmax. Pastikan probabilitas nonnegatif dan berjumlah satu. Parameter C mengikuti tiga kandidat Logistic.
 
-Bandingkan StandardScaler dan RobustScaler secara terbatas pada satu recipe referensi. Native missing-value handling XGBoost/HGB dapat menjadi kontrol implementasi, tetapi tidak boleh sekaligus mengubah fitur dan cohort tanpa pencatatan.
+Hierarchy melatih Low versus Elevated dan Medium versus High pada training sebenarnya. Saat inference, bentuk pLow dari tahap pertama, pMedium=(1-pLow)*pMedium_given_Elevated, pHigh=(1-pLow)*pHigh_given_Elevated; ambil argmax. Jangan merutekan test menggunakan y_true. Evaluasi conditional Medium–High hanya diagnostik; hasil utama tetap end-to-end tiga kelas.
 
-### Exp04: evaluasi varian window yang sudah disiapkan
+Isolation Forest/One-Class SVM tidak menjadi model utama CL: Low adalah kelas supervised yang tersedia, bukan otomatis anomali. Keduanya dapat diteliti pada studi novelty terpisah, bukan cara mengubah skor tiga kelas batch ini.
 
-[Builder v2](../../analysis_sessions/dataset_fusion/build_dataset_v2.py) sudah menghitung window 15/25/45 detik dari RR dan eye mentah, terpisah dari arsip. Notebook Exp04 mengonsumsi CSV tiap varian, bukan menghitung ulang fitur pada setiap fold. Rebuild hanya diperlukan jika sumber, konfigurasi, atau implementasi berubah; gunakan folder versi baru. Mengubah `window_seconds` pada CSV, merata-ratakan RMSSD lama, atau sekadar mengganti config bukan eksperimen window yang sah.
+### 6.10 Exp11: MLP dan FT-Transformer
 
-Kandidat awal adalah 15, 25, dan 45 detik dengan step 5 detik. Window 25 menjadi kontrol. Panjang 10/60 detik hanya boleh ditambahkan melalui perubahan registry yang terdokumentasi sebelum hasil outer dibuka, bila audit sensor menunjukkan alasan. Jumlah baris terbesar tidak menjadi kriteria memilih window.
+Kontrol MLP untuk cabang neural yang eligible: dua hidden layer 64/32, ReLU, dropout=0,2, tiga output softmax. Dua kandidat learning rate AdamW 1e-3/3e-4, weight_decay=1e-3, batch=64, maksimum 200 epoch.
 
-Rekonstruksi RR dari sumber dengan aturan timing, artefak, gap, adjacency pasangan RMSSD, dan ketersediaan kausal yang konsisten. Hitung SDNN dari RR yang masuk window, bukan dari SDNN window lain. Sejajarkan agregasi eye pada batas absolut yang sama. Gunakan endpoint yang konsisten dan jangan memakai sampel yang baru tersedia setelah akhir window.
+FT-Transformer kecil: numerical feature tokenizer d_token=64, dua block, empat head, FFN dimension=128, attention/residual dropout=0,1, tiga output. AdamW lr=3e-4, weight_decay=1e-3, batch=64, maksimum 200 epoch. Ini Transformer antarfitur tabular, bukan model bahasa dan bukan Transformer atas video mentah. Ikuti implementasi primer [FT-Transformer](https://github.com/yandex-research/rtdl-revisiting-models).
 
-Kualitas HRV dilaporkan per panjang: jumlah RR/pasangan, coverage, stale data, serta kestabilan RMSSD dan SDNN masing-masing. Kestabilan/agreement pada segmen yang dapat dibandingkan tidak ditentukan dari korelasi saja. Analisis kelayakan tidak boleh memakai outer CL score untuk memilih aturan sensor. Referensi HRV ultra-short berbeda menurut kondisi dan metode; penelitian ECG bukan jaminan untuk HW9 dalam tugas ini. [Muñoz dkk.](https://pmc.ncbi.nlm.nih.gov/articles/PMC4586373/), [Burma dkk.](https://pubmed.ncbi.nlm.nih.gov/33856258/).
+Gunakan median/scaling training dan kontrol F1/F4 tanpa history. Untuk cabang neural, fitting partition yang benar-benar dipakai melatih bobot, termasuk setelah menyisihkan grup stopping, harus memuat minimal delapan grup dan minimal 20 endpoint nonoverlap tiap kelas; ini guard operasional, bukan bukti kecukupan statistik. Jika tidak terpenuhi, simpan skipped_insufficient_support. Penentuan endpoint nonoverlap memakai interval sensor, tanpa membaca prediksi.
 
-Pisahkan dua perbandingan:
+Early stopping patience=20 pada log loss grup stopping yang terpisah dari fitting. Di setiap inner fit, ambil fold pertama yang feasible dari StratifiedGroupKFold(3,seed=42) pada inner-training untuk stopping; inner validation tidak menjadi stopping set. Setelah epoch terpilih, refit preprocessing dan model pada seluruh inner-training untuk jumlah epoch itu. Outer refit memakai median epoch terpilih dari inner fits, tanpa membuka outer test. Jika tidak ada stopping split grup yang feasible, cabang neural tidak eligible.
 
-| Perbandingan | Cara menjaga keadilan | Batas klaim |
-|---|---|---|
-| Efek representasi window | Train/test memakai decision endpoint yang sama dan eligible pada kandidat yang dibandingkan; hitung ulang fitur untuk tiap panjang | Berlaku pada cohort endpoint bersama, yang bisa mengutamakan span panjang |
-| Pemakaian operasional | Training dapat memakai seluruh window layak tiap kandidat; test tetap endpoint waktu D1 yang telah dibekukan | Fitur dan kuantitas training berubah bersama; coverage harus ikut dibaca |
+Seed 42 untuk seleksi; 17 dan 2026 hanya untuk sensitivitas recipe terpilih, bukan memilih seed tertinggi. GPU membantu, tetapi MLP kecil dapat berjalan CPU. FT-Transformer boleh skipped_hardware berdasarkan preflight sebelum skor.
 
-Pada test operasional, endpoint yang tidak dapat menghasilkan fitur/prediksi tidak boleh menghilang dari laporan. Simpan `prediction_available`, alasannya, coverage total/per kelas, skor bersyarat pada prediksi yang tersedia, dan skor dengan abstention dihitung sebagai kesalahan. Untuk F1 per kelas, abstention merupakan false negative pada kelas acuannya; bukan label CL keempat pada data sumber.
+### 6.11 Exp12: TabPFN-2 lokal
 
-Bekukan endpoint evaluasi dari kontrol 25 detik D1, mencakup rekaman lama dan baru yang lolos penerimaan. Endpoint ini hanya menyamakan waktu prediksi antarkandidat window di batch-02; bukan test warisan batch-01.
+Tambahkan satu kandidat TabPFN-2 untuk tabular kecil, bukan menganggap pretrained Transformer pasti unggul. Dasarnya adalah [penelitian TabPFN](https://www.nature.com/articles/s41586-024-08328-6) dan [implementasi resmi](https://github.com/PriorLabs/TabPFN).
 
-Guard awal untuk kandidat model utama: minimal 80% coverage total dan Low terhadap endpoint kontrol 25 detik D1. Ini pengaman operasional yang diusulkan, bukan ambang fisiologis yang tervalidasi. Bekukan sebelum skor model dibaca; perubahan memerlukan versi protokol baru. Kandidat yang gagal boleh dilaporkan sebagai diagnostik, tetapi tidak disebut pemenang utama hanya karena subset tersisanya mendapat skor tinggi.
+Pilih versi checkpoint V2 secara eksplisit, jangan mengikuti default package terbaru. Bekukan versi package, revision/hash weights, n_estimators=8, seed=42, dan catat lisensi bobot serta kebutuhan atribusinya. Gunakan inferensi lokal dengan GPU; tidak mengirim fitur/label/identitas ke API atau layanan hosted. Download bobot bukan izin mengunggah data penelitian.
 
-Window/step dipilih di inner validation dari kandidat yang telah memenuhi kontrak. Penurunan step menambah overlap, bukan otomatis informasi independen. Jika menguji step 10 detik sebagai pengurangan redundansi, cocokkan endpoint test dan pisahkan eksperimen itu dari perubahan panjang window.
+Kandidat memakai F1 dan F4 mentah tanpa scaling eksternal, tanpa SMOTE, dan missing handling resmi checkpoint. Hanya training fold yang menjadi konteks berlabel; validation/test tidak boleh masuk fit-context. Jalur acuan memprediksi satu endpoint dengan konteks training yang tetap. Optimasi prediksi batch hanya boleh dipakai jika prediksinya sama dengan acuan tersebut dalam toleransi runtime yang dibekukan; jika tidak, tetap gunakan jalur satu endpoint dan catat biaya waktunya. Jika implementasi tidak dapat menyediakan inference kausal ini, catat skipped_noncausal_inference.
 
-Multi-resolution eye/HRV tetap opsi lanjutan. Pada v2, window boleh melintasi feedback/rest bila semua bagiannya berlabel Low. Perpindahan target Medium/High ke Low tetap memotong kelayakan window. Jadi window panjang masih dapat kehilangan endpoint di batas target, meskipun tidak lagi disyaratkan satu fase active_task.
+Gate: checkpoint/lisensi tersedia, GPU lolos preflight, dimensi memenuhi batas V2 yang didokumentasikan (maksimal 10.000 contoh dan 500 fitur), serta uji persist/load/inference lulus. Jika salah satu gagal, catat skipped_checkpoint, skipped_hardware, atau skipped_size. Jangan memotong training secara diam-diam atau berpindah ke cloud. Jalur CPU inti tetap dapat selesai tanpa TabPFN.
 
-### Exp05: riwayat kausal tanpa konteks soal
+### 6.12 Exp13: sequence sensor kecil
 
-Bandingkan tanpa riwayat dengan riwayat berbasis waktu 15/30 detik, memakai fitur dasar HRV, blink rate, dan EAR yang sudah didefinisikan. Gunakan mean/median dan delta yang terdefinisi dari data saat ini atau masa lalu. Jangan memakai rolling terpusat atau future fill.
+Uji satu GRU satu layer, hidden_size=32, dropout pada head=0,2, output tiga kelas. Input adalah urutan sampai tujuh endpoint dalam trailing 30 detik pada grid 5 detik, F4 tanpa rasio dan tanpa history buatan. Target hanya label endpoint sekarang; label terdahulu tidak menjadi input atau syarat mengambil urutan.
 
-Reset hanya pada perubahan stream/sesi, waktu yang tidak meningkat, dan gap melebihi batas yang dibekukan berdasarkan step. `puzzle_id`, difficulty, label, dan event submit tidak menjadi syarat inference. Peserta digunakan untuk memastikan stream training tidak tercampur, bukan fitur prediksi.
+Ambil urutan dari stream sebelum label mask. Gunakan masking/packed sequence untuk warm-up 1–7 endpoint; tidak mengisi dengan frame masa depan atau melintasi gap/rekaman. Imputasi dan scaling memakai statistik fitting partition, bukan setiap sequence test secara penuh. AdamW lr=1e-3, weight_decay=1e-3, batch=64, maksimum 200 epoch; stopping dan support guard mengikuti exp11.
 
-Durasi riwayat dinyatakan dalam detik agar tidak berubah arti saat step berubah. Catat perilaku warm-up, jumlah riwayat minimum, dan keluaran ketika gap. Waktu tunggu atau riwayat parsial tidak disembunyikan sebagai fitur lengkap.
+Bandingkan dengan MLP yang menerima row sekarang pada F4 yang sama serta history generik exp05. Uji batch/stream parity dan prefix invariance. Jangan menambah LSTM/TCN/Transformer temporal besar pada registry awal; hasil negatif GRU harus tetap disimpan. Arsitektur lanjutan memerlukan revisi registry, bukan pencarian tanpa batas setelah melihat test.
 
-Wajib ada uji prefix invariance: menambahkan baris masa depan tidak mengubah fitur/prediksi masa lalu. Batch inference dan stream satu window per langkah harus konsisten pada input yang sama.
+## 7. Exp14: seleksi end-to-end dan keluaran akhir
 
-### Exp06: objective dan balancing setelah tambahan data
+### 7.1 Aturan pencarian yang tidak memakai outer leaderboard
 
-Gunakan tanpa balancing sebagai kontrol. Class weight dihitung dari training saat itu, bukan dari seluruh CSV. ROS/SMOTE hanya dipertimbangkan bila Low masih minoritas dalam training fold. Jika target resampling sudah tercapai, tandai no-op dan deduplikasi konfigurasi; jangan melakukan undersampling terselubung.
+Terapkan urutan berikut secara terpisah di setiap outer training dan setiap window. Seluruh ranking memakai manifest inner yang dibekukan:
 
-Kandidat awal yang terbatas:
+1. Screening fitur: nilai F0–F7 dan pasangan dengan/tanpa rasio menggunakan dua kontrol fixed. Pertahankan dua representasi berbeda dengan inner score terbaik.
+2. Model: jalankan bank exp08 pada dua representasi tersebut. Pertahankan dua pipeline statis terbaik.
+3. Refinement: untuk keduanya, uji history 0/15/30, seleksi none/corr/MI, balancing none/weight/ROS/SMOTE, dan Standard/Robust yang relevan, satu faktor per kontras. Uji PCA, N2/N3, missing indicator, dan native NaN sebagai kontras satu faktor terhadap dua pipeline statis tersebut, bukan perkalian semua opsi. N2 hanya berlaku pada pipeline dengan HRV, N3 pada pipeline dengan fitur eye yang ditransformasi, native NaN hanya pada estimator yang mendukungnya, dan PCA hanya sesudah imputasi/scaling. Kontras yang tidak berlaku ditandai not_applicable, bukan diubah diam-diam.
+4. Interaksi terarah: untuk masing-masing pipeline, gabungkan pilihan history+seleksi terbaik dan history+balancing terbaik; maksimal empat recipe kombinasi. Hindari kombinasi ROS/SMOTE pada GRU dan pretrained TabPFN.
+5. Bentuk pool final maksimum 24 recipe unik: enam statis, empat history/interaksi, dua normalisasi kausal, empat fusion/ordinal/hierarchy, dan maksimal delapan neural/pretrained/sequence. Slot tak terpakai tidak perlu diisi. Kontrol Logistic tanpa rasio dan XGBoost fixed selalu ikut dalam slot statis.
+6. Pilih dengan aturan bagian 4.4, refit pada seluruh outer training, dan prediksi outer test sekali untuk prosedur terpilih.
 
-- Class weight: none versus balanced.
-- ROS Low-only: target 0,50/0,75 dari kelas training terbesar, bila memang menambah Low.
-- SMOTE Low-only: target 0,50/0,75 dan k=3; kandidat k=5 hanya bila jumlah/keragaman Low training mendukung.
+Setiap keluarga advanced dipilih/diranking hanya dari training inner. Jangan mengambil pemenang global dari outer exp02–exp13 sebagai input tahap berikutnya. Gunakan input cache inner yang sama bila identitasnya cocok. Pada 15/45, ulangi screening inner; jangan memaksakan fitur yang dipilih dari outer 25.
 
-Imputasi/scaling dan tetangga SMOTE dibentuk di training partition. Validation/test tetap asli. Sampel sintetis tidak mendapat identitas peserta baru atau ditulis kembali sebagai pengukuran sensor pada CSV sumber. SMOTE yang gagal tidak diam-diam diganti ROS. [Panduan imbalanced-learn](https://imbalanced-learn.org/stable/common_pitfalls.html).
+Registry awal dibatasi 120 recipe efektif per outer/window, termasuk screening, refinement, dan cabang eligible; bukan 120 kombinasi untuk setiap faktor. Registry generator harus menghitung jumlahnya sebelum run. Jika melebihi batas, pangkas menurut prioritas tetap: hapus PCA/native/missing tambahan, kemudian refinement Robust/N3, kemudian cabang advanced menurut urutan exp13→exp12→FT; kontrol, sensor ablation, dan uji tanpa rasio tetap. Catat truncation, dan bekukan hasil registry sebelum outer results dibuka. Kandidat identik/no-op hanya dihitung sekali.
 
-Periksa domain fitur setelah resampling, termasuk rasio dan batas numerik. Lolos batas numerik tidak membuktikan validitas fisiologis sampel sintetis. Bila precision Low memburuk terhadap kontrol batch-02, jangan menganggap recall yang naik saja sebagai keberhasilan.
+### 7.2 Model per-window dan pilihan window
 
-Pengimbangan kontribusi blok rekaman yang sangat tidak merata dapat menjadi analisis sensitivitas tambahan, bukan default atau model personal. Cara tersebut tidak memasukkan ID sebagai fitur dan harus dipisahkan dari pembobotan kelas agar pengaruhnya tidak tercampur.
+Keluaran wajib adalah evaluasi nested native untuk setiap window dan tiga kandidat refit per-window. Skor native 15/25/45 tidak langsung diperlakukan sebagai peringkat global karena test-nya berbeda.
 
-### Exp07: perbandingan algoritma terbatas
+Tambahkan evaluasi prosedur seleksi lintas window pada intersection bagian 4.3. Di setiap outer training, lakukan screening/refinement dan pemilihan window menggunakan inner OOF pada intersection training; outer test juga intersection held-out. Jika intersection fitting tidak mendukung tiga kelas, jalur global tidak eligible; tiga jalur per-window tetap dilaporkan.
 
-Mulai dari keluarga yang masuk akal pada data tabular kecil, bukan mengulang pencarian besar enam algoritma pada seluruh kombinasi fitur.
+Untuk artefak penggunaan, pilih recipe/window melalui group validation pada seluruh release final dengan aturan yang sama, lalu refit. Simpan konfigurasi preferred_window dan tiga alternatif. Bila jalur global tidak eligible, default artefak operasional adalah kandidat 25 detik, dengan alasan kompatibilitas kontrol; jangan menyebutnya terbaik di antara window.
 
-| Model | Bank awal yang diusulkan |
-|---|---|
-| Logistic | C = 0,1 / 1 / 10 |
-| SVM RBF | C = 0,1 / 1 / 10; gamma = scale / 0,1 |
-| XGBoost | Kontrol fixed; enam kombinasi depth 2/3/5 dan learning rate 0,03/0,10, 300 pohon |
-| HistGradientBoosting | Enam kombinasi learning rate 0,05/0,10 dan max_leaf_nodes 7/15/31; 300 iterasi |
+Skor refit/seleksi pada seluruh data bukan hasil test baru. Angka kinerja yang dikutip berasal dari OOF prosedur yang sesuai cakupannya: native per-window atau selection-on-intersection.
 
-Semua parameter lain dibekukan, termasuk regularisasi/minimum leaf yang disepakati pada implementasi. Kontrol fixed disimpan sebagai kontrol, bukan selalu ditambahkan ke tuning bila efektif sama dengan kandidat yang sudah ada. GPU tidak menjadi kebutuhan awal.
+### 7.3 Pemeriksaan akhir
 
-HGB merupakan kandidat baru, bukan klaim akan lebih baik. Matikan early stopping acak bawaan untuk perbandingan awal. Bila early stopping diperlukan, validation-nya harus berasal dari grup training terpisah, bukan baris acak atau outer test. [Dokumentasi HGB](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingClassifier.html).
+- Simpan train/test gap, confusion matrix, seluruh metrik kelas, dan kontribusi tiap keluarga sensor.
+- Learning curve pada grup training 50%, 75%, 100% untuk Logistic tanpa rasio dan recipe statis terpilih; pilih subset deterministik seed 42 dan tambahkan grup minimum jika diperlukan agar tiga kelas hadir. Outer test tetap sama; subset bukan identitas sebagai fitur.
+- Laporkan skor pada test nonoverlap, fase Low, baseline tersedia/tidak, validasi gaze, dan asal gelombang. Subset audit tidak mengganti evaluasi utama atau dipakai memilih peserta yang dianggap bagus.
+- Jalankan seed 17/2026 untuk recipe terpilih dengan manifest tetap, bukan mengulang seluruh pencarian. Jangan memilih atau merata-ratakan hasil secara oportunistis; default deployment tetap seed 42.
+- Jalankan kontrol diagnostik missing-only serta warm-up/history-length-only dari stream kausal yang tidak membaca label, soal, atau fase. Keduanya tidak masuk kandidat final. Skor tinggi memerlukan inspeksi pola akuisisi dan ketersediaan, tetapi bukan bukti kebocoran dengan sendirinya; pelanggaran invariant tetap harus ditunjukkan. Jangan memakai metadata fase/set yang dapat merekonstruksi target sebagai classifier pembanding fisiologis.
+- Uji sensor-only inference, persist/load, cold start, missing baseline, warm-up, gap, serta parity batch/stream. Tidak ada parameter preprocessing dari label test.
 
-Data scaling, missing-value handling, dan seleksi fitur harus berada pada pipeline training yang benar. Jangan menafsirkan keberhasilan algoritma ketika jumlah fitur, cohort test, dan aturan preprocessing ikut berubah tanpa kontrol.
+## 8. Biaya, implementasi, dan artefak
 
-## 8. Opsi lanjutan yang tidak wajib dijalankan
+### 8.1 Paket disiapkan sebelum gate data; training sesudah persetujuan
 
-### Exp08: late fusion yang dapat dievaluasi
+Pembuatan notebook, kode bersama, dan tes teknis tidak menunggu pengambilan tambahan. Gate bagian 1 membatasi training penelitian, bukan persiapan implementasi. Exp00 memisahkan pemeriksaan kesiapan dari pengesahan release; persetujuan tidak diaktifkan otomatis. Penambahan rekaman dengan skema yang sama tidak memerlukan penulisan ulang notebook.
 
-Bandingkan satu early-fusion reference dengan dua classifier cabang HRV/eye. Bobot gabungan dipilih di inner validation. Jangan menyamakan decision score SVM dengan probabilitas.
+Setiap keluarga memakai notebook biasa pada foldernya sendiri, dengan markdown berbahasa Indonesia yang menjelaskan tujuan dan tahapan utama. Ikuti gaya notebook awal tim: tanpa emoji atau komentar dekoratif. Tidak ada launcher Run All lintas eksperimen. Operator tidak diwajibkan menjalankan setiap notebook dua kali smoke/full; pengembang melakukan tes teknis sebelum full diserahkan.
 
-Jika probabilitas dikalibrasi, gunakan prediksi out-of-group dari training untuk kalibrasi, tanpa label outer test. Biaya fitting dan split tambahan dihitung dalam budget. Simpan hasil masing-masing cabang untuk mengetahui apakah fusi hanya mengulangi sensor dominan. [Dokumentasi calibration](https://scikit-learn.org/stable/modules/calibration.html).
+Bangun shared code batch-02 yang mandiri, jangan bergantung pada models/shared lama atau source batch-01 yang sudah dibersihkan. Satu requirements.txt yang tervalidasi memuat seluruh dependency CPU dan optional neural pada versi terkunci; package GPU/bobot dapat berstatus optional, tetapi versinya tetap tercatat. Tidak perlu mengganti shared/requirements setiap eksperimen.
 
-Cabang ini dilanjutkan bila kedua sensor menyediakan informasi yang dapat dipakai pada inner validation. Jika satu cabang gagal kualitas atau fusi tidak memperbaiki inner score, model sederhana tetap menjadi kandidat. Jangan menambah fusi hanya agar terlihat multimodal; kontribusi sensor harus dilaporkan dari hasil.
-
-### Exp09: target berurutan sebagai hipotesis tambahan
-
-Low/Medium/High mempunyai urutan, tetapi belum tentu jarak yang sama. Kandidat ordinal supervised dapat menguji keputusan kumulatif di atas Low dan di atas Medium, lalu membentuk probabilitas tiga kelas yang valid.
-
-Gunakan kontrol multiclass dengan fitur dan test sama. Tetapkan penanganan probabilitas kumulatif yang tidak monoton sebelum evaluasi. Jangan mengganti target menjadi skor buatan atau membalik label agar HRV mengikuti arah tertentu. Ini berbeda dari novelty detection batch-00 maupun Low/Elevated dua tahap batch-01.
-
-Prioritasnya lebih rendah daripada data, representasi, dan window. Klaim manfaat harus tetap berdasarkan macro-F1 dan seluruh kelas, bukan hanya berkurangnya kesalahan Low-ke-High.
-
-## 9. Exp10: seleksi akhir dan kriteria hasil
-
-### 9.1 Recipe yang dipilih harus end-to-end
-
-Recipe mencakup versi dataset, fitur/normalisasi, window, riwayat, missing-value handling, sampler/weight, model/parameter, serta aturan inference. Menyeleksi hanya estimator setelah fitur dipilih dari outer test bukan nested selection yang lengkap.
-
-Sebelum full run, tulis registry final yang berisi paling banyak **24 recipe efektif** dari rencana inti dan cabang yang eligible. Isi tuple lengkapnya ditetapkan pada plan implementasi setelah audit D1; tidak diisi dari pemenang outer leaderboard. Cabang opsional yang masuk menggantikan slot budget, bukan memperluas pencarian tanpa batas.
-
-Kelayakan berdasarkan ketersediaan data, domain sensor, dan kompatibilitas inference dipisahkan dari pemilihan berbasis metrik. Jika ada keputusan berbasis skor, keputusan itu dilakukan di inner training pada tiap outer fold. Bila tim mengubah bank setelah melihat outer score, beri versi baru dan laporkan sebagai eksplorasi tambahan, bukan pengujian final yang belum tersentuh.
-
-Pilih recipe di inner, latih pada seluruh training outer, lalu evaluasi sekali pada outer test. Setelah pelaporan OOF selesai, lakukan pemilihan group-validation pada seluruh data yang disepakati dan refit untuk artefak penggunaan. Skor pemilihan refit bukan skor generalisasi baru. [Nested cross-validation](https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html).
-
-Untuk artefak penggunaan, lakukan seleksi melalui group-validation pada seluruh D1 dengan prinsip bagian 5.2. Rekaman lama dan baru mempunyai peran yang sama: semua sesi orang validasi dikeluarkan dari fitting. Setelah recipe terpilih, fit pada seluruh D1 dan simpan `selection_protocol`. Tidak ada jalur refit khusus cohort lama. Skor pemilihan pada tahap ini tidak menggantikan hasil outer OOF.
-
-### 9.2 Definisi hasil yang lebih baik
-
-- Macro-F1 lebih tinggi daripada kontrol atau kandidat lain pada evaluasi batch-02 yang sama, dengan selisih dan ketidakpastian dilaporkan.
-- Recall/precision Low tidak dibeli dengan runtuhnya Medium/High; sajikan perubahan per kelas.
-- Hasil tidak hanya berasal dari satu rekaman atau dari penghapusan endpoint sulit.
-- Coverage sensor, warm-up, dan kebutuhan baseline dapat dipenuhi pada penggunaan yang didefinisikan.
-- Model tidak membutuhkan label, identitas orang, atau konteks soal untuk memprediksi.
-- Kesimpulan membandingkan konfigurasi batch-02; tidak mengklaim peningkatan sebelum–sesudah penambahan Low atau kemenangan atas batch sebelumnya.
-
-Jika selisih kecil dan tidak meyakinkan, laporkan tie/ketidakpastian dan pertimbangkan recipe yang lebih sederhana, stabil, serta mudah dijalankan. Jangan memaksa kesimpulan menang. Tidak ada janji accuracy 70%, 80%, atau angka lain sebelum bukti tersedia.
-
-### 9.3 Batas yang belum terselesaikan
-
-Tambahan Low-only tidak menciptakan test tiga kelas independen pada sesi baru, tidak menghapus confounding urutan tugas lama, dan tidak memvalidasi label CL secara independen. Perubahan kondisi perekaman baru dapat tetap memengaruhi sensor walaupun metadata tidak menjadi fitur.
-
-Pengujian coding/debugging di luar CodeArrange, validasi target dengan ukuran independen, dan konfirmasi pada cohort baru tiga kelas merupakan pekerjaan sesudah bukti internal memadai. Tidak memaksakan pengambilan medium/high ulang sekarang bukan berarti batas tersebut hilang.
-
-## 10. Pengendalian jumlah eksperimen dan biaya
-
-Perubahan utama dievaluasi dengan model fixed lebih dahulu. Tuning luas tidak dijalankan pada setiap ablation, panjang window, panjang riwayat, dan sampler sekaligus.
-
-Sebelum menjalankan full notebook, tampilkan jumlah grup, outer/inner fold, kandidat efektif, estimasi fit, serta dependency. Kandidat dengan data/fit yang sama dapat berbagi cache hanya bila hash data, registry grup, window, fitur, parameter, seed, dan environment cocok.
-
-Bank final 24 recipe dengan tiga inner fold pada N orang unik D1 memerlukan sampai 72 × N fit kandidat ditambah N refit outer, sebelum kalibrasi/cabang fusi dan seleksi refit penggunaan. Misalnya, N=18 memerlukan sampai 1.296 fit kandidat dan 18 refit outer. Ini ilustrasi biaya, bukan jumlah peserta final atau training yang sudah dilakukan. Audit menentukan N dari orang unik, bukan jumlah sesi tambahan. Budget notebook rinci harus menghitung cabang dan biaya ulang fitur, bukan hanya jumlah estimator di tabel.
-
-Seed utama dibekukan, misalnya 42. Seed tambahan hanya untuk sensitivitas, bukan memilih skor tertinggi. Jika budget habis, simpan hasil parsial berstatus belum lengkap dan jangan membandingkannya dengan full run seolah-olah selesai.
-
-## 11. Rancangan implementasi dan keluaran
-
-### 11.1 Notebook dan dependensi
-
-Setiap keluarga eksperimen mendapat notebook biasa di foldernya sendiri. Tidak ada notebook atau command Run All lintas eksperimen. Operator boleh memakai Run All di dalam notebook yang sedang dikerjakan setelah dependensinya terpenuhi.
-
-Siapkan satu paket batch-02 yang memuat notebook, shared code versi batch-02, serta satu requirements tervalidasi. Paket diunggah sekali; tidak ada kewajiban mengganti shared/requirements untuk setiap eksperimen. Tempatkan kode di `models/batch-02/shared`. Tim sudah menghapus `models/shared` lama; batch-02 tidak boleh bergantung pada folder tersebut atau menganggap kode batch-01 masih tersedia.
-
-Notebook full disiapkan untuk eksekusi penelitian. Pemeriksaan teknis kecil dan tes sintetis dilakukan pengembang sebelum serah-terima, bukan kewajiban operator menjalankan seluruh notebook dua kali smoke/full. Tidak menjanjikan bebas semua error eksternal Colab, tetapi validasi input, dependency, resume dan kegagalan harus diuji.
-
-Notebook dan script diagnosis batch-01 masih merujuk kode shared serta setup root yang sudah dihapus. Keduanya disimpan sebagai arsip, bukan paket runnable atau dependency batch-02. Gunakan laporan, konfigurasi, dan keluaran tersimpan sebagai catatan metode; implementasi batch-02 memerlukan setup mandiri beserta tesnya sendiri.
-
-### 11.2 Path lokal dan Drive
-
-Root Drive yang dipakai tim:
-
-`drive/MyDrive/Penelitian-Adaptive-IDE`
-
-Root dataset:
-
-`drive/MyDrive/Penelitian-Adaptive-IDE/Dataset`
-
-Salin struktur versi output ke root Dataset, misalnya `drive/MyDrive/Penelitian-Adaptive-IDE/Dataset/v2_session_phase/window_25s_step_5s/good_acceptable.csv`, beserta allowlist dan manifest induknya. Varian 15 dan 45 memakai subfolder masing-masing. Saat data tambahan masuk, bangun folder versi penerimaan baru dan ubah konfigurasi path; jangan overwrite v1 atau mencampur CSV/allowlist antarversi. Setiap run memverifikasi hash serta target v2 sebelum training.
-
-Struktur berikut merupakan rancangan, bukan file yang sudah dibuat:
+Struktur implementasi yang direncanakan:
 
 ```text
 models/batch-02/
@@ -394,58 +378,63 @@ models/batch-02/
   shared/
   requirements.txt
   registry/
-  exp00_data_audit/
-  exp01/ ... exp10/
+  inputs/<release_id>/
+  exp00/ ... exp14/
   outputs/expXX/<run_id>/
 ```
 
-Root output Drive direncanakan `drive/MyDrive/Penelitian-Adaptive-IDE/models/batch-02/outputs`. Notebook menerima konfigurasi root agar tidak menyisipkan path mesin tertentu ke banyak cell.
+Root Drive: `drive/MyDrive/Penelitian-Adaptive-IDE`. Dataset: `Dataset/v2_session_phase/window_XXs_step_5s/good_acceptable.csv`; output: `models/batch-02/outputs` di bawah root yang sama. Notebook mendeteksi lokal/Colab melalui konfigurasi root, bukan path mesin yang berulang di banyak cell. Untuk jalur temporal di Colab, unggah cache stream turunan yang telah diverifikasi beserta manifest, bukan mengandalkan tiga CSV supervised saja.
 
-### 11.3 Artefak wajib
+### 8.2 Budget dan pelaksanaan
 
-Setiap run menyimpan config, status, hash data/kode/environment, manifest grup/split, allowlist, statistik preprocessing, kandidat/pilihan inner, prediksi OOF, metrik, confusion matrix dan grafik. Untuk window/riwayat tambahkan coverage, alasan unavailable, warm-up, dan audit prefix/endpoint.
+Sebelum full run, tampilkan jumlah grup, split, recipe efektif, jumlah estimator atomik, serta estimasi waktu dari benchmark teknis. Tiga inner fold berarti tiga fit per recipe dasar per outer/window; fusion/hierarchy/calibration dan early-stopping refit menambah fit. Dengan K recipe dan N orang, tiga window memerlukan sampai 9KN fit dasar sebelum tambahan tersebut. Batas K=120 adalah batas atas, bukan target untuk dihabiskan.
 
-Untuk provenance, simpan tabel sumber lama/tambahan tim/peserta kembali dan bukti seluruh sesi orang held-out dikeluarkan. Tabel sumber hanya untuk audit, bukan kondisi eksperimen sebelum–sesudah. Untuk baseline/quality, simpan keputusan dan fallback tanpa menganggap nilai kosong sebagai nol sensor.
+Jalankan CPU dengan maksimal satu tingkat paralelisme: paralel kandidat/fold atau paralel estimator, tidak keduanya tanpa pembatasan. Default estimator dua thread. GPU advanced serial. Simpan hasil setiap fold, gunakan resume berbasis hash, dan jangan menandai run parsial sebagai complete.
 
-CSV/JSON/Markdown dan figure dapat masuk Git sesuai [aturan models](../.gitignore). Bobot model/cache tidak masuk Git dan dibagikan melalui penyimpanan artefak bila diperlukan. Metadata identitas tetap memerlukan kontrol akses; alias grafik tidak menganonimkan seluruh hasil.
+Cache model/matriks harus mencakup hash data/label/stream, grup/split, spec lengkap, kode, seed, dependency dan checkpoint. Tidak boleh memakai cache hanya karena ID row sama. Perubahan rencana/versi data menolak resume lama. Semua error harus menyebut recipe/fold dan tahap; jangan mengganti model/metode diam-diam.
 
-## 12. Validasi sebelum notebook diserahkan
+Ketiadaan GPU tidak memblokir inti CPU. Bekukan status eligible/skipped advanced dari preflight, bukan dari ketidakpuasan pada hasil outer. Tidak ada janji accuracy tertentu atau bahwa Transformer akan lebih baik daripada Logistic/boosting.
 
-| Area | Uji minimal |
+### 8.3 Artefak dan laporan
+
+Wajib: dataset_release, config, status, registry, split manifest, dependency/code/checkpoint hashes, feature lists/transform stats, seluruh skor inner, recipe terpilih, prediksi OOF dengan probabilitas/decision score yang dibedakan, metrik kelas, coverage sensor/label, alasan fallback/unavailable, confusion CSV dan grafik.
+
+Tulis SUMMARY dan DIAGNOSIS batch-02 setelah full run, dengan hasil tiap keluarga, efek kombinasi, hasil negatif, biaya, serta daftar cabang skipped. Evaluasi internal dataset ini tidak otomatis membuktikan transfer ke semua aktivitas programming di IDE atau memvalidasi CL setiap window dengan pengukuran rujukan independen.
+
+Hasil CSV/JSON/Markdown/figure mengikuti [aturan Git models](../.gitignore); bobot, environment, snapshot input sensitif, dan cache tidak dipush. Jangan memperluas akses data atau memakai hosted inference tanpa keputusan terpisah. Alias grafik tidak menghilangkan identitas dari CSV.
+
+## 9. Validasi implementasi dan urutan serah-terima
+
+| Area | Kriteria lulus |
 |---|---|
-| Identitas | Orang yang sama dengan beberapa sesi/alias tetap satu grup; salinan sesi tidak dihitung dua kali |
-| Split | Seluruh orang D1 bergiliran test; tidak ada identitas/window overlap train/test; seluruh sesi orang held-out dikeluarkan dari inner dan outer training |
-| Data | Hash/target/schema D1 konsisten, NaN tetap NaN, sumber dan arsip tidak ditimpa |
-| Dataset terbaru | Sumber lama dan Low tambahan yang valid masuk D1; baseline hanya memakai D1; tidak ada kewajiban training D0 atau test cohort lama |
-| Preprocessing | Median/scaler/seleksi hanya fit training; fitur seluruhnya kosong/konstan ditangani eksplisit |
-| Window | Rumus RR/pasangan/gap, batas tepat awal/akhir, availability data terlambat, alignment eye, dan label mixed diuji |
-| Riwayat | Tidak melintasi stream/gap; prefix invariance; batch dan streaming konsisten; tidak membutuhkan ID soal/label |
-| Balancing | Hanya training, kandidat no-op/invalid jelas, validation/test tidak disintesis |
-| Seleksi | Tidak memakai outer score; tie-break deterministik; recipe lengkap; cache tidak tertukar |
-| Evaluasi | Metrik dapat dihitung ulang dari prediksi; absent class dan abstention ditangani; partial run tidak dianggap complete |
-| Inference | Input minimal sensor berhasil tanpa nama/soal; baseline/histori optional mempunyai kontrak dan fallback |
-| Reproduksi | Notebook dapat dijalankan dari runtime bersih dengan satu paket dependency; resume tidak menggabungkan identitas run berbeda |
+| Gate | Full menolak data tambahan/proporsi/release yang belum approved; tidak mengarang jumlah final |
+| Input | Tiga hash CSV/allowlist/manifest konsisten; target langsung; admission quality-only; sumber dan v1 tidak diubah |
+| Identitas/split | Seluruh sesi orang held-out keluar dari inner/outer fitting; setiap native row mendapat satu prediksi OOF |
+| Fitur | Metadata/event/label tidak masuk X; imputer/scaler/MI/corr/PCA/resampler hanya fit training |
+| History/sequence | Prefix, metadata, mask, cache dan batch/stream invariant; tidak reset karena label/soal/fase |
+| Window | Native versus paired jelas; labelable versus sensor coverage terpisah; tidak menghukum label mixed sebagai sensor failure |
+| Baseline/missing | Tanpa rasio tetap dapat inference; tidak ada full-test centering atau nol palsu; empty/constant training columns tercatat |
+| Balancing | Mendukung kelas minoritas apa pun, no-op/invalid eksplisit; validation/test tetap asli |
+| Neural/pretrained | Group stopping, checkpoint/license, fit-context isolation, seed, batch parity dan ukuran/hardware lulus |
+| Seleksi | Registry/search/tie-break deterministik; tidak memakai outer leaderboard; absennya kandidat tidak menjadi skor nol |
+| Numerik | Metrik dapat dihitung ulang dari OOF; probabilitas valid; kelas absent dan no_test_support tercatat |
+| Operasional | Persist/load dan sensor-only inference lulus; resume tidak mencampur run; file hasil dapat dibuka pengguna di Windows |
 
-## 13. Serah-terima ke tim atau LLM berikutnya
+Urutan pelaksanaan:
 
-1. Baca [konteks penelitian](../README.md#konteks-penelitian-dan-peran-kolom), [ringkasan batch-01](../batch-01/SUMMARY.md), dan [diagnosis](../batch-01/DIAGNOSIS.md) sebelum mengubah pipeline.
-2. Konfirmasi penerimaan sekitar lima anggota tim baru dan sesi easy peserta lama yang benar-benar tersedia. Jangan mengarang identitas/kelas untuk melengkapi tabel.
-3. D0 sudah diarsipkan di v1_active_task dan builder v2 sudah diuji. Buat registry lintas sesi serta review admission tambahan sebelum rebuild versi penerimaan; jangan mengubah arsip batch-01.
-4. Lanjutkan penerimaan A–B yang belum selesai: data tambahan, registry, admission, dan manifest evaluasi. Jangan membuat ulang builder/window yang sudah tersedia tanpa perubahan sumber/config. Notebook, registry kandidat pemodelan, dan training tetap belum dikerjakan.
-5. Jalankan baseline D1 pada exp01 sebelum menilai perubahan lain. Gunakan manifest batch-02 yang sama antarkonfigurasi; jangan menambahkan evaluasi sebelum–sesudah atau pembandingan batch-00/batch-01.
-6. Jangan menambahkan ID/difficulty/set/time limit ke fitur untuk mengejar accuracy. Peserta dipakai untuk menjaga pemisahan data, bukan sasaran classifier.
-7. Jangan menghapus peserta tanpa Low, mengubah catatan protokol sumber lama, melabel ulang di luar pemetaan v2, atau melonggarkan mutu sensor untuk meningkatkan skor. Easy tambahan tanpa timer adalah protokol pengambilan baru, bukan perubahan catatan lama.
-8. Jangan menjalankan lagi 12 eksperimen lama tanpa perubahan yang jelas, membuat launcher Run All lintas eksperimen, atau mengubah source batch-01 demi batch baru.
-9. Catat keputusan, kandidat yang tidak eligible, hasil negatif, dan perubahan versi. Model optimal berarti terbaik dalam cakupan pengujian yang sah, bukan skor maksimum setelah banyak percobaan pada test yang sama.
+1. Terima dan gabungkan pengambilan tambahan; rebuild v2, tinjau proporsi, lalu sahkan release.
+2. Implementasikan exp00 dan tes kontrak sampai lulus. Bekukan registry/group/endpoint sebelum full.
+3. Siapkan satu paket notebook/shared/dependency, uji pada runtime bersih, lalu jalankan baseline dan keluarga inti.
+4. Jalankan cabang advanced yang eligible dan exp14 sesuai registry yang dibekukan. Periksa parity inference sebelum menyatakan artefak siap digunakan.
+5. Laporkan hasil batch-02 sendiri. Pertahankan arsip sebelumnya; tidak ada kewajiban mengulang dataset v1 atau mengubah hasil lama.
+
+Paket implementasi sudah disiapkan tanpa training classifier atau epoch neural. Pemeriksaan teknis tidak menggantikan pemeriksaan saat fitting pada runtime dan dataset final. Pekerjaan berikutnya tetap penerimaan data tambahan, persetujuan proporsi, pembekuan release, serta persiapan cache sensor sebelum training penelitian.
 
 ## Referensi metode
 
-Rencana memakai bukti lokal pada diagnosis dan kode sumber yang ditautkan, serta dokumentasi primer untuk batas metode. Dokumentasi web dapat lebih baru daripada environment arsip; versi dependency implementasi nanti harus dipin dan diuji, bukan mengikuti versi terbaru secara buta.
-
-- [Grouped cross-validation](https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators-for-grouped-data): pemisahan grup tidak sama dengan memasukkan identitas sebagai fitur.
-- [Nested cross-validation](https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html): pemilihan parameter/prosedur dipisahkan dari test luar.
-- [Resampling pitfalls](https://imbalanced-learn.org/stable/common_pitfalls.html): resampling seluruh dataset sebelum split menyebabkan kebocoran.
-- [Muñoz dkk., validitas HRV ultra-short](https://pmc.ncbi.nlm.nih.gov/articles/PMC4586373/) dan [Burma dkk., reliabilitas/validitas HRV ultra-short](https://pubmed.ncbi.nlm.nih.gov/33856258/): durasi perlu dinilai menurut fitur dan kondisi, bukan diasumsikan universal.
-- [Probability calibration](https://scikit-learn.org/stable/modules/calibration.html): score dan probabilitas tidak dapat dipertukarkan tanpa dasar.
-
-Tidak ada hasil model batch-02 pada dokumen ini. Dataset v2 awal dan audit teknis window/baseline sudah tersedia; pemilihan kandidat, penerimaan sumber tambahan, jumlah fold D1, dan pengujian model tetap menunggu tahap berikutnya.
+- [Grouped CV](https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators-for-grouped-data), [StratifiedGroupKFold](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.StratifiedGroupKFold.html), dan [nested CV](https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html).
+- [Resampling pitfalls](https://imbalanced-learn.org/stable/common_pitfalls.html): resampling harus berada di training partition.
+- [Calibration](https://scikit-learn.org/stable/modules/calibration.html): decision score dan probabilitas tidak dipertukarkan.
+- [HGB](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.HistGradientBoostingClassifier.html) dan [CatBoost](https://catboost.ai/docs/en/concepts/python-reference_catboostclassifier): missing handling dan training options mengikuti versi yang dibekukan.
+- [FT-Transformer, penelitian dan implementasi](https://github.com/yandex-research/rtdl-revisiting-models).
+- [TabPFN, Nature 2025](https://www.nature.com/articles/s41586-024-08328-6) dan [repository resmi](https://github.com/PriorLabs/TabPFN): checkpoint/hardware/lisensi harus diperiksa sebelum dipakai.

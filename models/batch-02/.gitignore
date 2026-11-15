@@ -1,0 +1,8 @@
+.venv/
+inputs/
+technical_validation/tmp/
+registry/session_registry.local.json
+outputs/**/writer.lock
+outputs/**/pipeline.joblib
+outputs/**/inner/
+outputs/**/inner_refit/
