@@ -1,0 +1,50 @@
+{
+  "session_name": "20261116_151757_P01_coding_task",
+  "study_session_status": "unlabeled",
+  "study_event_count": 0,
+  "study_events_file": null,
+  "analyzed_at": "2026-11-16T15:37:13.892298+07:00",
+  "baseline": {
+    "rmssd_ms": 72.04593001235285,
+    "sdnn_ms": 85.64155090781499,
+    "status": "ready"
+  },
+  "total_windows": 176,
+  "task_summary_by_set": {},
+  "excluded_window_count": {
+    "mixed": 0,
+    "feedback": 0,
+    "rating": 0,
+    "rest": 0,
+    "pre_task": 0,
+    "post_task": 0,
+    "interrupted": 0,
+    "unlabeled": 176,
+    "baseline": 0,
+    "other_phase": 0,
+    "sensor_quality": 0
+  },
+  "task_state_breakdown_count": {
+    "FOCUSED": 0,
+    "CONFUSED": 0,
+    "SCANNING": 0,
+    "OVERLOADED": 0,
+    "DISTRACTED": 0
+  },
+  "state_breakdown_count": {
+    "FOCUSED": 0,
+    "CONFUSED": 70,
+    "SCANNING": 0,
+    "OVERLOADED": 106,
+    "DISTRACTED": 0
+  },
+  "state_breakdown_percent": {
+    "FOCUSED": 0.0,
+    "CONFUSED": 39.8,
+    "SCANNING": 0.0,
+    "OVERLOADED": 60.2,
+    "DISTRACTED": 0.0
+  },
+  "average_cognitive_load_score": null,
+  "timeline_file": "multimodal_timeline.csv"
+}
