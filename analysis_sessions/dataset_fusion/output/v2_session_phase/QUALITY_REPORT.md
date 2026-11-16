@@ -16,29 +16,29 @@ Baseline recorder ready dipisahkan dari baseline usable builder. Rasio hanya ter
 
 ## Validasi cache HRV 25 detik
 
-Diperiksa 6689 window: 6659 sesuai replay utama; 30 sesuai urutan timer live sebelum paket tepat di endpoint; tidak ada selisih yang tidak terjelaskan. Semua rincian ada di replay_validation.json. Dataset baru memakai aturan endpoint yang konsisten, tidak menyalin angka cache agar tampak identik.
+Diperiksa 7460 window: 7429 sesuai replay utama; 31 sesuai urutan timer live sebelum paket tepat di endpoint; tidak ada selisih yang tidak terjelaskan. Semua rincian ada di replay_validation.json. Dataset baru memakai aturan endpoint yang konsisten, tidak menyalin angka cache agar tampak identik.
 
 ## Distribusi
 
 | Window | Dataset | Low | Medium | High | Total | Peserta |
 |---|---|---:|---:|---:|---:|---:|
-| window_15s_step_5s | good_only | 438 | 620 | 642 | 1700 | 17 |
-| window_15s_step_5s | good_acceptable | 870 | 1134 | 1251 | 3255 | 17 |
-| window_15s_step_5s | all_data | 1447 | 1805 | 1964 | 5216 | 18 |
-| window_25s_step_5s | good_only | 402 | 541 | 574 | 1517 | 14 |
-| window_25s_step_5s | good_acceptable | 797 | 988 | 1137 | 2922 | 17 |
-| window_25s_step_5s | all_data | 1281 | 1477 | 1696 | 4454 | 18 |
-| window_45s_step_5s | good_only | 371 | 323 | 440 | 1134 | 13 |
-| window_45s_step_5s | good_acceptable | 732 | 657 | 891 | 2280 | 16 |
-| window_45s_step_5s | all_data | 1105 | 966 | 1250 | 3321 | 18 |
+| window_15s_step_5s | good_only | 522 | 724 | 642 | 1888 | 18 |
+| window_15s_step_5s | good_acceptable | 1062 | 1266 | 1251 | 3579 | 19 |
+| window_15s_step_5s | all_data | 1935 | 2001 | 1964 | 5900 | 20 |
+| window_25s_step_5s | good_only | 489 | 630 | 574 | 1693 | 15 |
+| window_25s_step_5s | good_acceptable | 984 | 1093 | 1137 | 3214 | 19 |
+| window_25s_step_5s | all_data | 1760 | 1633 | 1696 | 5089 | 20 |
+| window_45s_step_5s | good_only | 455 | 381 | 440 | 1276 | 14 |
+| window_45s_step_5s | good_acceptable | 908 | 728 | 891 | 2527 | 18 |
+| window_45s_step_5s | all_data | 1572 | 1052 | 1250 | 3874 | 20 |
 
 ## Penyaringan window
 
 | Window | Kandidat | Target campuran | Kalibrasi/tidak terlacak | Berlabel, HRV tidak layak | Tier poor |
 |---|---:|---:|---:|---:|---:|
-| 15s | 6727 | 1511 | 0 | 565 | 1961 |
-| 25s | 6689 | 2235 | 0 | 390 | 1532 |
-| 45s | 6613 | 3292 | 0 | 258 | 1041 |
+| 15s | 7502 | 1602 | 0 | 857 | 2321 |
+| 25s | 7460 | 2371 | 0 | 674 | 1875 |
+| 45s | 7376 | 3502 | 0 | 512 | 1347 |
 
 Kolom HRV/tier poor merupakan diagnostik pada window berlabel dan dapat saling overlap. Tier poor juga dapat berasal dari kualitas eye; rincian kriteria tersimpan di CSV. all_data tidak membuang tier poor. CSV curated hanya menerapkan tier sensor, tanpa pembatasan nama peserta.
 
@@ -46,37 +46,70 @@ Kolom HRV/tier poor merupakan diagnostik pada window berlabel dan dapat saling o
 
 | Window | Fase sumber | Window Low |
 |---|---|---:|
-| 15s | active_task | 378 |
-| 15s | feedback | 91 |
+| 15s | active_task | 460 |
+| 15s | feedback | 93 |
 | 15s | interrupted | 3 |
-| 15s | mixed | 356 |
+| 15s | mixed | 447 |
 | 15s | post_task | 4 |
-| 15s | pre_task | 30 |
-| 15s | rest | 8 |
-| 25s | active_task | 266 |
-| 25s | feedback | 38 |
+| 15s | pre_task | 34 |
+| 15s | rest | 21 |
+| 25s | active_task | 319 |
+| 25s | feedback | 40 |
 | 25s | interrupted | 1 |
-| 25s | mixed | 464 |
+| 25s | mixed | 580 |
 | 25s | post_task | 2 |
-| 25s | pre_task | 21 |
-| 25s | rest | 5 |
-| 45s | active_task | 146 |
+| 25s | pre_task | 26 |
+| 25s | rest | 16 |
+| 45s | active_task | 168 |
 | 45s | feedback | 4 |
-| 45s | mixed | 567 |
-| 45s | pre_task | 10 |
-| 45s | rest | 5 |
+| 45s | mixed | 712 |
+| 45s | pre_task | 12 |
+| 45s | rest | 12 |
 
 mixed berarti beberapa fase dengan target Low yang sama. Detail per segmen ada pada window_phase_mix; jumlah window bukan durasi unik dan tidak menyatakan semua Low berasal dari pengerjaan easy.
 
 ## Pemodelan berikutnya
 
-Gunakan 26 predictor sensor pada feature_columns.json, bukan semua kolom numerik. Target/difficulty/fase, nama peserta, ID soal, waktu, dan kualitas adalah metadata atau label, bukan X. Identitas tetap dipakai untuk grouping/deduplikasi. Imputasi, scaling, seleksi fitur, class weight dan oversampling dilakukan pada training fold, tidak pada CSV sumber. Belum ada training model atau rekaman Low tambahan pada build ini. Batch-01 tetap arsip; batch-02 memakai evaluasinya sendiri.
+Gunakan 26 predictor sensor pada feature_columns.json, bukan semua kolom numerik. Target/difficulty/fase, nama peserta, ID soal, waktu, dan kualitas adalah metadata atau label, bukan X. Identitas tetap dipakai untuk grouping/deduplikasi. Imputasi, scaling, seleksi fitur, class weight dan oversampling dilakukan pada training fold, tidak pada CSV sumber. Builder tidak melatih model; sumber tambahan yang diterima dijelaskan pada ringkasan pembaruan. Batch-01 tetap arsip; batch-02 memakai evaluasinya sendiri.
 
 Window overlap bukan observasi independen. Durasi unik dilaporkan per kelas/rekaman pada class_distribution.csv. Mutu sensor dan komposisi kelas dapat berubah antarwindow; jumlah row terbesar bukan bukti window terbaik. Endpoint pembanding dan manifest evaluasi batch-02 dibuat setelah data tambahan diterima.
 
+## Pembaruan sumber pada build ini
+
+Rekaman tanpa penanda aktivitas tidak diberi label Low secara manual. Eksklusi yang dikonfigurasi memakai session ID sehingga perubahan nama folder tidak mengubah keputusan.
+
+| Folder yang tidak dipakai | Session ID | Alasan |
+|---|---|---|
+| bangsur_easy_only | 20261116_151757_P01_coding_task | excluded_session: missing_task_events_operator_not_connected: operator confirmed that bangsur_easy_only was not connected to CodeArrange; activity labels are unavailable. |
+
+Sumber yang dikecualikan tetap disimpan dan di-hash. Tidak ada event atau ID soal yang dibuat untuk melengkapinya.
+
+### Perubahan good_acceptable
+
+| Window | Low sebelum | Medium sebelum | High sebelum | Tambahan Low | Tambahan Medium | Tambahan High | Total sesudah | Rasio terbesar/terkecil |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 15s | 870 | 1134 | 1251 | 192 | 132 | 0 | 3579 | 1.192 |
+| 25s | 797 | 988 | 1137 | 187 | 105 | 0 | 3214 | 1.155 |
+| 45s | 732 | 657 | 891 | 176 | 71 | 0 | 2527 | 1.247 |
+
+Rasio tersebut menjelaskan proporsi, bukan ambang kecukupan statistik. Builder mempertahankan semua window yang lolos, tanpa kuota kelas atau pemotongan manual.
+
+### Kontribusi rekaman yang belum ada pada build sebelumnya
+
+| Window | Rekaman | Low | Medium | High | Durasi unik Low (menit) | Durasi unik Medium (menit) |
+|---|---|---:|---:|---:|---:|---:|
+| 15s | bangsur_easy_medium | 95 | 113 | 0 | 8.67 | 10.92 |
+| 25s | bangsur_easy_medium | 96 | 95 | 0 | 8.83 | 10.92 |
+| 45s | bangsur_easy_medium | 97 | 68 | 0 | 9.25 | 8.33 |
+| 15s | ihsan | 97 | 19 | 0 | 13.42 | 2.83 |
+| 25s | ihsan | 91 | 10 | 0 | 14.75 | 2.67 |
+| 45s | ihsan | 79 | 3 | 0 | 14.33 | 1.58 |
+
+Durasi unik merupakan gabungan interval yang diterima, bukan jumlah row dikali panjang window. Satu sesi dapat menyumbang jumlah berbeda pada setiap panjang window. Rincian identitas dan delta tersimpan pada update_summary di manifest.
+
 ## Proses pembuatan dan pembaruan
 
-Build ini membaca 19 rekaman dari 18 orang pada sessions/saved_session. Inventory memilih satu salinan acquisition dan menyatukan identitas orang yang mempunyai beberapa rekaman. Build ini belum memasukkan pengambilan Low tambahan yang direncanakan.
+Build ini membaca 21 rekaman dari 20 orang pada sessions/saved_session. Inventory memilih satu salinan acquisition dan menyatukan identitas orang yang mempunyai beberapa rekaman. Sumber yang diterima dan dikecualikan dicatat pada inventory serta manifest.
 
 1. Builder memeriksa identitas sensor/ledger, readiness kedua kalibrasi, timestamp, dan grid HRV sumber.
 2. Builder mengolah RR mentah menurut urutan paket dan waktu ketersediaan, lalu menghitung ulang HRV pada tiga panjang window.
@@ -101,7 +134,7 @@ Good/acceptable adalah tier kelengkapan/clipping pada window. Hasil validasi spa
 
 ## Kondisi sensor dan nilai hilang
 
-Dari 19 rekaman sumber, validasi gaze asli mencatat 2 lolos, 17 gagal, dan 0 tanpa keputusan. Baseline HRV layak pada 17 rekaman. Angka ini mencakup semua sumber, bukan hanya rekaman yang mempunyai window curated.
+Dari 21 rekaman sumber, validasi gaze asli mencatat 2 lolos, 19 gagal, dan 0 tanpa keputusan. Baseline HRV layak pada 18 rekaman. Angka ini mencakup semua sumber, bukan hanya rekaman yang mempunyai window curated.
 
 Kegagalan validasi gaze tidak otomatis membuktikan EAR, blink, atau HRV pada rekaman yang sama tidak dapat digunakan. Kita mempertahankan hasil pengukuran serta status validasi aslinya; pemilihan kelompok fitur merupakan tahap pemodelan.
 
@@ -120,7 +153,7 @@ Identitas, difficulty, fase, set/soal, waktu, dan kualitas tetap metadata. Label
 
 ## Pemeriksaan build
 
-Pemeriksaan pembanding memeriksa 772 window sensor pada ketiga panjang window, termasuk sampel awal/tengah/akhir dan perubahan status ready/gap/recovery bila tersedia. Perhitungan pembanding memakai RR hasil preprocessing yang tersedia sebelum endpoint dan agregasi NumPy atas frame eye yang telah diperiksa validitasnya. Pemeriksaan ini menguji penggabungan dan rumus, bukan memvalidasi algoritma pengukuran gaze terhadap ground truth baru.
+Pemeriksaan pembanding memeriksa 868 window sensor pada ketiga panjang window, termasuk sampel awal/tengah/akhir dan perubahan status ready/gap/recovery bila tersedia. Perhitungan pembanding memakai RR hasil preprocessing yang tersedia sebelum endpoint dan agregasi NumPy atas frame eye yang telah diperiksa validitasnya. Pemeriksaan ini menguji penggabungan dan rumus, bukan memvalidasi algoritma pengukuran gaze terhadap ground truth baru.
 
 Validasi seluruh row memeriksa identitas/duplikasi, zona waktu dan durasi, grid 5 detik, target/fase, nilai infinity/negatif yang tidak sah, HRV readiness, baseline ratio, blink rate, dan jumlah proporsi eye-state. Setiap view harus memenuhi good_only ⊆ good_acceptable ⊆ all_data dengan nilai identik pada window yang sama. Checksum dan jumlah data diverifikasi sebelum dan setelah publikasi. Rincian mesin tersimpan pada manifest.json dan replay_validation.json.
 
@@ -129,6 +162,7 @@ Validasi seluruh row memeriksa identitas/duplikasi, zona waktu dan durasi, grid 
 1. Tambahkan folder sesi lengkap ke sessions/saved_session: eye_tracking.csv, hrv.csv, rr_raw.csv, task_events.csv, serta file readiness/ringkasan kalibrasi yang digunakan builder. Jangan menimpa rekaman lama.
 2. Pastikan ID sensor dan ledger konsisten. Konfirmasikan identitas lintas sesi pada inventory; rekaman ulang orang yang sama harus memakai grup orang yang sama. Nama folder yang berubah tidak boleh membuat acquisition lama dihitung dua kali.
 3. Sumber baru tidak perlu masuk daftar proposed_good/questionable. Builder menilai setiap window memakai aturan sensor yang sama. Jika operator memakai alias baru untuk orang lama, perbarui pemetaan identitas yang dapat dikonfirmasi sebelum build.
+Sesi tanpa ledger harus dipulihkan penandanya atau dikecualikan secara eksplisit melalui session_exclusions; jangan membuat event atau label pengganti. Sumber bermasalah yang tidak dikecualikan menghentikan publikasi.
 4. Jalankan tes, lalu rebuild dari root repository dengan perintah berikut:
 
 ```powershell
@@ -142,4 +176,4 @@ Builder membuat staging sementara dan menahan bundle lama sebagai rollback selam
 
 ## Hubungan dengan hasil pemodelan
 
-Hasil batch-00/batch-01 tetap merujuk hash dataset saat masing-masing training. Pembaruan CSV ini tidak melatih ulang model atau mengganti skor lama. Angka data bertambah karena admission berbasis kualitas; kenaikan skor model belum diuji pada bundle hasil refresh ini. Tiga window good_acceptable adalah kandidat utama untuk pemodelan berikutnya, sedangkan v1 menjadi referensi historis. Ringkasannya tersedia pada [README output](../README.md).
+Hasil batch-00/batch-01 tetap merujuk hash dataset saat masing-masing training. Pembaruan CSV ini tidak melatih ulang model atau mengganti skor lama. Admission berbasis kualitas tetap berlaku setelah sumber tambahan digabung; kenaikan skor model belum diuji pada bundle ini. Tiga window good_acceptable adalah kandidat utama untuk pemodelan berikutnya, sedangkan v1 menjadi referensi historis. Ringkasannya tersedia pada [README output](../README.md).

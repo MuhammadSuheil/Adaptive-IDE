@@ -7,14 +7,14 @@ from __future__ import annotations
 
 import argparse
 import csv
-from datetime import datetime, timedelta, timezone
-from itertools import groupby
 import json
 import math
-from pathlib import Path
 import platform
 import sys
 import tempfile
+from datetime import UTC, datetime, timedelta
+from itertools import groupby, pairwise
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -22,15 +22,27 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from analysis_sessions.dataset_fusion import build_dataset as shared
-from analysis_sessions.session_inventory import participant_group, select_session_directories
+from analysis_sessions.dataset_fusion.v2_documentation import (
+    build_update_summary,
+    render_output_index,
+    report_sections,
+)
+from analysis_sessions.dataset_fusion.v2_integrity import (
+    ADMISSION_POLICY,
+    guard_output,
+    publish_bundle,
+    quality_views,
+    validate_frame,
+    verify_bundle,
+)
+from analysis_sessions.dataset_fusion.v2_sensor_checks import audit_sensor_samples
+from analysis_sessions.session_inventory import (
+    participant_group,
+    select_session_directories,
+)
 from fuse_and_analyze import calibration_ready_ms, context_at, summarize_segments
 from hrv_monitor_prototype.calculate_hrv import LiveHRV
 from hrv_monitor_prototype.preprocess_rr import RRPreprocessor
-from analysis_sessions.dataset_fusion.v2_integrity import (
-    ADMISSION_POLICY, quality_views, validate_frame, verify_bundle, guard_output, publish_bundle,
-)
-from analysis_sessions.dataset_fusion.v2_sensor_checks import audit_sensor_samples
-from analysis_sessions.dataset_fusion.v2_documentation import report_sections, render_output_index
 
 WINDOWS = (15, 25, 45)
 LABELS = ('Low', 'Medium', 'High')
@@ -97,7 +109,7 @@ def segments_for_window(start, end, events, ready_ms):
     ordered = sorted(boundaries)
     return [{**context_at((left+right)/2, events, ready_ms),
              'duration_seconds': (right-left)/1000, 'proportion': (right-left)/(end-start)}
-            for left, right in zip(ordered, ordered[1:])]
+            for left, right in pairwise(ordered)]
 
 
 def replay_rr(raw, task_origin, stop_seconds, windows=WINDOWS, before_boundary=False):
@@ -347,11 +359,16 @@ def export_window(destination, rows, excluded, reports, inventory, seconds, *, c
 def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subjects=None, *, replace=False):
     input_dir = Path(input_dir).resolve()
     output_dir = guard_output(input_dir, output_dir, replace=replace)
+    previous_manifest = verify_bundle(output_dir) if output_dir.exists() else None
     config = shared.load_config(config_path)
     sources_before = shared.snapshot(input_dir)
-    directories, inventory = select_session_directories(input_dir, subjects)
+    directories, inventory = select_session_directories(input_dir, subjects,
+        session_exclusions=config.get('session_exclusions', {}))
     if not directories:
         raise ValueError('No selected sensor sessions.')
+    for directory in directories:
+        if not (directory/'task_events.csv').is_file():
+            raise ValueError(f'{directory.name}: missing task_events.csv; source is not explicitly excluded.')
     results = {seconds: ([], [], []) for seconds in WINDOWS}
     audits = []
     for directory in directories:
@@ -367,6 +384,7 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
         destination = Path(temporary)/'bundle'
         destination.mkdir()
         counts = {f'window_{s}s_step_5s': export_window(destination/f'window_{s}s_step_5s', *results[s], inventory, s, config=config) for s in WINDOWS}
+        update_summary = build_update_summary(results, counts, inventory, previous_manifest)
         (destination/'replay_validation.json').write_text(json.dumps(audits, indent=2, allow_nan=False)+'\n', encoding='utf-8')
         report_lines = ['# Dataset fusion v2: session phase', '',
             '## Label dan window', '',
@@ -401,9 +419,9 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
             report_lines += [f'| {seconds}s | {phase} | {count} |' for phase, count in phases.items()]
         report_lines += ['', 'mixed berarti beberapa fase dengan target Low yang sama. Detail per segmen ada pada window_phase_mix; jumlah window bukan durasi unik dan tidak menyatakan semua Low berasal dari pengerjaan easy.', '',
             '## Pemodelan berikutnya', '',
-            'Gunakan 26 predictor sensor pada feature_columns.json, bukan semua kolom numerik. Target/difficulty/fase, nama peserta, ID soal, waktu, dan kualitas adalah metadata atau label, bukan X. Identitas tetap dipakai untuk grouping/deduplikasi. Imputasi, scaling, seleksi fitur, class weight dan oversampling dilakukan pada training fold, tidak pada CSV sumber. Belum ada training model atau rekaman Low tambahan pada build ini. Batch-01 tetap arsip; batch-02 memakai evaluasinya sendiri.', '',
+            'Gunakan 26 predictor sensor pada feature_columns.json, bukan semua kolom numerik. Target/difficulty/fase, nama peserta, ID soal, waktu, dan kualitas adalah metadata atau label, bukan X. Identitas tetap dipakai untuk grouping/deduplikasi. Imputasi, scaling, seleksi fitur, class weight dan oversampling dilakukan pada training fold, tidak pada CSV sumber. Builder tidak melatih model; sumber tambahan yang diterima dijelaskan pada ringkasan pembaruan. Batch-01 tetap arsip; batch-02 memakai evaluasinya sendiri.', '',
             'Window overlap bukan observasi independen. Durasi unik dilaporkan per kelas/rekaman pada class_distribution.csv. Mutu sensor dan komposisi kelas dapat berubah antarwindow; jumlah row terbesar bukan bukti window terbaik. Endpoint pembanding dan manifest evaluasi batch-02 dibuat setelah data tambahan diterima.', '']
-        report_lines += report_sections(results, audits, config)
+        report_lines += report_sections(results, audits, config, update_summary)
         (destination/'QUALITY_REPORT.md').write_text('\n'.join(report_lines), encoding='utf-8')
         if shared.snapshot(input_dir) != sources_before:
             raise RuntimeError('Raw sources changed during build; no bundle published.')
@@ -413,8 +431,11 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
                       ROOT/'fuse_and_analyze.py', ROOT/'hrv_monitor_prototype/calculate_hrv.py',
                       ROOT/'hrv_monitor_prototype/preprocess_rr.py', ROOT/'hrv_monitor_prototype/config.py']
         manifest = {
-            'schema_version': 2, 'generated_at_utc': datetime.now(timezone.utc).isoformat(),
+            'schema_version': 2, 'generated_at_utc': datetime.now(UTC).isoformat(),
             'input_directory': str(input_dir), 'selected_folders': [p.name for p in directories],
+            'selected_session_ids': [r['session_id'] for r in results[25][2]],
+            'excluded_sessions': [r for r in inventory if r['reason'].startswith('excluded_session:')],
+            'update_summary': update_summary,
             'window_seconds': list(WINDOWS), 'step_seconds': 5, 'target': 'cognitive_load_label',
             'label_policy': {'active_task': ACTIVE_LABELS, 'Low_phases': list(LOW_PHASES), 'window_rule': 'unanimous_target'},
             'quality_configuration': config, 'quality_configuration_sha256': shared.digest(config_path),
@@ -431,10 +452,10 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
         archive_csv = output_dir.parent/'v1_active_task/good_acceptable.csv'
         index = Path(temporary)/'README.md'
         if output_dir.name == 'v2_session_phase' and archive_csv.exists():
-            index.write_text(render_output_index(archive_csv, counts), encoding='utf-8')
+            index.write_text(render_output_index(archive_csv, counts, update_summary), encoding='utf-8')
         publish_bundle(destination, output_dir, replace=replace)
         if index.exists():
-            index.replace(output_dir.parent/'README.md')
+            shared.publish_artifact(index, output_dir.parent/'README.md')
     print(json.dumps(counts, indent=2), flush=True)
     return manifest
 

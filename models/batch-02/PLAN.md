@@ -1,6 +1,6 @@
 # Batch-02: Rencana Eksperimen Cognitive Load
 
-Tanggal revisi: 15 November 2026.
+Tanggal revisi: 16 November 2026.
 
 ## 1. Status, tujuan, dan syarat mulai
 
@@ -17,7 +17,7 @@ Training penelitian hanya boleh berjalan setelah empat kondisi berikut terpenuhi
 | Syarat | Status saat revisi ini | Bukti penerimaan |
 |---|---|---|
 | Builder dan integritas dataset diperbaiki | Selesai untuk sumber yang tersedia | Manifest v2, tes builder, validasi sensor/label/subset/checksum |
-| Pengambilan tambahan selesai dan tergabung | Belum selesai | Daftar sesi tambahan yang benar-benar ada dan hash sumbernya masuk manifest hasil rebuild |
+| Pengambilan tambahan selesai dan tergabung | Dua rekaman tambahan tergabung; keputusan menutup pengambilan belum ditetapkan | Ihsan dan bangsur_easy_medium masuk manifest; bangsur_easy_only dikecualikan karena tidak terhubung ke CodeArrange |
 | Proporsi kelas setelah penambahan ditinjau dan disetujui tim | Belum selesai | Jumlah kelas, rasio terbesar/terkecil, durasi unik, dan cakupan rekaman pada ketiga window |
 | Input batch-02 dibekukan | Belum selesai | Release dataset, registry identitas, hash tiga CSV/allowlist, serta manifest split |
 
@@ -27,17 +27,21 @@ Peninjauan proporsi tidak mensyaratkan rasio persis 1:1:1 dan tidak boleh dilaku
 
 Audit input, tes sintetis, dan prototipe teknis boleh dikerjakan lebih dahulu. Skornya tidak masuk hasil penelitian batch-02.
 
-### 1.2 Acuan dataset terkini, sebelum pengambilan tambahan
+### 1.2 Acuan dataset terkini, setelah tambahan 16 November 2026
 
 | good_acceptable | Low | Medium | High | Total | Orang |
 |---|---:|---:|---:|---:|---:|
-| 15 detik / step 5 | 870 | 1.134 | 1.251 | 3.255 | 17 |
-| 25 detik / step 5 | 797 | 988 | 1.137 | 2.922 | 17 |
-| 45 detik / step 5 | 732 | 657 | 891 | 2.280 | 16 |
+| 15 detik / step 5 | 1.062 | 1.266 | 1.251 | 3.579 | 19 |
+| 25 detik / step 5 | 984 | 1.093 | 1.137 | 3.214 | 19 |
+| 45 detik / step 5 | 908 | 728 | 891 | 2.527 | 18 |
 
-Angka ini bukan jumlah final batch-02. Medium merupakan kelas terkecil pada varian 45 detik; balancing tidak lagi boleh dirancang sebagai Low-only.
+Rasio kelas terbesar/terkecil masing-masing sekitar 1,192; 1,155; dan 1,247. Angka ini belum menjadi release final batch-02. Medium masih merupakan kelas terkecil pada varian 45 detik; kebutuhan pengambilan berikutnya tidak boleh dirancang sebagai Low-only. Proporsi tidak perlu dipaksa sama dengan membuang window yang layak.
 
-Sumber saat revisi ini mencakup 19 rekaman dari 18 orang. Admission v2 sekarang memakai kualitas window tanpa pembatasan daftar nama. `team_review_group` hanya metadata historis. Ambang kualitas tetap; validasi gaze asli tetap terpisah dari tier kelengkapan/clipping. Rebuild tidak memperbaiki akurasi pengukuran gaze yang gagal.
+Sumber yang diproses saat revisi ini mencakup 21 rekaman dari 20 orang. Tambahan berasal dari `ihsan` dan `bangsur_easy_medium`; Ihsan berbeda dari Ikhsan. Kedua folder Bangsur tetap memakai satu identitas orang. Sesi `bangsur_easy_only` dengan ID `20261116_151757_P01_coding_task` tidak memiliki ledger aktivitas karena operator belum menghubungkan CodeArrange, sehingga dikecualikan melalui `session_exclusions` tanpa mengubah sumber atau membuat label pengganti.
+
+Semua window tambahan yang memenuhi aturan dipertahankan, tanpa kuota per kelas maupun panjang window. Admission v2 memakai kualitas window tanpa pembatasan daftar nama. `team_review_group` hanya metadata historis. Ambang kualitas tetap; validasi gaze asli tetap terpisah dari tier kelengkapan/clipping. Dua rekaman tambahan yang dipakai mempunyai validasi gaze terakhir diterima manual, tetapi tidak melewati ambang validasi. Rebuild tidak memperbaiki akurasi pengukuran gaze yang gagal.
+
+Penggabungan ini memperbarui sembilan view dataset dan dokumentasinya, bukan hasil model. Gate pada `registry/dataset_release.json` tetap pending sampai tim menetapkan kelengkapan pengambilan, menerima proporsi/kualitas, dan membekukan input. Tidak ada training atau persetujuan release otomatis.
 
 Baca [pilihan dataset](../../analysis_sessions/dataset_fusion/output/README.md) dan [laporan v2](../../analysis_sessions/dataset_fusion/output/v2_session_phase/QUALITY_REPORT.md) untuk definisi fitur, jumlah seluruh view, serta prosedur menambah sumber. Perbarui bundle aktif dengan builder `--replace`, sesuai prosedur yang sudah diuji. V1 tetap arsip.
 
@@ -428,7 +432,7 @@ Urutan pelaksanaan:
 4. Jalankan cabang advanced yang eligible dan exp14 sesuai registry yang dibekukan. Periksa parity inference sebelum menyatakan artefak siap digunakan.
 5. Laporkan hasil batch-02 sendiri. Pertahankan arsip sebelumnya; tidak ada kewajiban mengulang dataset v1 atau mengubah hasil lama.
 
-Paket implementasi sudah disiapkan tanpa training classifier atau epoch neural. Pemeriksaan teknis tidak menggantikan pemeriksaan saat fitting pada runtime dan dataset final. Pekerjaan berikutnya tetap penerimaan data tambahan, persetujuan proporsi, pembekuan release, serta persiapan cache sensor sebelum training penelitian.
+Paket implementasi sudah disiapkan tanpa training classifier atau epoch neural. Pemeriksaan teknis tidak menggantikan pemeriksaan saat fitting pada runtime dan dataset final. Dua rekaman tambahan 16 November telah diproses. Pekerjaan berikutnya adalah menetapkan apakah pengambilan sudah cukup, menerima proporsi/kualitas, membekukan release, serta menyiapkan cache sensor sebelum training penelitian.
 
 ## Referensi metode
 

@@ -4,8 +4,11 @@ Andreas,20261030_105505_P01_coding_task,Andreas,Andreas,False,True,rekaman utama
 Athaya,20261028_100710_P01_coding_task,Athaya,Athaya,False,True,rekaman utama
 Baithar,20261030_151950_P01_coding_task,Baithar,Baithar,False,True,rekaman utama
 Baithar - Copy,20261030_151950_P01_coding_task,Baithar,Baithar,True,False,eye_tracking.csv: 48803 vs 49559 baris; tambahan hanya post_task; hrv.csv: 427 vs 434 baris; tambahan hanya post_task
+bangsur_easy_medium,20261116_154424_P01_coding_task,bangsur,bangsur_easy_medium,False,True,rekaman utama
+bangsur_easy_only,20261116_151757_P01_coding_task,bangsur,bangsur_easy_only,False,False,excluded_session: missing_task_events_operator_not_connected: operator confirmed that bangsur_easy_only was not connected to CodeArrange; activity labels are unavailable.
 Fabian,20261030_141412_P01_coding_task,Fabian,Fabian,False,True,rekaman utama
 faqih,20261028_084341_P01_coding_task,faqih,faqih,False,True,rekaman utama
+ihsan,20261116_161850_P01_coding_task,ihsan,ihsan,False,True,rekaman utama
 ikhsan,20261028_145744_P01_coding_task,ikhsan,ikhsan,False,True,rekaman utama
 irfan,20261028_133037_P01_coding_task,irfan,irfan,False,True,rekaman utama
 kaka,20261027_151755_P01_coding_task,kaka,kaka,False,True,rekaman utama

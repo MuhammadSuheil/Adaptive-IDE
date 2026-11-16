@@ -26,11 +26,17 @@
     "questionable": ["Andreas", "Athaya", "Rafi", "Raina", "Sam", "Savitri", "Shakilla", "Tio"]
   },
   "participant_notes": {
+    "ihsan": "Pengambilan tambahan 16 November 2026; orang yang berbeda dari ikhsan. Validasi gaze terakhir diterima manual tetapi tidak melewati ambang; status asli tetap dipertahankan.",
+    "bangsur": "Dua rekaman 16 November 2026 berasal dari orang yang sama. Sesi easy_only tidak terhubung ke CodeArrange dan dikecualikan; pengambilan berikutnya mengulang tingkat easy setelah medium.",
     "Ikhsan": "Team reports glasses; do not infer that glasses caused measurement errors.",
     "Shakilla": "Team reports a laptop camera at 30 FPS; medium only. Use observed camera metadata, not the requested FPS.",
     "Ramadhan": "Two recordings of one participant; interrupted first recording and repeated medium in the second. Keep both in the same evaluation group."
   },
   "repeated_difficulties_by_session": {
+    "bangsur_easy_medium": ["easy"],
     "Ramadhan-2": ["medium"]
+  },
+  "session_exclusions": {
+    "20261116_151757_P01_coding_task": "missing_task_events_operator_not_connected: operator confirmed that bangsur_easy_only was not connected to CodeArrange; activity labels are unavailable."
   }
 }

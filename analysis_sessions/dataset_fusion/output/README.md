@@ -5,9 +5,9 @@ Empat CSV berikut menjadi rujukan utama tim: tiga kandidat v2 untuk pekerjaan be
 | Dataset | Window / step | Low | Medium | High | Total row | Orang | Peran |
 |---|---|---:|---:|---:|---:|---:|---|
 | [v1 good_acceptable](v1_active_task/good_acceptable.csv) | 25 / 5 detik | 249 | 968 | 1077 | 2294 | 13 | Referensi dataset lama |
-| [v2 good_acceptable 15s](v2_session_phase/window_15s_step_5s/good_acceptable.csv) | 15 / 5 detik | 870 | 1134 | 1251 | 3255 | 17 | Kandidat dataset aktif |
-| [v2 good_acceptable 25s](v2_session_phase/window_25s_step_5s/good_acceptable.csv) | 25 / 5 detik | 797 | 988 | 1137 | 2922 | 17 | Kandidat dataset aktif |
-| [v2 good_acceptable 45s](v2_session_phase/window_45s_step_5s/good_acceptable.csv) | 45 / 5 detik | 732 | 657 | 891 | 2280 | 16 | Kandidat dataset aktif |
+| [v2 good_acceptable 15s](v2_session_phase/window_15s_step_5s/good_acceptable.csv) | 15 / 5 detik | 1062 | 1266 | 1251 | 3579 | 19 | Kandidat dataset aktif |
+| [v2 good_acceptable 25s](v2_session_phase/window_25s_step_5s/good_acceptable.csv) | 25 / 5 detik | 984 | 1093 | 1137 | 3214 | 19 | Kandidat dataset aktif |
+| [v2 good_acceptable 45s](v2_session_phase/window_45s_step_5s/good_acceptable.csv) | 45 / 5 detik | 908 | 728 | 891 | 2527 | 18 | Kandidat dataset aktif |
 
 ## Perbedaan v1 dan v2
 
@@ -34,3 +34,12 @@ Good/acceptable menilai kelengkapan/clipping, bukan jaminan akurasi gaze. Baca [
 ## Pembaruan dan pemodelan
 
 Builder memperbarui tabel ini dari jumlah hasil build setelah mengganti bundle v2. Simpan metadata identitas untuk deduplikasi/grouping, bukan sebagai predictor. Gunakan allowlist fitur dan target sesuai versi dataset. Model lama tetap merujuk snapshot/hash saat training; menimpa v2 tidak memperbarui hasil eksperimen yang sudah selesai.
+
+
+## Sumber pada pembaruan terakhir
+
+Builder menerima 21 rekaman dari 20 orang. 2 rekaman belum ada pada build sebelumnya. Semua window yang lolos dipertahankan; tidak ada kuota tambahan per kelas atau window.
+
+- bangsur_easy_only tidak digunakan: excluded_session: missing_task_events_operator_not_connected: operator confirmed that bangsur_easy_only was not connected to CodeArrange; activity labels are unavailable.
+
+Kontribusi per rekaman, perubahan jumlah kelas, durasi unik, dan batas kualitas dijelaskan pada [QUALITY_REPORT v2](v2_session_phase/QUALITY_REPORT.md). Pembaruan dataset tidak mengesahkan release pemodelan atau menjalankan training.

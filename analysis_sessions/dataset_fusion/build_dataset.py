@@ -2,23 +2,26 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import hashlib
 import json
 import math
 import os
-from pathlib import Path
 import platform
 import subprocess
 import sys
 import tempfile
+from datetime import UTC, datetime
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from analysis_sessions.session_inventory import participant_group, select_session_directories
+from analysis_sessions.session_inventory import (
+    participant_group,
+    select_session_directories,
+)
 from fuse_and_analyze import calibration_ready_ms, interval_segments, summarize_segments
 
 DEFAULT_CONFIG = Path(__file__).with_name("config.json")
@@ -144,9 +147,15 @@ def load_config(path=DEFAULT_CONFIG):
     expected = {"schema_version", "window_seconds", "step_seconds", "eye_coverage_bin_ms", "gaze_clip_margin_fraction",
                 "baseline_min_coverage", "quality", "participant_review_groups", "participant_notes", "repeated_difficulties_by_session"}
     if not isinstance(config, dict):
-        raise ValueError("Configuration must be a JSON object.")
-    if set(config) != expected:
-        raise ValueError(f"Config keys must be {sorted(expected)}; missing={sorted(expected-set(config))}, unknown={sorted(set(config)-expected)}")
+        raise ValueError("Configuration must be a JSON object.")  # noqa: TRY004 - preserve the configuration API
+    optional = {'session_exclusions'}
+    if expected-set(config) or set(config)-expected-optional:
+        raise ValueError(f"Config keys must include {sorted(expected)}; missing={sorted(expected-set(config))}, unknown={sorted(set(config)-expected-optional)}")
+    exclusions = config.get('session_exclusions', {})
+    if not isinstance(exclusions, dict) or any(
+            not isinstance(key, str) or not key.strip() or not isinstance(reason, str) or not reason.strip()
+            for key, reason in exclusions.items()):
+        raise ValueError('session_exclusions must map nonempty session IDs to nonempty reasons.')
     if type(config["schema_version"]) is not int or config["schema_version"] != 1 or config["window_seconds"] != 25 or config["step_seconds"] != 5:
         raise ValueError("v1 reads recorded 25-second / 5-second-step windows; it does not recompute RR windows.")
     def numeric(value):
@@ -509,7 +518,7 @@ def build_dataset(input_dir, output_dir, config_path=DEFAULT_CONFIG, subjects=No
         counts = write_artifacts(destination, frame, excluded, reports, inventory, config)
         code_paths = [Path(__file__).resolve(), ROOT / "analysis_sessions/session_inventory.py", ROOT / "fuse_and_analyze.py"]
         manifest = {
-            "schema_version": 1, "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "schema_version": 1, "generated_at_utc": datetime.now(UTC).isoformat(),
             "input_directory": str(input_dir), "selected_folders": [p.name for p in directories],
             "configuration": config, "configuration_sha256": digest(config_path),
             "dataset_eye_review_groups": DATASET_REVIEW_GROUPS,

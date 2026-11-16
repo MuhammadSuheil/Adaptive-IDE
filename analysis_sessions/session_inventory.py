@@ -3,17 +3,19 @@
 Only exact CSV prefixes with extra post_task rows and identical event/RR/
 calibration records are treated as equivalent. Source files are never changed.
 """
-from collections import defaultdict
 import csv
 import hashlib
-from pathlib import Path
 import re
+from collections import defaultdict
+from pathlib import Path
 
 import pandas as pd
 
 
 def participant_group(name):
     name = re.sub(r" - Copy(?: \(\d+\))?$", "", name, flags=re.IGNORECASE)
+    if name.casefold() in {'bangsur_easy_only', 'bangsur_easy_medium'}:
+        return 'bangsur'
     return "Ramadhan" if name == "Ramadhan-2" else name
 
 
@@ -46,8 +48,13 @@ def _equivalent_recording(primary, other):
     return "; ".join(differences)
 
 
-def select_session_directories(root, subjects=None):
+def select_session_directories(root, subjects=None, *, session_exclusions=None):
     root = Path(root)
+    session_exclusions = {} if session_exclusions is None else session_exclusions
+    if not isinstance(session_exclusions, dict) or any(
+            not isinstance(key, str) or not key.strip() or not isinstance(reason, str) or not reason.strip()
+            for key, reason in session_exclusions.items()):
+        raise ValueError('Session exclusions must map nonempty session IDs to nonempty reasons.')
     directories = [root] if (root / "eye_tracking.csv").exists() else [
         p for p in sorted(root.iterdir()) if p.is_dir() and (p / "eye_tracking.csv").exists()]
     if not directories:
@@ -65,18 +72,23 @@ def select_session_directories(root, subjects=None):
         grouped[session_id].append(directory)
     inventory, selected = [], []
     for session_id, group in grouped.items():
-        group.sort(key=lambda p: (bool(re.search(r" - Copy(?: \(\d+\))?$", p.name, re.I)), p.name.casefold()))
+        group.sort(key=lambda p: (bool(re.search(r" - Copy(?: \(\d+\))?$", p.name, re.IGNORECASE)), p.name.casefold()))
         canonical = group[0]
         requested = [p for p in group if p.name in subjects] if subjects else [canonical]
+        exclusion = session_exclusions.get(session_id)
+        if exclusion and subjects and requested:
+            raise ValueError(f'Explicitly requested session is excluded: {session_id}: {exclusion}')
         if subjects and len(requested) > 1:
             raise ValueError(f"Beberapa folder memakai ID {session_id}; pilih satu varian: {[p.name for p in requested]}")
         for directory in group:
             reason = "rekaman utama"
-            if directory != canonical:
+            if exclusion:
+                reason = f'excluded_session: {exclusion}'
+            elif directory != canonical:
                 # Explicit single-variant inspection is permitted even if variants differ.
                 reason = (_equivalent_recording(canonical, directory) if not subjects
                           else "varian ID sesi sama; pemilihan eksplisit")
-            chosen = directory in requested
+            chosen = directory in requested and exclusion is None
             inventory.append({"folder": directory.name, "session_id": session_id,
                               "participant_group": participant_group(canonical.name),
                               "canonical_folder": canonical.name, "is_variant": directory != canonical,
