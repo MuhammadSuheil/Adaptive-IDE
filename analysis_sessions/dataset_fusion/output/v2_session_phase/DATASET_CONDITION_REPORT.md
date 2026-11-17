@@ -1,165 +1,123 @@
-# Kondisi Dataset dan Pemeriksaan Kualitas Pengambilan Data
+# Kondisi Dataset Setelah Penggantian Selektif
 
-Tanggal pemeriksaan: 16 November 2026.
+Waktu pemeriksaan UTC: 2026-11-17T10:02:09.193871+00:00.
 
-Acuan: bundle v2 dengan waktu build `2026-11-16T15:24:24.254744+00:00`, setelah penggabungan Ihsan dan Bangsur. Laporan ini merupakan snapshot pemeriksaan, bukan hasil training batch-02. Pembaruan sumber berikutnya memerlukan pemeriksaan dan pembaruan angka laporan ini. Builder mengganti folder bundle saat rebuild; laporan manual ini perlu dibuat ulang atau disimpan sebelum rebuild jika tim memerlukan riwayatnya.
+## Kesimpulan
 
-## 1. Kesimpulan
+Proporsi ketiga kelas dipertahankan dari dataset sebelumnya. Sebagian window acceptable lama diganti window sesi tambahan yang lolos validasi gaze dan tidak lebih buruk pada tujuh indikator kualitas. Ini pembaruan dataset, bukan hasil evaluasi model. Data lama tidak dinyatakan seluruhnya tidak layak.
 
-Ketiga dataset `good_acceptable` sudah mempunyai proporsi kelas yang berdekatan. Pengambilan tambahan untuk mengejar jumlah persis 1:1:1 tidak mendesak.
-
-Tim masih perlu memperhatikan akurasi posisi gaze dan kestabilan perekaman RR pada sebagian sesi. Pengolahan dataset sudah lolos pemeriksaan integritas, tetapi pemeriksaan tersebut tidak membuktikan akurasi pengukuran fisiologis maupun kemampuan model membedakan cognitive load.
-
-Penilaian per bagian:
-
-| Bagian | Kondisi saat pemeriksaan | Keputusan |
-|---|---|---|
-| Proporsi Low/Medium/High | Rasio kelas terbesar/terkecil 1,16–1,25 kali | Sudah layak untuk eksperimen; tidak perlu memaksa jumlah sama |
-| Integritas CSV dan penggabungan sensor | Lolos pemeriksaan bundle, label, subset, dan checksum | Pertahankan pipeline rekonstruksi yang sudah diperiksa |
-| Akurasi posisi gaze | 19 dari 21 rekaman tidak melewati ambang validasi | Prioritas perbaikan pengambilan dan pemeriksaan fitur gaze |
-| HRV pada row curated | Seluruh row memenuhi syarat HRV usable builder | Dapat digunakan sesuai definisi fitur; bukan validasi HW9 terhadap alat referensi |
-| Kontinuitas HRV pada seluruh rekaman | Beberapa sesi kehilangan banyak window sebelum seleksi | Periksa aliran RR sejak persiapan dan selama tugas |
-| Baseline HRV | 18 rekaman layak; 3 tidak memenuhi syarat baseline builder | Rasio baseline memerlukan penanganan nilai hilang atau eksperimen tanpa rasio |
-| Keragaman sumber | 18–19 orang mempunyai row curated, bergantung window | Jumlah row overlap tidak sama dengan jumlah pengamatan independen |
-
-Pernyataan bahwa seluruh data eye tracking dan HRV “jelek” terlalu luas. Bukti terkuat saat ini adalah kegagalan validasi posisi gaze pada sebagian besar rekaman dan kehilangan data HRV pada beberapa sesi. Kegagalan gaze tidak membuktikan bahwa HRV, EAR, atau kedipan pada rekaman yang sama ikut tidak layak.
-
-## 2. Proporsi tiga dataset utama
-
-| Window / step | Low | Medium | High | Total | Orang | Rasio terbesar/terkecil |
+| Window | Low | Medium | High | Total | Orang | Rasio terbesar/terkecil |
 |---|---:|---:|---:|---:|---:|---:|
-| 15 / 5 detik | 1.062 (29,7%) | 1.266 (35,4%) | 1.251 (35,0%) | 3.579 | 19 | 1,192 |
-| 25 / 5 detik | 984 (30,6%) | 1.093 (34,0%) | 1.137 (35,4%) | 3.214 | 19 | 1,155 |
-| 45 / 5 detik | 908 (35,9%) | 728 (28,8%) | 891 (35,3%) | 2.527 | 18 | 1,247 |
+| 15s | 1062 | 1266 | 1251 | 3579 | 21 | 1.192 |
+| 25s | 984 | 1093 | 1137 | 3214 | 21 | 1.155 |
+| 45s | 908 | 728 | 891 | 2527 | 20 | 1.247 |
 
-Persentase memakai pembulatan satu desimal. Medium masih paling sedikit pada window 45 detik. Perbedaan tersebut belum menjadi alasan untuk mengambil data ulang hanya demi balancing.
+## Penggantian bertahap: Mon kemudian Alif
 
-Ketiga CSV mewakili alternatif panjang window dari rekaman yang sama. Tim tidak boleh menumpuk ketiganya menjadi satu dataset untuk memperbanyak sampel.
+Kebijakan: `conservative_quality_replacement_v2`. Referensi awal dan setiap tahap tersimpan pada replacement_selection.json. Tahap berikutnya memakai hasil curated tahap sebelumnya, bukan memilih ulang dari nol. Semua pasangan tahap lama dan semua window tambahan yang sudah dipilih tetap dipertahankan.
 
-## 3. Masalah akurasi gaze
+Penggantian hanya terhadap acceptable lama yang gagal validasi gaze. Kandidat baru harus lolos validasi gaze dan good/acceptable. Coverage temporal eye, face/EAR, gaze, iris, serta HRV tidak menurun. Clipping dan usia RR tidak meningkat; baseline layak tidak diganti baseline tidak layak. Toleransi numerik 1e-9.
 
-### 3.1 Bukti dari rekaman
+Pencocokan memaksimalkan pasangan yang memenuhi seluruh syarat, secara deterministik, satu-banding-satu pada kelas dan panjang window sama. Dukungan setiap peserta–kelas lama tetap ada. Tidak ada pemilihan berdasarkan skor model, data sintetis, atau perubahan label.
 
-Validasi gaze terakhir pada sumber yang diproses mencatat 2 rekaman lolos dan 19 gagal. Rekaman yang lolos adalah Baithar dan Fabian. Dua rekaman tambahan, Ihsan dan `bangsur_easy_medium`, mempunyai keputusan `accepted_manual`, tetapi hasil `passed_thresholds` tetap `false`.
+| Tahap | Sumber | Window | Ganti Low | Ganti Medium | Ganti High | Total |
+|---|---|---|---:|---:|---:|---:|
+| 1 | Mon | 15s | 146 | 66 | 95 | 307 |
+| 1 | Mon | 25s | 140 | 64 | 77 | 281 |
+| 1 | Mon | 45s | 120 | 32 | 39 | 191 |
+| 2 | Alif | 15s | 98 | 29 | 25 | 152 |
+| 2 | Alif | 25s | 80 | 15 | 8 | 103 |
+| 2 | Alif | 45s | 65 | 8 | 0 | 73 |
 
-| Dataset curated | Row dari rekaman gagal validasi gaze | Persentase |
+| Window | Low / Medium / High akhir | Orang awal / akhir | Durasi unik awal / akhir (menit) |
+|---|---|---|---|
+| 15s | 1062 / 1266 / 1251 | 19 / 21 | 373.58 / 390.08 |
+| 25s | 984 / 1093 / 1137 | 19 / 21 | 369.42 / 387.75 |
+| 45s | 908 / 728 / 891 | 18 / 20 | 330.58 / 350.67 |
+
+Awal berarti referensi sebelum tahap Mon. Jumlah tiap kelas tetap pada semua tahap. replacement_pairs.csv mencatat selection_stage beserta indikator tiap pasangan. curation_selected dan curation_reason adalah metadata, bukan predictor. Row lama yang diganti tetap di all_data; window timestamp ambigu hanya di audit/excluded_windows. good_only berisi good terpilih dan good_acceptable berisi good/acceptable terpilih.
+
+## Kualitas yang masih perlu diperhatikan
+
+| Window | Gaze gagal (row / persen) | Rasio baseline kosong | Blink kosong | HRV tidak usable di curated |
+|---|---:|---:|---:|---:|
+| 15s | 2654 / 74.2% | 247 | 6 | 0 |
+| 25s | 2417 / 75.2% | 222 | 5 | 0 |
+| 45s | 1940 / 76.8% | 162 | 10 | 0 |
+
+Pada 23 rekaman sumber, 4 lolos dan 19 gagal validasi gaze. Tabel curated menghitung status rekaman asal, bukan pemeriksaan akurasi baru per window.
+
+- Kegagalan gaze tetap relevan untuk koordinat gaze dan fitur turunannya. Penggantian ini mengurangi kontribusinya, tidak memperbaiki kalibrasi sumber lama.
+- HRV absolut yang lolos aturan window tidak dibatalkan hanya karena baseline rasio tidak layak. Nilai rasio kosong tidak diganti nol.
+- EAR, blink, estimasi iris, dan HRV tidak otomatis tidak layak ketika validasi spasial gaze gagal.
+- Validasi awal yang lolos belum membuktikan tidak ada drift selama pengerjaan. Ambang berasal dari konfigurasi prototype, bukan standar universal.
+- Jumlah window overlap bukan pengamatan independen. Dukungan peserta–kelas dipertahankan, tetapi durasi unik dapat berubah.
+- Label tetap mengikuti protokol v2: fase sesi Low yang terlacak dan pengerjaan easy/practice menjadi Low; pengerjaan medium/hard menjadi Medium/High.
+
+## Kontribusi sumber tambahan
+
+| Sumber | Window | Berlabel, timestamp layak | Good/acceptable sebelum seleksi | Terpilih | Tidak terpilih |
+|---|---|---:|---:|---:|---:|
+| Mon | 15s | 392 | 371 | 307 | 85 |
+| Alif | 15s | 388 | 230 | 152 | 236 |
+| Mon | 25s | 333 | 330 | 281 | 52 |
+| Alif | 25s | 308 | 189 | 103 | 205 |
+| Mon | 45s | 252 | 252 | 191 | 61 |
+| Alif | 45s | 235 | 176 | 73 | 162 |
+
+Kandidat tidak dipilih jika sensornya poor, tidak mempunyai pasangan dominasi kualitas, atau penggantiannya menghilangkan dukungan peserta–kelas lama. Window target campuran tetap berada pada excluded_windows.csv, bukan dianggap sensor buruk. all_data tidak identik dengan dataset utama.
+
+## Kontinuitas HRV sumber sebelum seleksi
+
+| Sumber | Window cache 25s | Ready | Tidak ready | Ready (%) |
+|---|---:|---:|---:|---:|
+| Alif | 551 | 420 | 131 | 76.2 |
+| Andrean | 399 | 393 | 6 | 98.5 |
+| Andreas | 404 | 402 | 2 | 99.5 |
+| Athaya | 399 | 392 | 7 | 98.2 |
+| Baithar | 426 | 407 | 19 | 95.5 |
+| bangsur_easy_medium | 252 | 242 | 10 | 96.0 |
+| Fabian | 405 | 404 | 1 | 99.8 |
+| faqih | 409 | 395 | 14 | 96.6 |
+| ihsan | 519 | 170 | 349 | 32.8 |
+| ikhsan | 335 | 311 | 24 | 92.8 |
+| irfan | 407 | 395 | 12 | 97.1 |
+| kaka | 452 | 331 | 121 | 73.2 |
+| Mon | 517 | 514 | 3 | 99.4 |
+| Rafi | 411 | 390 | 21 | 94.9 |
+| raina | 397 | 392 | 5 | 98.7 |
+| Ramadhan | 63 | 59 | 4 | 93.7 |
+| Ramadhan-2 | 348 | 335 | 13 | 96.3 |
+| sam | 210 | 200 | 10 | 95.2 |
+| Savitri | 408 | 405 | 3 | 99.3 |
+| Shakilla | 155 | 148 | 7 | 95.5 |
+| Siti | 397 | 330 | 67 | 83.1 |
+| Sullivan | 233 | 0 | 233 | 0.0 |
+| Tio | 431 | 382 | 49 | 88.6 |
+
+## Timestamp ambigu: Alif
+
+Semua frame dan timestamp mentah dipertahankan. Tiga kelompok pada sesi Alif merupakan frame berbeda dengan timestamp milidetik sama, bukan baris duplikat. Tidak ada pergeseran waktu atau interpolasi. Setiap window dengan start < waktu ambigu <= end dikeluarkan, termasuk dari all_data. Increment kedipan tetap mengikuti urutan frame asli. Hash sumber serta detail kelompok ada di replacement_selection.json dan replay_validation.json.
+
+| Waktu WIB | Baris CSV | Frame | Capture ID |
+|---|---|---|---|
+| 2026-11-17T16:09:25.788000+07:00 | [98177, 98178] | [98176, 98177] | [111378, 111379] |
+| 2026-11-17T16:09:32.445000+07:00 | [98574, 98575] | [98573, 98574] | [111777, 111778] |
+| 2026-11-17T16:21:53.035000+07:00 | [141659, 141660] | [141658, 141659] | [156121, 156122] |
+
+| Window | Semua window menyentuh waktu ambigu | Tambahan exclusion di luar target campuran |
 |---|---:|---:|
-| 15 detik | 3.113 / 3.579 | 87,0% |
-| 25 detik | 2.801 / 3.214 | 87,1% |
-| 45 detik | 2.204 / 2.527 | 87,2% |
+| 15s | 7 | 2 |
+| 25s | 11 | 1 |
+| 45s | 19 | 0 |
 
-Persentase tersebut mengacu pada status validasi rekaman asal, bukan penilaian akurasi ulang untuk setiap window.
+## Pemeriksaan dan pemakaian berikutnya
 
-Konfigurasi validasi pada dua rekaman tambahan memakai tiga syarat yang harus terpenuhi bersama:
+Replay memeriksa 8528 window cache HRV; 0 perbedaan tidak terjelaskan. Validator mengulang pencocokan, memeriksa ledger pasangan, tier, label, subset, serta checksum sebelum dan setelah publikasi.
 
-| Ukuran validasi | Batas operasional |
-|---|---:|
-| Median error rata-rata per target validasi | ≤180 piksel |
-| P95 error rata-rata per target validasi | ≤350 piksel |
-| Error terbesar pada target nonpusat (`CornerMax`) | ≤300 piksel |
+Gunakan tiga CSV good_acceptable secara terpisah. Ikuti 26 predictor pada feature_columns.json; curation_selected, curation_reason, identitas, waktu, dan konteks tugas adalah metadata. Snapshot model lama tetap menggunakan CSV/hash lama. Evaluasi bundle ini memerlukan release/run baru, bukan mencampur hasil lama dan baru.
 
-Kode menghitung median/P95 tersebut dari error rata-rata prediksi pada setiap target validasi, bukan dari seluruh error per frame. Audit juga menyimpan statistik per sampel secara terpisah. Ambang ini adalah konfigurasi prototype, bukan standar universal untuk semua eye tracker atau ukuran layar.
-
-Pada Bangsur, median error sekitar 224,0 piksel sehingga melewati batas 180 piksel, walaupun P95 sekitar 276,2 piksel memenuhi batasnya. Pada Ihsan, median sekitar 277,3 piksel dan P95 sekitar 601,5 piksel. Status gagal keduanya konsisten dengan aturan kode.
-
-### 3.2 Bagian data yang perlu diperhatikan
-
-- Posisi dan variasi posisi: `gaze_x_norm_mean`, `gaze_x_norm_std`, `gaze_y_norm_mean`, dan `gaze_y_norm_std`.
-- Fitur turunan gaze, termasuk proporsi eye-state, memerlukan pemeriksaan algoritma serta ketahanan terhadap error/noise. Kelulusan atau kegagalan akurasi posisi saja belum mengukur semua aspek kualitas fitur turunan tersebut.
-- EAR, kedipan, dan estimasi iris berasal dari pengukuran landmark dengan aturan validitas masing-masing. Validasi posisi gaze tidak menjadi pengujian langsung untuk akurasi fitur-fitur tersebut.
-
-`good_acceptable` saat ini menyeleksi kelengkapan temporal, validitas frame/landmark, clipping, dan HRV readiness. Builder tidak mensyaratkan lolos validasi spasial gaze. `good_only` juga tidak menambahkan syarat akurasi spasial tersebut. Beralih ke `good_only` saja tidak menyelesaikan persoalan ini.
-
-Jika tim langsung mensyaratkan validasi gaze lolos pada seluruh row curated saat ini, sisanya hanya:
-
-| Window | Row tersisa | Orang |
-|---|---:|---:|
-| 15 detik | 466 | 2 |
-| 25 detik | 413 | 2 |
-| 45 detik | 323 | 2 |
-
-Jumlah sumber tersebut tidak mendukung penggantian menyeluruh dataset utama tanpa mempertimbangkan keragaman pengukuran. Tim perlu mengumpulkan rekaman yang valid dan menguji konfigurasi fitur, bukan menghapus 19 rekaman tanpa menilai sensor lain yang masih berguna.
-
-### 3.3 Yang belum terbukti
-
-Audit ini belum membuktikan penyebab kegagalan gaze. Posisi kepala, pencahayaan, pemetaan koordinat layar, cara mengikuti target, resolusi/inference kamera, dan konfigurasi mapper merupakan hal yang perlu diperiksa lewat pilot. Angka gagal validasi tidak cukup untuk menetapkan salah satunya sebagai penyebab.
-
-Tim juga belum menguji apakah masalah gaze menyebabkan skor model rendah pada bundle terbaru. Ablation tanpa koordinat gaze dan, secara terpisah, tanpa fitur turunan gaze merupakan pengujian pemodelan berikutnya.
-
-## 4. Masalah HRV dan baseline
-
-### 4.1 Kualitas selama perekaman berbeda antarrekaman
-
-Perbandingan dua rekaman tambahan pada window 25 detik:
-
-| Ukuran | Ihsan | Bangsur easy–medium |
-|---|---:|---:|
-| Kandidat window | 519 | 252 |
-| Window berlabel tunggal (`all_data`) | 433 | 202 |
-| Masuk `good_acceptable` | 101 | 191 |
-| Curated / window berlabel | 23,3% | 94,6% |
-| Status HRV cache task: ready | 170 | 242 |
-| Status HRV cache task: gap | 175 | 6 |
-| Status HRV cache task: insufficient_data | 147 | 4 |
-| Status HRV cache task: recovering | 27 | 0 |
-| Coverage baseline HRV | 71,3% | 87,0% |
-| Baseline layak menurut builder | Tidak | Ya |
-
-Status cache HRV mencakup seluruh grid tugas, termasuk window dengan target campuran yang tidak masuk `all_data`. Jumlah curated juga dipengaruhi kualitas eye. Karena itu, tim tidak boleh menganggap seluruh selisih curated semata-mata akibat HRV.
-
-Cache live dapat berbeda dari replay pada paket yang tepat tiba di endpoint. Audit bundle memeriksa 7.460 window: 7.429 cocok dengan replay utama dan 31 sesuai urutan publikasi timer alternatif. Audit tidak menemukan selisih yang tidak terjelaskan. Rekonstruksi CSV memakai satu kebijakan endpoint yang konsisten.
-
-Pengambilan Ihsan menunjukkan bahwa durasi tugas panjang belum menjamin banyak data fusion yang layak. Seluruh row yang sudah lolos ke tiga `good_acceptable` mempunyai HRV usable, RMSSD/SDNN tersedia, dan memenuhi aturan window builder. Kekurangan terjadi pada cakupan rekaman yang dapat dipertahankan, bukan berarti HRV tidak siap tetap lolos ke curated.
-
-### 4.2 `Baseline siap` belum menjamin baseline layak untuk rasio
-
-Recorder mengakhiri kalibrasi ketika durasi RR yang diterima mencapai target dan hasil HRV tersedia. Default targetnya 120 detik RR diterima, dengan batas waktu berjalan 300 detik. Builder juga mensyaratkan coverage baseline ≥80%, status ready, serta RMSSD positif untuk membuat `rmssd_baseline_ratio`.
-
-Contoh Ihsan:
-
-- Recorder menerima sekitar 120,9 detik RR dalam sekitar 169,4 detik waktu kalibrasi.
-- Recorder mencatat `status=ready` dan `reason=target_reached`.
-- Coverage baseline pada `hrv.csv` adalah `0.7134309894`, atau 71,3%.
-- Builder mencatat `baseline_usable=false` dan `baseline_rejection_reason=insufficient_baseline_coverage`.
-
-Tim tidak cukup mengandalkan teks “Baseline siap” atau `hrv_calib_status.json.status=ready`. Periksa juga coverage pada row `phase=baseline` di `hrv.csv`. Status JSON merekam kemajuan/penyelesaian baseline, bukan kualitas HRV live untuk setiap window tugas.
-
-Baseline yang tidak layak tidak otomatis membatalkan RMSSD/SDNN absolut dari window tugas yang memenuhi syarat. Builder mengosongkan rasio baseline pada window tersebut.
-
-Baseline berlangsung bersamaan dengan kalibrasi mata. Tim perlu mencatat kondisi ini dan tidak menyebutnya sebagai pengambilan resting baseline terpisah.
-
-## 5. Nilai hilang, fitur, dan keragaman data
-
-| Pemeriksaan curated | 15 detik | 25 detik | 45 detik |
-|---|---:|---:|---:|
-| `rmssd_baseline_ratio` kosong | 10,79% | 10,80% | 10,17% |
-| `blink_count` dan `blink_rate_per_minute` kosong, masing-masing | 0,34% | 0,22% | 0,40% |
-| Orang dengan Low | 19 | 18 | 16 |
-| Orang dengan Medium | 18 | 17 | 16 |
-| Orang dengan High | 14 | 14 | 13 |
-
-`eye_state_other_ratio` konstan pada ketiga CSV. Tim dapat menghapus fitur konstan di pipeline training. Penanganan rasio baseline yang kosong memerlukan imputasi training-only atau eksperimen tanpa rasio. Jangan mengubah nilai kosong menjadi nol di CSV sumber.
-
-Penggabungan tidak menjadikan identitas sebagai predictor. Tim tetap memakai identitas untuk deduplikasi, pengelompokan evaluasi, dan penilaian keragaman sumber. Penambahan easy/medium tidak menambah keragaman sumber High.
-
-Pada window 25 detik, row berurutan bergeser 5 detik dan berbagi 20 detik pengukuran. Dataset 25 detik mencakup sekitar 369,4 menit interval unik di seluruh rekaman: Low 107,8 menit, Medium 133,0 menit, dan High 128,7 menit. Angka ini bukan 3.214 pengamatan yang independen.
-
-Label mengikuti protokol v2: pengerjaan easy/practice/demo serta fase sesi Low yang terlacak menjadi Low; pengerjaan medium menjadi Medium; pengerjaan hard menjadi High. Tim mempertahankan keputusan protokol tersebut. Proporsi yang berdekatan belum membuktikan bahwa pola fisiologis ketiga label mudah dibedakan. Evaluasi model pada bundle terbaru masih diperlukan.
-
-## 6. Pemeriksaan yang sudah lolos
-
-Pemeriksaan terhadap bundle saat laporan dibuat mencakup:
-
-- Parsing CSV/JSON, checksum, jumlah kelas, dan allowlist 26 fitur sensor.
-- ID window unik, label tunggal sepanjang interval, timestamp berzona waktu, panjang window, dan grid 5 detik.
-- Tidak ada nilai infinity atau duplikasi persis seluruh vektor fitur sensor pada ketiga curated CSV.
-- Konsistensi `good_only` sebagai subset `good_acceptable`, lalu subset `all_data`, dengan nilai yang sama pada window yang sama.
-- HRV readiness serta aturan coverage, pasangan RR, usia data, dan kelayakan rasio baseline.
-- Perbandingan sensor independen pada 868 sampel window di tiga panjang window.
-
-Pada penggabungan 16 November, pemeriksaan mempertahankan seluruh window lama dengan nilai identik dan menjaga hash data mentah serta arsip v1. Rangkaian tes builder menjalankan 64 tes: 63 lulus, satu dilewati karena izin symlink Windows. Tidak ada training model pada penggabungan tersebut.
-
-Pemeriksaan ini membuktikan konsistensi pengolahan sesuai kode. Tim belum memvalidasi akurasi HW9 terhadap alat referensi melalui pemeriksaan bundle ini, dan belum membuktikan akurasi gaze pada rekaman yang gagal.
+Periksa [QUALITY_REPORT.md](QUALITY_REPORT.md), [manifest](manifest.json), [pasangan penggantian](replacement_pairs.csv), dan [referensi seleksi](replacement_selection.json).
 
 ## 7. Panduan operator sebelum dan saat pengambilan
 
@@ -246,94 +204,3 @@ Pantauan live tersebut memakai window default 25 detik. Setelah sesi selesai, bu
 5. Gunakan `Akhiri set` untuk menutup set; gunakan `Akhiri sesi penelitian` setelah rangkaian penelitian selesai. Hentikan sensor setelah event akhir tersimpan sesuai panduan operasional.
 
 Sesi `bangsur_easy_only` tidak mempunyai ledger karena operator belum menghubungkan CodeArrange. Tim mempertahankan sumbernya tetapi mengecualikannya dari dataset supervised; tidak ada label Low pengganti.
-
-## 8. Seleksi data lama dan baru setelah pengambilan
-
-| Kondisi sumber/window | Perlakuan |
-|---|---|
-| Data lama atau baru memenuhi kriteria sensor yang diperlukan | Pertahankan dalam konfigurasi dataset yang sesuai |
-| HRV window tidak usable | Keluarkan dari dataset utama fusion yang mensyaratkan HRV, tetapi simpan sumber dan alasan |
-| Gaze gagal validasi, HRV layak | Tinjau penggunaan fitur gaze; data dapat tetap berguna untuk HRV-only atau fitur lain setelah pemeriksaan yang sesuai |
-| Baseline tidak layak, HRV tugas layak | Pertahankan HRV absolut; rasio baseline tetap kosong |
-| Tidak ada event aktivitas yang dapat ditelusuri | Pulihkan dari sumber autentik atau kecualikan; jangan membuat label perkiraan |
-| Rekaman ulang orang yang sama | Simpan sebagai acquisition berbeda, satu grup orang untuk evaluasi |
-
-Tim menyimpan data mentah lama maupun baru. Tidak ada penggantian satu-banding-satu atau kewajiban membuang rekaman lama setelah data baru masuk. Jika tim menyetujui aturan kualitas baru, terapkan pada seluruh sumber dengan aturan yang sama, dokumentasikan perubahan, lalu bangun ulang view yang sesuai. Jangan diam-diam mengubah syarat dataset saat membandingkan hasil eksperimen.
-
-Aturan admission `good_acceptable` saat ini tetap berlaku. Laporan ini belum menambahkan gate validasi spasial, menghapus fitur, memotong kuota kelas, mengubah label, atau menyetujui release training. Tim perlu menetapkan aturan penggunaan gaze sebelum eksperimen utama yang mengandalkan gaze.
-
-Seleksi berdasarkan akuisisi/validasi sensor harus mendahului pembacaan hasil test. Akurasi model yang turun bukan alasan menghapus peserta atau window dari test.
-
-## 9. Prioritas tindakan
-
-| Prioritas | Tindakan | Hasil yang perlu diperiksa |
-|---|---|---|
-| 1 | Pilot setup dan validasi gaze sebelum pengambilan penuh | Hasil validasi memenuhi konfigurasi, kondisi layar/posisi terdokumentasi |
-| 2 | Pastikan baseline dan aliran RR layak | Coverage baseline ≥80% untuk rasio; status task siap berkelanjutan, gangguan tercatat |
-| 3 | Rekam ketiga tingkat bila sasaran pengambilan mencakup kualitas seluruh kelas | Data layak tidak hanya berasal dari easy atau satu orang |
-| 4 | Audit dan rebuild ketiga panjang window | Kontribusi aktual, cakupan, nilai hilang, serta alasan exclusion per sesi |
-| 5 | Mulai baseline dan ablation batch-02 setelah penerimaan dataset | Uji fusion, HRV-only, eye-only, tanpa gaze/turunannya, serta tanpa rasio baseline sesuai registry eksperimen |
-
-Pengambilan tambahan tidak wajib demi balancing. Tim masih dapat menjalankan eksperimen dengan bundle saat ini sambil memperlakukan kualitas gaze sebagai faktor yang perlu diuji. Jika kesempatan pengambilan berikutnya tersedia, sasaran yang berguna adalah rekaman dengan pengukuran yang lebih dapat dipertanggungjawabkan, bukan jumlah row tertentu.
-
-Window HRV pendek juga merupakan pilihan representasi yang perlu diuji, bukan jaminan kualitas. Penelitian ECG menunjukkan perbedaan validitas RMSSD dan SDNN pada durasi ultra-short; hasil tersebut tidak otomatis memvalidasi HW9 atau kondisi tugas penelitian ini. Karena itu, tim tetap membandingkan 15/25/45 detik melalui evaluasi yang sesuai.
-
-## 10. Ringkasan sumber yang diproses
-
-Tabel berikut memakai `session_quality_summary.csv` pada varian 25 detik. Median/P95 dibulatkan satu desimal. “Baseline layak” mengikuti builder; jumlah curated memakai good + acceptable. Tidak ada sumber yang diputuskan layak hanya berdasarkan median pada tabel ini karena pemeriksaan validasi memakai tiga syarat.
-
-| Rekaman | Validasi gaze | Median error (px) | P95 error (px) | Baseline HRV | Row curated 25 detik |
-|---|---|---:|---:|---|---:|
-| Andrean | Gagal | 315,2 | 795,3 | Layak | 292 |
-| Andreas | Gagal | 182,3 | 463,2 | Layak | 145 |
-| Athaya | Gagal | 523,8 | 1.319,9 | Layak | 221 |
-| Baithar | Lolos | 166,1 | 325,9 | Layak | 139 |
-| bangsur_easy_medium | Gagal | 224,0 | 276,2 | Layak | 191 |
-| Fabian | Lolos | 111,7 | 189,7 | Layak | 274 |
-| faqih | Gagal | 200,7 | 1.035,1 | Layak | 265 |
-| ihsan | Gagal | 277,3 | 601,5 | Tidak layak | 101 |
-| ikhsan | Gagal | 439,2 | 585,6 | Layak | 212 |
-| irfan | Gagal | 389,5 | 661,4 | Layak | 17 |
-| kaka | Gagal | 287,1 | 747,0 | Layak | 151 |
-| Rafi | Gagal | 317,2 | 1.275,9 | Layak | 298 |
-| raina | Gagal | 238,2 | 439,3 | Layak | 105 |
-| Ramadhan | Gagal | 335,8 | 1.130,9 | Layak | 52 |
-| Ramadhan-2 | Gagal | 394,0 | 825,5 | Layak | 0 |
-| sam | Gagal | 645,7 | 1.215,0 | Layak | 150 |
-| Savitri | Gagal | 287,6 | 1.125,5 | Layak | 258 |
-| Shakilla | Gagal | 166,5 | 820,2 | Layak | 94 |
-| Siti | Gagal | 1.329,7 | 2.334,2 | Layak | 3 |
-| Sullivan | Gagal | 486,5 | 1.636,3 | Tidak layak | 0 |
-| Tio | Gagal | 386,3 | 961,4 | Tidak layak | 246 |
-
-Ramadhan dan Ramadhan-2 merupakan satu orang dengan dua rekaman. Ihsan berbeda dari Ikhsan. `bangsur_easy_only` merupakan acquisition berbeda dari orang yang sama dengan `bangsur_easy_medium`, tetapi tidak masuk 21 sumber yang diproses karena pengecualian ledger.
-
-## 11. Sumber dan penelusuran
-
-### Dataset dan audit
-
-- [Laporan pembuatan dataset](QUALITY_REPORT.md), [manifest](manifest.json), dan [audit replay](replay_validation.json).
-- CSV utama: [15 detik](window_15s_step_5s/good_acceptable.csv), [25 detik](window_25s_step_5s/good_acceptable.csv), dan [45 detik](window_45s_step_5s/good_acceptable.csv).
-- [Ringkasan kualitas sumber 25 detik](window_25s_step_5s/session_quality_summary.csv), [kualitas HRV/window](window_25s_step_5s/sensor_quality_counts.csv), serta [distribusi/durasi](window_25s_step_5s/class_distribution.csv).
-- Allowlist fitur dan data dictionary berada pada setiap folder window.
-
-Identitas snapshot tiga CSV utama, SHA-256:
-
-```text
-15s: f6a45d947fb67231acd1eb718f57dd5b3b36680bcdc31fed7d0b7e69815aa8bb
-25s: bfd4e2f266992f3c271d29fe13fa78033527ce4e4fedcf476912352115aa3db1
-45s: b4a476a8d7305bd81ff28235370b45410192f6f692146feb3d941770f2173666
-```
-
-### Implementasi dan log yang perlu diperiksa
-
-- [Validasi dan kontrol eye tracking](../../../../eye_tracking_prototype/eye_tracking_prototype.py): `run_validation_screen`, audit `held_out_validation`, dan preview persiapan. [Konfigurasi eye](../../../../eye_tracking_prototype/modules/config.py).
-- [Recorder dan baseline HRV](../../../../hrv_monitor_prototype/calibrate.py), [ambang HRV](../../../../hrv_monitor_prototype/config.py), [builder v2](../../build_dataset_v2.py), dan [konfigurasi dataset](../../config.json).
-- Pada folder sesi: `eye_summary_calibration.json` menyimpan konfigurasi/percobaan kalibrasi dan held-out validation; periksa percobaan terakhir dengan fase `held_out_validation`, termasuk `passed_thresholds` dan `decision`. `eye_summary.json` dapat memuat ringkasan audit yang sama.
-- `hrv_calib_status.json` menyimpan status baseline; row baseline/task pada `hrv.csv` menyimpan coverage/status pengukuran. `rr_raw.csv` menyimpan RR mentah, dan `task_events.csv` menyimpan ledger aktivitas. Beberapa sumber mentah hanya tersedia pada penyimpanan lokal karena aturan Git.
-- [Panduan integrasi CodeArrange](../../../../.md/notes/codearrange_integration_guidelines.md) untuk menjalankan, menghubungkan, dan menutup sesi.
-
-### Rujukan pengukuran
-
-- Niehorster dkk., [The fundamentals of eye tracking, Part 7: Determining data quality](https://pmc.ncbi.nlm.nih.gov/articles/PMC13230380/): akurasi, presisi, dan kehilangan data merupakan aspek yang berbeda; pemilihan analisis perlu mempertimbangkan kualitas pengukuran.
-- Muñoz dkk., [Validity of (Ultra-)Short Recordings for Heart Rate Variability Measurements](https://pmc.ncbi.nlm.nih.gov/articles/PMC4586373/): validitas HRV ultra-short bergantung parameter dan durasi; studi tersebut memakai ECG dan tidak menjadi validasi langsung untuk hardware penelitian ini.

@@ -5,9 +5,9 @@ Empat CSV berikut menjadi rujukan utama tim: tiga kandidat v2 untuk pekerjaan be
 | Dataset | Window / step | Low | Medium | High | Total row | Orang | Peran |
 |---|---|---:|---:|---:|---:|---:|---|
 | [v1 good_acceptable](v1_active_task/good_acceptable.csv) | 25 / 5 detik | 249 | 968 | 1077 | 2294 | 13 | Referensi dataset lama |
-| [v2 good_acceptable 15s](v2_session_phase/window_15s_step_5s/good_acceptable.csv) | 15 / 5 detik | 1062 | 1266 | 1251 | 3579 | 19 | Kandidat dataset aktif |
-| [v2 good_acceptable 25s](v2_session_phase/window_25s_step_5s/good_acceptable.csv) | 25 / 5 detik | 984 | 1093 | 1137 | 3214 | 19 | Kandidat dataset aktif |
-| [v2 good_acceptable 45s](v2_session_phase/window_45s_step_5s/good_acceptable.csv) | 45 / 5 detik | 908 | 728 | 891 | 2527 | 18 | Kandidat dataset aktif |
+| [v2 good_acceptable 15s](v2_session_phase/window_15s_step_5s/good_acceptable.csv) | 15 / 5 detik | 1062 | 1266 | 1251 | 3579 | 21 | Kandidat dataset aktif |
+| [v2 good_acceptable 25s](v2_session_phase/window_25s_step_5s/good_acceptable.csv) | 25 / 5 detik | 984 | 1093 | 1137 | 3214 | 21 | Kandidat dataset aktif |
+| [v2 good_acceptable 45s](v2_session_phase/window_45s_step_5s/good_acceptable.csv) | 45 / 5 detik | 908 | 728 | 891 | 2527 | 20 | Kandidat dataset aktif |
 
 ## Perbedaan v1 dan v2
 
@@ -18,7 +18,7 @@ Empat CSV berikut menjadi rujukan utama tim: tiga kandidat v2 untuk pekerjaan be
 | Medium / High | Active medium / hard | Active medium / hard |
 | Target di CSV | difficulty_level, dipetakan easy→Low, medium→Medium, hard→High | cognitive_load_label; difficulty tetap metadata asal |
 | Window | 25 detik, fitur HRV dari cache sumber | HRV dihitung ulang dari RR mentah untuk 15/25/45 detik; eye mengikuti batas yang sama |
-| Admission curated | Tier sensor dan daftar review tim lama | Tier sensor saja, tanpa pembatasan nama |
+| Admission curated | Tier sensor dan daftar review tim lama | Tier sensor dan penggantian kualitas satu-banding-satu yang tercatat |
 | Status | Arsip tetap, tidak ditimpa | Bundle aktif, dapat diperbarui dengan --replace |
 
 V2 hanya menerima window dengan satu target sepanjang interval. Easy + rating dapat tetap Low; medium + rating atau hard + rest dikeluarkan. V2 juga menerapkan aturan endpoint RR yang konsisten, sehingga perubahan terhadap v1 tidak hanya berupa tambahan baris Low.
@@ -27,7 +27,7 @@ Window panjang mencakup rentang waktu lebih besar, tetapi lebih mudah melintasi 
 
 ## View lain yang tetap tersedia
 
-Pada setiap panjang window v2, good_only memuat tier good, good_acceptable memuat tier good/acceptable, dan all_data memuat seluruh window berlabel termasuk tier poor. Gunakan good_only untuk pembanding kualitas dan all_data untuk audit cakupan; jangan menganggap seluruh all_data layak menjadi input sensor tanpa memeriksa kualitasnya.
+Pada bundle penggantian, good_only memuat good terpilih dan good_acceptable memuat good/acceptable terpilih. Status curation_selected dan curation_reason menjelaskan keputusan terpisah dari tier sensor, dan all_data memuat seluruh window berlabel termasuk tier poor. Gunakan good_only untuk pembanding kualitas dan all_data untuk audit cakupan; jangan menganggap seluruh all_data layak menjadi input sensor tanpa memeriksa kualitasnya.
 
 Good/acceptable menilai kelengkapan/clipping, bukan jaminan akurasi gaze. Baca [laporan v2](v2_session_phase/QUALITY_REPORT.md) untuk proses, fitur, kondisi sensor, dan panduan menambah rekaman.
 
@@ -38,7 +38,7 @@ Builder memperbarui tabel ini dari jumlah hasil build setelah mengganti bundle v
 
 ## Sumber pada pembaruan terakhir
 
-Builder menerima 21 rekaman dari 20 orang. 2 rekaman belum ada pada build sebelumnya. Semua window yang lolos dipertahankan; tidak ada kuota tambahan per kelas atau window.
+Builder menerima 23 rekaman dari 22 orang. 1 rekaman belum ada pada build sebelumnya. Penggantian selektif mempertahankan jumlah kelas awal; tidak seluruh kandidat tambahan dimasukkan ke curated. Tahap baru tidak mengubah hasil tahap sebelumnya. Window bertimestamp ambigu dikeluarkan sebelum pembentukan view.
 
 - bangsur_easy_only tidak digunakan: excluded_session: missing_task_events_operator_not_connected: operator confirmed that bangsur_easy_only was not connected to CodeArrange; activity labels are unavailable.
 

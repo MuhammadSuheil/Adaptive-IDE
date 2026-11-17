@@ -3,7 +3,7 @@
 import pandas as pd
 
 
-def build_update_summary(results, counts, inventory, previous=None):
+def build_update_summary(results, counts, inventory, previous=None, *, policy='window_quality_only'):
     from .build_dataset_v2 import unique_duration
 
     reports = results[25][2]
@@ -35,7 +35,11 @@ def build_update_summary(results, counts, inventory, previous=None):
         record['windows'] = {}
         for seconds, (rows, _excluded, _reports) in results.items():
             frame = pd.DataFrame(rows)
-            selected = frame.loc[frame.session_id.eq(report['session_id']) & frame.quality_tier.isin(('good', 'acceptable'))] if len(frame) else frame
+            mask = frame.quality_tier.isin(('good', 'acceptable')) if len(frame) else pd.Series(dtype=bool)
+            if policy != 'window_quality_only' and len(frame):
+                from .v2_replacement import boolean
+                mask &= boolean(frame.curation_selected)
+            selected = frame.loc[frame.session_id.eq(report['session_id']) & mask] if len(frame) else frame
             classes = selected.cognitive_load_label.value_counts().to_dict() if len(selected) else {}
             record['windows'][str(seconds)] = {
                 'Low': int(classes.get('Low', 0)), 'Medium': int(classes.get('Medium', 0)),
@@ -66,7 +70,10 @@ def update_sections(summary):
             lines.append(f'| {seconds}s | {before["Low"]} | {before["Medium"]} | {before["High"]} | '
                          f'{added["Low"]} | {added["Medium"]} | {added["High"]} | {after["windows"]} | {ratio_text} |')
         lines += ['', ('Rasio tersebut menjelaskan proporsi, bukan ambang kecukupan statistik. '
-                  'Builder mempertahankan semua window yang lolos, tanpa kuota kelas atau pemotongan manual.'), '']
+                  + ('Delta adalah perubahan bersih; penggantian satu-banding-satu tidak menambah jumlah kelas. '
+                     'Lihat bagian penggantian selektif untuk kontribusi setiap sumber tambahan dan row lama yang diganti.'
+                     if summary.get('replacement_policy') else
+                     'Builder mempertahankan semua window yang lolos, tanpa kuota kelas atau pemotongan manual.')), '']
     if summary['introduced_recordings']:
         lines += ['### Kontribusi rekaman yang belum ada pada build sebelumnya', '',
                   '| Window | Rekaman | Low | Medium | High | Durasi unik Low (menit) | Durasi unik Medium (menit) |',
@@ -82,6 +89,7 @@ def update_sections(summary):
 
 
 def report_sections(results, audits, config, update_summary=None):
+    replaced = bool(update_summary and update_summary.get('replacement_policy'))
     reports = results[25][2]
     recordings = len(reports)
     people = len({r['participant_id'].casefold() for r in reports})
@@ -97,12 +105,15 @@ def report_sections(results, audits, config, update_summary=None):
         '1. Builder memeriksa identitas sensor/ledger, readiness kedua kalibrasi, timestamp, dan grid HRV sumber.',
         '2. Builder mengolah RR mentah menurut urutan paket dan waktu ketersediaan, lalu menghitung ulang HRV pada tiga panjang window.',
         '3. Builder menggabungkan frame eye pada interval absolut yang sama dan menentukan target dari seluruh bagian fase di dalam window.',
-        '4. Builder menghitung tier sensor dan membentuk tiga view tanpa membatasi nama peserta atau kategori penilaian tim lama.',
+        ('4. Builder menghitung tier sensor, kemudian menerapkan seleksi penggantian yang tercatat pada referensi dan pasangan window.'
+         if replaced else '4. Builder menghitung tier sensor dan membentuk tiga view tanpa membatasi nama peserta atau kategori penilaian tim lama.'),
         '5. Builder memeriksa label, nilai sensor, subset, jumlah data, serta checksum sebelum mengganti bundle aktif.', '',
-        ('Pembaruan admission memperluas cakupan window yang sudah memenuhi ambang sensor. '
+        (('Admission penggantian mempertahankan jumlah kelas referensi; tidak semua kandidat yang lolos tier masuk curated. '
+          'Tier asli, data mentah, dan arsip v1 tetap utuh. Aturan dan pasangan ada pada replacement_selection.json dan replacement_pairs.csv.'
+          if replaced else 'Pembaruan admission memperluas cakupan window yang sudah memenuhi ambang sensor. '
         'Kita tidak menambah baris sintetis, mengubah label untuk menyeimbangkan kelas, atau melonggarkan ambang kualitas. '
         'Data mentah dan arsip v1 tetap utuh. Manifest mencatat admission_policy=window_quality_only; '
-        'team_review_group merupakan metadata historis.'), '',
+        'team_review_group merupakan metadata historis.')), '',
         '## Ambang kualitas window', '',
         '| Kriteria | Good | Acceptable |', '|---|---:|---:|',
         '| HRV | Ready, RMSSD/SDNN finite dan nonnegatif | Sama |',
@@ -152,7 +163,9 @@ def report_sections(results, audits, config, update_summary=None):
         'serta file readiness/ringkasan kalibrasi yang digunakan builder. Jangan menimpa rekaman lama.'),
         ('2. Pastikan ID sensor dan ledger konsisten. Konfirmasikan identitas lintas sesi pada inventory; '
         'rekaman ulang orang yang sama harus memakai grup orang yang sama. Nama folder yang berubah tidak boleh membuat acquisition lama dihitung dua kali.'),
-        ('3. Sumber baru tidak perlu masuk daftar proposed_good/questionable. Builder menilai setiap window memakai aturan sensor yang sama. '
+        ('3. Cohort penggantian saat ini dibekukan. --replace mengulang seleksi terhadap referensi awal yang sama; '
+          'sumber tambahan di luar cohort menghentikan build sampai rencana seleksi diperbarui secara eksplisit.'
+          if replaced else '3. Sumber baru tidak perlu masuk daftar proposed_good/questionable. Builder menilai setiap window memakai aturan sensor yang sama. '
         'Jika operator memakai alias baru untuk orang lama, perbarui pemetaan identitas yang dapat dikonfirmasi sebelum build.'),
         ('Sesi tanpa ledger harus dipulihkan penandanya atau dikecualikan secara eksplisit melalui session_exclusions; '
         'jangan membuat event atau label pengganti. Sumber bermasalah yang tidak dikecualikan menghentikan publikasi.'),
@@ -161,8 +174,8 @@ def report_sections(results, audits, config, update_summary=None):
         'python -m unittest discover -s analysis_sessions/dataset_fusion -p "test_*.py"',
         'python analysis_sessions/dataset_fusion/build_dataset_v2.py --replace',
         '```', '',
-        ('5. Periksa status berhasil, distribusi kelas, kualitas, dan alasan exclusion. Salin bundle beserta manifest dan allowlist ke Drive bila dibutuhkan. '
-        'Setelah data tambahan lengkap, tetapkan input batch-02 dari bundle terbaru.'), '',
+        ('5. Periksa status berhasil, distribusi kelas, kualitas, seleksi dan alasan exclusion. Salin bundle beserta manifest dan allowlist bila dibutuhkan. '
+        'Snapshot input pemodelan lama tidak berubah otomatis; evaluasi pada bundle baru memerlukan release/run baru.'), '',
         ('Builder membuat staging sementara dan menahan bundle lama sebagai rollback selama pemasangan. '
         'Setelah verifikasi berhasil, builder menghapus rollback; tidak ada arsip dataset permanen tambahan. '
         'Jika pemulihan juga gagal, builder menampilkan lokasi rollback dan mempertahankannya untuk pemulihan operator.'), '',
@@ -177,6 +190,7 @@ def report_sections(results, audits, config, update_summary=None):
 
 
 def render_output_index(archive_csv, counts, update_summary=None):
+    replaced = bool(update_summary and update_summary.get('replacement_policy'))
     old = pd.read_csv(archive_csv)
     target = old.difficulty_level.map({'easy': 'Low', 'medium': 'Medium', 'hard': 'High'})
     if target.isna().any():
@@ -205,7 +219,8 @@ def render_output_index(archive_csv, counts, update_summary=None):
         '| Medium / High | Active medium / hard | Active medium / hard |',
         '| Target di CSV | difficulty_level, dipetakan easy→Low, medium→Medium, hard→High | cognitive_load_label; difficulty tetap metadata asal |',
         '| Window | 25 detik, fitur HRV dari cache sumber | HRV dihitung ulang dari RR mentah untuk 15/25/45 detik; eye mengikuti batas yang sama |',
-        '| Admission curated | Tier sensor dan daftar review tim lama | Tier sensor saja, tanpa pembatasan nama |',
+        ('| Admission curated | Tier sensor dan daftar review tim lama | Tier sensor dan penggantian kualitas satu-banding-satu yang tercatat |'
+         if replaced else '| Admission curated | Tier sensor dan daftar review tim lama | Tier sensor saja, tanpa pembatasan nama |'),
         '| Status | Arsip tetap, tidak ditimpa | Bundle aktif, dapat diperbarui dengan --replace |', '',
         ('V2 hanya menerima window dengan satu target sepanjang interval. Easy + rating dapat tetap Low; '
         'medium + rating atau hard + rest dikeluarkan. V2 juga menerapkan aturan endpoint RR yang konsisten, '
@@ -214,8 +229,10 @@ def render_output_index(archive_csv, counts, update_summary=None):
         'Karena itu jumlah row dan bagian rekaman yang lolos berbeda antarwindow. '
         'Step 5 detik menambah overlap; jumlah row bukan jumlah pengamatan independen.'), '',
         '## View lain yang tetap tersedia', '',
-        ('Pada setiap panjang window v2, good_only memuat tier good, good_acceptable memuat tier good/acceptable, '
-        'dan all_data memuat seluruh window berlabel termasuk tier poor. '
+        (('Pada bundle penggantian, good_only memuat good terpilih dan good_acceptable memuat good/acceptable terpilih. '
+          'Status curation_selected dan curation_reason menjelaskan keputusan terpisah dari tier sensor, '
+          if replaced else 'Pada setiap panjang window v2, good_only memuat tier good, good_acceptable memuat tier good/acceptable, ')
+        + 'dan all_data memuat seluruh window berlabel termasuk tier poor. '
         'Gunakan good_only untuk pembanding kualitas dan all_data untuk audit cakupan; '
         'jangan menganggap seluruh all_data layak menjadi input sensor tanpa memeriksa kualitasnya.'), '',
         ('Good/acceptable menilai kelengkapan/clipping, bukan jaminan akurasi gaze. '
@@ -231,7 +248,9 @@ def render_output_index(archive_csv, counts, update_summary=None):
                   (f'Builder menerima {update_summary["accepted_recordings"]} rekaman dari '
                   f'{update_summary["accepted_people"]} orang. '
                   f'{len(update_summary["additional_session_ids"])} rekaman belum ada pada build sebelumnya. '
-                  'Semua window yang lolos dipertahankan; tidak ada kuota tambahan per kelas atau window.'), '']
+                  + ('Penggantian selektif mempertahankan jumlah kelas awal; tidak seluruh kandidat tambahan dimasukkan ke curated. '
+                     'Tahap baru tidak mengubah hasil tahap sebelumnya. Window bertimestamp ambigu dikeluarkan sebelum pembentukan view.'
+                     if replaced else 'Semua window yang lolos dipertahankan; tidak ada kuota tambahan per kelas atau window.')), '']
         for record in update_summary['excluded_sessions']:
             lines.append(f'- {record["folder"]} tidak digunakan: {record["reason"]}')
         lines += ['', ('Kontribusi per rekaman, perubahan jumlah kelas, durasi unik, dan batas kualitas dijelaskan pada '

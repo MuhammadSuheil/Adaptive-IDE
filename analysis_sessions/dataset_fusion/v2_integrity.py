@@ -11,6 +11,9 @@ import numpy as np
 import pandas as pd
 
 from . import build_dataset as shared
+from . import v2_replacement as replacement
+from . import v2_history as history
+from . import v2_timestamps as timing
 from hrv_monitor_prototype.config import (
     HRV_MIN_COVERAGE, HRV_MIN_PAIRS, HRV_MAX_DATA_AGE_SECONDS,
 )
@@ -20,10 +23,14 @@ LABELS = ('Low', 'Medium', 'High')
 ADMISSION_POLICY = 'window_quality_only'
 
 
-def quality_views(frame):
+def quality_views(frame, policy=ADMISSION_POLICY):
     if frame.window_id.duplicated().any():
         raise ValueError('Duplicate v2 window IDs.')
-    return {name: frame[frame.quality_tier.isin(tiers)].copy()
+    selected = (replacement.boolean(frame.curation_selected) if policy in history.POLICIES
+                else pd.Series(True, index=frame.index))
+    if policy in history.POLICIES:
+        _require(~selected | frame.quality_tier.isin(('good', 'acceptable')), 'Selected poor window.')
+    return {name: frame[frame.quality_tier.isin(tiers) & (True if name == 'all_data' else selected)].copy()
             for name, tiers in shared.DATASETS.items()}
 
 
@@ -140,12 +147,32 @@ def verify_bundle(directory):
         del actual['manifest.json']
         _require(actual == manifest['output_sha256'], 'Bundle checksum mismatch.')
         policy = manifest.get('admission_policy', 'legacy_review_groups')
-        _require(policy in (ADMISSION_POLICY, 'legacy_review_groups'), 'Unknown admission policy.')
+        _require(policy in (ADMISSION_POLICY, *history.POLICIES, 'legacy_review_groups'), 'Unknown admission policy.')
+        context, pairs = None, []
+        if policy in history.POLICIES:
+            context = json.loads((directory/'replacement_selection.json').read_text(encoding='utf-8'))
+            history.verify_context(context)
         for length in WINDOWS:
             root = directory/f'window_{length}s_step_5s'
             frame = pd.read_csv(root/'all_data.csv')
             validate_frame(frame, manifest['quality_configuration'], length)
-            expected = quality_views(frame) if policy == ADMISSION_POLICY else shared.dataset_views(frame)
+            if context is not None:
+                recomputed, matches = history.curate_history(frame, context, length)
+                for session, timestamp_policy in context.get('timestamp_policies', {}).items():
+                    for row in frame.loc[frame.session_id.eq(session)].itertuples():
+                        _require(not timing.touches(shared.epoch_ms(row.window_start), shared.epoch_ms(row.window_end), timestamp_policy),
+                                 'Ambiguous eye timestamp window leaked into all_data.')
+                    exclusions = pd.read_csv(root/'excluded_windows.csv', keep_default_na=False)
+                    for row in exclusions.loc[exclusions.session_id.eq(session)].itertuples():
+                        touched = timing.touches(shared.epoch_ms(row.window_start), shared.epoch_ms(row.window_end), timestamp_policy)
+                        flags = json.loads(row.exclusion_flags)
+                        _require(('ambiguous_eye_timestamp' in flags) == touched, 'Timestamp exclusion audit mismatch.')
+                _require(replacement.boolean(frame.curation_selected).eq(recomputed.curation_selected),
+                         'Replacement selection mismatch.')
+                _require(frame.curation_reason.eq(recomputed.curation_reason), 'Replacement reason mismatch.')
+                pairs.extend(matches)
+            expected = (shared.dataset_views(frame) if policy == 'legacy_review_groups'
+                        else quality_views(frame, policy))
             for name, view in expected.items():
                 published = pd.read_csv(root/f'{name}.csv')
                 pd.testing.assert_frame_equal(published, view.reset_index(drop=True),
@@ -158,6 +185,11 @@ def verify_bundle(directory):
             allowlist = json.loads((root/'feature_columns.json').read_text())
             _require(allowlist['target'] == 'cognitive_load_label'
                      and allowlist['features'] == shared.FEATURE_COLUMNS, 'Feature contract mismatch.')
+        if context is not None:
+            expected_pairs = pd.DataFrame(pairs, columns=history.pair_columns(policy))
+            published_pairs = pd.read_csv(directory/'replacement_pairs.csv')
+            pd.testing.assert_frame_equal(published_pairs, expected_pairs, check_dtype=False,
+                                          rtol=1e-10, atol=1e-10)
         return manifest
     except (KeyError, OSError, AssertionError, TypeError) as error:
         raise ValueError(f'Incomplete or inconsistent v2 bundle: {directory}') from error

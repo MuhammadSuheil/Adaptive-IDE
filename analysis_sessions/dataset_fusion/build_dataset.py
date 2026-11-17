@@ -212,11 +212,19 @@ def epoch_ms(value):
     return timestamp.timestamp() * 1000
 
 
-def prepare_eye(eye, screen, config):
+def prepare_eye(eye, screen, config, *, allow_equal_timestamps=False):
     eye = eye.copy()
     eye["timestamp_ms"] = number(eye, "timestamp_ms")
-    if eye.timestamp_ms.isna().any() or (eye.timestamp_ms.diff().dropna() <= 0).any():
+    delta = eye.timestamp_ms.diff().dropna()
+    if (not np.isfinite(eye.timestamp_ms).all()
+            or (delta < 0 if allow_equal_timestamps else delta <= 0).any()):
         raise ValueError("Eye timestamps must be finite, unique and strictly increasing.")
+    if allow_equal_timestamps:
+        for column in ('frame_index', 'capture_frame_id'):
+            identity = number(eye, column)
+            if (not np.isfinite(identity).all() or not identity.mod(1).eq(0).all()
+                    or identity.diff().dropna().le(0).any()):
+                raise ValueError('Audited timestamp ties require unique increasing frame identities.')
     face = truth(eye, "face_detected")
     left, right = number(eye, "EAR_Left"), number(eye, "EAR_Right")
     eye["face_ear"] = face & left.between(0, 1) & right.between(0, 1)

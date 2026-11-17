@@ -14,6 +14,7 @@ import sys
 import tempfile
 from datetime import UTC, datetime, timedelta
 from itertools import groupby, pairwise
+from io import StringIO
 from pathlib import Path
 
 import numpy as np
@@ -36,6 +37,9 @@ from analysis_sessions.dataset_fusion.v2_integrity import (
     verify_bundle,
 )
 from analysis_sessions.dataset_fusion.v2_sensor_checks import audit_sensor_samples
+from analysis_sessions.dataset_fusion import v2_replacement as replacement
+from analysis_sessions.dataset_fusion import v2_history as history
+from analysis_sessions.dataset_fusion import v2_timestamps as timing
 from analysis_sessions.session_inventory import (
     participant_group,
     select_session_directories,
@@ -187,7 +191,7 @@ def audit_replay(raw, original, origin, replay):
             'endpoint_publication_differences': len(details), 'unexplained_windows': 0, 'differences': details}
 
 
-def load_session(directory, config):
+def load_session(directory, config, timestamp_policy=None):
     eye = pd.read_csv(directory/'eye_tracking.csv', keep_default_na=False, low_memory=False)
     hrv = pd.read_csv(directory/'hrv.csv', keep_default_na=False)
     with (directory/'rr_raw.csv').open(encoding='utf-8-sig', newline='') as stream:
@@ -226,7 +230,9 @@ def load_session(directory, config):
     screen = calibration.get('config', {}).get('screen') or summary.get('config', {}).get('screen', {})
     if not all(shared.finite(screen.get(axis)) > 0 for axis in ('width', 'height')):
         raise ValueError(f'{directory.name}: invalid screen dimensions.')
-    eye = shared.prepare_eye(eye, screen, config)
+    if timestamp_policy:
+        timing.check_policy(directory, eye, timestamp_policy)
+    eye = shared.prepare_eye(eye, screen, config, allow_equal_timestamps=bool(timestamp_policy))
     baseline_rows = hrv[hrv.phase.eq('baseline')]
     baseline = baseline_rows.iloc[-1] if len(baseline_rows) else {}
     baseline_rmssd, coverage = shared.finite(baseline.get('rmssd_ms')), shared.finite(baseline.get('coverage'))
@@ -265,12 +271,16 @@ def load_session(directory, config):
                (last_raw-origin).total_seconds(), (float(eye.timestamp_ms.iloc[-1])-origin.timestamp()*1000)/1000)
     replay = replay_rr(raw, origin, stop)
     audit = {'session_folder': directory.name, **audit_replay(raw, original, origin, replay[25])}
+    audit['source_hrv_status_counts'] = {status: sum(r['status'] == status for r in original)
+                                       for status in sorted({r['status'] for r in original})}
+    if timestamp_policy:
+        audit['eye_timestamp_audit'] = {**timestamp_policy, 'session_id': session_id}
     audit['independent_sensor_check'] = audit_sensor_samples(raw, eye, replay, origin, config)
     return eye, replay, events, ready, metadata, audit
 
 
-def build_session(directory, config):
-    eye, replay, events, ready, metadata, audit = load_session(directory, config)
+def build_session(directory, config, timestamp_policy=None):
+    eye, replay, events, ready, metadata, audit = load_session(directory, config, timestamp_policy)
     result = {}
     for seconds, windows in replay.items():
         rows, excluded = [], []
@@ -282,8 +292,12 @@ def build_session(directory, config):
             reason = target.pop('exclusion_reason')
             identity = {'window_id': f"{metadata['session_id']}|{source['window_start']}|{source['window_end']}",
                         'window_start': source['window_start'], 'window_end': source['window_end'], 'window_seconds': seconds}
-            if reason:
-                excluded.append({**metadata, **identity, **context, **target, 'exclusion_reason': reason})
+            touched = timing.touches(start, end, timestamp_policy)
+            if reason or touched:
+                flags = ([reason] if reason else []) + (['ambiguous_eye_timestamp'] if touched else [])
+                excluded.append({**metadata, **identity, **context, **target,
+                                 'exclusion_reason': reason or 'ambiguous_eye_timestamp',
+                                 'exclusion_flags': json.dumps(flags)})
                 continue
             rmssd, sdnn = shared.finite(source['rmssd_ms']), shared.finite(source['sdnn_ms'])
             usable = source['status'] == 'ready' and rmssd >= 0 and sdnn >= 0
@@ -303,7 +317,14 @@ def build_session(directory, config):
         report = {**metadata, 'window_seconds': seconds, 'candidate_windows': len(windows),
                   'retained_windows': len(rows), 'excluded_windows': len(excluded),
                   **{f'{tier}_windows': count for tier, count in tiers.items()}}
+        if timestamp_policy:
+            report['timestamp_affected_windows'] = sum('ambiguous_eye_timestamp' in r['exclusion_flags'] for r in excluded)
+            report['timestamp_only_excluded_windows'] = sum(r['exclusion_reason'] == 'ambiguous_eye_timestamp' for r in excluded)
         result[seconds] = rows, excluded, report
+    if timestamp_policy:
+        audit['eye_timestamp_audit']['windows'] = {
+            str(s): {'affected': result[s][2]['timestamp_affected_windows'],
+                     'additional_excluded': result[s][2]['timestamp_only_excluded_windows']} for s in WINDOWS}
     return result, audit
 
 
@@ -318,11 +339,12 @@ def unique_duration(frame):
     return total
 
 
-def export_window(destination, rows, excluded, reports, inventory, seconds, *, config=None):
+def export_window(destination, rows, excluded, reports, inventory, seconds, *, config=None, policy=ADMISSION_POLICY):
     destination.mkdir()
-    frame = pd.DataFrame(rows, columns=DATA_COLUMNS).replace([np.inf, -np.inf], np.nan)
+    metadata = {**META_INFO, **(replacement.CURATION_META if policy in history.POLICIES else {})}
+    frame = pd.DataFrame(rows, columns=[*metadata, *shared.FEATURE_COLUMNS]).replace([np.inf, -np.inf], np.nan)
     validate_frame(frame, config=config if config is not None else shared.load_config(), seconds=seconds)
-    views = quality_views(frame)
+    views = quality_views(frame, policy)
     counts, distribution = {}, []
     for name, view in views.items():
         view.to_csv(destination/f'{name}.csv', index=False)
@@ -335,12 +357,12 @@ def export_window(destination, rows, excluded, reports, inventory, seconds, *, c
     pd.DataFrame(distribution).to_csv(destination/'class_distribution.csv', index=False)
     pd.DataFrame(inventory).to_csv(destination/'session_inventory.csv', index=False)
     pd.DataFrame(reports).to_csv(destination/'session_quality_summary.csv', index=False)
-    excluded_columns = [*META_INFO, 'exclusion_reason']
+    excluded_columns = [*META_INFO, 'exclusion_reason', 'exclusion_flags']
     pd.DataFrame(excluded, columns=excluded_columns).to_csv(destination/'excluded_windows.csv', index=False)
     frame.groupby(['session_folder', 'cognitive_load_label', 'study_phase', 'quality_tier'], dropna=False).size().rename('windows').reset_index().to_csv(destination/'counts_by_session_label_phase_tier.csv', index=False)
     frame.groupby(['quality_tier', 'hrv_status', 'hrv_reason'], dropna=False).size().rename('windows').reset_index().to_csv(destination/'sensor_quality_counts.csv', index=False)
     dictionary = [{'column': key, 'role': 'target' if key == 'cognitive_load_label' else 'metadata', 'unit': '', 'description': value}
-                  for key, value in META_INFO.items()]
+                  for key, value in metadata.items()]
     dictionary += [{'column': key, 'role': 'feature', 'unit': unit,
                     'description': description.replace('Recorded time-domain HRV', 'Recomputed time-domain HRV')}
                    for key, (unit, description) in shared.FEATURE_INFO.items()]
@@ -356,10 +378,22 @@ def export_window(destination, rows, excluded, reports, inventory, seconds, *, c
     return counts
 
 
-def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subjects=None, *, replace=False):
+def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subjects=None, *, replace=False,
+                  replacement_session=None, exclude_tied_eye_windows=False, expected_replacement_counts=None):
     input_dir = Path(input_dir).resolve()
     output_dir = guard_output(input_dir, output_dir, replace=replace)
     previous_manifest = verify_bundle(output_dir) if output_dir.exists() else None
+    selection = history.selection_context(output_dir, previous_manifest, replacement_session)
+    policy = selection['policy'] if selection else ADMISSION_POLICY
+    if exclude_tied_eye_windows and (not replacement_session or policy != history.POLICY):
+        raise ValueError('Timestamp exclusion requires an explicit new staged replacement session.')
+    if expected_replacement_counts is not None:
+        if not replacement_session or policy != history.POLICY:
+            raise ValueError('Expected counts require an explicit staged replacement session.')
+        stage = next(s for s in history.stages(selection) if s['candidate_session_ids'] == [replacement_session])
+        if 'expected_counts' in stage and stage['expected_counts'] != expected_replacement_counts:
+            raise ValueError('Do not change expected counts in an existing audited stage.')
+        stage['expected_counts'] = expected_replacement_counts
     config = shared.load_config(config_path)
     sources_before = shared.snapshot(input_dir)
     directories, inventory = select_session_directories(input_dir, subjects,
@@ -372,19 +406,66 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
     results = {seconds: ([], [], []) for seconds in WINDOWS}
     audits = []
     for directory in directories:
-        session, audit = build_session(directory, config)
+        session_id = str(pd.read_csv(directory/'eye_tracking.csv', nrows=1, usecols=['session_id']).session_id.iloc[0])
+        timestamp_policy = selection.get('timestamp_policies', {}).get(session_id) if selection else None
+        if exclude_tied_eye_windows and session_id == replacement_session and timestamp_policy is None:
+            timestamp_policy = timing.make_policy(directory)
+            selection['timestamp_policies'][session_id] = timestamp_policy
+        session, audit = build_session(directory, config, timestamp_policy)
         audits.append(audit)
         for seconds, (rows, excluded, report) in session.items():
             results[seconds][0].extend(rows)
             results[seconds][1].extend(excluded)
             results[seconds][2].append(report)
         print(f"{directory.name}: retained " + ', '.join(f'{s}s={len(session[s][0])}' for s in WINDOWS), flush=True)
+    selected_frames, pairs = {}, []
+    if selection:
+        history.verify_context(selection)
+        allowed = set(selection['reference_session_ids']) | set(selection['candidate_session_ids'])
+        if {r['session_id'] for r in results[25][2]} != allowed:
+            raise ValueError('Replacement source cohort changed; update the selection plan explicitly.')
+        if config != previous_manifest['quality_configuration']:
+            raise ValueError('Do not change quality configuration during count-preserving replacement.')
+        for seconds, (rows, excluded, reports) in results.items():
+            frame = pd.DataFrame(rows, columns=DATA_COLUMNS).replace([np.inf, -np.inf], np.nan)
+            before = pd.read_csv(output_dir/f'window_{seconds}s_step_5s/all_data.csv')
+            original_columns = [c for c in before if c not in replacement.CURATION_META]
+            normalized = pd.read_csv(StringIO(frame.to_csv(index=False))).set_index('window_id')
+            pd.testing.assert_frame_equal(before[original_columns].set_index('window_id'),
+                normalized.loc[before.window_id, [c for c in original_columns if c != 'window_id']],
+                check_dtype=False, rtol=1e-10, atol=1e-10)
+            selected, matches = history.curate_history(frame, selection, seconds)
+            if policy == history.POLICY and previous_manifest['admission_policy'] in history.POLICIES:
+                previous_pairs = pd.read_csv(output_dir/'replacement_pairs.csv')
+                old_pairs = previous_pairs[previous_pairs.window_seconds.eq(seconds)].copy()
+                if 'selection_stage' not in old_pairs:
+                    old_pairs['selection_stage'] = 1
+                kept_pairs = pd.DataFrame(matches, columns=history.PAIR_COLUMNS)
+                kept_pairs = kept_pairs[kept_pairs.selection_stage.le(old_pairs.selection_stage.max())]
+                pd.testing.assert_frame_equal(old_pairs[history.PAIR_COLUMNS].reset_index(drop=True),
+                    kept_pairs.reset_index(drop=True), check_dtype=False, rtol=1e-10, atol=1e-10)
+            selected_frames[seconds] = selected
+            pairs.extend(matches)
+            results[seconds] = (selected.to_dict('records'), excluded, reports)
     output_dir.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.fusion-v2-', dir=output_dir.parent) as temporary:
         destination = Path(temporary)/'bundle'
         destination.mkdir()
-        counts = {f'window_{s}s_step_5s': export_window(destination/f'window_{s}s_step_5s', *results[s], inventory, s, config=config) for s in WINDOWS}
-        update_summary = build_update_summary(results, counts, inventory, previous_manifest)
+        counts = {f'window_{s}s_step_5s': export_window(destination/f'window_{s}s_step_5s', *results[s], inventory, s, config=config, policy=policy) for s in WINDOWS}
+        update_summary = build_update_summary(results, counts, inventory, previous_manifest, policy=policy)
+        if selection:
+            (destination/'replacement_selection.json').write_text(json.dumps(selection, indent=2)+'\n', encoding='utf-8')
+            pd.DataFrame(pairs, columns=history.pair_columns(policy)).to_csv(destination/'replacement_pairs.csv', index=False)
+            update_summary['replacement_policy'] = policy
+            update_summary['replacement_counts'] = {
+                str(s): {label: sum(p['window_seconds'] == s and p['cognitive_load_label'] == label for p in pairs)
+                         for label in LABELS} for s in WINDOWS}
+            update_summary['replacement_stages'] = [
+                {'stage': i, 'candidate_session_ids': stage['candidate_session_ids'],
+                 'counts': {str(s): {label: sum(p['window_seconds'] == s and p['cognitive_load_label'] == label
+                                      and p.get('selection_stage', 1) == i for p in pairs) for label in LABELS}
+                            for s in WINDOWS}}
+                for i, stage in enumerate(history.stages(selection), 1)]
         (destination/'replay_validation.json').write_text(json.dumps(audits, indent=2, allow_nan=False)+'\n', encoding='utf-8')
         report_lines = ['# Dataset fusion v2: session phase', '',
             '## Label dan window', '',
@@ -401,20 +482,23 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
             for name, c in views.items():
                 report_lines.append(f"| {variant} | {name} | {c['Low']} | {c['Medium']} | {c['High']} | {c['windows']} | {c['participants']} |")
         report_lines += ['', '## Penyaringan window', '',
-            '| Window | Kandidat | Target campuran | Kalibrasi/tidak terlacak | Berlabel, HRV tidak layak | Tier poor |',
-            '|---|---:|---:|---:|---:|---:|']
+            '| Window | Kandidat | Target campuran | Kalibrasi/tidak terlacak | Timestamp ambigu saja | Berlabel, HRV tidak layak | Tier poor |',
+            '|---|---:|---:|---:|---:|---:|---:|']
         for seconds, (rows, excluded, reports) in results.items():
             mixed = sum(r['exclusion_reason'] == 'mixed_cognitive_labels' for r in excluded)
-            unresolved = len(excluded)-mixed
+            ambiguous = sum(r['exclusion_reason'] == 'ambiguous_eye_timestamp' for r in excluded)
+            unresolved = len(excluded)-mixed-ambiguous
             unusable = sum(not r['hrv_usable'] for r in rows)
             poor = sum(r['quality_tier'] == 'poor' for r in rows)
-            report_lines.append(f'| {seconds}s | {sum(r["candidate_windows"] for r in reports)} | {mixed} | {unresolved} | {unusable} | {poor} |')
+            report_lines.append(f'| {seconds}s | {sum(r["candidate_windows"] for r in reports)} | {mixed} | {unresolved} | {ambiguous} | {unusable} | {poor} |')
         report_lines += ['', 'Kolom HRV/tier poor merupakan diagnostik pada window berlabel dan dapat saling overlap. Tier poor juga dapat berasal dari kualitas eye; rincian kriteria tersimpan di CSV. all_data tidak membuang tier poor. CSV curated hanya menerapkan tier sensor, tanpa pembatasan nama peserta.', '',
             '## Komposisi fase pada Low good_acceptable', '',
             '| Window | Fase sumber | Window Low |', '|---|---|---:|']
         for seconds, (rows, _, _) in results.items():
             frame = pd.DataFrame(rows, columns=DATA_COLUMNS)
-            view = quality_views(frame)['good_acceptable']
+            if selection:
+                frame = selected_frames[seconds]
+            view = quality_views(frame, policy)['good_acceptable']
             phases = view.loc[view.cognitive_load_label.eq('Low')].groupby('study_phase').size()
             report_lines += [f'| {seconds}s | {phase} | {count} |' for phase, count in phases.items()]
         report_lines += ['', 'mixed berarti beberapa fase dengan target Low yang sama. Detail per segmen ada pada window_phase_mix; jumlah window bukan durasi unik dan tidak menyatakan semua Low berasal dari pengerjaan easy.', '',
@@ -422,11 +506,39 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
             'Gunakan 26 predictor sensor pada feature_columns.json, bukan semua kolom numerik. Target/difficulty/fase, nama peserta, ID soal, waktu, dan kualitas adalah metadata atau label, bukan X. Identitas tetap dipakai untuk grouping/deduplikasi. Imputasi, scaling, seleksi fitur, class weight dan oversampling dilakukan pada training fold, tidak pada CSV sumber. Builder tidak melatih model; sumber tambahan yang diterima dijelaskan pada ringkasan pembaruan. Batch-01 tetap arsip; batch-02 memakai evaluasinya sendiri.', '',
             'Window overlap bukan observasi independen. Durasi unik dilaporkan per kelas/rekaman pada class_distribution.csv. Mutu sensor dan komposisi kelas dapat berubah antarwindow; jumlah row terbesar bukan bukti window terbaik. Endpoint pembanding dan manifest evaluasi batch-02 dibuat setelah data tambahan diterima.', '']
         report_lines += report_sections(results, audits, config, update_summary)
+        if selection:
+            report_lines += replacement.report_lines(selected_frames, selection, pairs)
+            if selection.get('timestamp_policies'):
+                report_lines += ['', '## Timestamp eye ambigu', '',
+                    ('Penanganan hanya berlaku untuk sesi yang disetujui secara eksplisit pada timestamp_policies. '
+                     'Seluruh frame, urutan, dan waktu mentah dipertahankan, termasuk urutan increment kedipan. '
+                     'Tidak ada interpolasi atau timestamp buatan. Setiap window dengan start < timestamp ambigu <= end '
+                     'dikeluarkan dari semua view dan dicatat pada excluded_windows. exclusion_flags juga mempertahankan '
+                     'alasan target campuran jika keduanya terjadi. Sumber dipin dengan SHA-256; perubahan file memerlukan audit baru. '
+                     'Rincian kelompok dan jumlah window terdampak ada di DATASET_CONDITION_REPORT.md dan replay_validation.json.'), '']
+            report_lines = [line.replace(
+                'Admission v2 tidak menggunakan daftar nama: good_only memuat tier good; good_acceptable memuat tier good/acceptable; all_data memuat semua window berlabel termasuk sensor poor.',
+                'Admission curated memakai tier sensor serta seleksi penggantian yang tercatat. good_only berisi good terpilih; good_acceptable berisi good/acceptable terpilih; all_data memuat window berlabel dengan waktu tidak ambigu, termasuk poor dan kandidat tidak terpilih.'
+            ).replace('CSV curated hanya menerapkan tier sensor, tanpa pembatasan nama peserta.',
+                      'CSV curated menerapkan tier sensor dan kebijakan penggantian yang tercatat.') for line in report_lines]
+            prior_report = output_dir/'DATASET_CONDITION_REPORT.md'
+            operator_guide = ''
+            if prior_report.exists():
+                text = prior_report.read_text(encoding='utf-8')
+                start = text.find('## 7. Panduan operator sebelum dan saat pengambilan')
+                if start >= 0:
+                    stop = text.find('\n## ', start+4)
+                    operator_guide = text[start:stop if stop >= 0 else len(text)]
+            (destination/'DATASET_CONDITION_REPORT.md').write_text(
+                replacement.condition_report(selected_frames, selection, pairs, results[25][2], audits, operator_guide),
+                encoding='utf-8')
         (destination/'QUALITY_REPORT.md').write_text('\n'.join(report_lines), encoding='utf-8')
         if shared.snapshot(input_dir) != sources_before:
             raise RuntimeError('Raw sources changed during build; no bundle published.')
         code_paths = [Path(__file__).resolve(), Path(shared.__file__).resolve(), Path(__file__).with_name('v2_integrity.py'),
                       Path(__file__).with_name('v2_sensor_checks.py'), Path(__file__).with_name('v2_documentation.py'),
+                      Path(replacement.__file__).resolve(),
+                      Path(history.__file__).resolve(), Path(timing.__file__).resolve(),
                       ROOT/'analysis_sessions/session_inventory.py',
                       ROOT/'fuse_and_analyze.py', ROOT/'hrv_monitor_prototype/calculate_hrv.py',
                       ROOT/'hrv_monitor_prototype/preprocess_rr.py', ROOT/'hrv_monitor_prototype/config.py']
@@ -440,7 +552,7 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
             'label_policy': {'active_task': ACTIVE_LABELS, 'Low_phases': list(LOW_PHASES), 'window_rule': 'unanimous_target'},
             'quality_configuration': config, 'quality_configuration_sha256': shared.digest(config_path),
             'endpoint_packet_policy': 'include_available_packets_at_endpoint',
-            'admission_policy': ADMISSION_POLICY,
+            'admission_policy': policy,
             'dataset_eye_review_groups': {name: None for name in shared.DATASETS},
             'source_integrity_verified': True, 'source_sha256': sources_before,
             'code_sha256': {str(p.relative_to(ROOT)).replace('\\', '/'): shared.digest(p) for p in code_paths},
@@ -467,8 +579,12 @@ def main():
     parser.add_argument('--config', type=Path, default=shared.DEFAULT_CONFIG)
     parser.add_argument('--subjects', nargs='+')
     parser.add_argument('--replace', action='store_true', help='Replace a verified v2 bundle; restore it if publication fails.')
+    parser.add_argument('--replacement-session', help='Replace weaker curated reference windows using this new session ID.')
+    parser.add_argument('--exclude-tied-eye-windows', action='store_true',
+                        help='Audit ties in the explicit replacement session and exclude all touched windows.')
     args = parser.parse_args()
-    build_dataset(args.input, args.output, args.config, args.subjects, replace=args.replace)
+    build_dataset(args.input, args.output, args.config, args.subjects, replace=args.replace,
+                  replacement_session=args.replacement_session, exclude_tied_eye_windows=args.exclude_tied_eye_windows)
 
 
 if __name__ == '__main__':
