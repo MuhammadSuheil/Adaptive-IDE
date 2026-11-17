@@ -21,7 +21,7 @@ class Config:
     dataset_root: Path | None = None
     batch_root: Path | None = None
     seed: int = 42
-    threads: int = 2
+    threads: int = 4
     tabpfn_checkpoint: Path | None = None
     tabpfn_checkpoint_sha256: str | None = None
     tabpfn_license_confirmed: bool = False
@@ -117,8 +117,16 @@ def inspect_dataset(config):
         "admission_policy",
         manifest.get("quality_configuration", {}).get("admission_policy"),
     )
-    if policy != "window_quality_only":
-        raise ValueError("Manifest tidak menyatakan admission window_quality_only.")
+    if (
+        policy
+        not in (
+            "window_quality_only",
+            "conservative_quality_replacement_v1",
+            "conservative_quality_replacement_v2",
+        )
+        or manifest.get("source_integrity_verified") is not True
+    ):
+        raise ValueError("Kebijakan/integritas dataset tidak didukung.")
     for seconds in WINDOWS:
         subdir = f"window_{seconds}s_step_5s"
         definition = read_json(config.dataset / subdir / "feature_columns.json")
@@ -137,11 +145,23 @@ def inspect_dataset(config):
             seconds,
             features,
         )
+        if policy != "window_quality_only":
+            selected = frames[seconds].get("curation_selected")
+            if (
+                selected is None
+                or not selected.astype(str).str.lower().isin(("true", "1")).all()
+            ):
+                raise ValueError("CSV curated memuat window yang tidak dipilih.")
         for name in ["good_acceptable.csv", "feature_columns.json"]:
             key = f"{subdir}/{name}"
             files[key] = file_hash(config.dataset / key)
             if manifest.get("output_sha256", {}).get(key) != files[key]:
                 raise ValueError(f"Checksum dataset tidak sesuai manifest: {key}")
+    if policy != "window_quality_only":
+        for name in ("replacement_selection.json", "replacement_pairs.csv"):
+            files[name] = file_hash(config.dataset / name)
+            if files[name] != manifest.get("output_sha256", {}).get(name):
+                raise ValueError(f"Checksum seleksi dataset tidak sesuai: {name}")
     files["manifest.json"] = file_hash(config.dataset / "manifest.json")
     summary = {
         seconds: {
@@ -185,13 +205,28 @@ def attach_registry(frames, registry):
 
 
 def freeze_release(
-    config, registry, additional_sessions, approved_by, proportions_approved=False
+    config,
+    registry,
+    additional_sessions,
+    approved_by,
+    proportions_approved=False,
+    *,
+    evaluation_scope="current_snapshot",
+    collection_status="ongoing",
+    expected_manifest_sha256=None,
 ):
     if not proportions_approved or not approved_by.strip() or not additional_sessions:
         raise ValueError(
             "Persetujuan proporsi, penanggung jawab, dan sesi tambahan wajib diisi."
         )
     inspected = inspect_dataset(config)
+    if (
+        expected_manifest_sha256 is not None
+        and inspected["files"]["manifest.json"] != expected_manifest_sha256
+    ):
+        raise ValueError(
+            "Hash manifest berbeda dari snapshot yang menerima persetujuan."
+        )
     frames = attach_registry(inspected["frames"], registry)
     source_sessions = {s for f in frames.values() for s in f.session_id}
     if not set(additional_sessions).issubset(source_sessions):
@@ -199,7 +234,13 @@ def freeze_release(
     from .splits import make_manifests
 
     manifests = make_manifests(frames, config.seed)
-    identity = {"files": inspected["files"], "registry": registry, "splits": manifests}
+    identity = {
+        "files": inspected["files"],
+        "registry": registry,
+        "splits": manifests,
+        "evaluation_scope": evaluation_scope,
+        "collection_status": collection_status,
+    }
     release_id = digest(identity)[:20]
     destination = config.batch / "inputs" / release_id
     if destination.exists():
@@ -220,6 +261,8 @@ def freeze_release(
         "release_id": release_id,
         "gates": dict.fromkeys(GATES, "approved"),
         "approved_by": approved_by,
+        "evaluation_scope": evaluation_scope,
+        "collection_status": collection_status,
         "additional_sessions": additional_sessions,
         "files": {
             **inspected["files"],

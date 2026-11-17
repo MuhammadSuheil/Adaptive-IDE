@@ -12,5 +12,5 @@ filelock==3.29.5
 nbformat==5.11.1
 threadpoolctl==3.8.0
 # Optional groups are installed explicitly by ensure_environment(optional=...).
-# optional-neural: torch==2.12.1
+# optional-neural: torch==2.11.0
 # optional-tabpfn: tabpfn==10.0.0

@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 
 from .preprocessing import Preprocessor
-from .splits import group_splits
 from .streams import nonoverlap_indices
 
 
@@ -25,9 +24,17 @@ def support_ok(rows):
 
 
 def stopping_split(rows, seed):
-    for fit, stop in group_splits(rows, seed):
-        if support_ok(rows.iloc[fit]):
-            return fit, stop
+    from sklearn.model_selection import StratifiedGroupKFold
+
+    for count in (3, 4):
+        if rows.person_id.nunique() < count:
+            continue
+        splitter = StratifiedGroupKFold(n_splits=count, shuffle=True, random_state=seed)
+        for fit, stop in splitter.split(
+            np.zeros((len(rows), 1)), rows.y, rows.person_id
+        ):
+            if support_ok(rows.iloc[fit]) and rows.iloc[fit].y.nunique() == 3:
+                return fit, stop
     raise Ineligible(
         "skipped_insufficient_support: tidak ada group stopping dengan >=8 grup dan >=20 endpoint nonoverlap per kelas fitting."
     )
@@ -105,7 +112,11 @@ def _train(recipe, sources, rows, seed, threads, epochs, stopping=None):
     np.random.seed(seed)
     processor = Preprocessor().fit(flattened(sources))
     matrix, lengths = prepared(sources, processor)
-    device = torch.device("cuda" if recipe.model == "ft_transformer" else "cpu")
+    device = torch.device(
+        "cuda"
+        if torch.cuda.is_available()
+        else "cpu"
+    )
     model = network(recipe.model, matrix.shape[-1]).to(device)
     optimizer = torch.optim.AdamW(
         model.parameters(),
@@ -164,19 +175,12 @@ def _train(recipe, sources, rows, seed, threads, epochs, stopping=None):
 
 
 def fit_neural(recipe, sources, rows, seed=42, threads=2, epochs=None):
-    if recipe.model == "ft_transformer":
-        import torch
-
-        if not torch.cuda.is_available():
-            raise Ineligible(
-                "skipped_hardware: FT-Transformer memerlukan GPU pada konfigurasi awal."
-            )
     if not support_ok(rows):
         raise Ineligible(
             "skipped_insufficient_support: neural support gate tidak terpenuhi."
         )
     if epochs is None:
-        fit, stop = stopping_split(rows.reset_index(drop=True), 42)
+        fit, stop = stopping_split(rows.reset_index(drop=True), seed)
         selected = _train(
             recipe,
             subset_sources(sources, fit),

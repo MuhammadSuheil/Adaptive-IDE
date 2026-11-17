@@ -6,8 +6,10 @@ import json
 import math
 import platform
 import sys
+import time
 from datetime import UTC, datetime
 from pathlib import Path
+from uuid import uuid4
 
 import numpy as np
 
@@ -43,11 +45,24 @@ def file_hash(path):
 def write_json(path, value):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + ".tmp")
+    temporary = path.with_name(path.name + f".{uuid4().hex}.tmp")
     temporary.write_text(
         json.dumps(clean(value), indent=2, allow_nan=False) + "\n", encoding="utf-8"
     )
-    temporary.replace(path)
+    try:
+        for attempt in range(8):
+            try:
+                temporary.replace(path)
+                break
+            except PermissionError:
+                if attempt == 7:
+                    raise
+                time.sleep(0.15)
+    finally:
+        try:
+            temporary.unlink(missing_ok=True)
+        except PermissionError:
+            pass
 
 
 def read_json(path):

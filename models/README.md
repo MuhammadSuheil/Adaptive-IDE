@@ -1,5 +1,15 @@
 # Model Cognitive Load
 
+## Mulai batch-02 di Google Colab
+
+Panduan operasional ada di [batch-02/README.md](batch-02/README.md), termasuk struktur Google Drive, urutan notebook, dan cara melanjutkan run yang terputus.
+
+1. Salin dataset terbaru dari `analysis_sessions/dataset_fusion/output/v2_session_phase` ke `MyDrive/Penelitian-Adaptive-IDE/Dataset/v2_session_phase`.
+2. Salin `models/batch-02` ke `MyDrive/Penelitian-Adaptive-IDE/models/batch-02`. Yang diperlukan adalah folder `exp00` sampai `exp14`, seluruh `shared`, seluruh `sensor_streams`, dan `requirements.txt`. README boleh ikut. Jangan membawa `inputs`, `registry`, atau `outputs` dari run lama.
+3. Jalankan notebook exp00 sampai selesai, kemudian exp01 sampai exp14 satu per satu. Setiap notebook sudah menangani tiga window; tidak perlu membuat salinan per-window atau mengunggah CSV pada setiap run.
+
+`inputs`, `registry`, dan `outputs` dibuat otomatis di Drive. Untuk run baru, biarkan `RESUME_DIR=None`. TabPFN pada exp12 merupakan cabang opsional yang default-nya dinonaktifkan; baca panduan sebelum mengaktifkannya.
+
 ## Konteks penelitian dan peran kolom
 
 Tujuan penelitian adalah satu model klasifikasi cognitive load (Low/Medium/High) dari fitur eye tracking dan HRV selama aktivitas pemrograman. Satu baris mewakili satu window sensor. Penelitian tidak menargetkan pengenalan identitas atau satu model terpisah untuk setiap peserta. CodeArrange merupakan sarana pengambilan data dan sumber penanda tugas, bukan ketergantungan wajib saat model utama digunakan pada aktivitas pemrograman lain.
@@ -29,19 +39,19 @@ Satu `batch` adalah satu rangkaian penelitian/pemodelan; `exp` adalah percobaan 
 
 | Batch | Isi | Ringkasan |
 |---|---|---|
-| batch-00 | Eksperimen awal tim; sebelumnya `exp0` | [SUMMARY.md](batch-00/SUMMARY.md) |
-| batch-01 | Baseline dan rangkaian exp01 sampai exp12 | [SUMMARY.md](batch-01/SUMMARY.md) |
-| batch-02 | Evaluasi mandiri dataset terbaru: fitur sensor, window, balancing, dan model; belum training | [PLAN.md](batch-02/PLAN.md) |
+| batch-00 | Eksperimen awal tim; sebelumnya `exp0` | [Dataset lama](batch-00/old-dataset/SUMMARY.md), [dataset baru](batch-00/new-dataset/SUMMARY.md) |
+| batch-01 | Baseline dan rangkaian exp01 sampai exp12 | [Dataset lama](batch-01/old-dataset/SUMMARY.md), [dataset baru](batch-01/new-dataset/SUMMARY.md) |
+| batch-02 | 14 eksperimen pada dataset terbaru setelah Mon/Alif; dijalankan dari awal di Colab | [Panduan Colab](batch-02/README.md) |
 
-Rencana batch-02 sudah tersedia dan sudah disesuaikan dengan builder/tiga varian dataset v2 yang selesai dibuat. Rekaman Low tambahan masih menunggu pengambilan/penerimaan data; notebook dan training baru belum dibuat. Rangkaian setelahnya dapat memakai nama `batch-03` bila nanti disepakati.
+Notebook batch-02 sudah disiapkan: exp00 untuk persiapan, exp01–exp14 untuk eksperimen. Dataset dan paket sensor dibaca melalui path Google Drive. Training lokal lama tidak dilanjutkan. Rangkaian setelahnya dapat memakai nama batch-03 bila disepakati.
 
 Batch-02 tidak membandingkan skor dengan batch-00/batch-01 atau menguji sebelum–sesudah penambahan Low. Seluruh dataset terbaru menjadi sumber evaluasi dan baseline batch-02. Manifest fold yang sama digunakan untuk membandingkan konfigurasi di dalam batch tersebut; hasil batch lama tetap menjadi arsip.
 
 ## Hasil evaluasi dan Git
 
-[Diagnosis batch-01](batch-01/DIAGNOSIS.md) menelusuri keterwakilan Low, variasi antarrekaman, mutu sensor, dan batas hasil model, disertai bukti audit serta prioritas batch berikutnya.
+[Diagnosis batch-01 dataset lama](batch-01/old-dataset/DIAGNOSIS.md) dan [dataset baru](batch-01/new-dataset/DIAGNOSIS.md) menelusuri keterwakilan Low, variasi antarrekaman, mutu sensor, dan batas hasil model, disertai bukti audit serta prioritas batch berikutnya.
 
-Hasil lengkap batch-01 berada di `batch-01/outputs/exp01` sampai `exp12`. Baca [laporan batch-01](batch-01/SUMMARY.md) untuk rincian metode, hasil per kelas, grafik, dan cakupan pengujian. Notebook yang dieksekusi melalui Python tidak harus memiliki output cell tersimpan; hasilnya dapat diperiksa melalui CSV dan metadata run.
+Hasil batch-01 berada di folder `outputs` pada masing-masing arsip `old-dataset` dan `new-dataset`. Baca [laporan dataset lama](batch-01/old-dataset/SUMMARY.md) atau [laporan dataset baru](batch-01/new-dataset/SUMMARY.md) untuk rincian metode, hasil per kelas, grafik, dan cakupan pengujian. Notebook yang dieksekusi melalui Python tidak harus memiliki output cell tersimpan; hasilnya dapat diperiksa melalui CSV dan metadata run.
 
 [`.gitignore`](.gitignore) berlaku untuk seluruh batch, termasuk batch berikutnya:
 

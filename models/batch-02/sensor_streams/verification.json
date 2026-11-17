@@ -1,0 +1,14 @@
+{
+  "15": {
+    "matched_rows": 3579,
+    "full_grid_rows": 8574
+  },
+  "25": {
+    "matched_rows": 3214,
+    "full_grid_rows": 8528
+  },
+  "45": {
+    "matched_rows": 2527,
+    "full_grid_rows": 8436
+  }
+}

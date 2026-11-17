@@ -90,11 +90,8 @@ def capabilities(config):
         result.update(
             mlp="eligible_subject_to_support", gru="eligible_subject_to_support"
         )
-        result["ft_transformer"] = (
-            "eligible_subject_to_support"
-            if torch.cuda.is_available()
-            else "skipped_hardware"
-        )
+        result["ft_transformer"] = "eligible_subject_to_support"
+        result["neural_device"] = "cuda" if torch.cuda.is_available() else "cpu"
         if (
             importlib.util.find_spec("tabpfn")
             and importlib.metadata.version("tabpfn")

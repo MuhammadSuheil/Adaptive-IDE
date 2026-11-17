@@ -10,6 +10,63 @@ from .metrics import LABELS, classification_metrics
 from .streams import nonoverlap_indices
 
 
+def notebook_tables(directory):
+    from .artifacts import read_json
+
+    directory = Path(directory)
+    classes = []
+    metrics = (
+        read_json(directory / "metrics.json")
+        if (directory / "metrics.json").exists()
+        else {}
+    )
+    for comparison, metric in metrics.items():
+        for label, values in metric["classes"].items():
+            classes.append({"comparison": comparison, "label": label, **values})
+    return {
+        "classes": pd.DataFrame(classes),
+        "summary": pd.read_csv(directory / "summary.csv")
+        if (directory / "summary.csv").exists()
+        else pd.DataFrame(),
+    }
+
+
+def display_notebook_results(directory):
+    from IPython.display import Image, display
+
+    from .artifacts import read_json
+
+    directory = Path(directory)
+    display(read_json(directory / "status.json"))
+    tables = notebook_tables(directory)
+    if not tables["classes"].empty:
+        display(tables["classes"])
+    summary = tables["summary"]
+    if not summary.empty:
+        complete = summary[summary.complete_oof]
+        for seconds, rows in complete.groupby("window_seconds"):
+            representative = rows.sort_values("macro_f1", ascending=False).iloc[0]
+            print(
+                f"Confusion matrix deskriptif {seconds}s: {representative.comparison}. "
+                "Ranking outer ini tidak dipakai untuk seleksi model akhir."
+            )
+            figure = (
+                directory
+                / f"window_{seconds}s"
+                / representative.support
+                / representative.comparison
+                / "figures/confusion_matrix.png"
+            )
+            if figure.exists():
+                display(Image(filename=str(figure)))
+    if (directory / "events.json").exists():
+        events = read_json(directory / "events.json")
+        if events:
+            display(pd.DataFrame(events))
+    if (directory / "joint_window_metrics.json").exists():
+        display(read_json(directory / "joint_window_metrics.json"))
+
+
 def transform_metadata(bundle):
     fitted = getattr(bundle, "fitted", None)
     processor = getattr(fitted, "preprocessing", None)

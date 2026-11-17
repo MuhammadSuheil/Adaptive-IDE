@@ -240,8 +240,6 @@ def recipes_for(experiment):
 
 
 def experiment_windows(experiment):
-    return (
-        (15, 25, 45)
-        if experiment in ("exp00", "exp01", "exp04", "exp05", "exp14")
-        else (25,)
-    )
+    if experiment not in {f"exp{i:02d}" for i in range(15)}:
+        raise ValueError(f"Keluarga eksperimen tidak dikenal: {experiment}")
+    return (15, 25, 45)

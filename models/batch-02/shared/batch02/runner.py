@@ -1,6 +1,7 @@
 """Notebook entry points. Training requires an approved immutable release."""
 
 from dataclasses import asdict
+from time import perf_counter
 
 import numpy as np
 import pandas as pd
@@ -120,7 +121,7 @@ def _identity(config, experiment, release, cache_identity):
         "checkpoint_license": config.tabpfn_license_confirmed,
         "capabilities": capabilities(config),
         "requirements_sha256": file_hash(config.batch / "requirements.txt"),
-        "protocol": "batch02_v1_inner_search_120_pool24",
+        "protocol": "batch02_v2_three_windows_colab_stopping34_pool24",
     }
 
 
@@ -226,13 +227,25 @@ def run_experiment(config, experiment, resume=None, fit=fit_candidate):
     from filelock import FileLock
 
     with FileLock(str(run / "writer.lock"), timeout=0):
-        workload = estimate_work(experiment, manifests)
+        paired = paired_endpoints(frames)
+        paired_manifests = (
+            make_manifests(
+                {s: restrict_paired(f, paired) for s, f in frames.items()}, config.seed
+            )
+            if experiment == "exp04"
+            else None
+        )
+        workload = estimate_work(
+            experiment,
+            manifests,
+            paired_manifests=paired_manifests,
+            capabilities=capabilities(config),
+        )
         write_json(run / "workload.json", workload)
         print("Rencana pekerjaan:", workload)
         write_json(run / "status.json", {"status": "running", "experiment": experiment})
         write_json(run / "capabilities.json", capabilities(config))
         all_predictions, expected, events = [], {}, []
-        paired = paired_endpoints(frames)
         try:
             for seconds in experiment_windows(experiment):
                 for support in (
@@ -264,6 +277,10 @@ def run_experiment(config, experiment, resume=None, fit=fit_candidate):
                             events.append(fold)
                             continue
                         folder = run / f"window_{seconds}s" / support / fold["id"]
+                        print(
+                            f"{experiment} / {seconds}s / {support} / {fold['id']} / {fold['person']}",
+                            flush=True,
+                        )
                         evaluator = Evaluator(
                             frame, store, seconds, config, folder / "inner", fit
                         )
@@ -285,6 +302,17 @@ def run_experiment(config, experiment, resume=None, fit=fit_candidate):
                             ]
                         records = []
                         for recipe in recipes:
+                            started = perf_counter()
+                            write_json(
+                                run / "progress.json",
+                                {
+                                    "window": seconds,
+                                    "support": support,
+                                    "fold": fold["id"],
+                                    "recipe": recipe.key,
+                                    "stage": "inner_selection",
+                                },
+                            )
                             record = evaluator.score(recipe, fold["inner"])
                             records.append(record)
                             comparison = (
@@ -312,6 +340,10 @@ def run_experiment(config, experiment, resume=None, fit=fit_candidate):
                                 folder / recipe.key,
                             )
                             all_predictions.append(result)
+                            print(
+                                f"  {recipe.model} / {recipe.features} / {perf_counter() - started:.1f}s",
+                                flush=True,
+                            )
                         _save_search(folder / "search_results.json", records)
             if all_predictions:
                 summary = summarize_predictions(
@@ -360,6 +392,18 @@ def run_final(config, resume=None, fit=fit_candidate):
                     if fold["status"] == "no_test_support":
                         continue
                     directory = run / f"window_{seconds}s" / fold["id"]
+                    print(
+                        f"exp14 / {seconds}s / {fold['id']} / {fold['person']}",
+                        flush=True,
+                    )
+                    write_json(
+                        run / "progress.json",
+                        {
+                            "window": seconds,
+                            "fold": fold["id"],
+                            "stage": "adaptive_search",
+                        },
+                    )
                     evaluator = Evaluator(
                         frame, store, seconds, config, directory / "inner", fit
                     )

@@ -9,25 +9,32 @@ from .registry import Recipe, model_bank, recipes_for
 from .runtime import ensure_environment
 
 
-def validate_package(batch):
+def validate_notebook(path):
     import nbformat
 
+    notebook = nbformat.read(path, as_version=4)
+    nbformat.validate(notebook)
+    cells = executed = 0
+    for cell in notebook.cells:
+        if cell.cell_type == "code":
+            ast.parse(cell.source, filename=str(path))
+            if any(output.output_type == "error" for output in cell.outputs):
+                raise ValueError(f"Notebook contains an error traceback: {path}")
+            cells += 1
+            executed += cell.execution_count is not None
+    return {"code_cells": cells, "executed_code_cells": executed}
+
+
+def validate_package(batch):
     batch = Path(batch)
     notebooks = sorted(batch.glob("exp*/EyeHeartCognitiveLoad.ipynb"))
     if len(notebooks) != 15:
         raise ValueError("Paket memerlukan notebook exp00 sampai exp14.")
-    cells = 0
+    cells = executed = 0
     for path in notebooks:
-        notebook = nbformat.read(path, as_version=4)
-        nbformat.validate(notebook)
-        for cell in notebook.cells:
-            if cell.cell_type == "code":
-                ast.parse(cell.source, filename=str(path))
-                if cell.outputs or cell.execution_count is not None:
-                    raise ValueError(
-                        f"Notebook paket harus belum berisi hasil training: {path}"
-                    )
-                cells += 1
+        checked = validate_notebook(path)
+        cells += checked["code_cells"]
+        executed += checked["executed_code_cells"]
     constructors = []
     for recipe in [Recipe("dummy"), *model_bank()]:
         model = make_estimator(recipe)
@@ -44,6 +51,7 @@ def validate_package(batch):
         "training_performed": False,
         "notebooks": len(notebooks),
         "parsed_code_cells": cells,
+        "executed_code_cells": executed,
         "recipe_counts": counts,
         "constructors": constructors,
         "environment": environment(),
