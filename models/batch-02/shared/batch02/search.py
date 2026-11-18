@@ -9,6 +9,7 @@ from .features import MissingStream
 from .metrics import classification_metrics
 from .modeling import fit_candidate
 from .neural import Ineligible
+from .persistence import checkpoint
 from .preprocessing import CandidateInvalid
 from .registry import Recipe, controls, model_bank, recipes_for, unique
 from .runtime import capabilities
@@ -145,6 +146,7 @@ class Evaluator:
         write_json(path, {**result, "recipe": asdict(recipe)})
         result["recipe"] = recipe
         self.results[key] = result
+        checkpoint()
         return result
 
 

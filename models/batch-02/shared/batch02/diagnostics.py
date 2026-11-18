@@ -8,6 +8,7 @@ from .artifacts import read_json, write_json
 from .features import MissingStream
 from .fitting import fit_tabular
 from .metrics import classification_metrics
+from .persistence import checkpoint
 from .preprocessing import CandidateInvalid
 from .registry import Recipe
 
@@ -118,6 +119,15 @@ def negative_controls(config, frames, store, manifests, run):
                 if fold["status"] == "no_test_support":
                     continue
                 train, test = fold["train"], fold["test"]
+                cached = (
+                    run / "control_cache" / f"{seconds}s" / name / f"{fold['id']}.json"
+                )
+                if cached.exists():
+                    saved = read_json(cached)
+                    if saved["window_id"] != frame.iloc[test].window_id.tolist():
+                        raise ValueError("Endpoint cache kontrol berbeda.")
+                    outputs.append(pd.DataFrame(saved))
+                    continue
                 try:
                     fitted = fit_tabular(
                         Recipe(),
@@ -134,15 +144,16 @@ def negative_controls(config, frames, store, manifests, run):
                         "reason": str(error),
                     }
                     break
-                outputs.append(
-                    pd.DataFrame(
-                        {
-                            "window_id": frame.iloc[test].window_id.to_numpy(),
-                            "y_true": frame.iloc[test].y.to_numpy(),
-                            "y_pred": probabilities.argmax(1),
-                        }
-                    )
+                output = pd.DataFrame(
+                    {
+                        "window_id": frame.iloc[test].window_id.to_numpy(),
+                        "y_true": frame.iloc[test].y.to_numpy(),
+                        "y_pred": probabilities.argmax(1),
+                    }
                 )
+                write_json(cached, output.to_dict(orient="list"))
+                outputs.append(output)
+                checkpoint()
             if outputs:
                 combined = pd.concat(outputs)
                 combined.to_csv(run / f"diagnostic_{seconds}_{name}.csv", index=False)
@@ -150,4 +161,5 @@ def negative_controls(config, frames, store, manifests, run):
                     "status": "diagnostic_only",
                     **classification_metrics(combined.y_true, combined.y_pred),
                 }
+            checkpoint(force=True)
     write_json(run / "negative_controls.json", result)

@@ -6,9 +6,11 @@ Panduan operasional ada di [batch-02/README.md](batch-02/README.md), termasuk st
 
 1. Salin dataset terbaru dari `analysis_sessions/dataset_fusion/output/v2_session_phase` ke `MyDrive/Penelitian-Adaptive-IDE/Dataset/v2_session_phase`.
 2. Salin `models/batch-02` ke `MyDrive/Penelitian-Adaptive-IDE/models/batch-02`. Yang diperlukan adalah folder `exp00` sampai `exp14`, seluruh `shared`, seluruh `sensor_streams`, dan `requirements.txt`. README boleh ikut. Jangan membawa `inputs`, `registry`, atau `outputs` dari run lama.
-3. Jalankan notebook exp00 sampai selesai, kemudian exp01 sampai exp14 satu per satu. Setiap notebook sudah menangani tiga window; tidak perlu membuat salinan per-window atau mengunggah CSV pada setiap run.
+3. Jalankan notebook exp00 sampai selesai, kemudian exp01 sampai exp14. Setiap runtime menjalankan satu notebook pada satu waktu; anggota tim boleh memakai akun berbeda untuk eksperimen berbeda secara paralel. Setiap notebook sudah menangani tiga window; tidak perlu membuat salinan per-window atau mengunggah CSV pada setiap run.
 
 `inputs`, `registry`, dan `outputs` dibuat otomatis di Drive. Untuk run baru, biarkan `RESUME_DIR=None`. TabPFN pada exp12 merupakan cabang opsional yang default-nya dinonaktifkan; baca panduan sebelum mengaktifkannya.
+
+Pada exp03–exp14, pekerjaan training berlangsung di disk sementara Colab dan checkpoint disimpan otomatis ke Drive bersama. Semua akun perlu izin Editor pada folder proyek dan pintasan di My Drive masing-masing. Bila exp00–exp02 sudah selesai, cukup perbarui shared serta notebook exp03–exp14, gunakan runtime baru, dan mulai ulang exp03 yang gagal; pertahankan inputs/registry/output Colab yang sudah ada. Ikuti bagian pembaruan pada panduan batch-02, bukan menyalin ulang seluruh folder di atas hasil yang sudah selesai.
 
 ## Konteks penelitian dan peran kolom
 

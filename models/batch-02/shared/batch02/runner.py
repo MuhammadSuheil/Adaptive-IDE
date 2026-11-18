@@ -19,6 +19,7 @@ from .contracts import inspect_dataset, load_release
 from .features import FeatureStore
 from .metrics import classification_metrics
 from .modeling import fit_candidate
+from .persistence import checkpoint
 from .registry import experiment_windows, model_bank, recipes_for
 from .reporting import (
     prediction_frame,
@@ -191,6 +192,7 @@ def _outer_result(
             "pipeline_sha256": file_hash(model_path),
         },
     )
+    checkpoint()
     return predictions
 
 
@@ -211,7 +213,23 @@ def _save_search(path, records):
     )
 
 
-def run_experiment(config, experiment, resume=None, fit=fit_candidate):
+def _record_failure(run, error):
+    try:
+        write_json(
+            run / "status.json",
+            {"status": "failed", "error": f"{type(error).__name__}: {error}"},
+        )
+    except Exception as status_error:  # noqa: BLE001 - logging must not replace the original failure.
+        error.add_note(f"Status gagal disimpan: {status_error}")
+
+
+def run_experiment(
+    config, experiment, resume=None, fit=fit_candidate, persistence=None
+):
+    if persistence is not None:
+        local_resume = persistence.restore(resume) if resume is not None else None
+        with persistence.session():
+            return run_experiment(config, experiment, resume=local_resume, fit=fit)
     if experiment == "exp14":
         return run_final(config, resume, fit=fit)
     release, frames, _features, manifests, store, cache_identity = _context(config)
@@ -245,6 +263,7 @@ def run_experiment(config, experiment, resume=None, fit=fit_candidate):
         print("Rencana pekerjaan:", workload)
         write_json(run / "status.json", {"status": "running", "experiment": experiment})
         write_json(run / "capabilities.json", capabilities(config))
+        checkpoint(run=run, force=True)
         all_predictions, expected, events = [], {}, []
         try:
             for seconds in experiment_windows(experiment):
@@ -345,6 +364,7 @@ def run_experiment(config, experiment, resume=None, fit=fit_candidate):
                                 flush=True,
                             )
                         _save_search(folder / "search_results.json", records)
+                        checkpoint(force=True)
             if all_predictions:
                 summary = summarize_predictions(
                     pd.concat(all_predictions, ignore_index=True), run, expected
@@ -363,10 +383,7 @@ def run_experiment(config, experiment, resume=None, fit=fit_candidate):
                 },
             )
         except Exception as error:
-            write_json(
-                run / "status.json",
-                {"status": "failed", "error": f"{type(error).__name__}: {error}"},
-            )
+            _record_failure(run, error)
             raise
     return run, summary
 
@@ -385,6 +402,7 @@ def run_final(config, resume=None, fit=fit_candidate):
         write_json(run / "workload.json", workload)
         print("Rencana pekerjaan:", workload)
         write_json(run / "status.json", {"status": "running"})
+        checkpoint(run=run, force=True)
         predictions, expected = [], {}
         try:
             for seconds, frame in frames.items():
@@ -423,6 +441,7 @@ def run_final(config, resume=None, fit=fit_candidate):
                         directory / "selected",
                     )
                     predictions.append(result)
+                    checkpoint(force=True)
                 expected[(seconds, "nested_selected", "native")] = len(frame)
             # Joint-window selection is evaluated on an identical validation/test endpoint set.
             from .finalization import (
@@ -434,17 +453,21 @@ def run_final(config, resume=None, fit=fit_candidate):
             _joint, _joint_expected, joint_status = joint_window_evaluation(
                 config, frames, store, run, fit
             )
+            checkpoint(force=True)
             summary = summarize_predictions(
                 pd.concat(predictions, ignore_index=True), run, expected
             )
             refit_release(config, frames, store, run, joint_status, fit)
+            checkpoint(force=True)
             sensitivity_checks(config, frames, store, manifests, run, fit)
+            checkpoint(force=True)
             from .diagnostics import coverage_report, negative_controls
 
             coverage_report(
                 frames, store, config.batch / "inputs" / release["release_id"], run
             )
             negative_controls(config, frames, store, manifests, run)
+            checkpoint(force=True)
             write_run_notes(run, summary, "exp14")
             write_json(
                 run / "status.json",
@@ -455,9 +478,6 @@ def run_final(config, resume=None, fit=fit_candidate):
                 },
             )
         except Exception as error:
-            write_json(
-                run / "status.json",
-                {"status": "failed", "error": f"{type(error).__name__}: {error}"},
-            )
+            _record_failure(run, error)
             raise
     return run, summary

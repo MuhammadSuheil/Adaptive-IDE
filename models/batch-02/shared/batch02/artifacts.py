@@ -1,5 +1,6 @@
 """Atomic, hash-addressed artifacts and explicit run state."""
 
+import errno
 import hashlib
 import importlib.metadata
 import json
@@ -44,25 +45,32 @@ def file_hash(path):
 
 def write_json(path, value):
     path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + f".{uuid4().hex}.tmp")
-    temporary.write_text(
-        json.dumps(clean(value), indent=2, allow_nan=False) + "\n", encoding="utf-8"
-    )
-    try:
-        for attempt in range(8):
-            try:
-                temporary.replace(path)
-                break
-            except PermissionError:
-                if attempt == 7:
-                    raise
-                time.sleep(0.15)
-    finally:
+    payload = json.dumps(clean(value), indent=2, allow_nan=False) + "\n"
+    for attempt in range(8):
+        temporary = path.with_name(path.name + f".{uuid4().hex}.tmp")
         try:
-            temporary.unlink(missing_ok=True)
-        except PermissionError:
-            pass
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temporary.write_text(payload, encoding="utf-8")
+            temporary.replace(path)
+            return
+        except OSError as error:
+            transient = isinstance(
+                error, (FileNotFoundError, PermissionError)
+            ) or error.errno in (
+                errno.EIO,
+                errno.EAGAIN,
+                errno.EBUSY,
+                errno.ETIMEDOUT,
+                getattr(errno, "ESTALE", -1),
+            )
+            if not transient or attempt == 7:
+                raise
+            time.sleep(0.15)
+        finally:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError:
+                pass
 
 
 def read_json(path):
@@ -97,7 +105,11 @@ def environment():
 
 def code_hash():
     root = Path(__file__).parent
-    return digest({p.name: file_hash(p) for p in sorted(root.glob("*.py"))})
+    sources = {p.name: file_hash(p) for p in sorted(root.glob("*.py"))}
+    bootstrap = root.parent / "colab_bootstrap.py"
+    if bootstrap.exists():
+        sources["../colab_bootstrap.py"] = file_hash(bootstrap)
+    return digest(sources)
 
 
 def open_run(root, identity, resume):

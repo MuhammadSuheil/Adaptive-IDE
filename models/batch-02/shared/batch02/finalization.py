@@ -5,10 +5,11 @@ from dataclasses import asdict, replace
 import numpy as np
 import pandas as pd
 
-from .artifacts import file_hash, read_json, write_json
+from .artifacts import digest, file_hash, read_json, write_json
 from .metrics import classification_metrics, paired_bootstrap
 from .modeling import fit_candidate
 from .neural import Ineligible
+from .persistence import checkpoint
 from .registry import Recipe, recipe_from_dict
 from .search import Evaluator, adaptive_search, select_record
 from .splits import group_splits, paired_endpoints, restrict_paired
@@ -89,6 +90,7 @@ def joint_window_evaluation(config, frames, store, run, fit=fit_candidate):
             folder / "selection.json",
             {"window": seconds, "recipe": asdict(best["recipe"])},
         )
+        checkpoint(force=True)
     combined = pd.concat(predictions, ignore_index=True)
     if (
         len(combined) != len(common)
@@ -125,6 +127,15 @@ def _save_deployment(config, record, rows, store, seconds, directory, fit):
     import joblib
 
     directory.mkdir(parents=True, exist_ok=True)
+    card_path = directory / "model_card.json"
+    if card_path.exists() and (directory / "transform_metadata.json").exists():
+        card = read_json(card_path)
+        # JSON converts tuples to lists; compare canonical digests instead.
+        if digest(card["recipe"]) != digest(asdict(record["recipe"])):
+            raise ValueError("Recipe deployment tersimpan berbeda.")
+        if file_hash(directory / "pipeline.joblib") != card["pipeline_sha256"]:
+            raise ValueError("Model deployment tersimpan korup.")
+        return
     fitted = fit(
         record["recipe"], rows, store, seconds, config, epochs=record.get("epoch")
     )
@@ -154,6 +165,7 @@ def _save_deployment(config, record, rows, store, seconds, directory, fit):
             ),
         },
     )
+    checkpoint(force=True)
 
 
 def refit_release(config, frames, store, run, joint_status, fit=fit_candidate):
@@ -221,12 +233,37 @@ def refit_release(config, frames, store, run, joint_status, fit=fit_candidate):
     )
 
 
-def _score_fit(recipe, training, test, store, seconds, config, fit, epoch=None):
+def _score_fit(
+    recipe, training, test, store, seconds, config, fit, epoch=None, cache_path=None
+):
+    identity = digest(
+        {
+            "recipe": asdict(recipe),
+            "train": training.window_id.tolist(),
+            "test": test.window_id.tolist(),
+            "seed": config.seed,
+            "threads": config.threads,
+            "epoch": epoch,
+        }
+    )
+    if cache_path is not None and cache_path.exists():
+        cached = read_json(cache_path)
+        if cached["identity"] != identity:
+            raise ValueError("Identitas cache sensitivity berbeda.")
+        return cached["metrics"], np.asarray(cached["predicted"], dtype=int)
     fitted = fit(recipe, training, store, seconds, config, epochs=epoch)
     values, kind = fitted.predict(test, store, seconds)
-    return classification_metrics(
+    metrics = classification_metrics(
         test.y, values.argmax(1), values if kind == "probability" else None
-    ), values.argmax(1)
+    )
+    predicted = values.argmax(1)
+    if cache_path is not None:
+        write_json(
+            cache_path,
+            {"identity": identity, "metrics": metrics, "predicted": predicted},
+        )
+        checkpoint()
+    return metrics, predicted
 
 
 def sensitivity_checks(config, frames, store, manifests, run, fit=fit_candidate):
@@ -244,7 +281,19 @@ def sensitivity_checks(config, frames, store, manifests, run, fit=fit_candidate)
             for seed in (17, 2026):
                 local = replace(config, seed=seed)
                 metrics, _ = _score_fit(
-                    chosen, train, test, store, seconds, local, fit, epoch
+                    chosen,
+                    train,
+                    test,
+                    store,
+                    seconds,
+                    local,
+                    fit,
+                    epoch,
+                    cache_path=run
+                    / "sensitivity_cache"
+                    / f"{seconds}s"
+                    / fold["id"]
+                    / f"seed_{seed}.json",
                 )
                 rows.append(
                     {
@@ -288,7 +337,18 @@ def sensitivity_checks(config, frames, store, manifests, run, fit=fit_candidate)
                     if recipe.thin == 10:
                         selected = thin_training(selected)
                     metrics, prediction = _score_fit(
-                        recipe, selected, test, store, seconds, config, fit
+                        recipe,
+                        selected,
+                        test,
+                        store,
+                        seconds,
+                        config,
+                        fit,
+                        cache_path=run
+                        / "sensitivity_cache"
+                        / f"{seconds}s"
+                        / fold["id"]
+                        / f"{recipe.key}_{fraction}.json",
                     )
                     rows.append(
                         {
@@ -308,6 +368,9 @@ def sensitivity_checks(config, frames, store, manifests, run, fit=fit_candidate)
                             seconds,
                         )
                         baseline_predictions.append(baseline)
+            # Persist cumulative results so a checkpoint contains the finished fold.
+            write_json(run / "sensitivity.json", rows)
+            checkpoint(force=True)
     write_json(run / "sensitivity.json", rows)
     if baseline_predictions:
         baseline = pd.concat(baseline_predictions).drop_duplicates(
