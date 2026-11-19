@@ -1,5 +1,11 @@
 # Model Cognitive Load
 
+## Mulai batch-03 di Google Colab
+
+[Panduan batch-03](batch-03/README.md) menyiapkan dua notebook mandiri: exp01 untuk model tabular dan ensemble, exp02 untuk deep learning. Masing-masing mencakup training sampai evaluasi test dan penyimpanan model.
+
+Unggah dua notebook serta tiga CSV good_acceptable terbaru pada folder Drive yang dijelaskan panduan. Tidak memerlukan shared, file Python, requirements, paket sensor, atau output batch sebelumnya. Gunakan split blok waktu campuran dengan purge; panduan batch-02 di bawah merupakan arsip operasional rangkaian sebelumnya, bukan persyaratan menjalankan batch-03.
+
 ## Mulai batch-02 di Google Colab
 
 Panduan operasional ada di [batch-02/README.md](batch-02/README.md), termasuk struktur Google Drive, urutan notebook, dan cara melanjutkan run yang terputus.
@@ -44,6 +50,7 @@ Satu `batch` adalah satu rangkaian penelitian/pemodelan; `exp` adalah percobaan 
 | batch-00 | Eksperimen awal tim; sebelumnya `exp0` | [Dataset lama](batch-00/old-dataset/SUMMARY.md), [dataset baru](batch-00/new-dataset/SUMMARY.md) |
 | batch-01 | Baseline dan rangkaian exp01 sampai exp12 | [Dataset lama](batch-01/old-dataset/SUMMARY.md), [dataset baru](batch-01/new-dataset/SUMMARY.md) |
 | batch-02 | 14 eksperimen pada dataset terbaru setelah Mon/Alif; dijalankan dari awal di Colab | [Panduan Colab](batch-02/README.md) |
+| batch-03 | Dua notebook mandiri: model tabular/ensemble dan deep learning, dengan split blok waktu campuran serta evaluasi test di masing-masing notebook | [Panduan Colab](batch-03/README.md) |
 
 Notebook batch-02 sudah disiapkan: exp00 untuk persiapan, exp01–exp14 untuk eksperimen. Dataset dan paket sensor dibaca melalui path Google Drive. Training lokal lama tidak dilanjutkan. Rangkaian setelahnya dapat memakai nama batch-03 bila disepakati.
 
