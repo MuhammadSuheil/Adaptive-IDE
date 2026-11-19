@@ -1,0 +1,729 @@
+{
+  "training_performed": false,
+  "logical_files": 15352,
+  "duplicate_identical_paths": 0,
+  "parts": [
+    "outputs/outputs-20261119T044432Z-1-001/outputs",
+    "outputs/outputs-20261119T044432Z-1-002/outputs"
+  ],
+  "release": {
+    "created_at_utc": "2026-11-17T16:00:50.606497+00:00",
+    "release_id": "5cbfc8880194ad4cdd99",
+    "gates": {
+      "integrity": "approved",
+      "additional_data": "approved",
+      "proportions": "approved",
+      "frozen": "approved"
+    },
+    "approved_by": "Tim penelitian; dataset setelah Mon dan Alif, 17 November 2026",
+    "evaluation_scope": "colab_latest_dataset",
+    "collection_status": "ongoing",
+    "additional_sessions": [
+      "20261116_161850_P01_coding_task",
+      "20261116_154424_P01_coding_task",
+      "20261117_143302_P01_coding_task",
+      "20261117_153818_P01_coding_task"
+    ],
+    "files": {
+      "window_15s_step_5s/good_acceptable.csv": "b9a534b8de6c27d8888eb48ddc9ec5ab91d5f6712f59371de85ebc7473dbb1f5",
+      "window_15s_step_5s/feature_columns.json": "18572ef0a71ebc4a0e960821f79ed0c83d7a489ead864f8ac56a0cf1e2653a26",
+      "window_25s_step_5s/good_acceptable.csv": "478d080ab031cd06c59fa1791d9c81f1ca8845c9c62a96cdc942f1475e995a0a",
+      "window_25s_step_5s/feature_columns.json": "18572ef0a71ebc4a0e960821f79ed0c83d7a489ead864f8ac56a0cf1e2653a26",
+      "window_45s_step_5s/good_acceptable.csv": "028df02c14422d8ad469a1df0acfa57091ad367440f5607f6d89293081ee83ea",
+      "window_45s_step_5s/feature_columns.json": "18572ef0a71ebc4a0e960821f79ed0c83d7a489ead864f8ac56a0cf1e2653a26",
+      "replacement_selection.json": "7b2de38753a5f677c0fe015316f9c09593913a40346e5a0a4fa6b6e8b2880d08",
+      "replacement_pairs.csv": "ddd2ffd18c9f721f727a94e2730ee04eef724a3f2eb6e0082e1ea7f5e83eac32",
+      "manifest.json": "5bc566a20c7aa67388da4cf19a0587791af94ba650c33eac785a6ea9989e4d52",
+      "session_registry.json": "ea8e694ddf0133ec852655b5e4d6496b5c00f355a9c614037b2048197f930c8f",
+      "splits.json": "ba4c3a48f89da8d06b1ec823567a75e381f44c9c995fdd8fb497e1ab5b430c31"
+    },
+    "summary": {
+      "15": {
+        "rows": 3579,
+        "classes": {
+          "Medium": 1266,
+          "High": 1251,
+          "Low": 1062
+        },
+        "groups_metadata": 21
+      },
+      "25": {
+        "rows": 3214,
+        "classes": {
+          "High": 1137,
+          "Medium": 1093,
+          "Low": 984
+        },
+        "groups_metadata": 21
+      },
+      "45": {
+        "rows": 2527,
+        "classes": {
+          "Low": 908,
+          "High": 891,
+          "Medium": 728
+        },
+        "groups_metadata": 20
+      }
+    }
+  },
+  "runs": [
+    {
+      "experiment": "exp01",
+      "run_id": "20261117T160743601231Z_a3abbe766f63",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 12,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "58fa569e4a2247692017a61eefb33d38e5e465334356f5cb5089061422755f38",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-001/outputs/exp01/20261117T160743601231Z_a3abbe766f63/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 248
+    },
+    {
+      "experiment": "exp02",
+      "run_id": "20261118T035904682437Z_6c29983f2e54",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 90,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-002/outputs/exp02/20261118T035904682437Z_6c29983f2e54/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 1860
+    },
+    {
+      "experiment": "exp03",
+      "run_id": "20261118T013558776177Z_7f3d2057584d",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 39,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-001/outputs/exp03/20261118T013558776177Z_7f3d2057584d/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    },
+    {
+      "experiment": "exp04",
+      "run_id": "20261118T044625448834Z_b7efd98160fc",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 24,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-002/outputs/exp04/20261118T044625448834Z_b7efd98160fc/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    },
+    {
+      "experiment": "exp05",
+      "run_id": "20261118T023911164545Z_88a36d0b1ea4",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 18,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-001/outputs/exp05/20261118T023911164545Z_88a36d0b1ea4/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    },
+    {
+      "experiment": "exp06",
+      "run_id": "20261118T051230313758Z_0482a1bdc613",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 30,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-002/outputs/exp06/20261118T051230313758Z_0482a1bdc613/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    },
+    {
+      "experiment": "exp07",
+      "run_id": "20261118T030503239606Z_88107d171590",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 48,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-001/outputs/exp07/20261118T030503239606Z_88107d171590/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    },
+    {
+      "experiment": "exp08",
+      "run_id": "20261118T031711467399Z_a888d5fe103b",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 57,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-001/outputs/exp08/20261118T031711467399Z_a888d5fe103b/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    },
+    {
+      "experiment": "exp09",
+      "run_id": "20261118T055502648500Z_756891029d30",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 27,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-002/outputs/exp09/20261118T055502648500Z_756891029d30/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    },
+    {
+      "experiment": "exp10",
+      "run_id": "20261118T054818859075Z_a882a2451265",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 21,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-002/outputs/exp10/20261118T054818859075Z_a882a2451265/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    },
+    {
+      "experiment": "exp11",
+      "run_id": "20261118T060743135058Z_5e8a83174deb",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 18,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.11.0",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "eligible_subject_to_support",
+        "gru": "eligible_subject_to_support",
+        "ft_transformer": "eligible_subject_to_support",
+        "tabpfn": "skipped_dependency",
+        "neural_device": "cuda"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-001/outputs/exp11/20261118T060743135058Z_5e8a83174deb/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    },
+    {
+      "experiment": "exp12",
+      "run_id": "20261118T070215367166Z_25f7b5bef519",
+      "status": "complete_with_skips",
+      "training_performed": false,
+      "reported_summary_rows": 0,
+      "event_reasons": {
+        "skipped_dependency": 124,
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.14.1+cu130",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "skipped_dependency",
+        "gru": "skipped_dependency",
+        "ft_transformer": "skipped_dependency",
+        "tabpfn": "skipped_dependency"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-001/outputs/exp12/20261118T070215367166Z_25f7b5bef519/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    },
+    {
+      "experiment": "exp13",
+      "run_id": "20261118T070954931397Z_2e8b74523ed4",
+      "status": "complete_with_skips",
+      "training_performed": true,
+      "reported_summary_rows": 24,
+      "event_reasons": {
+        "no_test_support": 1
+      },
+      "code": "2d85fb5a91e6b9b7cafa06fe7115031be549f5ef555e1efb36cdd3e975c24440",
+      "release": "d66d0b8a317f0d51667444654c8ea68ebbc631fe3c41b2e197b03d0203ab6ef8",
+      "stream": "62f1380005cfc26b03c115bcf39621263489683333615e2a810aac92372432b6",
+      "seed": 42,
+      "environment": {
+        "numpy": "2.5.1",
+        "pandas": "3.0.3",
+        "scipy": "1.18.0",
+        "scikit-learn": "1.9.1",
+        "imbalanced-learn": "0.14.2",
+        "xgboost": "3.4.1",
+        "catboost": "1.2.10",
+        "torch": "2.11.0",
+        "tabpfn": null,
+        "joblib": "1.6.0",
+        "matplotlib": "3.11.0",
+        "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+        "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+        "threadpoolctl": "3.8.0"
+      },
+      "capabilities": {
+        "mlp": "eligible_subject_to_support",
+        "gru": "eligible_subject_to_support",
+        "ft_transformer": "eligible_subject_to_support",
+        "tabpfn": "skipped_dependency",
+        "neural_device": "cuda"
+      },
+      "source_status": "outputs/outputs-20261119T044432Z-1-002/outputs/exp13/20261118T070954931397Z_2e8b74523ed4/status.json",
+      "checkpoint_files_local": 0,
+      "local_model_files": 0
+    }
+  ],
+  "notebooks": [
+    {
+      "experiment": "exp01",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp02",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp03",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp04",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp05",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp06",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp07",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp08",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp09",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp10",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp11",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp12",
+      "errors": [],
+      "run_id_matches": true
+    },
+    {
+      "experiment": "exp13",
+      "errors": [],
+      "run_id_matches": true
+    }
+  ],
+  "verified_summary_rows": 408,
+  "native_summary_rows": 396,
+  "paired_summary_rows": 12,
+  "distinct_native_config_window_pairs": 333,
+  "paired_endpoints": 2138,
+  "common_control_predictions_identical": true,
+  "winner": {
+    "experiment": "exp02",
+    "run_id": "20261118T035904682437Z_6c29983f2e54",
+    "window_seconds": 25,
+    "support": "native",
+    "comparison": "logistic_499f533391d1cfa0",
+    "model": "logistic",
+    "feature_group": "F6",
+    "feature_count": 21,
+    "baseline_ratio": false,
+    "normalization": "N0",
+    "history": 0,
+    "selector": "none",
+    "balance": "none",
+    "thin": 5,
+    "params": "{\"C\": 1.0}",
+    "rows": 3214,
+    "people": 21,
+    "macro_f1": 0.39697915412750007,
+    "accuracy": 0.39919103920348475,
+    "balanced_accuracy": 0.40445229798649324,
+    "complete_oof": true,
+    "prediction_sha256": "1dd1a0589986a9ede39544087c659ea17317c19c6c381928cddf6d7d3c72225b",
+    "source_summary": "outputs/outputs-20261119T044432Z-1-001/outputs/exp02/20261118T035904682437Z_6c29983f2e54/summary.csv",
+    "Low_precision": 0.3885109599395314,
+    "Low_recall": 0.5223577235772358,
+    "Low_f1": 0.4456003467706979,
+    "Low_support": 984,
+    "Medium_precision": 0.39922854387656703,
+    "Medium_recall": 0.3787740164684355,
+    "Medium_f1": 0.38873239436619716,
+    "Medium_support": 1093,
+    "High_precision": 0.41569086651053866,
+    "High_recall": 0.3122251539138083,
+    "High_f1": 0.3566047212456052,
+    "High_support": 1137
+  },
+  "highest_accuracy_native": {
+    "experiment": "exp02",
+    "run_id": "20261118T035904682437Z_6c29983f2e54",
+    "window_seconds": 45,
+    "support": "native",
+    "comparison": "logistic_499f533391d1cfa0",
+    "model": "logistic",
+    "feature_group": "F6",
+    "feature_count": 21,
+    "baseline_ratio": false,
+    "normalization": "N0",
+    "history": 0,
+    "selector": "none",
+    "balance": "none",
+    "thin": 5,
+    "params": "{\"C\": 1.0}",
+    "rows": 2527,
+    "people": 20,
+    "macro_f1": 0.3942090939960061,
+    "accuracy": 0.40918084685397704,
+    "balanced_accuracy": 0.4011840029950651,
+    "complete_oof": true,
+    "prediction_sha256": "8496132f33118a180c24185345f150974da499a0003867c5edd503e4e696537b",
+    "source_summary": "outputs/outputs-20261119T044432Z-1-001/outputs/exp02/20261118T035904682437Z_6c29983f2e54/summary.csv",
+    "Low_precision": 0.4282277465918204,
+    "Low_recall": 0.5881057268722467,
+    "Low_f1": 0.49559164733178657,
+    "Low_support": 908,
+    "Medium_precision": 0.36610169491525424,
+    "Medium_recall": 0.2967032967032967,
+    "Medium_f1": 0.3277693474962064,
+    "Medium_support": 728,
+    "High_precision": 0.4115942028985507,
+    "High_recall": 0.31874298540965207,
+    "High_f1": 0.3592662871600253,
+    "High_support": 891
+  }
+}

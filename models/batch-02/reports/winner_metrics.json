@@ -1,0 +1,187 @@
+{
+  "macro_f1": 0.39697915412750007,
+  "accuracy": 0.39919103920348475,
+  "balanced_accuracy": 0.40445229798649324,
+  "confusion_matrix": [
+    [
+      514,
+      252,
+      218
+    ],
+    [
+      398,
+      414,
+      281
+    ],
+    [
+      411,
+      371,
+      355
+    ]
+  ],
+  "classes": {
+    "Low": {
+      "precision": 0.3885109599395314,
+      "recall": 0.5223577235772358,
+      "f1": 0.4456003467706979,
+      "support": 984
+    },
+    "Medium": {
+      "precision": 0.39922854387656703,
+      "recall": 0.3787740164684355,
+      "f1": 0.38873239436619716,
+      "support": 1093
+    },
+    "High": {
+      "precision": 0.41569086651053866,
+      "recall": 0.3122251539138083,
+      "f1": 0.3566047212456052,
+      "support": 1137
+    }
+  },
+  "nonoverlap": {
+    "macro_f1": 0.40578992057287744,
+    "accuracy": 0.4083129584352078,
+    "balanced_accuracy": 0.41373345080105356,
+    "confusion_matrix": [
+      [
+        132,
+        60,
+        55
+      ],
+      [
+        102,
+        114,
+        72
+      ],
+      [
+        96,
+        99,
+        88
+      ]
+    ],
+    "classes": {
+      "Low": {
+        "precision": 0.4,
+        "recall": 0.5344129554655871,
+        "f1": 0.45753899480069327,
+        "support": 247
+      },
+      "Medium": {
+        "precision": 0.4175824175824176,
+        "recall": 0.3958333333333333,
+        "f1": 0.40641711229946526,
+        "support": 288
+      },
+      "High": {
+        "precision": 0.40930232558139534,
+        "recall": 0.31095406360424027,
+        "f1": 0.3534136546184739,
+        "support": 283
+      }
+    }
+  },
+  "nonoverlap_rows": 818,
+  "bootstrap": {
+    "unit": "person",
+    "method": "paired multinomial cluster bootstrap of fixed OOF predictions",
+    "seed": 42,
+    "repetitions": 2000,
+    "selection_adjusted": false,
+    "intervals": {
+      "winner": {
+        "f1": [
+          0.3176385311457711,
+          0.44742807527817857
+        ],
+        "accuracy": [
+          0.33300305531732416,
+          0.4518155045867329
+        ]
+      },
+      "late_fusion": {
+        "f1": [
+          0.3144993147478761,
+          0.4468033238559871
+        ],
+        "accuracy": [
+          0.33058617268648316,
+          0.45172217417641836
+        ]
+      },
+      "baseline_fusion": {
+        "f1": [
+          0.308476273693156,
+          0.4190807377107391
+        ],
+        "accuracy": [
+          0.3209177651951588,
+          0.42567276038602586
+        ]
+      },
+      "winner_minus_late_fusion_f1": [
+        -0.004599448910992146,
+        0.0064165699610892754
+      ],
+      "winner_minus_baseline_fusion_f1": [
+        -0.008040683362694914,
+        0.06863492005258326
+      ]
+    }
+  },
+  "configuration": {
+    "model": "logistic",
+    "features": "F6",
+    "baseline_ratio": false,
+    "scaler": "standard",
+    "missing": "median",
+    "normalization": "N0",
+    "history": 0,
+    "selector": "none",
+    "balance": "none",
+    "indicator": false,
+    "winsor": false,
+    "thin": 5,
+    "support": "native",
+    "decision": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "params": {
+      "C": 1.0
+    },
+    "children": []
+  },
+  "feature_names": [
+    "blink_rate_per_minute",
+    "ear_left_mean",
+    "ear_left_std",
+    "ear_right_mean",
+    "ear_right_std",
+    "iris_size_estimate_mean",
+    "iris_size_estimate_std",
+    "iris_size_delta_mean",
+    "iris_size_delta_std",
+    "head_pitch_mean",
+    "head_pitch_std",
+    "head_yaw_mean",
+    "head_yaw_std",
+    "gaze_x_norm_mean",
+    "gaze_x_norm_std",
+    "gaze_y_norm_mean",
+    "gaze_y_norm_std",
+    "eye_state_fixation_ratio",
+    "eye_state_saccade_ratio",
+    "eye_state_transition_ratio",
+    "eye_state_unclassified_ratio"
+  ],
+  "participant_summary": {
+    "count": 21,
+    "full_three_class_count": 13,
+    "accuracy_min": 0.08633093525179857,
+    "accuracy_max": 0.8571428571428571,
+    "accuracy_median": 0.43010752688172044,
+    "accuracy_mean_equal_person": 0.4158223219575735
+  }
+}
