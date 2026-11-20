@@ -13,8 +13,8 @@ import platform
 import sys
 import tempfile
 from datetime import UTC, datetime, timedelta
-from itertools import groupby, pairwise
 from io import StringIO
+from itertools import groupby, pairwise
 from pathlib import Path
 
 import numpy as np
@@ -23,6 +23,10 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from analysis_sessions.dataset_fusion import build_dataset as shared
+from analysis_sessions.dataset_fusion import v2_features as sensor_features
+from analysis_sessions.dataset_fusion import v2_history as history
+from analysis_sessions.dataset_fusion import v2_replacement as replacement
+from analysis_sessions.dataset_fusion import v2_timestamps as timing
 from analysis_sessions.dataset_fusion.v2_documentation import (
     build_update_summary,
     render_output_index,
@@ -37,9 +41,6 @@ from analysis_sessions.dataset_fusion.v2_integrity import (
     verify_bundle,
 )
 from analysis_sessions.dataset_fusion.v2_sensor_checks import audit_sensor_samples
-from analysis_sessions.dataset_fusion import v2_replacement as replacement
-from analysis_sessions.dataset_fusion import v2_history as history
-from analysis_sessions.dataset_fusion import v2_timestamps as timing
 from analysis_sessions.session_inventory import (
     participant_group,
     select_session_directories,
@@ -339,12 +340,22 @@ def unique_duration(frame):
     return total
 
 
-def export_window(destination, rows, excluded, reports, inventory, seconds, *, config=None, policy=ADMISSION_POLICY):
+def export_window(destination, rows, excluded, reports, inventory, seconds, *, config=None, policy=ADMISSION_POLICY,
+                  validation_checks=None):
     destination.mkdir()
-    metadata = {**META_INFO, **(replacement.CURATION_META if policy in history.POLICIES else {})}
+    config = config if config is not None else shared.load_config()
+    metadata = {**META_INFO, **(replacement.CURATION_META if policy in (*history.POLICIES, sensor_features.POLICY) else {})}
+    if policy == sensor_features.POLICY:
+        metadata.update(quality_tier='Core-feature quality tier, not spatial-gaze accuracy.',
+                        good_failed_criteria='Failed core good rules; empty when all pass.',
+                        acceptable_failed_criteria='Failed core acceptable rules; empty when all pass.',
+                        curation_selected='Selected by core quality; never a predictor.',
+                        curation_reason='Core selection or rejection reason; never a predictor.')
     frame = pd.DataFrame(rows, columns=[*metadata, *shared.FEATURE_COLUMNS]).replace([np.inf, -np.inf], np.nan)
-    validate_frame(frame, config=config if config is not None else shared.load_config(), seconds=seconds)
-    views = quality_views(frame, policy)
+    if policy == sensor_features.POLICY:
+        frame = sensor_features.apply_policy(frame, config)
+    validate_frame(frame, config=config, seconds=seconds, policy=policy)
+    views = quality_views(frame, policy, config=config, validation_checks=validation_checks)
     counts, distribution = {}, []
     for name, view in views.items():
         view.to_csv(destination/f'{name}.csv', index=False)
@@ -363,12 +374,14 @@ def export_window(destination, rows, excluded, reports, inventory, seconds, *, c
     frame.groupby(['quality_tier', 'hrv_status', 'hrv_reason'], dropna=False).size().rename('windows').reset_index().to_csv(destination/'sensor_quality_counts.csv', index=False)
     dictionary = [{'column': key, 'role': 'target' if key == 'cognitive_load_label' else 'metadata', 'unit': '', 'description': value}
                   for key, value in metadata.items()]
-    dictionary += [{'column': key, 'role': 'feature', 'unit': unit,
+    dictionary += [{'column': key, 'role': ('feature' if key in sensor_features.CORE else 'optional_or_audit')
+                    if policy == sensor_features.POLICY else 'feature', 'unit': unit,
                     'description': description.replace('Recorded time-domain HRV', 'Recomputed time-domain HRV')}
                    for key, (unit, description) in shared.FEATURE_INFO.items()]
     pd.DataFrame(dictionary).to_csv(destination/'data_dictionary.csv', index=False)
-    (destination/'feature_columns.json').write_text(json.dumps({'target': 'cognitive_load_label', 'group': 'participant_id',
-                                                              'features': shared.FEATURE_COLUMNS}, indent=2)+'\n', encoding='utf-8')
+    feature_contract = (sensor_features.contract(config, validation_checks) if policy == sensor_features.POLICY else
+                        {'target': 'cognitive_load_label', 'group': 'participant_id', 'features': shared.FEATURE_COLUMNS})
+    (destination/'feature_columns.json').write_text(json.dumps(feature_contract, indent=2)+'\n', encoding='utf-8')
     lines = [f'# Window {seconds} detik, step 5 detik', '',
              'Target: `cognitive_load_label`. Difficulty dan fase tetap metadata. Hanya window dengan satu target sepanjang interval yang masuk CSV.', '',
              '| Dataset | Low | Medium | High | Total | Peserta |', '|---|---:|---:|---:|---:|---:|']
@@ -379,10 +392,23 @@ def export_window(destination, rows, excluded, reports, inventory, seconds, *, c
 
 
 def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subjects=None, *, replace=False,
-                  replacement_session=None, exclude_tied_eye_windows=False, expected_replacement_counts=None):
+                  replacement_session=None, exclude_tied_eye_windows=False, expected_replacement_counts=None,
+                  admission_policy=None):
     input_dir = Path(input_dir).resolve()
     output_dir = guard_output(input_dir, output_dir, replace=replace)
     previous_manifest = verify_bundle(output_dir) if output_dir.exists() else None
+    if admission_policy not in (None, ADMISSION_POLICY, sensor_features.POLICY):
+        raise ValueError('Unsupported explicit admission policy.')
+    requested = admission_policy or (previous_manifest or {}).get('admission_policy', ADMISSION_POLICY)
+    if requested == sensor_features.POLICY:
+        if replacement_session or exclude_tied_eye_windows or expected_replacement_counts is not None:
+            raise ValueError('Feature-aware admission cannot use count-preserving replacement options.')
+        from analysis_sessions.dataset_fusion.v2_feature_build import (
+            build_feature_dataset,
+        )
+        return build_feature_dataset(input_dir, output_dir, config_path, subjects, previous_manifest, replace=replace)
+    if previous_manifest and previous_manifest['admission_policy'] == sensor_features.POLICY:
+        raise ValueError('Do not silently downgrade a feature-aware bundle to a legacy policy.')
     selection = history.selection_context(output_dir, previous_manifest, replacement_session)
     policy = selection['policy'] if selection else ADMISSION_POLICY
     if exclude_tied_eye_windows and (not replacement_session or policy != history.POLICY):
@@ -579,12 +605,15 @@ def main():
     parser.add_argument('--config', type=Path, default=shared.DEFAULT_CONFIG)
     parser.add_argument('--subjects', nargs='+')
     parser.add_argument('--replace', action='store_true', help='Replace a verified v2 bundle; restore it if publication fails.')
+    parser.add_argument('--admission-policy', choices=(ADMISSION_POLICY, sensor_features.POLICY),
+                        help='Explicit feature-policy migration; omitted rebuilds inherit the active bundle policy.')
     parser.add_argument('--replacement-session', help='Replace weaker curated reference windows using this new session ID.')
     parser.add_argument('--exclude-tied-eye-windows', action='store_true',
                         help='Audit ties in the explicit replacement session and exclude all touched windows.')
     args = parser.parse_args()
     build_dataset(args.input, args.output, args.config, args.subjects, replace=args.replace,
-                  replacement_session=args.replacement_session, exclude_tied_eye_windows=args.exclude_tied_eye_windows)
+                  replacement_session=args.replacement_session, exclude_tied_eye_windows=args.exclude_tied_eye_windows,
+                  admission_policy=args.admission_policy)
 
 
 if __name__ == '__main__':

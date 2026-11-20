@@ -1,5 +1,0 @@
-,accuracy,accuracy,accuracy,balanced_accuracy,balanced_accuracy,balanced_accuracy,macro_f1,macro_f1,macro_f1
-,min,median,max,min,median,max,min,median,max
-model,,,,,,,,,
-logistic_selection,0.0,0.2903225806451613,0.859375,0.0,0.3333333333333333,0.859375,0.0,0.22478021460209754,0.9243697478991597
-xgboost_selection,0.0,0.25630252100840334,0.6612903225806451,0.0,0.3209074875741542,0.4102564102564103,0.0,0.19036981881360138,0.41306584362139914

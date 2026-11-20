@@ -1,132 +1,107 @@
-# Batch-02: Google Colab
+# Batch-03: Model Tabular dan Deep Learning
 
-Batch-02 dimulai dari awal memakai tiga dataset terbaru setelah penggantian selektif Mon dan Alif. Hasil, snapshot, status, dan persetujuan training lokal lama tidak digunakan. Ada 14 notebook eksperimen (exp01–exp14) dan satu notebook persiapan (exp00). Tujuan dan tahapan tiap eksperimen dijelaskan pada notebook masing-masing.
+Batch ini memakai dua notebook mandiri. Masing-masing membaca tiga dataset dari Drive, menjalankan training, memilih kandidat menggunakan validation, mengevaluasi test, dan menyimpan model. Tidak ada notebook khusus rekap atau persiapan.
 
-## Rekap hasil
+| Notebook | Isi | Runtime yang disarankan |
+|---|---|---|
+| [exp01](exp01/EyeHeartCognitiveLoad.ipynb) | Delapan algoritma tabular, sensor ablation, tuning, seleksi fitur, balancing, interaksi, hierarchy, soft voting, dan late fusion | CPU |
+| [exp02](exp02/EyeHeartCognitiveLoad.ipynb) | MLP, MLP residual, Transformer tabular, dua preset, eye/fusion, pengulangan seed, dan ensemble neural | GPU T4 |
 
-Hasil ekspor exp01–exp13, perbandingan kandidat, grafik, serta penilaian kualitas model tersedia di [SUMMARY.md](SUMMARY.md). Rekap membedakan eksperimen yang menghasilkan prediksi, TabPFN yang dilewati pada exp12, dan exp14 yang tidak diselesaikan. Kedua bagian unduhan Drive tetap tersimpan pada folder outputs aslinya.
+Exp01 tidak membutuhkan exp02, dan sebaliknya. Keduanya boleh dijalankan dengan akun berbeda secara paralel. Perbandingan kedua notebook dilakukan setelah hasil tersedia, bukan melalui notebook ketiga.
 
-## Melanjutkan setelah perbaikan penyimpanan exp03
+## Hasil eksekusi
 
-Jika exp00–exp02 sudah selesai di Colab, **jangan hapus inputs, registry, atau outputs yang sudah dibuat di Drive**. Lakukan pembaruan berikut:
+Tim sudah menjalankan kedua notebook di Google Colab. [SUMMARY.md](SUMMARY.md) merangkum enam finalist, model utama pilihan validation, skor test tertinggi yang teramati, hasil per kelas, dan analisis gap training–validation–test. Laporan juga mencocokkan metrik dengan prediksi yang tersimpan.
 
-1. Hentikan notebook yang sedang berjalan sebelum memperbarui kode shared bersama.
-2. Perbarui seluruh folder `shared` di Drive, termasuk `shared/colab_bootstrap.py` dan isi `shared/batch02`. Perbarui juga notebook exp03–exp14 dan README ini. Dataset, paket sensor, dan requirements tidak berubah pada perbaikan ini.
-3. Gunakan runtime baru, lalu jalankan exp03 terbaru dari atas dengan `RESUME_DIR=None`. Run exp03 yang gagal sebelumnya tetap disimpan, tetapi tidak dilanjutkan memakai kode baru. Hasil exp01–exp02 tidak perlu diulang.
-4. Lanjutkan notebook berikutnya. Jangan membawa salinan notebook lama yang masih menulis semua file training langsung ke Drive.
-
-## Folder bersama dan akun anggota tim
-
-Anggota tim boleh memakai akun berbeda. Bagikan folder proyek dengan izin **Editor**, buat pintasan folder `Penelitian-Adaptive-IDE` di My Drive masing-masing, dan mount Drive dengan akun yang memiliki akses tersebut. Membagikan notebook saja tidak otomatis memberikan izin menulis pada folder hasil.
-
-Path tetap `/content/drive/MyDrive/Penelitian-Adaptive-IDE`. Path hasil resolve dapat menampilkan `.shortcut-targets-by-id`; jangan menggantinya dengan ID folder yang di-hard-code. Exp00 harus selesai sebelum anggota lain memulai training. Setelah itu akun A boleh menjalankan exp03 bersamaan dengan akun B yang menjalankan exp04. Satu eksperimen/run hanya dikerjakan satu runtime; ini bukan pembagian fold satu eksperimen ke banyak akun. Jangan memperbarui input, registry, requirements, atau shared selama eksperimen aktif.
-
-## Folder yang disalin ke Drive satu kali
+## Persiapan Google Drive
 
 ```text
 MyDrive/Penelitian-Adaptive-IDE/
 ├── Dataset/
-│   └── v2_session_phase/                 salinan output dataset terbaru
-│       ├── manifest.json
-│       ├── replacement_selection.json
-│       ├── replacement_pairs.csv
-│       ├── window_15s_step_5s/
-│       │   ├── good_acceptable.csv
-│       │   └── feature_columns.json
-│       ├── window_25s_step_5s/
-│       │   ├── good_acceptable.csv
-│       │   └── feature_columns.json
-│       └── window_45s_step_5s/
-│           ├── good_acceptable.csv
-│           └── feature_columns.json
+│   └── v2_session_phase/
+│       ├── window_15s_step_5s/good_acceptable.csv
+│       ├── window_25s_step_5s/good_acceptable.csv
+│       └── window_45s_step_5s/good_acceptable.csv
 └── models/
-    └── batch-02/
-        ├── exp00/EyeHeartCognitiveLoad.ipynb
+    └── batch-03/
         ├── exp01/EyeHeartCognitiveLoad.ipynb
-        ├── ...
-        ├── exp14/EyeHeartCognitiveLoad.ipynb
-        ├── shared/
-        │   ├── colab_bootstrap.py
-        │   └── batch02/                  seluruh isi folder kode
-        ├── requirements.txt
-        ├── sensor_streams/               seluruh isi paket pendamping
-        │   ├── window_15s_step_5s.csv
-        │   ├── window_25s_step_5s.csv
-        │   ├── window_45s_step_5s.csv
-        │   ├── stream_manifest.json
-        │   └── verification.json
-        └── README.md
+        └── exp02/EyeHeartCognitiveLoad.ipynb
 ```
 
-Untuk persiapan pertama, salin folder lokal `analysis_sessions/dataset_fusion/output/v2_session_phase` ke `Dataset/v2_session_phase`. Pada batch-02, salin exp00–exp14, shared, requirements.txt, sensor_streams, dan README pada struktur di atas. File laporan dan view dataset lain boleh ikut; training utama hanya memakai tiga good_acceptable. Jangan mengunggah inputs, registry, atau hasil training lokal lama. Jika release Colab sudah dibuat melalui exp00, pertahankan hasilnya seperti petunjuk pembaruan di atas. PLAN.md dan folder tests tidak diperlukan di Drive.
+Hanya tiga CSV dan dua notebook yang diperlukan. README boleh ikut. Tidak perlu mengunggah `shared`, `.py`, file requirements, feature JSON, folder sesi, paket sensor, output batch lama, atau file pengujian repositori. Tidak ada upload CSV dari cell notebook.
 
-Tidak ada `files.upload()` atau upload tiga CSV pada setiap run. Notebook membaca path Drive. Jangan menambahkan tingkat folder ganda seperti `batch-02/batch-02` atau `v2_session_phase/v2_session_phase`.
+Untuk folder bersama, setiap anggota memerlukan izin Editor dan pintasan folder proyek di My Drive. Path tetap `/content/drive/MyDrive/Penelitian-Adaptive-IDE`; jangan mengganti path menjadi ID internal pintasan. Ketiga CSV harus berasal dari salinan dataset terbaru yang sama.
 
-`inputs`, `registry`, dan `outputs` dibuat otomatis oleh exp00/notebook. Jangan menyalin snapshot input, registry release, atau hasil dari eksekusi lokal lama. Folder `.venv`, source sensor, `sessions`, dan seluruh repositori tidak diperlukan di Drive.
+## Menjalankan
 
-## Apa itu sensor_streams?
+1. Buka salah satu notebook di Colab. Gunakan Python 3.12 atau lebih baru. Untuk exp02 pilih GPU T4 jika tersedia.
+2. Biarkan `PROJECT_ROOT`, `DATASET_ROOT`, dan `RESUME_DIR = None` seperti yang disediakan, kecuali lokasi proyek berbeda.
+3. Pilih **Run all** pada notebook tersebut. Ini menjalankan satu eksperimen, bukan launcher untuk semua notebook.
+4. Jika cell Environment memperbarui dependency dan meminta restart, pilih **Runtime > Restart session**, lalu jalankan kembali dari atas. PyTorch/CUDA bawaan tidak dipasang ulang.
+5. Izinkan akses Drive. Perhatikan tabel distribusi split dan path `Run:` yang dicetak.
+6. Tunggu sampai bagian evaluasi test selesai. Simpan notebook setelah running agar output cell ikut tersimpan.
 
-Paket ini berisi fitur seluruh grid sensor sebelum pemilihan target, termasuk endpoint tanpa label tunggal. History dan GRU membentuk konteks dari aliran tersebut, bukan rolling atas CSV curated yang waktunya bisa terputus. Paket tidak menambah contoh training atau membuat label baru.
+Tidak ada mode smoke/full. Notebook memproses tiga window secara otomatis. Exp01 melakukan penyaringan dahulu sebelum optimasi dua keluarga terbaik per-window, bukan mencari seluruh kombinasi. Exp02 menjalankan 36 konfigurasi awal, enam pengulangan seed, lalu refit finalist. Early stopping dapat menghentikan neural sebelum batas 100 epoch. Durasi bergantung runtime Colab; tidak ada jaminan waktu tetap.
 
-Input telah direkonstruksi dari rekaman terbaru, termasuk Mon dan Alif, dengan rumus kanonis. Nilainya dicocokkan dengan seluruh row curated. Pada interval timestamp eye ambigu, fitur eye konteks dikosongkan; HRV independen tetap dipertahankan. Frame dan timestamp mentah tidak diubah.
+## Cara split dan pemilihan model
 
-Paket terikat pada hash manifest dataset. Exp00 menolak pasangan dataset/paket yang berbeda. Setelah dataset diperbarui lagi, paket sensor dan persetujuan snapshot perlu diperbarui; jangan mengganti path untuk meneruskan run lama.
+- Target langsung memakai `cognitive_load_label`, bukan memetakan ulang difficulty. Metadata peserta, soal, fase, waktu, dan kualitas tidak menjadi fitur prediksi.
+- Blok waktu 120 detik per sesi dibagi mendekati 70% training, 15% validation, dan 15% test, dengan seed 42 dan pengelompokan kelas dominan blok.
+- Data orang yang sama boleh muncul pada ketiga bagian. Ini evaluasi internal dengan blok waktu campuran, bukan LOPO atau TimeSeriesSplit.
+- Rentang pendukung 45 detik dipakai pada semua window. Test dipertahankan; validation yang overlap test dibuang; training yang overlap validation/test dibuang. Ini juga mencegah overlap lintas pilihan window. Persentase baris sesudah purge dapat berbeda dari persentase blok.
+- Imputasi, transformasi, seleksi fitur, dan resampling hanya dipelajari dari training selama pencarian kandidat. CSV sumber tidak berubah. Tiga window tidak ditumpuk menjadi satu dataset.
+- Accuracy validation menjadi kriteria pemilihan utama, diikuti Macro-F1 dan kompleksitas. Finalist tiap window serta pemenang utama dikunci sebelum evaluasi test.
+- Finalist di-fit ulang pada training + validation, kemudian diuji pada test. Untuk neural, epoch refit sudah ditentukan dari checkpoint terbaik sebelumnya. Model yang disimpan adalah model yang diuji tersebut; test tidak ikut fitting.
 
-## Pemeriksaan sebelum Run All
+Sebagai pemeriksaan dataset saat penyiapan, jumlah baris setelah purge adalah:
 
-- Pastikan ketiga `good_acceptable.csv` beserta `feature_columns.json`, manifest, dan dua file seleksi berasal dari salinan dataset terbaru yang sama; jangan hanya mengganti CSV-nya.
-- Pastikan kelima file `sensor_streams` ikut disalin. Paket ini dibutuhkan meskipun tiga CSV training sudah ada; folder `inputs` lokal tidak perlu diunggah sebagai penggantinya.
-- Pada exp00, hash persetujuan sudah terisi untuk manifest terbaru: `5bc566a20c7aa67388da4cf19a0587791af94ba650c33eac785a6ea9989e4d52`. Biarkan nilai tersebut untuk dataset saat ini.
-- Biarkan konfigurasi awal notebook seperti yang disediakan, termasuk `INSTALL_DEPENDENCIES=True` dan `RESUME_DIR=None`. Tidak perlu mode smoke/full.
+| Window | Training | Validation | Test | Dibuang karena overlap |
+|---|---:|---:|---:|---:|
+| 15 detik | 2131 | 550 | 464 | 434 |
+| 25 detik | 1878 | 510 | 423 | 403 |
+| 45 detik | 1424 | 435 | 338 | 330 |
 
-## Menjalankan notebook
+Ketiga kelas tersedia pada setiap bagian. Angka ini dapat berubah jika CSV diperbarui. Gunakan tabel yang dicetak notebook sebagai sumber untuk run baru; split tidak dipilih ulang berdasarkan skor.
 
-1. Buka exp00 melalui Google Colab. Pilih runtime versi **2026.10** bila tersedia (Python 3.13), atau runtime Python minimal 3.12. GPU T4 cukup sebagai pilihan awal untuk cabang neural. TPU tidak digunakan.
-2. Jalankan exp00 dari atas sampai selesai. Izinkan akses Drive saat diminta. Instalasi dependency dilakukan oleh cell Environment. Jika diminta restart setelah instalasi, restart runtime sekali lalu jalankan kembali dari awal.
-3. Exp00 memeriksa dataset, membuat release baru, memverifikasi paket sensor, dan menyimpan split. Tidak ada model yang dilatih di exp00. Jangan mengubah nilai hash persetujuan untuk melewati dataset yang tidak sesuai.
-4. Setelah exp00 selesai, buka exp01 lalu jalankan dari atas. Lanjutkan exp02 sampai exp14. Satu runtime menjalankan satu notebook pada satu waktu; anggota tim boleh menjalankan eksperimen berbeda secara paralel. Tidak perlu mode smoke/full atau launcher seluruh eksperimen.
-5. Simpan notebook yang sudah dijalankan ke Drive agar output cell ikut tersimpan. Artefak evaluasi otomatis ditulis ke `models/batch-02/outputs/expXX/<run_id>`.
+## Hasil yang disimpan
 
-Semua notebook memproses window 15/25/45 detik. Path utama sudah diisi `/content/drive/MyDrive/Penelitian-Adaptive-IDE`. Nama folder huruf besar/kecil harus sama. Jangan menjalankan notebook training sebelum exp00 selesai.
+```text
+models/batch-03/outputs/exp01/<run_id>/
+models/batch-03/outputs/exp02/<run_id>/
+```
 
-## Workspace Colab dan checkpoint otomatis
+Setiap run menyimpan identitas data/environment, split, distribusi kelas, proporsi fitur kosong, leaderboard validation, parameter kandidat, dan checkpoint kandidat selesai. Pada exp02, riwayat loss/accuracy serta grafik learning curve ikut disimpan.
 
-Pada exp03–exp14, cell Lokasi proyek menyalin kode dan satu release input yang sudah disahkan ke `/content/batch02-work/<release_id>`, kemudian memeriksa checksum-nya. Workspace yang sama dipakai kembali setelah restart kernel jika file runtime masih ada. Input atau kode yang berubah tidak menimpa workspace aktif; gunakan runtime baru setelah pembaruan paket. Ini disk VM Colab, bukan komputer operator.
+Bagian akhir menghasilkan:
 
-Selama training, seluruh file kerja ditulis ke workspace tersebut. Checkpoint dikirim otomatis ke `outputs/expXX/<run_id>/checkpoints` setelah outer fold, pergantian tahap utama, dan pada batas kandidat yang selesai jika minimal lima menit telah lewat. Satu fitting yang masih berlangsung tidak dipotong untuk upload. Checkpoint berisi arsip perubahan file beserta manifest commit dan checksum; file setengah terunggah tidak dianggap checkpoint valid. Jangan menghapus arsip lama dalam folder checkpoints karena commit terbaru masih dapat merujuknya.
+- `selection/`: kandidat yang dikunci menggunakan validation, sebelum penilaian test.
+- `final_<candidate_id>/`: model evaluasi, prediksi test, classification report, confusion matrix, dan schema fitur.
+- `test_summary.csv`: hasil test finalist tiap window, dengan penanda model utama.
+- `RESULTS.md`: hasil model utama dan status target accuracy 75%.
+- `complete/`: penanda bahwa semua evaluasi akhir berhasil tersimpan.
 
-Laporan utama, CSV OOF/metrik, dan grafik akhir disalin ke struktur output Drive yang dapat dibaca langsung. Detail per-fold, cache inner search, dan bobot model tetap lengkap di arsip checkpoint; semuanya dipulihkan otomatis ketika resume. `status.json` dan `progress.json` di Drive merupakan status saat sinkronisasi terakhir, bukan pembaruan setiap detik. `last_checkpoint_sequence` menunjukkan urutan penyimpanan yang terverifikasi.
+Tabel selama pencarian adalah **validation**, bukan test. Tabel test mempunyai accuracy, Macro-F1, balanced accuracy, dan jumlah baris. Precision, recall, F1 per kelas, serta confusion matrix ditampilkan langsung. Model utama tetap yang dipilih lewat validation, bukan diganti berdasarkan angka test tertinggi.
 
-Jika akses Drive gagal, publikasi mencoba maksimal lima kali untuk gangguan I/O sementara; izin ditolak atau disk penuh dihentikan lebih awal. Training tidak melanjutkan pekerjaan baru setelah kegagalan penyimpanan. Workspace yang sudah ada tidak dihapus. Status `storage_pending` berarti komputasi selesai tetapi penyimpanan final belum lengkap. Run baru dianggap tersimpan lengkap setelah laporan serta checkpoint akhir berhasil diverifikasi.
+Target accuracy 75% adalah sasaran eksperimen, bukan hasil yang dijamin. Jika belum tercapai, notebook tetap menyimpan hasil sebenarnya. Bobot model diabaikan Git mengikuti aturan folder models; CSV, JSON, Markdown, dan figure tetap dapat dibagikan. CSV prediksi berisi metadata peserta, sehingga aksesnya tetap mengikuti ketentuan penelitian.
 
-## GPU dan TabPFN
+## Melanjutkan jika runtime terputus
 
-MLP, FT-Transformer, dan GRU memakai CUDA bila tersedia, serta tetap mempunyai fallback CPU. Dependency neural dipasang otomatis pada notebook yang memerlukannya. CPU threads mengikuti perangkat, dibatasi maksimal empat. Kebutuhan dukungan kelas/grup untuk early stopping tetap berlaku.
+Salin path setelah teks `Run:` dari eksekusi sebelumnya, misalnya:
 
-TabPFN adalah cabang opsional. Default `ENABLE_TABPFN=False` tidak mengunduh paket/checkpoint atau menerima lisensi otomatis. Cabang ini akan tercatat skipped; itu bukan hasil evaluasi TabPFN dan bukan error run.
+```python
+RESUME_DIR = "/content/drive/MyDrive/Penelitian-Adaptive-IDE/models/batch-03/outputs/exp01/<run_id>"
+```
 
-Untuk mengaktifkannya pada exp12 atau exp14, sediakan checkpoint TabPFN V2 yang kompatibel di `models/batch-02/checkpoints/tabpfn-v2-classifier.ckpt`, isi hash SHA-256 yang benar dan konfirmasi lisensinya di cell konfigurasi, lalu ubah `ENABLE_TABPFN=True`. Setelah konfirmasi tersebut, bobot diverifikasi dan disalin sekali ke workspace. GPU dan batas ukuran data juga harus memenuhi protokol. Semua file checkpoint ini opsional; 14 notebook tidak otomatis berarti seluruh cabang model eligible.
+Ganti `<run_id>` dengan nama folder run sebenarnya. Untuk exp02 gunakan folder exp02. Jalankan kembali notebook dari atas.
 
-## Hasil, waktu, dan resume
+Kandidat yang telah lengkap dan checksum-nya cocok dibaca kembali tanpa training ulang. Kandidat yang terputus sebelum selesai diulang dari awal; resume di tengah epoch tidak dijanjikan. Refit/evaluasi akhir yang sudah selesai juga tidak diulang. Jangan memakai satu run yang sama dari dua runtime bersamaan.
 
-`RESUME_DIR=None` memulai run baru. Untuk melanjutkan exp03–exp14 yang memakai sistem checkpoint ini, isi RESUME_DIR dengan folder run **di Drive**, misalnya `BATCH_DIR / 'outputs' / 'exp03' / '<run_id>'`, kemudian jalankan notebook dari atas. Jangan menunjuk file tar.gz atau folder `/content` dari runtime yang sudah hilang. Sistem memilih commit valid terbaru, memverifikasi arsip, dan memulihkan workspace. Jika runtime yang sama masih hidup, progres lokal yang belum terunggah tidak ditimpa. Resume mensyaratkan data, kode, seed, konfigurasi, dependency, dan perangkat yang kompatibel; jangan mengedit identity.json untuk melewati pemeriksaan ini. Run exp03 sebelum perbaikan harus dimulai ulang karena kode dan format penyimpanannya berbeda.
+Resume ditolak jika CSV, split, implementasi, versi Python, atau dependency berbeda. Jika menggunakan dataset baru atau mengubah pipeline, gunakan `RESUME_DIR = None` untuk membuat run baru. Jangan menyalin checkpoint dari run lama untuk melewati pemeriksaan.
 
-Jika hanya upload yang gagal sementara runtime masih hidup:
+File kerja dibuat di disk sementara Colab. Artefak disalin ke Drive dan diverifikasi sebelum ditandai selesai, tanpa mengandalkan atomic rename pada pintasan Drive. Jika penyalinan gagal, notebook berhenti; perbaiki koneksi/izin lalu resume. Jika checkpoint terdeteksi rusak, gunakan run baru atau pulihkan salinan lengkap yang benar, jangan menghapus penanda kegagalan agar run tampak selesai.
 
-1. Periksa akses Editor, kuota penyimpanan, dan mount Drive. Jangan menghapus atau me-remount paksa runtime ketika ada proses lain yang memakainya.
-2. Di bagian **Pemulihan Penyimpanan** notebook, ubah `RETRY_PUBLISH=True` dan jalankan cell itu saja. Cell memanggil `persistence.retry_publish()` dan tidak menjalankan training. Setelah berhasil, kembalikan nilainya ke False.
-3. Jika komputasi sudah selesai, tampilkan kembali cell Hasil Tersimpan. Jika belum, isi `RESUME_DIR` dengan folder run Drive yang dicetak sebelumnya dan jalankan kembali cell training; cache pekerjaan yang selesai dipakai kembali.
+## Memakai model yang tersimpan
 
-Disk `/content` bersifat sementara. Jika VM hilang sebelum upload berhasil, hanya checkpoint terakhir yang terverifikasi di Drive yang dapat dipulihkan. Pekerjaan setelah checkpoint tersebut perlu diulang. Tidak ada EXECUTION_STATUS global atau worker training lokal. Untuk ekspor ulang laporan/bobot, restore menggunakan `persistence.restore(path_run_drive)` pada runtime yang telah disiapkan tanpa memanggil cell training.
+Cell terakhir menunjukkan cara memuat model utama dan memprediksi ulang beberapa baris tanpa training. Jalankan cell definisi pipeline pada notebook yang sesuai sebelum memuat model. Semua definisi sudah ada dalam notebook; tidak perlu file Python pendamping. Gunakan urutan fitur/schema yang disimpan. Muat hanya file model terpercaya yang dibuat tim.
 
-Nested evaluation dapat memerlukan waktu lama, terutama pada exp02 dan exp14. GPU tidak mempercepat semua algoritma tabular. Colab tetap mempunyai batas runtime, kuota, penyimpanan, dan kemungkinan putus; resume serta artefak Drive diperlukan. Baca [FAQ Colab](https://research.google.com/colaboratory/faq.html) dan [versi runtime](https://research.google.com/colaboratory/runtime-version-faq.html).
-
-Setiap run menyimpan prediksi OOF, metrik kelas, confusion matrix, metadata, grafik, serta laporan SUMMARY. `complete_oof=false` tidak boleh dianggap hasil lengkap. Exp14 juga menyimpan evaluasi pemilihan window dan model refit. Skor refit bukan skor test baru.
-
-## Pemeriksaan paket
-
-Pemeriksaan ulang mencakup JSON notebook, syntax seluruh cell kode dan modul shared, konfigurasi path Drive, checksum dataset/paket sensor, serta kecocokan 26 fitur pada seluruh row curated. Hasil pencocokan adalah 3.579 row untuk window 15 detik, 3.214 row untuk 25 detik, dan 2.527 row untuk 45 detik. Metadata status eksekusi lokal lama dibersihkan; notebook disiapkan tanpa output tersimpan.
-
-Tes penyimpanan memakai release fixture dan fungsi fitting deterministik pengganti. Cakupannya meliputi pembuatan/rename file sementara, delta checkpoint, upload gagal, arsip korup, pemulihan progres, isolasi output eksperimen, serta kesamaan prediksi sebelum/sesudah persistence. Tes tidak melatih estimator penelitian. Instalasi dependency serta eksekusi pada hosted Colab belum diuji langsung, sehingga keberhasilan instalasi, ketersediaan GPU, kuota, dan putusnya runtime tetap perlu diperhatikan saat pelaksanaan. Bila cell Environment meminta restart setelah instalasi, lakukan restart lalu jalankan lagi dari atas; jangan melewati pesan tersebut.
-
-Pemeriksaan 18 November 2026: 27 tes lolos, termasuk simulasi jalur exp03–exp14. Seluruh 15 notebook (117 cell kode) lolos nbformat/syntax; lint dan type check paket lolos; tidak ada temuan keamanan kategori medium/high pada pemeriksaan statis. Persiapan workspace juga diuji pada proses terpisah dengan tiga input terbaru dan seluruh row/fiturnya cocok dengan paket sensor. Pemeriksaan input menggunakan snapshot temporer khusus validasi, bukan release training baru pada folder proyek atau Drive tim.
+Pada penyiapan awal, notebook telah diperiksa dengan syntax/schema validation, audit split pada CSV, dan pengujian ringan menggunakan data sintetis. Tim kemudian menjalankan training penuh di Colab; hasil penelitian berada pada folder outputs dan dirangkum pada SUMMARY.md. Rekap hasil tidak melatih ulang model atau mengubah dataset sumber.

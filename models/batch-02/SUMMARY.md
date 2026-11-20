@@ -1,270 +1,239 @@
-# Batch-02: Hasil Eksperimen Cognitive Load
+# Batch-03: Hasil Model Tabular dan Deep Learning
 
-Tanggal rekap: 19 November 2026.
+Tanggal rekap: 20 November 2026.
 
 ## Ringkasan
 
-Kandidat dengan **Macro-F1 tertinggi** pada hasil exp01–exp13 adalah **Logistic Regression dengan 21 fitur eye tracking, window 25 detik, step 5 detik**, dari exp02. Kandidat ini mencapai **Macro-F1 39,70%, accuracy 39,92%, dan balanced accuracy 40,45%** pada 3.214 prediksi out-of-fold (OOF).
+Belum ada finalist batch-03 yang mencapai target accuracy test 75%. Skor test tertinggi yang teramati adalah **47,41% accuracy dan 47,02% Macro-F1**, dari MLP fusion pada window 15 detik. Model tersebut menjawab benar 220 dari 464 window test dan salah pada 244 window, atau 52,59%.
 
-Kandidat dengan **accuracy tertinggi** memakai konfigurasi eye-only yang sama pada window 45 detik: **accuracy 40,92% dan Macro-F1 39,42%**. Rekap ini memakai Macro-F1 sebagai ukuran utama karena metrik tersebut memberi bobot yang sama kepada Low, Medium, dan High.
+Kedua notebook memilih window 45 detik sebagai model utama melalui validation. Pilihan utama exp01 mencapai accuracy test **35,21%**, sedangkan pilihan utama exp02 mencapai **45,86%**. Model 15 detik merupakan hasil test tertinggi setelah hasil dibaca, bukan pemenang utama yang ditetapkan sebelum evaluasi. Laporan ini mempertahankan perbedaan tersebut.
 
-**Hasil tersebut belum baik untuk klasifikasi CL yang dapat diandalkan.** Kandidat terbaik masih salah pada 1.931 dari 3.214 window, atau 60,08%. Recall High hanya 31,22%. Performa membaik terhadap Dummy, tetapi model belum memisahkan ketiga kelas dengan kuat pada evaluasi lintas peserta.
+Hasil belum memenuhi sasaran penelitian pada evaluasi internal yang disepakati. Perekaman orang yang sama boleh muncul pada training dan test dalam batch ini; hasil yang rendah tetap muncul setelah pemisahan peserta tidak lagi menjadi cara evaluasi utama.
 
-Dari 13 notebook yang selesai, **12 eksperimen menghasilkan model dan prediksi evaluasi**. Exp12 selesai dengan seluruh kandidat TabPFN dilewati, sehingga tidak menghasilkan skor. Tim menghentikan exp14 karena durasi komputasinya dan tidak memasukkan hasil parsialnya ke peringkat ini.
+![Accuracy validation dan test](figures/validation_test.png)
 
-![Hasil native tertinggi per eksperimen](reports/figures/best_per_experiment.png)
+## 1. Data dan pembagian evaluasi
 
-## 1. Sumber hasil dan pemeriksaan kelengkapan
+Kedua notebook memakai tiga good_acceptable dataset v2 setelah penggantian selektif Mon dan Alif. Hash ketiga CSV sesuai dengan file sumber lokal sekarang dan sama pada kedua run. Model memprediksi Low/Medium/High dari fitur sensor; identitas, difficulty, fase, dan soal tidak menjadi predictor.
 
-Tim menyimpan unduhan Google Drive dalam dua bagian:
+Split memakai blok waktu 120 detik per sesi, kelas dominan blok, dan seed 42. Target pembagian blok mendekati 70/15/15. Purge menggunakan rentang pendukung konservatif 45 detik pada seluruh pilihan window. Training tidak berbagi interval pendukung dengan validation/test, dan validation tidak berbagi interval dengan test.
 
-- `outputs/outputs-20261119T044432Z-1-001/outputs/`
-- `outputs/outputs-20261119T044432Z-1-002/outputs/`
+| Window / step | CSV awal | Training | Validation | Test | Purge |
+|---|---|---|---|---|---|
+| 15 / 5 detik | 3579 | 2131 | 550 | 464 | 434 |
+| 25 / 5 detik | 3214 | 1878 | 510 | 423 | 403 |
+| 45 / 5 detik | 2527 | 1424 | 435 | 338 | 330 |
 
-Audit membaca keduanya sebagai satu kumpulan file berdasarkan path relatif `expXX/<run_id>/...`. File ringkasan suatu run dapat berada di bagian pertama sementara status atau metriknya berada di bagian kedua. Audit tidak memindahkan atau menimpa kedua folder asli.
+Purge hanya mengecualikan baris dari eksperimen; CSV sumber tidak berubah. Window dalam bagian yang sama masih dapat overlap. Jumlah baris bukan jumlah pengamatan sensor independen. Window test 15, 25, dan 45 detik juga mempunyai cakupan berbeda, sehingga perbandingan antarwindow tidak memakai test yang identik. Perbandingan exp01 versus exp02 pada window yang sama memakai endpoint dan label test yang identik.
 
-Hasil pemeriksaan:
+Seluruh pencarian memakai training untuk fitting dan validation untuk memilih kandidat. Setiap notebook kemudian mengunci satu finalist per-window dan satu model utama. Finalist menjalani refit pada training + validation sebelum evaluasi test. Skor validation berasal dari model sebelum refit; skor test berasal dari model sesudah refit.
+
+## 2. Eksperimen yang dijalankan
+
+### Exp01: model tabular dan ensemble
+
+Tim menjalankan Logistic Regression, SVM RBF dengan kalibrasi probabilitas, KNN, Random Forest, Extra Trees, HistGradientBoosting, XGBoost, dan CatBoost. Penyaringan awal mencakup eye-only, HRV-only, dan fusion pada ketiga window. Dummy menjadi pembanding.
+
+Optimasi berikutnya berfokus pada dua keluarga teratas tiap window. Kandidat mencakup tambahan rasio baseline, log HRV, scaler, mutual information, PCA, class/sample weight, ROS, SMOTE, interaksi derajat dua, hierarchy Low/Elevated lalu Medium/High, soft voting, dan late fusion. Ini pencarian bertahap, bukan tuning mendalam delapan algoritma sekaligus.
+
+| Tahap tercatat | Kandidat unik |
+|---|---|
+| Penyaringan algoritma dan sensor | 72 |
+| Tuning tambahan | 66 |
+| Seleksi fitur tambahan | 18 |
+| Balancing tambahan | 18 |
+| Logistic Regression dengan interaksi | 18 |
+| Hierarchy | 3 |
+| Soft voting | 3 |
+| Late fusion | 9 |
+| Dummy | 3 |
+| **Total exp01** | **210** |
+
+Jumlah tuning tambahan tidak menghitung ulang kontrol. Uji gabungan seleksi fitur dan balancing menggunakan recipe yang sudah tersedia ketika kombinasi terbaiknya sama dengan kandidat sebelumnya. Cache mencegah fitting ganda dan tidak menambah hitungan kandidat unik. Ensemble menyimpan hasil gabungan probabilitas pada validation; refit komponennya berlangsung untuk finalist yang terpilih.
+
+### Exp02: deep learning
+
+Tim menjalankan MLP, MLP residual, dan Transformer tabular kecil pada eye-only dan fusion, dengan dua preset per arsitektur dan tiga window. Preset berbeda dalam ukuran, dropout, learning rate, dan penggunaan weighted loss; perbandingannya tidak mengisolasi pengaruh satu parameter saja.
+
+| Tahap tercatat | Kandidat |
+|---|---|
+| Penyaringan neural | 36 |
+| Pengulangan seed 17 dan 2026 | 6 |
+| Rata-rata tiga seed | 3 |
+| Voting dua arsitektur | 9 |
+| **Total exp02** | **54** |
+
+Pemilihan memakai kandidat seed 42, rata-rata tiga seed, dan voting arsitektur. Seed tambahan tidak dipilih sebagai kandidat tunggal berdasarkan skor terbaiknya. Maksimal 100 epoch dan patience 12; notebook memulihkan checkpoint accuracy validation terbaik, lalu Macro-F1 sebagai pemecah nilai sama.
+
+Total kedua notebook adalah **264 catatan kandidat validation**, bukan 264 algoritma berbeda. Hanya **enam finalist** yang menjalani evaluasi test.
+
+## 3. Hasil enam finalist
+
+| Notebook | Window | Finalist | Accuracy validation | Accuracy test | Macro-F1 test | Balanced accuracy test |
+|---|---|---|---|---|---|---|
+| exp01 | 15 s | Soft voting LR interaksi, Extra Trees, Random Forest | 50,36% | 46,77% | 46,40% | 46,83% |
+| exp01 | 25 s | Logistic Regression fusion, C=10 | 54,90% | 31,21% | 31,39% | 32,25% |
+| exp01 | 45 s | Late fusion LR eye + Random Forest HRV **(utama exp01)** | 60,92% | 35,21% | 33,37% | 34,83% |
+| exp02 | 15 s | MLP fusion, hidden 64–32 | 51,64% | 47,41% | 47,02% | 47,57% |
+| exp02 | 25 s | Voting MLP fusion + Transformer eye | 60,98% | 42,08% | 40,94% | 43,50% |
+| exp02 | 45 s | Voting Transformer fusion + MLP residual eye **(utama exp02)** | 61,84% | 45,86% | 45,82% | 46,39% |
+
+### Konfigurasi utama exp01
+
+Late fusion 45 detik menggabungkan Logistic Regression eye-only C=1 dan Random Forest HRV-only 300 tree. Bobot probabilitasnya 75% eye dan 25% HRV. Model eye memakai 21 fitur dengan median imputation dan StandardScaler; cabang HRV memakai RMSSD dan SDNN. Keduanya tidak memakai balancing atau tambahan rasio baseline.
+
+Accuracy validation 60,92% turun menjadi 35,21% pada test. Pada kelas Medium, model mengenali hanya 13 dari 110 window, atau recall 11,82%. Accuracy test juga di bawah tebakan konstan Low sebesar 36,98%, meskipun Macro-F1 model masih lebih tinggi daripada tebakan satu kelas.
+
+### Konfigurasi utama exp02
+
+Voting neural 45 detik menggabungkan Transformer fusion token dimension 64 dan MLP residual eye-only width 128, masing-masing berbobot 50%. Keduanya memakai preset weighted loss dan seed 42. Epoch terbaik masing-masing adalah 43 dan 11; jumlah ini menjadi durasi refit komponennya.
+
+Accuracy validation 61,84% turun menjadi 45,86% pada test. Model mengenali Low 40,80%, Medium 38,18%, dan High 60,19%. Kemampuan mengenali High lebih tinggi, tetapi Low dan Medium masih banyak tertukar.
+
+### Skor test tertinggi yang teramati
+
+MLP fusion 15 detik memakai **23 fitur**: 21 fitur eye dan RMSSD/SDNN. Konfigurasinya hidden layer 64–32, dropout 0,1, learning rate 0,001, AdamW dengan weight decay 0,0001, median imputation, dan StandardScaler. Model tidak memakai weighted loss, resampling, rasio baseline, atau history. Seed-nya 42.
+
+Training awal mencapai epoch 87 dan memilih checkpoint epoch 75. Refit menggunakan 2.681 baris training + validation selama 75 epoch, lalu mengevaluasi 464 baris test. Model hasil refit inilah yang tersimpan sebagai model evaluasi.
+
+| Kelas | Precision test | Recall test | F1 test | Support |
+|---|---|---|---|---|
+| Low | 47,01% | 39,01% | 42,64% | 141 |
+| Medium | 44,38% | 41,04% | 42,64% | 173 |
+| High | 50,27% | 62,67% | 55,79% | 150 |
+
+Soft voting tabular 15 detik menjawab benar 217 dari 464 window, sedangkan MLP menjawab benar 220. Selisih accuracy 0,65 poin persentase hanya setara tiga prediksi benar tambahan. Ini belum menunjukkan keunggulan besar deep learning atas tabular pada window tersebut.
+
+![Confusion matrix neural 15 dan 45 detik](figures/neural_confusion.png)
+
+## 4. Perbandingan dengan Dummy
+
+Pembanding berikut memilih kelas terbanyak pada training + validation, kemudian menerapkan tebakan yang sama pada test. Kelas tidak dipilih dari distribusi test.
+
+| Window | Tebakan konstan | Accuracy Dummy test | Accuracy exp01 test | Accuracy exp02 test |
+|---|---|---|---|---|
+| 15 s | Medium | 37,28% | 46,77% | 47,41% |
+| 25 s | High | 30,50% | 31,21% | 42,08% |
+| 45 s | Low | 36,98% | 35,21% | 45,86% |
+
+MLP 15 detik melampaui Dummy sebesar 10,13 poin persentase. Ada informasi prediktif yang dimanfaatkan model, tetapi hasil 47,41% masih menyisakan lebih dari separuh window test salah. Nilai tersebut belum mendekati target 75%.
+
+## 5. Temuan dari variasi sensor dan algoritma
+
+### Penyaringan input sensor
+
+Tabel ini menunjukkan accuracy validation tertinggi pada penyaringan awal untuk setiap kelompok sensor. Algoritma pemenangnya dapat berbeda antarkelompok, sehingga tabel tidak mengisolasi efek penambahan sensor pada satu algoritma tetap.
+
+| Window | Eye-only | HRV-only | Fusion |
+|---|---|---|---|
+| 15 s | 49,09% (Extra Trees) | 38,73% (Extra Trees) | 49,09% (Extra Trees) |
+| 25 s | 53,92% (Logistic Regression) | 40,20% (HistGradientBoosting) | 54,51% (Logistic Regression) |
+| 45 s | 58,16% (Logistic Regression) | 42,76% (Random Forest) | 59,08% (Random Forest) |
+
+HRV-only menghasilkan skor penyaringan lebih rendah daripada kelompok eye/fusion pada ketiga window. Namun cabang HRV membantu memilih late fusion 45 detik pada validation. Perannya belum konsisten ketika model tersebut masuk test. Hasil ini tidak membuktikan bahwa rekaman HRV pasti rusak.
+
+### Keluarga algoritma dan arsitektur
+
+Angka berikut adalah accuracy validation tertinggi per keluarga dari kandidat yang benar-benar dijalankan. Sebagian keluarga mendapat tuning lanjutan, sedangkan keluarga lain hanya menjalani penyaringan. Kolom bukan perbandingan hyperparameter dengan anggaran yang sama.
+
+| Keluarga | 15 s | 25 s | 45 s |
+|---|---|---|---|
+| HistGradientBoosting | 47,09% | 51,96% | 52,18% |
+| XGBoost | 46,91% | 51,76% | 53,79% |
+| CatBoost | 45,09% | 48,24% | 56,09% |
+| Logistic Regression | 50,18% | 54,90% | 59,54% |
+| SVM RBF | 33,45% | 36,27% | 32,41% |
+| Random Forest | 48,55% | 52,35% | 59,08% |
+| Extra Trees | 49,82% | 51,96% | 50,57% |
+| KNN | 47,64% | 50,59% | 49,43% |
+
+| Arsitektur neural tunggal | 15 s | 25 s | 45 s |
+|---|---|---|---|
+| MLP | 51,64% | 59,02% | 56,55% |
+| MLP residual | 51,45% | 56,08% | 59,08% |
+| Transformer tabular | 49,64% | 57,06% | 60,46% |
+
+Logistic Regression dengan interaksi dan soft voting memberi hasil validation teratas tabular pada 15 detik. Logistic Regression fusion tanpa tambahan seleksi atau balancing menjadi finalist 25 detik. Pada 45 detik, late fusion mengungguli kandidat tunggal di validation.
+
+Balancing, seleksi fitur, PCA, hierarchy, dan rata-rata seed telah dicoba. Perlakuan tersebut tidak menjadi pilihan utama kedua notebook. Pada exp02, rata-rata tiga seed tidak melampaui kandidat/voting terpilih. Ini hasil pada pencarian dan split sekarang, bukan kesimpulan bahwa metode-metode tersebut tidak dapat berguna pada konfigurasi lain.
+
+## 6. Analisis hasil yang belum optimal
+
+### 6.1 Model kompleks menunjukkan overfitting
+
+Beberapa model mempelajari training jauh lebih baik daripada validation. Contoh dari checkpoint kandidat sebelum refit:
+
+| Kandidat | Accuracy training | Accuracy validation |
+|---|---|---|
+| MLP fusion 15 s | 87,47% | 51,64% |
+| MLP fusion 25 s | 89,72% | 59,02% |
+| Transformer fusion 45 s | 98,10% | 60,46% |
+| HistGradientBoosting eye 25 s | 100,00% | 51,96% |
+
+Pada Transformer 45 detik, loss training turun dari 1,030 pada epoch pertama menjadi 0,121 pada checkpoint terbaik epoch 43. Loss validation justru naik dari 1,112 menjadi 2,385, lalu mencapai 2,845 pada epoch terakhir. Pola ini mendukung indikasi overfitting dan prediksi yang terlalu yakin pada sebagian jawaban salah.
+
+![Learning curve Transformer fusion 45 detik](outputs/exp02/20261119T191445996307Z_f399c8da/learning_curve_45s.png)
+
+Notebook menghentikan training berdasarkan accuracy validation, bukan loss validation. Ia memang memulihkan checkpoint accuracy terbaik; masalahnya, checkpoint dengan accuracy tertinggi dapat mempunyai cross-entropy yang jauh lebih buruk. Hal ini relevan untuk ensemble yang menggabungkan probabilitas.
+
+### 6.2 Peringkat validation belum stabil terhadap test
+
+| Notebook / window | Accuracy validation | Accuracy test | Penurunan |
+|---|---|---|---|
+| exp01 / 15 s | 50,36% | 46,77% | 3,60 poin |
+| exp01 / 25 s | 54,90% | 31,21% | 23,70 poin |
+| exp01 / 45 s | 60,92% | 35,21% | 25,71 poin |
+| exp02 / 15 s | 51,64% | 47,41% | 4,22 poin |
+| exp02 / 25 s | 60,98% | 42,08% | 18,90 poin |
+| exp02 / 45 s | 61,84% | 45,86% | 15,98 poin |
+
+Kedua notebook memilih 45 detik, sementara 15 detik mencatat test tertinggi. Pemilihan dari satu validation split belum memprediksi urutan performa test dengan baik. Seluruh pencarian 210 dan 54 kandidat menggunakan validation yang sama, sehingga sensitivitas pemilihan kandidat perlu diperiksa sebelum memperluas pencarian lagi.
+
+Penurunan bukan hanya ciri model yang mencapai 100% training. Logistic Regression 25 detik mencatat training 57,29% dan validation 54,90%, tetapi test setelah refit hanya 31,21%. Karena itu, overfitting model kompleks bukan penjelasan tunggal.
+
+Komposisi kelas 45 detik juga berubah: High mencakup 40,00% validation tetapi 30,47% test; Low berubah dari 28,74% menjadi 36,98%. Namun penyesuaian proporsi saja tidak menjelaskan seluruh penurunan. Jika recall per kelas validation tetap sama, accuracy terhitung pada proporsi test masih sekitar 59,34% untuk exp01 dan 60,30% untuk exp02, bukan 35,21% dan 45,86%. Ini perhitungan deskriptif dari confusion matrix, bukan eksperimen model baru.
+
+Skor validation dan test di atas memakai model dengan fitting berbeda, karena finalist menjalani refit pada training + validation. Hasil yang tersedia belum memisahkan efek refit dari perbedaan bagian rekaman validation/test. Laporan ini tidak menetapkan refit sebagai penyebab pasti dan tidak menjalankan ulang model untuk mencari skor test yang lebih tinggi.
+
+### 6.3 Jumlah kelas yang lebih seimbang belum menghasilkan pemisahan kelas yang baik
+
+Pada MLP 15 detik, test berisi Low 141, Medium 173, dan High 150. Meskipun jumlahnya berdekatan, recall Low hanya 39,01% dan Medium 41,04%. High lebih baik pada 62,67%. Kesalahan model melibatkan beberapa kelas, sehingga kekurangan Low bukan penjelasan tunggal hasil batch ini.
+
+Kualitas perekaman dan kemampuan klasifikasi adalah dua pemeriksaan berbeda. Hasil batch-03 menunjukkan bahwa pipeline yang diuji belum memanfaatkan fitur untuk memisahkan label dengan kuat. Metrik ini saja belum menentukan apakah penyebab dasarnya mutu sensor tertentu, representasi fitur, variasi antarbagiannya, atau hubungan label dengan sinyal fisiologis.
+
+## 7. Prioritas tindak lanjut
+
+1. **Pisahkan pengaruh refit.** Pada diagnostik terpisah, bandingkan prediksi checkpoint sebelum refit dengan model sesudah refit pada endpoint yang sama. Tujuannya menelusuri penurunan, bukan mengganti skor utama setelah melihat test.
+2. **Periksa kestabilan pemilihan di validation.** Gunakan beberapa pembagian blok ber-purge di dalam bagian pengembangan. Pertahankan test sebagai evaluasi akhir dan jangan mencari seed yang kebetulan memberi test tinggi. Ini tidak mengharuskan kembali ke LOPO.
+3. **Uji regularisasi dan aturan stopping neural.** Bandingkan stopping berdasarkan validation loss dengan aturan accuracy sekarang; periksa confidence/probabilitas sebelum menambah bobot ensemble atau durasi training.
+4. **Audit fitur dan bagian rekaman yang menyumbang kesalahan.** Gunakan metadata hanya untuk penelusuran; jangan membuang baris karena model salah atau memasukkan ID, fase, dan difficulty untuk mengejar accuracy.
+
+Menambah arsitektur lebih besar belum menjadi prioritas pertama. Batch ini sudah menunjukkan model yang mencapai training 87–100% tetapi tetap rendah pada validation/test. Perubahan berikutnya perlu menargetkan gap tersebut dan ketidakstabilan pemilihan, bukan hanya menaikkan kapasitas.
+
+## 8. Pemeriksaan hasil dan sumber
+
+Kedua run mempunyai penanda complete. Notebook tersimpan tidak memuat output exception atau warning, dan source code cell cocok dengan versi penyiapan di Git; perubahannya berupa hasil eksekusi. Run ID pada output notebook sesuai dengan folder hasil.
 
 | Pemeriksaan | Hasil |
 |---|---|
-| File dalam gabungan logis kedua bagian | 15.352 file, sekitar 2,90 GB |
-| Path file yang muncul pada kedua bagian | 0 |
-| Notebook exp01–exp13 | Tidak menyimpan traceback error; run ID pada teks output cocok dengan hasil ekspor |
-| Baris ringkasan konfigurasi–window–cakupan | 408 |
-| Hasil dengan cakupan native | 396 baris, seluruhnya OOF lengkap |
-| Hasil dengan cakupan paired | 12 baris, seluruhnya OOF lengkap |
-| Pasangan konfigurasi–window native unik | 333; kontrol yang diulang pada beberapa eksperimen tidak dihitung sebagai konfigurasi baru |
-| Accuracy, Macro-F1, balanced accuracy, confusion matrix | Cocok dengan perhitungan ulang dari prediksi OOF |
-| Endpoint dan label OOF | Cocok dengan dataset terkait; tidak ada endpoint ganda dalam satu hasil konfigurasi |
-| Metrik subset window tidak overlap | Cocok dengan perhitungan ulang dari subset prediksi terkait |
-| Release input | Sama pada seluruh run: `5cbfc8880194ad4cdd99` |
-| Kontrol Logistic Regression yang diulang | Label prediksinya identik antar-eksperimen pada window yang sama |
+| Kandidat dengan metrik validation dihitung ulang | 210 exp01 + 54 exp02; cocok |
+| Prediksi test diperiksa | Enam finalist; jumlah, endpoint, label, argmax probabilitas, confusion matrix, accuracy, Macro-F1, dan balanced accuracy cocok |
+| Daftar kandidat pada CSV leaderboard | Cocok dengan record kandidat |
+| Identitas dataset dan split | Hash CSV sama pada kedua run dan cocok dengan sumber lokal; hash split sama |
+| Berkas ber-checksum | 850 berkas cocok; tidak ada checksum berbeda atau artefak yang hilang |
+| Bobot model dalam salinan lokal | 201 file pkl exp01 dan 45 file pkl exp02 tersedia |
+| Training ulang saat rekap | Tidak dilakukan |
 
-Seluruh run memakai seed 42. Metadata exp01 mencatat fingerprint kode berbeda dari exp02–exp13. Audit tetap menemukan hash release yang sama serta prediksi kontrol yang identik. Exp11 dan exp13 mencatat PyTorch 2.11.0 dengan CUDA, sedangkan eksperimen tabular mencatat PyTorch 2.14.1 dan tidak menggunakan cabang neural tersebut. Rincian versi, status, dan sumber file tersedia dalam [audit.json](reports/audit.json).
+Audit membaca JSON, CSV, probabilitas NPY, dan checksum berkas. Audit tidak memuat file pickle untuk menjalankan inference. Penanda complete juga sesuai dengan finalist dan test_summary masing-masing run.
 
-Status `complete_with_skips` pada exp01–exp11 dan exp13 memuat satu catatan `no_test_support` untuk satu peserta pada window 45 detik. Cakupan view tersebut memang 20 peserta, sedangkan view 15 dan 25 detik mencakup 21 peserta. Audit tidak menemukan kekurangan prediksi pada baris dataset yang seharusnya dievaluasi.
+Environment core sama pada kedua notebook. Exp01 memakai Python 3.13.18; exp02 memakai Python 3.13.16 dan PyTorch 2.14.1+cu130. Selisih patch Python ini dicatat sebagai konteks reproduksi, bukan ditetapkan sebagai penyebab perbedaan skor.
 
-### Artefak model yang tersedia secara lokal
+- [Hasil utama exp01](outputs/exp01/20261119T185251108907Z_2bc268ab/RESULTS.md), [test_summary exp01](outputs/exp01/20261119T185251108907Z_2bc268ab/test_summary.csv), dan [leaderboard validation exp01](outputs/exp01/20261119T185251108907Z_2bc268ab/validation_leaderboard.csv).
+- [Hasil utama exp02](outputs/exp02/20261119T191445996307Z_f399c8da/RESULTS.md), [test_summary exp02](outputs/exp02/20261119T191445996307Z_f399c8da/test_summary.csv), dan [leaderboard validation exp02](outputs/exp02/20261119T191445996307Z_f399c8da/validation_leaderboard.csv).
+- [Pemilihan finalist exp01](outputs/exp01/20261119T185251108907Z_2bc268ab/selection/record.json) dan [exp02](outputs/exp02/20261119T191445996307Z_f399c8da/selection/record.json).
+- [Prediksi test MLP 15 detik](outputs/exp02/20261119T191445996307Z_f399c8da/final_w15_be01358bfb41959422a3/predictions.csv) dan [schema/konfigurasi model](outputs/exp02/20261119T191445996307Z_f399c8da/final_w15_be01358bfb41959422a3/feature_schema.json).
 
-Unduhan memuat 248 file `.joblib` pada exp01 dan 1.860 pada exp02. Pada exp03–exp13, unduhan yang tersedia **tidak memuat folder checkpoint maupun file bobot model**, meskipun status run mencatat penyimpanan tersinkron di Drive. Laporan, CSV prediksi, metrik, dan grafik cukup untuk rekap ini, tetapi tidak menggantikan bobot dan cache untuk inference atau resume. Keberadaan artefak tersebut di Drive belum diperiksa dalam audit lokal ini.
+Model dengan skor test tertinggi berada pada `outputs/exp02/20261119T191445996307Z_f399c8da/final_w15_be01358bfb41959422a3/model.pkl`. Model utama exp02 berada pada `final_w45_a3126a45dd04aa33dfe1/model.pkl` di run yang sama. Bobot tersedia lokal/Drive tetapi mengikuti aturan Git yang mengabaikan pkl; pertahankan environment dan notebook yang sesuai saat memuatnya.
 
-Audit tidak memuat file `.joblib` dan tidak menjalankan training ulang.
+Angka batch-03 tidak dibandingkan langsung sebagai peningkatan algoritma atas batch-02 karena unit evaluasinya berubah dari pemisahan peserta menjadi blok waktu campuran. Kesimpulan batch ini tetap: **skor test tertinggi teramati 47,41%, model utama neural 45,86%, dan target 75% belum tercapai.**
 
-## 2. Dataset dan cara membaca evaluasi
-
-Ketiga input utama memakai `good_acceptable.csv` dari dataset v2 setelah penggantian selektif Mon dan Alif. Hash sembilan file dataset/seleksi yang tercatat pada release cocok dengan file lokal saat audit.
-
-| Window / step | Jumlah window | Low | Medium | High | Peserta |
-|---|---:|---:|---:|---:|---:|
-| 15 / 5 detik | 3.579 | 1.062 | 1.266 | 1.251 | 21 |
-| 25 / 5 detik | 3.214 | 984 | 1.093 | 1.137 | 21 |
-| 45 / 5 detik | 2.527 | 908 | 728 | 891 | 20 |
-
-Dataset menyediakan 26 fitur sensor sebagai daftar awal. Tiap konfigurasi dapat memakai subsetnya. Nama peserta, ID sesi, kesulitan, fase, dan identitas soal tetap berfungsi sebagai metadata, bukan fitur prediksi utama. Label mengikuti kebijakan fase sesi pada dataset v2.
-
-Evaluasi memakai leave-one-participant-out: satu peserta menjadi test dan peserta lainnya menjadi sumber training serta inner validation. Prediksi test dari seluruh giliran kemudian digabung untuk menghitung metrik OOF. Angka pada tabel laporan ini merupakan **metrik dari gabungan prediksi**, bukan rata-rata sederhana skor setiap peserta.
-
-Ada dua cakupan evaluasi:
-
-- **Native:** memakai semua endpoint yang lolos pada masing-masing panjang window. Jumlah baris dan cakupannya berbeda antarwindow.
-- **Paired:** memakai 2.138 endpoint sesi/waktu/label yang sama pada ketiga panjang window. Exp04 menyediakan perbandingan terkontrol ini.
-
-Peringkat utama di bawah memakai hasil native. Perbandingan paired dibahas terpisah. Skor native 25 dan 45 detik tidak berasal dari test set yang persis sama.
-
-## 3. Rekap masing-masing eksperimen
-
-Tabel ini mengambil hasil native dengan Macro-F1 tertinggi pada setiap eksperimen. Beberapa baris memilih kontrol yang sama karena perlakuan tambahannya tidak melampaui kontrol tersebut.
-
-| Eksperimen | Yang diuji | Kandidat native terbaik | Window | Accuracy | Macro-F1 |
-|---|---|---|---:|---:|---:|
-| [exp01](exp01/EyeHeartCognitiveLoad.ipynb) | Baseline Dummy, Logistic Regression, XGBoost | Logistic Regression, fusion bersih | 45 s | 39,73% | 37,99% |
-| [exp02](exp02/EyeHeartCognitiveLoad.ipynb) | Kelompok fitur, eye/HRV/fusion, baseline ratio | Logistic Regression, eye-only | 25 s | 39,92% | **39,70%** |
-| [exp03](exp03/EyeHeartCognitiveLoad.ipynb) | Normalisasi, scaler, missing values, winsorization | Logistic Regression, centering kausal N3 | 15 s | 38,56% | 38,43% |
-| [exp04](exp04/EyeHeartCognitiveLoad.ipynb) | Cakupan native/paired, kepadatan training step 5/10 s | Logistic Regression, native, step 5 s | 45 s | 39,73% | 37,99% |
-| [exp05](exp05/EyeHeartCognitiveLoad.ipynb) | Riwayat sensor 0/15/30 s | Logistic Regression, tanpa tambahan riwayat | 45 s | 39,73% | 37,99% |
-| [exp06](exp06/EyeHeartCognitiveLoad.ipynb) | Seleksi korelasi, mutual information, PCA | Logistic Regression, tanpa seleksi tambahan | 45 s | 39,73% | 37,99% |
-| [exp07](exp07/EyeHeartCognitiveLoad.ipynb) | Bobot kelas/rekaman, ROS, SMOTE, keputusan kelas | Logistic Regression + SMOTE | 45 s | 39,89% | 38,34% |
-| [exp08](exp08/EyeHeartCognitiveLoad.ipynb) | Tujuh keluarga algoritma dan variasi parameter | Logistic Regression, C=10 | 45 s | 39,97% | 38,29% |
-| [exp09](exp09/EyeHeartCognitiveLoad.ipynb) | Late fusion dan voting | Late fusion Logistic Regression | 25 s | 39,83% | 39,66% |
-| [exp10](exp10/EyeHeartCognitiveLoad.ipynb) | Struktur ordinal dan hierarchy | Ordinal Logistic Regression, C=10 | 45 s | 39,81% | 38,28% |
-| [exp11](exp11/EyeHeartCognitiveLoad.ipynb) | MLP dan FT-Transformer | FT-Transformer, fusion bersih | 45 s | 34,90% | 34,05% |
-| [exp12](exp12/EyeHeartCognitiveLoad.ipynb) | TabPFN | Seluruh kandidat dilewati | — | — | — |
-| [exp13](exp13/EyeHeartCognitiveLoad.ipynb) | GRU dan pembanding temporal pada fitur inti | Logistic Regression + history 15 s | 15 s | 34,06% | 32,89% |
-
-Angka mentah beserta konfigurasi, skor per kelas, dan sumber file tersedia di [leaderboard.csv](reports/leaderboard.csv). Tabel tersebut menyimpan 408 hasil, termasuk kontrol berulang dan hasil paired.
-
-### Exp01: baseline
-
-Kontrol Logistic Regression pada fitur fusion bersih mencapai Macro-F1 37,27%, 37,34%, dan 37,99% pada window 15, 25, dan 45 detik. Seluruhnya melampaui konfigurasi XGBoost baseline yang diuji.
-
-Dummy yang memilih kelas paling sering pada data training memperoleh accuracy 26,80%, 32,45%, dan 21,80% pada tiga window tersebut. Nilai ini mengikuti distribusi training pada masing-masing fold, sehingga tidak sama dengan persentase kelas terbesar pada seluruh dataset.
-
-### Exp02: pemilihan kelompok fitur
-
-Eksperimen ini menghasilkan kandidat terbaik keseluruhan berdasarkan Macro-F1. Konfigurasi eye-only 25 detik memakai 21 fitur: blink rate, EAR, iris, head pose, gaze, dan eye-state ratios yang dipilih. Konfigurasi itu menghapus tiga fitur HRV serta `blink_count` dan `eye_state_other_ratio` dari allowlist awal.
-
-Untuk membandingkan sensor dengan perlakuan yang sama, berikut hasil Logistic Regression C=1, median imputation, StandardScaler, tanpa baseline ratio dan balancing:
-
-| Input | Macro-F1 15 s | Macro-F1 25 s | Macro-F1 45 s |
-|---|---:|---:|---:|
-| Fusion bersih | 37,27% | 37,34% | 37,99% |
-| HRV saja | 28,04% | 26,76% | 16,71% |
-| Eye tracking saja | 37,81% | **39,70%** | **39,42%** |
-
-![Perbandingan input sensor](reports/figures/sensor_ablation.png)
-
-Angka HRV di tabel ini berlaku untuk Logistic Regression tersebut. Kandidat HRV-only terbaik dari seluruh variasi exp02 adalah XGBoost pada 45 detik, dengan Macro-F1 36,96% dan accuracy 38,31%. Jadi, hasil audit tidak mendukung kesimpulan bahwa semua model HRV hanya mencapai 16–28%. Hasilnya tetap belum melampaui kandidat eye-only terbaik.
-
-### Exp03: normalisasi dan nilai kosong
-
-Centering kausal N3 memberi Macro-F1 terbaik pada ketiga window dalam exp03: 38,43%, 37,90%, dan 38,14%. N3 menambahkan fitur relatif terhadap median riwayat sensor sebelumnya, bukan memakai informasi masa depan atau label peserta test. Kenaikan terhadap kontrol fusion ada, tetapi belum melampaui hasil eye-only exp02.
-
-### Exp04: window dan kepadatan data training
-
-Pada native, kontrol step 5 detik tetap menjadi kandidat terbaik. Pada 2.138 endpoint paired yang sama, Logistic Regression step 5 detik memperoleh:
-
-| Window | Accuracy paired | Macro-F1 paired |
-|---|---:|---:|
-| 15 s | 40,60% | 38,59% |
-| 25 s | 39,43% | 37,70% |
-| 45 s | 37,98% | 36,13% |
-
-Dalam perbandingan paired ini, window 15 detik lebih baik untuk konfigurasi fusion yang diuji. Hasil tersebut berbeda dari peringkat native eye-only, sehingga kita belum dapat menetapkan satu panjang window sebagai pemenang untuk seluruh konfigurasi. Pengurangan kepadatan training ke step 10 detik tidak melampaui step 5 detik pada kandidat paired terbaik tiap window.
-
-### Exp05: tambahan riwayat sensor
-
-Pada 15 detik, history 30 detik memberi Macro-F1 37,36%, dibanding kontrol 37,27%. Pada 25 dan 45 detik, kontrol tanpa tambahan history tetap terbaik. Penambahan history belum memberi keuntungan yang konsisten pada konfigurasi yang diuji.
-
-### Exp06: seleksi fitur dan PCA
-
-Kontrol tanpa seleksi tambahan menjadi yang terbaik pada ketiga window. Seleksi berdasarkan korelasi, mutual information, serta PCA tidak memperbaiki hasil kontrol dalam eksperimen ini. Temuan ini berlaku untuk perlakuan seleksi tersebut. Exp02 tetap menunjukkan bahwa mengubah kelompok sensor dapat membantu.
-
-### Exp07: balancing dan keputusan kelas
-
-SMOTE memberi Macro-F1 terbaik pada 15 dan 45 detik, yaitu 38,00% dan 38,34%. Random oversampling memberi yang terbaik pada 25 detik, yaitu 38,28%. Pada 45 detik, kenaikan SMOTE terhadap kontrol sebesar 0,35 poin persentase Macro-F1.
-
-Balancing membantu beberapa konfigurasi, tetapi kenaikannya belum cukup untuk menjadikan model kuat. Dataset saat ini juga tidak memiliki selisih proporsi kelas sejauh versi awal penelitian, sehingga jumlah Low bukan penjelasan tunggal yang memadai untuk skor batch ini.
-
-### Exp08: pilihan algoritma
-
-Logistic Regression C=10 pada 45 detik mengungguli keluarga lain yang diuji di exp08. Macro-F1 terbaik per keluarga adalah Logistic Regression 38,29%, XGBoost 33,74%, HistGradientBoosting 33,51%, Extra Trees 32,87%, Random Forest 32,29%, CatBoost 31,77%, dan SVM 31,08%.
-
-Exp08 memakai kelompok fitur kontrol, bukan seluruh kombinasi kelompok fitur exp02. Karena itu hasil XGBoost exp02 dengan fitur HRV-only atau subset lain tidak harus sama dengan hasil XGBoost di exp08.
-
-### Exp09: late fusion dan voting
-
-Late fusion Logistic Regression pada 25 detik mencapai Macro-F1 39,66% dan accuracy 39,83%. Model membangun cabang HRV dan eye secara terpisah, lalu menggabungkan probabilitas dengan bobot 25% HRV dan 75% eye. Kandidat voting terbaik mencapai Macro-F1 35,16%.
-
-Selisih Macro-F1 late fusion terhadap eye-only terbaik hanya 0,04 poin persentase. Kita belum mempunyai bukti bahwa salah satunya unggul secara konsisten. Eye-only lebih sederhana dan tidak membutuhkan kedua sensor untuk inference konfigurasi tersebut.
-
-### Exp10: ordinal dan hierarchy
-
-Ordinal Logistic Regression C=10 pada 45 detik menjadi yang terbaik di exp10, dengan Macro-F1 38,28%. Struktur ordinal mempelajari batas Low terhadap Medium/High serta Low/Medium terhadap High. Hierarchy memisahkan Low terhadap Medium/High dan kemudian Medium terhadap High. Kedua pendekatan tetap menghasilkan tiga kelas; hasilnya belum melampaui kandidat terbaik exp02 atau exp09.
-
-### Exp11: MLP dan FT-Transformer
-
-Kedua jenis neural menghasilkan prediksi OOF lengkap. FT-Transformer terbaik memperoleh Macro-F1 34,05% pada 45 detik. MLP terbaik memperoleh Macro-F1 32,38% pada 15 detik. Pada data dan konfigurasi training ini, peningkatan kompleksitas neural belum memberikan hasil yang lebih baik daripada Logistic Regression.
-
-### Exp12: TabPFN belum menghasilkan evaluasi
-
-Status mencatat `training_performed=false`, nol baris ringkasan, dan 124 kandidat/fold dilewati dengan alasan `skipped_dependency`. Metadata tidak mencatat paket TabPFN maupun checkpoint yang aktif. Satu event lain adalah `no_test_support` pada 45 detik.
-
-Exp12 bukan model dengan skor nol dan tidak masuk peringkat. Notebook selesai menjalankan pemeriksaan serta pencatatan skip, tetapi tidak menguji kemampuan TabPFN pada dataset ini.
-
-### Exp13: GRU dan pembanding temporal
-
-GRU menghasilkan OOF lengkap, dengan Macro-F1 terbaik 28,92% pada 25 detik dan accuracy 29,96%. Pembanding terbaik dalam exp13 adalah Logistic Regression pada fitur inti dengan history 15 detik, Macro-F1 32,89% pada window 15 detik.
-
-Exp13 membatasi fitur pada kelompok inti. Perbandingan dengan exp11 atau eye-only exp02 juga mencakup perbedaan kelompok fitur, sehingga selisih skor tidak dapat dikaitkan hanya dengan arsitektur GRU.
-
-## 4. Kandidat terbaik dan hasil per kelas
-
-| Pengaturan | Nilai |
-|---|---|
-| Eksperimen | exp02 |
-| Model | Logistic Regression, C=1, solver lbfgs |
-| ID konfigurasi | `logistic_499f533391d1cfa0` |
-| Kelompok fitur | Eye-only, kode F6, 21 fitur |
-| Window / step | 25 / 5 detik |
-| Nilai kosong | Median dari data training |
-| Scaling | StandardScaler dari data training |
-| History / seleksi tambahan | Tidak ada |
-| Balancing | Tidak ada |
-| Jumlah test OOF | 3.214 window dari 21 peserta |
-| Accuracy | 39,92% |
-| Macro-F1 | 39,70% |
-| Balanced accuracy | 40,45% |
-
-Daftar fitur dan konfigurasi lengkap tersedia dalam [winner_metrics.json](reports/winner_metrics.json).
-
-| Kelas | Jumlah | Precision | Recall | F1 |
-|---|---:|---:|---:|---:|
-| Low | 984 | 38,85% | 52,24% | 44,56% |
-| Medium | 1.093 | 39,92% | 37,88% | 38,87% |
-| High | 1.137 | 41,57% | 31,22% | 35,66% |
-
-Confusion matrix berikut memakai baris sebagai label dataset dan kolom sebagai prediksi:
-
-| Label / prediksi | Low | Medium | High |
-|---|---:|---:|---:|
-| Low | 514 | 252 | 218 |
-| Medium | 398 | 414 | 281 |
-| High | 411 | 371 | 355 |
-
-![Confusion matrix kandidat terbaik](reports/figures/winner_confusion_matrix.png)
-
-Model mengenali 514 dari 984 Low, 414 dari 1.093 Medium, dan 355 dari 1.137 High. Sebanyak 411 High justru diprediksi Low. Recall yang rendah pada Medium dan High membatasi kegunaan model, meskipun jumlah kelas pada view ini relatif berdekatan.
-
-### Sensitivitas hasil
-
-- **Window utama tanpa overlap:** pada subset 818 window, accuracy 40,83% dan Macro-F1 40,58%. Skor tetap berada pada kisaran yang sama.
-- **Variasi antar-peserta:** accuracy per peserta berkisar 8,63–85,71%, dengan median 43,01%. Skor 85,71% berasal dari hanya 7 window dan dua kelas. Dari 21 peserta, 13 mempunyai ketiga kelas pada view 25 detik. Rentang tersebut perlu dibaca bersama jumlah dan cakupan kelas, bukan sebagai peringkat kualitas peserta.
-- **Bootstrap berbasis peserta:** 2.000 pengambilan ulang kelompok peserta, seed 42, memberi interval persentil 95% Macro-F1 sebesar 31,76–44,74% dan accuracy 33,30–45,18%.
-- **Eye-only versus late fusion:** interval selisih Macro-F1 adalah −0,46 sampai +0,64 poin persentase. Interval mencakup nol.
-- **Eye-only versus kontrol fusion:** kenaikan teramati 2,36 poin persentase Macro-F1, dengan interval selisih −0,80 sampai +6,86 poin persentase. Interval juga mencakup nol.
-
-Bootstrap tersebut memakai prediksi OOF tetap dan mengubah komposisi peserta, tanpa fitting ulang. Interval tidak mengoreksi pemilihan pemenang dari banyak konfigurasi. Rincian per peserta tersedia di [best_per_participant.csv](reports/best_per_participant.csv).
-
-## 5. Penilaian keseluruhan
-
-**Kandidat terbaik saat ini layak menjadi pembanding penelitian, tetapi belum layak disebut model CL yang baik atau siap digunakan untuk keputusan individual.** Dasar penilaian ini adalah tingkat kesalahan 60,08%, recall High 31,22%, selisih kecil antara kandidat teratas, dan variasi hasil antarrekaman. Rekap ini tidak memakai batas accuracy universal seperti 80% untuk menyatakan kelayakan; tim belum menetapkan kriteria operasional tersebut.
-
-Temuan yang dapat ditarik dari hasil yang sudah ada:
-
-1. **Pemilihan kelompok sensor lebih membantu daripada beberapa perubahan algoritma.** Eye-only dan late fusion yang memberi bobot lebih besar pada eye berada di posisi teratas.
-2. **Imbalance bukan satu-satunya masalah yang perlu ditangani.** Proporsi kelas sekarang relatif berdekatan. ROS/SMOTE dan pembobotan belum menghasilkan kenaikan besar pada percobaan ini.
-3. **Model kompleks belum memberi keuntungan.** FT-Transformer, MLP, GRU, voting, dan hierarchy yang diuji belum melampaui kandidat sederhana terbaik.
-4. **Tambahan history dan seleksi otomatis belum konsisten membantu.** Beberapa peningkatan kecil muncul, tetapi kontrol tetap memenangkan beberapa eksperimen.
-5. **Pemilihan window bergantung pada konfigurasi dan cakupan evaluasi.** Native eye-only 25 detik memimpin Macro-F1, native eye-only 45 detik memimpin accuracy, sementara paired fusion di exp04 lebih baik pada 15 detik.
-
-Hasil ini belum menetapkan penyebab tunggal seperti sensor rusak, label salah, atau satu algoritma yang selalu tidak cocok. Rekap menunjukkan perlakuan mana yang sudah diuji dan batas hasilnya. Penjelasan sebab-akibat memerlukan pemeriksaan sumber atau percobaan yang memisahkan faktor tersebut.
-
-### Arti “model terbaik” dalam laporan ini
-
-Peringkat ini memilih **konfigurasi dengan skor OOF teramati tertinggi**. Tim memilihnya setelah melihat banyak hasil outer-test, sehingga angka pemenang dapat mengandung optimisme pemilihan. Evaluasi terpisah atau prosedur seleksi nested diperlukan untuk menilai proses pemilihan konfigurasi itu sendiri. Penjelasan metode tersedia pada [dokumentasi nested cross-validation scikit-learn](https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html).
-
-Tim belum menyelesaikan refit/deployment exp14. Bobot dari salah satu fold exp02 juga hanya mewakili training yang mengecualikan peserta test fold tersebut. Karena itu laporan ini tidak menunjuk satu file fold sebagai model final yang dilatih pada seluruh dataset.
-
-Tim dapat menyelesaikan pembahasan exp01–exp13 tanpa memaksakan exp14. Jika membutuhkan kandidat untuk penggunaan lanjutan, langkah terfokus adalah memilih eye-only 25 detik dan late fusion 25 detik sebagai dua pembanding, menilai keduanya pada data uji independen, lalu melakukan refit konfigurasi yang diputuskan. Tidak perlu mengulang seluruh pencarian exp14 untuk sekadar membuat satu model kandidat.
-
-## 6. Berkas pendamping dan reproduksi rekap
-
-| Berkas | Isi |
-|---|---|
-| [leaderboard.csv](reports/leaderboard.csv) | 408 hasil beserta skor kelas dan konfigurasi |
-| [best_per_experiment.csv](reports/best_per_experiment.csv) | Kandidat native terbaik pada 12 eksperimen yang menghasilkan prediksi |
-| [dataset_counts.csv](reports/dataset_counts.csv) | Jumlah window, kelas, dan peserta pada tiga input |
-| [audit.json](reports/audit.json) | Status run, hash release/kode, environment, lokasi sumber pada dua bagian ekspor, dan pemeriksaan notebook |
-| [winner_metrics.json](reports/winner_metrics.json) | Metrik kandidat terbaik, fitur, confusion matrix, subset nonoverlap, serta bootstrap |
-| [recipes.json](reports/recipes.json) | Arti ID konfigurasi yang dirujuk hasil |
-| [review_results.py](reports/review_results.py) | Script audit perhitungan dan pembuatan tabel/grafik; tidak melakukan training |
-
-Untuk menghitung ulang berkas pendamping dari dua folder unduhan yang sama, jalankan dari root proyek:
-
-```bash
-python -B models/batch-02/reports/review_results.py
-```
-
-Script memerlukan NumPy, pandas, dan Matplotlib. Script hanya menulis tabel audit dan gambar dalam `reports`; ia tidak mengubah dataset, notebook, atau output asli. Dokumen Markdown ini memuat penilaian dan penjelasan hasil, bukan output training otomatis.
-
-CSV sumber dan rincian per peserta memuat identitas penelitian. Tim perlu memperhatikan akses repositori saat membagikan artefak di luar kelompok penelitian.

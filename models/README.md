@@ -1,5 +1,11 @@
 # Model Cognitive Load
 
+## Mulai batch-04 di Google Colab
+
+[Panduan batch-04](batch-04/README.md) mencakup dua notebook: exp01 untuk model tabular dan exp02 untuk model neural. Keduanya memproses tiga CSV good_acceptable v2 terbaru, memakai lima fold internal pada Train, lalu memilih model individual atau ensemble pada validation akhir yang terpisah. Model test identik dengan model yang telah dipilih, tanpa refit sesudah seleksi. Gunakan run baru untuk pipeline versi 2; hasil versi 1 tetap diarsipkan.
+
+Salin kedua notebook dan tiga CSV pada struktur Drive dalam panduan, lalu jalankan notebook pilihan melalui **Run all**. [Rancangan eksperimen](batch-04/PLAN.md) menjelaskan perlakuan yang diuji. Dataset dan protokol label tetap sama; hasil batch ini merupakan evaluasi internal eksploratif.
+
 ## Mulai batch-03 di Google Colab
 
 [Panduan batch-03](batch-03/README.md) menyiapkan dua notebook mandiri: exp01 untuk model tabular dan ensemble, exp02 untuk deep learning. Masing-masing mencakup training sampai evaluasi test dan penyimpanan model.
@@ -26,6 +32,7 @@ Protokol menetapkan batas waktu easy **5 menit**, medium **12 menit**, dan hard 
 
 | Peran | Kolom/contoh | Penggunaan |
 |---|---|---|
+| batch-04 | Normalisasi sensor, lima fold internal, validation seleksi terpisah, pemantau epoch neural, dan evaluasi bentuk model akhir | [Panduan Colab](batch-04/README.md), [rancangan](batch-04/PLAN.md), [diagnosis run pertama](batch-04/DIAGNOSIS.md) |
 | Fitur prediksi `X` | RMSSD, SDNN, EAR, kedipan, iris, head pose, gaze, eye state | Daftar eksplisit fitur sensor dan transformasinya; bukan seluruh kolom CSV |
 | Label `y` | V2: `cognitive_load_label` (`Low`, `Medium`, `High`) | Target langsung; `difficulty_level` tetap metadata, bukan target kedua atau input prediksi |
 | Metadata identitas | `participant_id`, `session_id`, `window_id` | Pengelompokan train/test, deduplikasi, dan penelusuran sumber; bukan fitur model utama |

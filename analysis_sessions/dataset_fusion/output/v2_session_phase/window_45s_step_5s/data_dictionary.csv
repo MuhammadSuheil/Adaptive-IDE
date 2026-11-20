@@ -44,19 +44,19 @@ gaze_validation_passed,metadata,,Original last held-out validation decision; bla
 gaze_validation_median_px,metadata,,Last held-out median error of point mean predictions; not a frame-level error quantile.
 gaze_validation_p95_px,metadata,,Last held-out P95 error of point mean predictions; not a frame-level error quantile.
 gaze_validation_max_corner_px,metadata,,Last held-out maximum corner error.
-quality_tier,metadata,,Operational completeness/clipping tier; good does not certify spatial accuracy or mental-state validity.
-good_failed_criteria,metadata,,Semicolon-delimited failed good rules; empty when good.
-acceptable_failed_criteria,metadata,,Semicolon-delimited failed acceptable rules; empty when acceptable rules pass.
+quality_tier,metadata,,"Core-feature quality tier, not spatial-gaze accuracy."
+good_failed_criteria,metadata,,Failed core good rules; empty when all pass.
+acceptable_failed_criteria,metadata,,Failed core acceptable rules; empty when all pass.
 cognitive_load_label,target,,Target Low/Medium/High according to phase/difficulty protocol; every segment must have the same target.
 window_label_mix,metadata,,"JSON target-duration map in seconds, including unresolved duration when present."
 baseline_recorder_ready,metadata,,"Baseline recorder reported ready, independently of builder coverage eligibility."
 baseline_rejection_reason,metadata,,Why the baseline ratio is unavailable; empty when eligible.
-curation_selected,metadata,,Selected for curated views by the recorded replacement policy; never a predictor.
-curation_reason,metadata,,"Selection decision, separate from the original sensor quality tier."
+curation_selected,metadata,,Selected by core quality; never a predictor.
+curation_reason,metadata,,Core selection or rejection reason; never a predictor.
 rmssd_ms,feature,ms,Recomputed time-domain HRV; unavailable unless status is ready and both HRV measures are finite and nonnegative.
 sdnn_ms,feature,ms,Recomputed time-domain HRV; not a cognitive-state label.
-rmssd_baseline_ratio,feature,ratio,Window RMSSD / positive ready baseline RMSSD with sufficient baseline coverage.
-blink_count,feature,events,Increments in the session blink counter at reopening timestamps; blank if a counter discontinuity is observed.
+rmssd_baseline_ratio,optional_or_audit,ratio,Window RMSSD / positive ready baseline RMSSD with sufficient baseline coverage.
+blink_count,optional_or_audit,events,Increments in the session blink counter at reopening timestamps; blank if a counter discontinuity is observed.
 blink_rate_per_minute,feature,events/minute,"Blink count * 60 / full window duration; partial recordings can undercount, see coverage."
 ear_left_mean,feature,ratio,"Left eye aspect ratio; face present and value in [0, 1]. Window mean; std uses ddof=1."
 ear_left_std,feature,ratio,"Left eye aspect ratio; face present and value in [0, 1]. Window std; std uses ddof=1."
@@ -65,17 +65,17 @@ ear_right_std,feature,ratio,"Right eye aspect ratio; face present and value in [
 iris_size_estimate_mean,feature,eye_width_ratio,"Landmark iris-size estimate, not pupil diameter; valid, nonblinking frames only. Window mean; std uses ddof=1."
 iris_size_estimate_std,feature,eye_width_ratio,"Landmark iris-size estimate, not pupil diameter; valid, nonblinking frames only. Window std; std uses ddof=1."
 iris_size_delta_mean,feature,relative_change,Recorded iris-size change; requires a ready iris baseline. Window mean; std uses ddof=1.
-iris_size_delta_std,feature,relative_change,Recorded iris-size change; requires a ready iris baseline. Window std; std uses ddof=1.
-head_pitch_mean,feature,degrees,Recorded head-pitch estimate; face present. Window mean; std uses ddof=1.
-head_pitch_std,feature,degrees,Recorded head-pitch estimate; face present. Window std; std uses ddof=1.
-head_yaw_mean,feature,degrees,Recorded head-yaw estimate; face present. Window mean; std uses ddof=1.
-head_yaw_std,feature,degrees,Recorded head-yaw estimate; face present. Window std; std uses ddof=1.
-gaze_x_norm_mean,feature,screen_width,"Smoothed gaze x / screen width; valid finite gaze, including outside-screen/clipped estimates. Window mean; std uses ddof=1."
-gaze_x_norm_std,feature,screen_width,"Smoothed gaze x / screen width; valid finite gaze, including outside-screen/clipped estimates. Window std; std uses ddof=1."
-gaze_y_norm_mean,feature,screen_height,"Smoothed gaze y / screen height; valid finite gaze, including outside-screen/clipped estimates. Window mean; std uses ddof=1."
-gaze_y_norm_std,feature,screen_height,"Smoothed gaze y / screen height; valid finite gaze, including outside-screen/clipped estimates. Window std; std uses ddof=1."
-eye_state_fixation_ratio,feature,ratio,Frame proportion of algorithmic Fixation Eye_State among valid-gaze frames; not an independently validated eye event.
-eye_state_saccade_ratio,feature,ratio,Frame proportion of algorithmic Saccade Eye_State among valid-gaze frames; not an independently validated eye event.
-eye_state_transition_ratio,feature,ratio,Frame proportion of algorithmic Transition Eye_State among valid-gaze frames; not an independently validated eye event.
-eye_state_unclassified_ratio,feature,ratio,Frame proportion of algorithmic Unclassified Eye_State among valid-gaze frames; not an independently validated eye event.
-eye_state_other_ratio,feature,ratio,Frame proportion of algorithmic other Eye_State among valid-gaze frames; not an independently validated eye event.
+iris_size_delta_std,optional_or_audit,relative_change,Recorded iris-size change; requires a ready iris baseline. Window std; std uses ddof=1.
+head_pitch_mean,optional_or_audit,degrees,Recorded head-pitch estimate; face present. Window mean; std uses ddof=1.
+head_pitch_std,optional_or_audit,degrees,Recorded head-pitch estimate; face present. Window std; std uses ddof=1.
+head_yaw_mean,optional_or_audit,degrees,Recorded head-yaw estimate; face present. Window mean; std uses ddof=1.
+head_yaw_std,optional_or_audit,degrees,Recorded head-yaw estimate; face present. Window std; std uses ddof=1.
+gaze_x_norm_mean,optional_or_audit,screen_width,"Smoothed gaze x / screen width; valid finite gaze, including outside-screen/clipped estimates. Window mean; std uses ddof=1."
+gaze_x_norm_std,optional_or_audit,screen_width,"Smoothed gaze x / screen width; valid finite gaze, including outside-screen/clipped estimates. Window std; std uses ddof=1."
+gaze_y_norm_mean,optional_or_audit,screen_height,"Smoothed gaze y / screen height; valid finite gaze, including outside-screen/clipped estimates. Window mean; std uses ddof=1."
+gaze_y_norm_std,optional_or_audit,screen_height,"Smoothed gaze y / screen height; valid finite gaze, including outside-screen/clipped estimates. Window std; std uses ddof=1."
+eye_state_fixation_ratio,optional_or_audit,ratio,Frame proportion of algorithmic Fixation Eye_State among valid-gaze frames; not an independently validated eye event.
+eye_state_saccade_ratio,optional_or_audit,ratio,Frame proportion of algorithmic Saccade Eye_State among valid-gaze frames; not an independently validated eye event.
+eye_state_transition_ratio,optional_or_audit,ratio,Frame proportion of algorithmic Transition Eye_State among valid-gaze frames; not an independently validated eye event.
+eye_state_unclassified_ratio,optional_or_audit,ratio,Frame proportion of algorithmic Unclassified Eye_State among valid-gaze frames; not an independently validated eye event.
+eye_state_other_ratio,optional_or_audit,ratio,Frame proportion of algorithmic other Eye_State among valid-gaze frames; not an independently validated eye event.

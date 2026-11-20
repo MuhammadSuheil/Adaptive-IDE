@@ -1,0 +1,1 @@
+{"best_epoch":44,"fold":3,"id":"w45_a5d6f8f19e9f4e607a0a_f3","monitor_fit_rows":731,"monitor_rows":202,"seconds":4.083925998000041,"training":{"accuracy":1.0,"balanced_accuracy":1.0,"macro_f1":1.0},"training_rows":1035,"validation":{"accuracy":0.5324675324675324,"balanced_accuracy":0.5331437817845585,"macro_f1":0.5347185009886608},"validation_rows":308}

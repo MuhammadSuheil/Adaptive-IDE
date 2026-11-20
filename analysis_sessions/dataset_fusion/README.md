@@ -1,105 +1,90 @@
 # Dataset Fusion Eye Tracking dan HRV
 
-## Versi output
+Builder merekonstruksi fitur eye tracking dan HRV pada interval yang sama, lalu memberi target Low, Medium, atau High dari ledger CodeArrange. Perekaman mentah tetap read-only. Tidak ada training model dalam proses ini.
 
-```text
-output/
-  v1_active_task/
-  v2_session_phase/
-    window_15s_step_5s/
-    window_25s_step_5s/
-    window_45s_step_5s/
-    QUALITY_REPORT.md
-    replay_validation.json
-    manifest.json
-```
+## Dataset aktif
 
-`v1_active_task` menyimpan seluruh 13 artefak lama byte-identik, termasuk CSV yang dipakai batch-01. Jangan menimpa arsip ini. `v2_session_phase` adalah hasil penghitungan ulang RR dan agregasi eye, bukan salinan v1 yang hanya diganti label/durasinya.
+Tiga good_acceptable.csv pada output/v2_session_phase menjadi dataset utama: window_15s_step_5s, window_25s_step_5s, dan window_45s_step_5s. V1 pada output/v1_active_task tetap arsip historis.
 
-Setiap varian v2 berisi `all_data.csv`, `good_acceptable.csv`, dan `good_only.csv`, data dictionary, allowlist, distribusi kelas/durasi unik, inventory sesi, kualitas sensor, daftar window dikeluarkan, dan laporan ringkas. Laporan induk membandingkan ketiga panjang window. Belum ada training model pada tahap ini.
+Ketiga panjang window merupakan alternatif dari rekaman yang sama; jangan menumpuknya menjadi satu dataset. Step 5 detik menghasilkan overlap, bukan observasi independen baru. Jumlah dan durasi unik kelas dibaca dari hasil build terbaru.
 
-## Target v2
+## Kelayakan fitur inti
 
-| Konteks sumber | cognitive_load_label |
+Kebijakan feature_aware_quality_v1 menilai input inti tanpa menggugurkan EAR/HRV hanya karena posisi gaze tidak akurat.
+
+| View | Isi |
 |---|---|
-| Active easy, practice, atau demo | Low |
-| Active medium | Medium |
-| Active hard | High |
-| Pre-task setelah kedua kalibrasi selesai | Low |
-| Feedback dan rating, termasuk setelah medium/hard | Low |
-| Jeda antarset dan post-task sampai akhir rekaman | Low |
-| Setelah penutupan set tercatat tanpa akhir penelitian berikutnya (interrupted) | Low |
-| Baseline/kalibrasi, readiness tidak diketahui, atau interval tanpa ledger yang dapat ditelusuri | Tidak masuk dataset berlabel |
+| good_only.csv | Window inti good |
+| good_acceptable.csv | Window inti good atau acceptable |
+| all_data.csv | Seluruh window berlabel dengan waktu tidak ambigu, termasuk inti poor; pengukuran spasial asal tetap tersedia |
 
-Seluruh bagian window harus menghasilkan **satu target yang sama**. Easy + rating atau rating + rest dapat tetap Low, walaupun `study_phase=mixed`. Medium + rating atau hard + rest dikeluarkan. Tidak ada majority vote; transisi singkat tetap diperiksa. Event tepat pada endpoint mempunyai durasi nol dalam window sebelumnya.
+Kolom quality_tier, good_failed_criteria, dan acceptable_failed_criteria yang sudah ada kini menilai fitur inti. curation_selected dan curation_reason mencatat admission. Tidak ada kolom core_quality_tier, core_usable, head_pose_usable, atau spatial_usable.
 
-`cognitive_load_label` merupakan satu-satunya target model. `difficulty_level`, fase, set, soal, identitas, waktu, dan kualitas tetap metadata asal. Contoh: rating setelah hard mempunyai difficulty hard dan target Low. Jangan membentuk ulang target v2 dari difficulty pada notebook.
-
-## Fitur dan kualitas
-
-Allowlist setiap varian menetapkan **26 fitur sensor**: RMSSD, SDNN, rasio baseline RMSSD, kedipan, mean/std EAR, estimasi ukuran iris/perubahannya, head pose, gaze ternormalisasi, dan proporsi Eye_State. Metadata tidak masuk predictor.
-
-Estimasi iris bukan diameter pupil; Eye_State adalah keluaran algoritma. Nilai hilang tetap kosong, tidak diganti nol. Imputasi, scaling, seleksi fitur, class weight, ROS, dan SMOTE merupakan pekerjaan training-fold di pemodelan, bukan modifikasi CSV sumber.
-
-Ambang kualitas window tetap mengikuti `config.json`. Admission v2 menggunakan kualitas window saja:
-
-- `good_only`: seluruh window tier good.
-- `good_acceptable`: seluruh window tier good/acceptable.
-- `all_data`: seluruh window berlabel, termasuk tier poor.
-- `team_review_group` menyimpan penilaian lama sebagai metadata; daftar nama tidak lagi membatasi admission v2. Aturan builder/arsip v1 tidak diubah.
-- Ramadhan/Ramadhan-2 tetap satu grup orang, dengan baseline per rekaman; salinan acquisition dipilih sekali oleh inventory.
-- Rekaman baru memerlukan integritas sumber, readiness kalibrasi, ledger yang dapat ditelusuri, serta pemeriksaan kualitas window yang sama. Tidak perlu memasukkan nama ke daftar admission.
+Semua window yang memenuhi aturan diterima tanpa kuota kelas, penilaian berdasarkan nama, atau skor model. Window yang dahulu ditolak hanya karena gaze dapat diterima setelah syarat inti dipenuhi. Riwayat Mon/Alif tetap tersimpan pada history tetapi tidak lagi mengunci jumlah kelas.
 
 | Kriteria | Good | Acceptable |
 |---|---:|---:|
-| HRV | Ready, RMSSD/SDNN finite dan nonnegatif | Sama |
-| Coverage temporal eye, bin 100 ms | ≥95% | ≥80% |
-| Face + EAR valid | ≥95% | ≥80% |
-| Gaze valid | ≥90% | ≥70% |
+| Coverage temporal eye dengan bin 100 ms | ≥95% | ≥80% |
+| Face dan EAR valid | ≥95% | ≥80% |
 | Iris valid nonblinking | ≥90% | ≥70% |
-| Clipping di antara gaze valid | ≤5% | ≤20% |
+| Coverage RR | ≥80% | ≥80% |
+| Pasangan RR | ≥10 | ≥10 |
+| Umur RR terakhir | ≤3 detik | ≤3 detik |
 
-HRV memerlukan accepted-RR coverage minimal 80%, minimal 10 pasangan, serta data age maksimal 3 detik. Ambang tidak dilonggarkan untuk window 15 detik. Kualitas good/acceptable menyatakan kelengkapan/clipping, bukan pengganti hasil validasi spasial gaze. Hasil validasi asli tetap metadata.
+Seluruh predictor inti harus tersedia, finite, dan memenuhi batas nilainya. Missing tidak diganti nol. Perubahan iris negatif tetap sah. Rasio baseline HRV yang tidak tersedia tidak menggugurkan core bila RMSSD/SDNN window layak.
 
-`baseline_recorder_ready` dipisahkan dari `baseline_usable`. Rasio hanya dihitung jika baseline ready, RMSSD positif, dan coverage ≥80%; alasan penolakan tercatat dan rasio tetap kosong bila tidak layak. Raw HRV yang layak tidak ikut dibuang hanya karena rasio tidak tersedia.
+## Predictor dan profil input
 
-## Rekonstruksi waktu dan RR
+feature_columns.json menetapkan target cognitive_load_label, group participant_id, dan default 10 predictor:
 
-Semua varian memakai task-origin sensor yang sama dan grid step 5 detik. Setiap RMSSD/SDNN dihitung dari RR mentah pada interval sebenarnya; fitur eye diagregasi pada batas absolut yang sama, dengan endpoint sensor `(start, end]`.
+    rmssd_ms, sdnn_ms, blink_rate_per_minute,
+    ear_left_mean, ear_left_std, ear_right_mean, ear_right_std,
+    iris_size_estimate_mean, iris_size_estimate_std, iris_size_delta_mean
 
-Replay mempertahankan urutan packet/raw ID, interval ditolak, segment/gap, dan availability recovery. RR sebelum task sensor tidak masuk replay. Paket setelah endpoint tidak digunakan; paket tepat pada endpoint termasuk jika sudah tersedia. Pasangan RMSSD tidak menyambung RR terbuang atau segmen putus. Window parsial terakhir tidak dibuat.
+Pengukuran lain tetap disimpan. iris_size_delta_std dan blink_count tidak masuk default karena redundansi. Iris adalah estimasi geometris landmark, bukan diameter pupil langsung.
 
-Cache HRV 25 detik divalidasi terhadap rekonstruksi. Pada sumber sekarang, 6.659 dari 6.689 window cocok dengan replay utama; 30 cocok dengan timer live yang menerbitkan window sebelum paket tepat di endpoint. Tidak ada selisih tak terjelaskan. `replay_validation.json` menyimpan rinciannya. Dataset v2 memakai satu aturan endpoint konsisten, bukan memilih aturan berbeda per window untuk meniru cache.
+| Profil | Predictor | Syarat baris |
+|---|---:|---|
+| core | 10 | Seluruh baris good_acceptable |
+| core_head | 14 | Core dan empat statistik head pose finite |
+| validated_fusion | 22 | Core/head, empat statistik gaze, dan empat rasio eye-state; seluruh aturan spasial terpenuhi |
 
-Durasi unik adalah gabungan interval pada tiap rekaman/kelas, bukan penjumlahan durasi row yang overlap. Step lebih pendek menambah overlap, bukan peserta/observasi independen baru.
+Fusion memakai rasio fixation, saccade, transition, dan unclassified; other tetap untuk audit. Head pose diperiksa terpisah dari validasi gaze.
+
+Pilih kolom dari profiles dan baris dengan seluruh kolom profil finite. Untuk validated_fusion, terapkan juga validated_fusion_filter: session ID terverifikasi, hasil validasi asli lolos, coverage gaze minimal sesuai kontrak, dan clipping maksimal sesuai kontrak. Gunakan good_acceptable sebagai titik awal pemodelan, bukan all_data tanpa penyaringan.
+
+Validasi terakhir diperiksa terhadap ambang tersimpan dan prediksi lima titik uji. accepted_manual tidak mengubah hasil gagal menjadi lolos. Pada CSV curated, seluruh statistik gaze dan rasio eye-state yang tidak layak dikosongkan. Nilai asal tetap di all_data. Jangan mengimputasi gaze gagal seolah menggantikan pengukuran tervalidasi.
+
+Identitas, waktu, fase, soal, difficulty, dan kualitas bukan predictor. Normalisasi, seleksi fitur yang dipelajari, dan resampling dihitung pada Train saat pemodelan. Notebook serta hasil historis tetap merujuk snapshot/hash saat eksperimen tersebut dijalankan.
+
+## Target dan rekonstruksi sensor
+
+- Active easy/practice/demo diberi Low; active medium diberi Medium; active hard diberi High.
+- Pre-task setelah kedua kalibrasi, feedback, rating, rest, serta post-task/interrupted yang terlacak diberi Low sesuai protokol v2.
+- Baseline/kalibrasi dan waktu yang tidak terlacak tidak diberi Low.
+- Seluruh bagian window harus mempunyai satu target. Easy + rating dapat tetap Low; medium + rating dikeluarkan. Target bukan majority vote dan tidak dibentuk ulang dari difficulty.
+
+HRV dihitung dari RR mentah pada masing-masing panjang window, bukan rata-rata RMSSD cache. Endpoint (start, end] memakai paket yang sudah tersedia pada endpoint. Pasangan RMSSD tidak menyeberangi RR ditolak atau segmen terputus. Baseline dan RR sebelum task tidak masuk task replay.
+
+Inventory memilih satu salinan acquisition dan menggabungkan grup orang pada rekaman berulang. Ihsan tetap berbeda dari Ikhsan. bangsur_easy_only dikecualikan karena tidak memiliki ledger. Timestamp ambigu Alif tetap dipin pada hash sumber dan window yang menyentuhnya dikeluarkan; waktu mentah tidak digeser.
 
 ## Menjalankan builder
 
-Dari root repository:
+Migrasi eksplisit atau build baru dengan kebijakan fitur inti:
 
-```powershell
-python analysis_sessions/dataset_fusion/build_dataset_v2.py
-python -m unittest discover -s analysis_sessions/dataset_fusion -p "test_*.py" -v
-```
+    python analysis_sessions/dataset_fusion/build_dataset_v2.py --admission-policy feature_aware_quality_v1 --replace
 
-Default sumber: `sessions/saved_session`. Default tujuan: `output/v2_session_phase`. Tanpa `--replace`, tujuan yang sudah ada tetap ditolak. Untuk memperbarui bundle v2 aktif:
+Jika output belum ada, hilangkan --replace. Rebuild berikutnya mewarisi kebijakan manifest aktif:
 
-```powershell
-python analysis_sessions/dataset_fusion/build_dataset_v2.py --replace
-```
+    python analysis_sessions/dataset_fusion/build_dataset_v2.py --replace
+    python -m unittest discover -s analysis_sessions/dataset_fusion -p "test_*.py" -v
 
-`--input`, `--config`, dan `--subjects` tersedia. Subjects memakai nama folder persis dan tidak mengubah ambang kualitas. Satu build selalu menghasilkan ketiga panjang window, sehingga CSV dan manifest tidak tercampur antar-run.
+Opsi --input, --output, --config, dan --subjects tersedia. Build baru tanpa --admission-policy mempertahankan default legacy window_quality_only; verifikasi bundle historis tetap didukung. Opsi penggantian satu-banding-satu tidak boleh dicampur dengan kebijakan feature-aware.
 
-Hash seluruh sumber diverifikasi sebelum publikasi. Bundle lengkap dibangun pada staging dan diverifikasi sebelum dipasang. Penggantian hanya menerima bundle v2 yang lengkap dan checksum-nya valid; sumber mentah, root output, symlink/junction, dan arsip v1 dilindungi. Bundle lama dipindah sementara untuk rollback dan dihapus setelah pemasangan, checksum, serta permission Windows terverifikasi. Kegagalan pemasangan memulihkan bundle lama; jika rollback juga gagal, lokasi bundle lama ditampilkan dan tidak dihapus.
+## Publikasi dan pembaruan
 
-Validasi memeriksa label/durasi fase, grid waktu, identitas, ambang sensor, baseline, blink, nilai hilang, proporsi eye-state, subset antar-view, serta jumlah baris. `replay_validation.json` juga menyimpan jumlah sampel pemeriksaan pembanding rumus HRV dan agregasi eye pada setiap panjang window; pemeriksaan ini tidak membuktikan akurasi gaze atau ground truth fisiologis.
+Sumber diverifikasi sebelum dan sesudah build. Ketiga window dibuat pada staging dan diverifikasi bersama sebelum publikasi. Kegagalan pemasangan memulihkan bundle sebelumnya; lokasi rollback dipertahankan jika pemulihan gagal. Sumber mentah, root output, arsip v1, symlink, dan junction dilindungi.
 
-Builder v1 tetap tersedia untuk audit dengan `--output` eksplisit ke folder rebuild terpisah. Root output versi dan arsip v1 yang sudah ada dilindungi. Logika angka/label historis v1 tidak diubah.
+Manifest mencatat kebijakan, sumber, kontrak fitur, audit validasi gaze, pengecualian timestamp, jumlah profil, dan checksum. replay_validation.json memuat pembandingan cache HRV serta sampel perhitungan independen. history menjelaskan kebijakan sebelum migrasi; aturan dan jumlah aktual dibaca dari manifest aktif.
 
-## Pemodelan dan Drive
-
-Baca [models/README.md](../../models/README.md) dan [plan batch-02](../../models/batch-02/PLAN.md). Path Drive mengikuti struktur versi, misalnya:
-
-`drive/MyDrive/Penelitian-Adaptive-IDE/Dataset/v2_session_phase/window_25s_step_5s/good_acceptable.csv`
-
-Sertakan allowlist dan manifest, bukan CSV saja. Dataset v2 memakai rekaman yang tersedia; pengambilan Low tambahan belum termasuk. Setelah sumber tambahan dan identitas lintas sesi diperiksa, rebuild bundle aktif dan bekukan manifest evaluasi batch-02. Hash sumber pada hasil batch-01 tetap menunjukkan dataset saat training dahulu, bukan bundle setelah refresh; penggantian CSV tidak memperbarui model atau skor lama.
+Tambahkan rekaman lengkap ke sessions/saved_session, lalu rebuild. Jangan menggabungkan CSV dengan concat manual. Baca QUALITY_REPORT.md dan DATASET_CONDITION_REPORT.md setelah build untuk jumlah kelas, kontribusi rekaman, durasi unik, dan cakupan profil tambahan.

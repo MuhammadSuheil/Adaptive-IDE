@@ -20,6 +20,7 @@ __pycache__/
 *.safetensors
 *.ubj
 *.cbm
+batch-*/outputs/**/native*.json
 
 # Cache training, environment lokal, dan file sementara.
 _final_cache/

@@ -1,6 +1,6 @@
 quality_tier,hrv_status,hrv_reason,windows
-acceptable,ready,,1673
-good,ready,,1282
+acceptable,ready,,1343
+good,ready,,2230
 poor,gap,rr_gap,2
 poor,gap,rr_gap;insufficient_coverage,2
 poor,gap,rr_gap;insufficient_coverage;insufficient_pairs;stale_or_missing_data,20
@@ -10,7 +10,7 @@ poor,insufficient_data,insufficient_coverage,243
 poor,insufficient_data,insufficient_coverage;insufficient_pairs,1
 poor,insufficient_data,insufficient_coverage;stale_or_missing_data,9
 poor,insufficient_data,stale_or_missing_data,13
-poor,ready,,846
+poor,ready,,228
 poor,recovering,recovery_pending;insufficient_coverage;insufficient_pairs;stale_or_missing_data,1
 poor,recovering,recovery_pending;insufficient_coverage;stale_or_missing_data,28
 poor,recovering,recovery_pending;stale_or_missing_data,9

@@ -2,30 +2,39 @@
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 from uuid import uuid4
 
 import numpy as np
 import pandas as pd
 
-from . import build_dataset as shared
-from . import v2_replacement as replacement
-from . import v2_history as history
-from . import v2_timestamps as timing
 from hrv_monitor_prototype.config import (
-    HRV_MIN_COVERAGE, HRV_MIN_PAIRS, HRV_MAX_DATA_AGE_SECONDS,
+    HRV_MAX_DATA_AGE_SECONDS,
+    HRV_MIN_COVERAGE,
+    HRV_MIN_PAIRS,
 )
+
+from . import build_dataset as shared
+from . import v2_features as sensor_features
+from . import v2_history as history
+from . import v2_replacement as replacement
+from . import v2_timestamps as timing
 
 WINDOWS = (15, 25, 45)
 LABELS = ('Low', 'Medium', 'High')
 ADMISSION_POLICY = 'window_quality_only'
 
 
-def quality_views(frame, policy=ADMISSION_POLICY):
+def quality_views(frame, policy=ADMISSION_POLICY, *, config=None, validation_checks=None):
     if frame.window_id.duplicated().any():
         raise ValueError('Duplicate v2 window IDs.')
+    if policy == sensor_features.POLICY:
+        config = config if config is not None else shared.load_config()
+        return {name: (frame.copy() if name == 'all_data' else sensor_features.curated_projection(
+                    frame.loc[frame.quality_tier.isin(tiers)], config, validation_checks))
+                for name, tiers in shared.DATASETS.items()}
     selected = (replacement.boolean(frame.curation_selected) if policy in history.POLICIES
                 else pd.Series(True, index=frame.index))
     if policy in history.POLICIES:
@@ -45,7 +54,7 @@ def _bool(series):
     return text.isin(('true', '1'))
 
 
-def validate_frame(frame, config, seconds):
+def validate_frame(frame, config, seconds, *, policy=ADMISSION_POLICY):
     """Fail rather than publish inconsistent measurements or invented values."""
     from .build_dataset_v2 import segment_label
 
@@ -120,8 +129,19 @@ def validate_frame(frame, config, seconds):
         mix = json.loads(row['window_label_mix'])
         _require(set(mix) == {row['cognitive_load_label']}
                  and np.isclose(sum(mix.values()), seconds, rtol=0, atol=1e-5), 'Label duration mismatch.')
-        expected = shared.quality_tier(row, config)
+        expected = (sensor_features.core_quality(row, config) if policy == sensor_features.POLICY
+                    else shared.quality_tier(row, config))
         _require(row['quality_tier'] == expected['quality_tier'], 'Quality tier mismatch.')
+        if policy == sensor_features.POLICY:
+            for field in ('good_failed_criteria', 'acceptable_failed_criteria'):
+                _require(('' if pd.isna(row[field]) else row[field]) == expected[field], 'Quality reason mismatch.')
+    if policy == sensor_features.POLICY:
+        _require(_bool(frame.curation_selected).eq(frame.quality_tier.isin(('good', 'acceptable'))),
+                 'Core selection mismatch.')
+        expected = sensor_features.apply_policy(frame, config)
+        _require(frame.curation_reason.eq(expected.curation_reason), 'Core selection reason mismatch.')
+        forbidden = {'core_quality_tier', 'core_usable', 'head_pose_usable', 'spatial_usable'}
+        _require(not forbidden.intersection(frame.columns), 'Unexpected extra quality flags.')
 
 
 def _no_links(path):
@@ -147,7 +167,14 @@ def verify_bundle(directory):
         del actual['manifest.json']
         _require(actual == manifest['output_sha256'], 'Bundle checksum mismatch.')
         policy = manifest.get('admission_policy', 'legacy_review_groups')
-        _require(policy in (ADMISSION_POLICY, *history.POLICIES, 'legacy_review_groups'), 'Unknown admission policy.')
+        _require(policy in (ADMISSION_POLICY, *history.POLICIES, 'legacy_review_groups', sensor_features.POLICY),
+                 'Unknown admission policy.')
+        validation_checks = manifest.get('spatial_validation', {})
+        if policy == sensor_features.POLICY:
+            _require(set(validation_checks) == set(manifest['selected_session_ids']), 'Missing source validation audit.')
+            for audit in validation_checks.values():
+                _require(audit == sensor_features.audit_validation(audit['source']), 'Source validation audit mismatch.')
+            _require(manifest['feature_columns'] == sensor_features.CORE, 'Manifest feature contract mismatch.')
         context, pairs = None, []
         if policy in history.POLICIES:
             context = json.loads((directory/'replacement_selection.json').read_text(encoding='utf-8'))
@@ -155,7 +182,18 @@ def verify_bundle(directory):
         for length in WINDOWS:
             root = directory/f'window_{length}s_step_5s'
             frame = pd.read_csv(root/'all_data.csv')
-            validate_frame(frame, manifest['quality_configuration'], length)
+            validate_frame(frame, manifest['quality_configuration'], length, policy=policy)
+            if policy == sensor_features.POLICY:
+                for session, timestamp_policy in manifest.get('timestamp_policies', {}).items():
+                    timing.validate_policy(timestamp_policy)
+                    for row in frame.loc[frame.session_id.eq(session)].itertuples():
+                        _require(not timing.touches(shared.epoch_ms(row.window_start), shared.epoch_ms(row.window_end), timestamp_policy),
+                                 'Ambiguous eye timestamp window leaked into all_data.')
+                    exclusions = pd.read_csv(root/'excluded_windows.csv', keep_default_na=False)
+                    for row in exclusions.loc[exclusions.session_id.eq(session)].itertuples():
+                        touched = timing.touches(shared.epoch_ms(row.window_start), shared.epoch_ms(row.window_end), timestamp_policy)
+                        _require(('ambiguous_eye_timestamp' in json.loads(row.exclusion_flags)) == touched,
+                                 'Timestamp exclusion audit mismatch.')
             if context is not None:
                 recomputed, matches = history.curate_history(frame, context, length)
                 for session, timestamp_policy in context.get('timestamp_policies', {}).items():
@@ -172,7 +210,8 @@ def verify_bundle(directory):
                 _require(frame.curation_reason.eq(recomputed.curation_reason), 'Replacement reason mismatch.')
                 pairs.extend(matches)
             expected = (shared.dataset_views(frame) if policy == 'legacy_review_groups'
-                        else quality_views(frame, policy))
+                        else quality_views(frame, policy, config=manifest['quality_configuration'],
+                                           validation_checks=validation_checks))
             for name, view in expected.items():
                 published = pd.read_csv(root/f'{name}.csv')
                 pd.testing.assert_frame_equal(published, view.reset_index(drop=True),
@@ -183,8 +222,15 @@ def verify_bundle(directory):
                 for label in LABELS:
                     _require(counts[label] == published.cognitive_load_label.eq(label).sum(), 'Class count mismatch.')
             allowlist = json.loads((root/'feature_columns.json').read_text())
-            _require(allowlist['target'] == 'cognitive_load_label'
-                     and allowlist['features'] == shared.FEATURE_COLUMNS, 'Feature contract mismatch.')
+            if policy == sensor_features.POLICY:
+                _require(allowlist == sensor_features.contract(manifest['quality_configuration'], validation_checks),
+                         'Feature contract mismatch.')
+                profiles = {name: len(sensor_features.profile_frame(frame, name, manifest['quality_configuration'],
+                                                                   validation_checks)) for name in sensor_features.PROFILES}
+                _require(profiles == manifest['feature_profile_counts'][root.name], 'Profile count mismatch.')
+            else:
+                _require(allowlist['target'] == 'cognitive_load_label'
+                         and allowlist['features'] == shared.FEATURE_COLUMNS, 'Feature contract mismatch.')
         if context is not None:
             expected_pairs = pd.DataFrame(pairs, columns=history.pair_columns(policy))
             published_pairs = pd.read_csv(directory/'replacement_pairs.csv')
