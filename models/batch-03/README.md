@@ -9,6 +9,10 @@ Batch ini memakai dua notebook mandiri. Masing-masing membaca tiga dataset dari 
 
 Exp01 tidak membutuhkan exp02, dan sebaliknya. Keduanya boleh dijalankan dengan akun berbeda secara paralel. Perbandingan kedua notebook dilakukan setelah hasil tersedia, bukan melalui notebook ketiga.
 
+## Hasil eksekusi
+
+Tim sudah menjalankan kedua notebook di Google Colab. [SUMMARY.md](SUMMARY.md) merangkum enam finalist, model utama pilihan validation, skor test tertinggi yang teramati, hasil per kelas, dan analisis gap training–validation–test. Laporan juga mencocokkan metrik dengan prediksi yang tersimpan.
+
 ## Persiapan Google Drive
 
 ```text
@@ -100,4 +104,4 @@ File kerja dibuat di disk sementara Colab. Artefak disalin ke Drive dan diverifi
 
 Cell terakhir menunjukkan cara memuat model utama dan memprediksi ulang beberapa baris tanpa training. Jalankan cell definisi pipeline pada notebook yang sesuai sebelum memuat model. Semua definisi sudah ada dalam notebook; tidak perlu file Python pendamping. Gunakan urutan fitur/schema yang disimpan. Muat hanya file model terpercaya yang dibuat tim.
 
-Notebook telah diperiksa dengan syntax/schema validation, audit split pada CSV sekarang, dan pengujian ringan menggunakan data sintetis. Pengujian persiapan bukan hasil training penelitian dan tidak menjamin seluruh layanan Colab/Drive selalu tersedia. Training penuh batch-03 belum dijalankan saat penyiapan.
+Pada penyiapan awal, notebook telah diperiksa dengan syntax/schema validation, audit split pada CSV, dan pengujian ringan menggunakan data sintetis. Tim kemudian menjalankan training penuh di Colab; hasil penelitian berada pada folder outputs dan dirangkum pada SUMMARY.md. Rekap hasil tidak melatih ulang model atau mengubah dataset sumber.
