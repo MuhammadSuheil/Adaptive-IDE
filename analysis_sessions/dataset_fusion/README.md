@@ -22,6 +22,10 @@ Kolom quality_tier, good_failed_criteria, dan acceptable_failed_criteria yang su
 
 Semua window yang memenuhi aturan diterima tanpa kuota kelas, penilaian berdasarkan nama, atau skor model. Window yang dahulu ditolak hanya karena gaze dapat diterima setelah syarat inti dipenuhi. Riwayat Mon/Alif tetap tersimpan pada history tetapi tidak lagi mengunci jumlah kelas.
 
+Aturan tambahan `exclude_local_rr_jump_v1` memeriksa RR task secara kausal dengan timing, kontak, rentang, dan recovery yang sama. Window curated dikeluarkan bila memuat RR diterima dengan selisih lebih dari 250 ms terhadap median referensi lokal (maksimum 11 RR; minimum 5 pada riwayat normal). Beat harus berada dalam `(start, end]` dan sudah tersedia pada endpoint. Kandidat adalah ketidakpastian lokal, bukan diagnosis artefak.
+
+RR dan fitur sensor tidak dikoreksi, diinterpolasi, atau dipotong. Window terdampak tetap tersedia di `all_data.csv`, tetapi `quality_tier` menjadi `poor` dan alasan `rr_local_median_jump` disimpan di kolom metadata yang sudah ada. Aturan tidak membaca label dan tidak mengubah `FILTER_ENABLED` pada sistem perekaman. Manifest memuat bukti raw_id, waktu, median, hash sumber, serta jumlah eksklusi tiap kelas/window.
+
 | Kriteria | Good | Acceptable |
 |---|---:|---:|
 | Coverage temporal eye dengan bin 100 ms | ≥95% | ≥80% |
@@ -81,10 +85,18 @@ Jika output belum ada, hilangkan --replace. Rebuild berikutnya mewarisi kebijaka
 
 Opsi --input, --output, --config, dan --subjects tersedia. Build baru tanpa --admission-policy mempertahankan default legacy window_quality_only; verifikasi bundle historis tetap didukung. Opsi penggantian satu-banding-satu tidak boleh dicampur dengan kebijakan feature-aware.
 
+Untuk menerapkan ulang pemeriksaan RR pada bundle feature-aware yang sudah terverifikasi tanpa menghitung ulang agregasi eye/HRV:
+
+    python -m analysis_sessions.dataset_fusion.v2_rr_quality --refresh analysis_sessions/dataset_fusion/output/v2_session_phase
+
+Perintah ini hanya memakai agregat lama bila hash seluruh sumber, konfigurasi kualitas, dan kode perhitungan sensor masih cocok. Jika berubah, proses berhenti dan harus menggunakan full builder. Hasil aturan RR sama dengan full build; tidak ada penggabungan CSV manual. Seluruh predictor dan label interval lama diperiksa agar tidak berubah sebelum publikasi.
+
 ## Publikasi dan pembaruan
 
 Sumber diverifikasi sebelum dan sesudah build. Ketiga window dibuat pada staging dan diverifikasi bersama sebelum publikasi. Kegagalan pemasangan memulihkan bundle sebelumnya; lokasi rollback dipertahankan jika pemulihan gagal. Sumber mentah, root output, arsip v1, symlink, dan junction dilindungi.
 
 Manifest mencatat kebijakan, sumber, kontrak fitur, audit validasi gaze, pengecualian timestamp, jumlah profil, dan checksum. replay_validation.json memuat pembandingan cache HRV serta sampel perhitungan independen. history menjelaskan kebijakan sebelum migrasi; aturan dan jumlah aktual dibaca dari manifest aktif.
+
+`pre_model_audit` pada manifest dan laporan dataset memuat kelengkapan core, ID/vektor duplikat, fitur konstan, baseline opsional yang hilang, komposisi fase Low, dan variasi antarsesi/kelas. Nilai nol kedipan yang sah tidak dihapus. Pergeseran nilai dasar antarsesi serta pemisahan Train/validation/test tidak diselesaikan dengan normalisasi global pada CSV.
 
 Tambahkan rekaman lengkap ke sessions/saved_session, lalu rebuild. Jangan menggabungkan CSV dengan concat manual. Baca QUALITY_REPORT.md dan DATASET_CONDITION_REPORT.md setelah build untuk jumlah kelas, kontribusi rekaman, durasi unik, dan cakupan profil tambahan.

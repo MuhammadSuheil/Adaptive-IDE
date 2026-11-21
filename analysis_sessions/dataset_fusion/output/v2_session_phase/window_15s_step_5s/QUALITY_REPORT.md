@@ -4,8 +4,8 @@ Target: `cognitive_load_label`. Difficulty dan fase tetap metadata. Hanya window
 
 | Dataset | Low | Medium | High | Total | Peserta |
 |---|---:|---:|---:|---:|---:|
-| good_only | 974 | 1210 | 1187 | 3371 | 20 |
-| good_acceptable | 1700 | 1768 | 1812 | 5280 | 22 |
+| good_only | 974 | 1207 | 1180 | 3361 | 20 |
+| good_acceptable | 1687 | 1763 | 1803 | 5253 | 22 |
 | all_data | 2389 | 2153 | 2138 | 6680 | 22 |
 
 Baca laporan induk untuk aturan fase, replay RR, admission peserta, dan penggunaan fitur. `class_distribution.csv` melaporkan durasi unik; penjumlahan durasi semua row akan menghitung overlap berulang.

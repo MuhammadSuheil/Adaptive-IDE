@@ -2,9 +2,9 @@
 
 ## Mulai batch-04 di Google Colab
 
-[Panduan batch-04](batch-04/README.md) mencakup dua notebook: exp01 untuk model tabular dan exp02 untuk model neural. Keduanya memproses tiga CSV good_acceptable v2 terbaru, memakai lima fold internal pada Train, lalu memilih model individual atau ensemble pada validation akhir yang terpisah. Model test identik dengan model yang telah dipilih, tanpa refit sesudah seleksi. Gunakan run baru untuk pipeline versi 2; hasil versi 1 tetap diarsipkan.
+[Panduan batch-04](batch-04/README.md) menyiapkan empat notebook mandiri: exp01 untuk tabular/representasi fitur, exp02 untuk acuan dan riwayat statistik, exp03 untuk deep learning tabular, serta exp04 untuk GRU/TCN kausal. Masing-masing membaca tiga CSV good_acceptable v2 terbaru setelah audit RR, memakai evaluasi internal Train–validation–test, dan menyimpan model yang identik dengan model terpilih pada validation. Tidak menggunakan LOPO.
 
-Salin kedua notebook dan tiga CSV pada struktur Drive dalam panduan, lalu jalankan notebook pilihan melalui **Run all**. [Rancangan eksperimen](batch-04/PLAN.md) menjelaskan perlakuan yang diuji. Dataset dan protokol label tetap sama; hasil batch ini merupakan evaluasi internal eksploratif.
+Salin empat notebook dan tiga CSV pada struktur Drive dalam panduan, lalu jalankan notebook pilihan melalui **Run all**. Notebook dapat dijalankan independen tanpa shared, file Python pendamping, requirements, atau output batch sebelumnya. [Rancangan eksperimen](batch-04/PLAN.md) menjelaskan pencarian, lima fold internal beserta pengulangannya, dan pengendalian overlap riwayat. Notebook belum memuat hasil training penelitian; dataset dan label tidak diubah oleh pemodelan.
 
 ## Mulai batch-03 di Google Colab
 
@@ -32,7 +32,6 @@ Protokol menetapkan batas waktu easy **5 menit**, medium **12 menit**, dan hard 
 
 | Peran | Kolom/contoh | Penggunaan |
 |---|---|---|
-| batch-04 | Normalisasi sensor, lima fold internal, validation seleksi terpisah, pemantau epoch neural, dan evaluasi bentuk model akhir | [Panduan Colab](batch-04/README.md), [rancangan](batch-04/PLAN.md), [diagnosis run pertama](batch-04/DIAGNOSIS.md) |
 | Fitur prediksi `X` | RMSSD, SDNN, EAR, kedipan, iris, head pose, gaze, eye state | Daftar eksplisit fitur sensor dan transformasinya; bukan seluruh kolom CSV |
 | Label `y` | V2: `cognitive_load_label` (`Low`, `Medium`, `High`) | Target langsung; `difficulty_level` tetap metadata, bukan target kedua atau input prediksi |
 | Metadata identitas | `participant_id`, `session_id`, `window_id` | Pengelompokan train/test, deduplikasi, dan penelusuran sumber; bukan fitur model utama |
@@ -40,7 +39,7 @@ Protokol menetapkan batas waktu easy **5 menit**, medium **12 menit**, dan hard 
 
 Label v2 mengikuti protokol fase/difficulty: active easy/practice/demo, pre-task setelah kalibrasi, feedback, rating, jeda, dan post-task diberi Low; active medium diberi Medium dan hard diberi High. Rating/feedback setelah medium/hard juga Low. Kalibrasi dan interval tanpa konteks yang dapat ditelusuri dikeluarkan. Seluruh window harus mempunyai satu target yang sama, meskipun fase/soalnya boleh berbeda. Jangan memasukkan nama set, ID soal, kesulitan, atau batas waktu set ke `X` untuk menaikkan skor dengan informasi yang mengungkap label.
 
-Output dipisahkan menjadi `v1_active_task` (13 artefak lama byte-identik, termasuk dataset batch-01) dan `v2_session_phase` (window 15/25/45 detik, step 5). Ketiga view CSV di setiap varian menyimpan fitur, target, dan metadata bersama. [Allowlist v2 25 detik](../analysis_sessions/dataset_fusion/output/v2_session_phase/window_25s_step_5s/feature_columns.json) menetapkan 26 fitur sensor, tidak termasuk ID, difficulty, fase, atau target. [Laporan v2](../analysis_sessions/dataset_fusion/output/v2_session_phase/QUALITY_REPORT.md) mencatat distribusi dan rekonstruksi RR. Jangan memakai pemetaan difficulty milik notebook lama pada CSV v2; target Low dapat berada pada rating setelah hard. Kode pemodelan lama `models/shared` tetap dihapus.
+Output dipisahkan menjadi `v1_active_task` sebagai arsip dan `v2_session_phase` (window 15/25/45 detik, step 5). Ketiga view CSV di setiap varian menyimpan fitur, target, dan metadata bersama. [Kontrak fitur v2 25 detik](../analysis_sessions/dataset_fusion/output/v2_session_phase/window_25s_step_5s/feature_columns.json) menetapkan 10 fitur core sebagai input default, core-head 14 fitur, serta profil spasial tervalidasi yang mempunyai filter tersendiri. Banyaknya kolom CSV bukan jumlah predictor default. [Laporan v2](../analysis_sessions/dataset_fusion/output/v2_session_phase/QUALITY_REPORT.md) mencatat distribusi, masking gaze, rekonstruksi RR, dan pengecualian window lonjakan RR. Jangan memakai pemetaan difficulty milik notebook lama pada CSV v2; target Low dapat berada pada rating setelah hard. Kode pemodelan lama `models/shared` tetap dihapus.
 
 Pemisahan berbasis peserta merupakan pengaman evaluasi model sensor, bukan perubahan tujuan menjadi analisis perorangan. Nilai sensor tetap dapat membawa variasi antarrekaman walaupun nama peserta tidak menjadi input. Menghapus ID peserta tidak menghilangkan variasi itu dan akan menghilangkan kunci pengelompokan jika tidak disimpan terpisah.
 
@@ -54,6 +53,7 @@ Satu `batch` adalah satu rangkaian penelitian/pemodelan; `exp` adalah percobaan 
 
 | Batch | Isi | Ringkasan |
 |---|---|---|
+| batch-04 | Empat notebook mandiri: tabular, acuan/riwayat sensor, deep learning tabular, serta GRU/TCN pada core terbaru | [Panduan Colab](batch-04/README.md), [rancangan](batch-04/PLAN.md) |
 | batch-00 | Eksperimen awal tim; sebelumnya `exp0` | [Dataset lama](batch-00/old-dataset/SUMMARY.md), [dataset baru](batch-00/new-dataset/SUMMARY.md) |
 | batch-01 | Baseline dan rangkaian exp01 sampai exp12 | [Dataset lama](batch-01/old-dataset/SUMMARY.md), [dataset baru](batch-01/new-dataset/SUMMARY.md) |
 | batch-02 | 14 eksperimen pada dataset terbaru setelah Mon/Alif; dijalankan dari awal di Colab | [Panduan Colab](batch-02/README.md) |

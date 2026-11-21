@@ -16,15 +16,37 @@ from analysis_sessions.session_inventory import select_session_directories
 from . import build_dataset as shared
 from . import v2_features as features
 from . import v2_integrity as integrity
+from . import v2_rr_quality as rr_quality
 from .v2_documentation import build_update_summary
 from .v2_feature_documentation import write_reports
 
 
-def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous, *, replace=False):
+def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous, *, replace=False, reuse_verified=False):
     from . import build_dataset_v2 as builder
 
     config = shared.load_config(config_path)
     sources_before = shared.snapshot(input_dir)
+    cached = {}
+    cached_audits = {}
+    if reuse_verified:
+        if not previous or previous['admission_policy'] != features.POLICY or subjects:
+            raise ValueError('RR refresh requires a complete verified feature-aware bundle.')
+        if integrity.verify_bundle(output_dir) != previous:
+            raise ValueError('Active manifest changed before refresh.')
+        if sources_before != previous['source_sha256'] or shared.digest(config_path) != previous['quality_configuration_sha256']:
+            raise ValueError('Raw sources or quality settings changed; run the full builder instead.')
+        cache_code = ('build_dataset.py', 'build_dataset_v2.py', 'v2_timestamps.py', 'v2_sensor_checks.py',
+                      'session_inventory.py', 'calculate_hrv.py', 'preprocess_rr.py', 'config.py', 'fuse_and_analyze.py')
+        for name, digest in previous['code_sha256'].items():
+            if Path(name).name in cache_code and shared.digest(builder.ROOT/name) != digest:
+                raise ValueError(f'Sensor calculation code changed: {name}; run the full builder instead.')
+        for seconds in builder.WINDOWS:
+            directory = output_dir/f'window_{seconds}s_step_5s'
+            cached[seconds] = (pd.read_csv(directory/'all_data.csv', float_precision='round_trip'),
+                               pd.read_csv(directory/'excluded_windows.csv', keep_default_na=False, float_precision='round_trip'),
+                               pd.read_csv(directory/'session_quality_summary.csv', keep_default_na=False, float_precision='round_trip'))
+        cached_audits = {audit['session_folder']: audit for audit in
+                         json.loads((output_dir/'replay_validation.json').read_text(encoding='utf-8'))['sessions']}
     directories, inventory = select_session_directories(
         input_dir, subjects, session_exclusions=config.get('session_exclusions', {}))
     if not directories:
@@ -37,16 +59,33 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
     results: dict[int, tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]] = {
         seconds: ([], [], []) for seconds in builder.WINDOWS}
     audits, validation_checks = [], {}
+    rr_registry = {**rr_quality.settings(), 'sessions': {}}
     for directory in directories:
         if not (directory/'task_events.csv').is_file():
             raise ValueError(f'{directory.name}: missing task_events.csv; source is not explicitly excluded.')
         session_id = str(pd.read_csv(directory/'eye_tracking.csv', nrows=1, usecols=['session_id']).session_id.iloc[0])
         validation_checks[session_id] = features.audit_validation(shared.read_json(directory/'eye_summary_calibration.json'))
-        session, audit = builder.build_session(directory, config, timestamps.get(session_id))
+        rr_audit = rr_quality.audit_session(directory)
+        if rr_audit['session_id'] != session_id:
+            raise ValueError('Eye and RR source identity mismatch.')
+        rr_registry['sessions'][session_id] = rr_audit
+        if reuse_verified:
+            session = {}
+            for seconds, (rows, excluded, reports) in cached.items():
+                report = reports.loc[reports.session_id.eq(session_id)]
+                if len(report) != 1:
+                    raise ValueError('Missing or duplicated cached session report.')
+                session[seconds] = (rows.loc[rows.session_id.eq(session_id)].to_dict('records'),
+                                    excluded.loc[excluded.session_id.eq(session_id)].to_dict('records'),
+                                    report.iloc[0].to_dict())
+            audit = cached_audits[directory.name]
+        else:
+            session, audit = builder.build_session(directory, config, timestamps.get(session_id))
         audits.append(audit)
         eligible_counts = {}
         for seconds, (rows, excluded, report) in session.items():
-            frame = features.apply_policy(pd.DataFrame(rows, columns=builder.DATA_COLUMNS), config)
+            frame = rr_quality.apply_window_policy(pd.DataFrame(rows, columns=builder.DATA_COLUMNS), rr_audit)
+            frame = features.apply_policy(frame, config)
             eligible_counts[seconds] = int(frame.curation_selected.sum())
             results[seconds][0].extend(frame.to_dict('records'))
             results[seconds][1].extend(excluded)
@@ -90,6 +129,11 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
             f'window_{s}s_step_5s': {name: len(features.profile_frame(pd.DataFrame(rows), name, config, validation_checks))
                                     for name in features.PROFILES}
             for s, (rows, _, _) in results.items()}
+        rr_registry['windows'] = {}
+        for seconds, (rows, _, _) in results.items():
+            rr_registry['windows'][f'window_{seconds}s_step_5s'] = rr_quality.window_summary(pd.DataFrame(rows), config)
+        pre_model_audit = {f'window_{seconds}s_step_5s': features.pre_model_audit(pd.read_csv(
+            destination/f'window_{seconds}s_step_5s/all_data.csv')) for seconds in results}
         replay = {'sessions': audits, 'unexplained_windows': sum(a['unexplained_windows'] for a in audits)}
         (destination/'replay_validation.json').write_text(json.dumps(replay, indent=2, allow_nan=False)+'\n', encoding='utf-8')
         operator_guide = ''
@@ -101,10 +145,11 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
                 stop = text.find('\n## ', start+4)
                 operator_guide = text[start:stop if stop >= 0 else len(text)]
         write_reports(destination, results, counts, profile_counts, validation_checks, update, config,
-                      previous_policy, operator_guide)
+                      previous_policy, operator_guide, rr_registry=rr_registry, pre_model_audit=pre_model_audit)
         if shared.snapshot(input_dir) != sources_before:
             raise RuntimeError('Raw sources changed during build; no bundle published.')
         code_paths = [Path(builder.__file__), Path(shared.__file__), Path(__file__),
+                      Path(rr_quality.__file__),
                       Path(features.__file__), Path(integrity.__file__), Path(__file__).with_name('v2_feature_documentation.py'),
                       Path(__file__).with_name('v2_sensor_checks.py'), Path(__file__).with_name('v2_documentation.py'),
                       Path(builder.timing.__file__), builder.ROOT/'analysis_sessions/session_inventory.py',
@@ -125,6 +170,8 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
             'previous_admission_policy': previous_policy,
             'previous_manifest_sha256': shared.digest(output_dir/'manifest.json') if previous else None,
             'spatial_validation': validation_checks, 'timestamp_policies': timestamps,
+            'rr_quality_control': rr_registry,
+            'pre_model_audit': pre_model_audit,
             'feature_profile_counts': profile_counts, 'feature_columns': features.CORE,
             'dataset_eye_review_groups': {name: None for name in shared.DATASETS},
             'source_integrity_verified': True, 'source_sha256': sources_before,

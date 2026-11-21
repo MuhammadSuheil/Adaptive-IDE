@@ -34,6 +34,8 @@ def true(value):
 
 def core_quality(row, config):
     reasons = []
+    if 'rr_local_median_jump' in str(row.get('hrv_reason', '')).split(';'):
+        reasons.append('rr_local_median_jump')
     for column in CORE:
         value = shared.finite(row.get(column))
         valid = math.isfinite(value)
@@ -106,6 +108,30 @@ def profile_frame(frame, profile, config, validation_checks=None):
     if profile == 'validated_fusion':
         mask &= spatial_mask(frame, config, validation_checks)
     return frame.loc[mask].copy()
+
+
+def pre_model_audit(frame):
+    """Describe the admitted core without fitting transformations or changing labels."""
+    selected = frame.loc[frame.quality_tier.isin(('good', 'acceptable'))]
+    values = selected[CORE].to_numpy(float)
+    variation: dict[str, dict[str, float | None]] = {}
+    for column in ('rmssd_ms', 'ear_left_mean', 'iris_size_estimate_mean'):
+        total = float(((selected[column]-selected[column].mean())**2).sum())
+        variation[column] = {}
+        for group, key in (('session_id', 'session'), ('cognitive_load_label', 'label')):
+            between = sum(len(rows)*(rows.mean()-selected[column].mean())**2
+                          for _, rows in selected.groupby(group)[column])
+            variation[column][key] = round(float(between/total), 8) if total > 0 else None
+    low = selected.cognitive_load_label.eq('Low')
+    return {'windows': len(selected), 'missing_core_values': int(selected[CORE].isna().sum().sum()),
+            'infinite_core_values': int(np.isinf(values).sum()),
+            'constant_core_features': [name for name in CORE if selected[name].nunique() <= 1],
+            'duplicate_window_ids': int(selected.window_id.duplicated().sum()),
+            'duplicate_core_vectors': int(selected.duplicated(CORE, keep=False).sum()),
+            'missing_optional_baseline_ratio': int(selected.rmssd_baseline_ratio.isna().sum()),
+            'low_windows': int(low.sum()),
+            'low_active_windows': int((low & selected.study_phase.eq('active_task')).sum()),
+            'variation': variation}
 
 
 def contract(config, validation_checks=None):

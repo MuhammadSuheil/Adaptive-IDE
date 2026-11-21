@@ -102,6 +102,30 @@ class FeaturePolicyTests(unittest.TestCase):
                 result = mod.apply_policy(self.frame(**change), self.config)
                 self.assertEqual(result.quality_tier.tolist(), ['poor'])
 
+    def test_rr_jump_rejects_window_without_overwriting_sensor_values(self):
+        mod = self.module()
+        frame = self.frame(hrv_reason='rr_local_median_jump')
+        result = mod.apply_policy(frame, self.config)
+        self.assertEqual(result.quality_tier.tolist(), ['poor'])
+        self.assertFalse(result.curation_selected.any())
+        pd.testing.assert_frame_equal(result[CORE], frame[CORE])
+        self.assertIn('rr_local_median_jump', result.iloc[0].acceptable_failed_criteria)
+
+    def test_pre_model_audit_separates_session_variation_from_class_variation(self):
+        mod = self.module()
+        frame = pd.concat([self.frame()]*4, ignore_index=True)
+        frame['session_id'] = ['a', 'a', 'b', 'b']
+        frame['cognitive_load_label'] = ['Low', 'High', 'Low', 'High']
+        frame['rmssd_ms'] = [1., 1., 3., 3.]
+        frame['study_phase'] = 'active_task'
+        frame['curation_selected'] = True
+        audit = mod.pre_model_audit(frame)
+        self.assertEqual(audit['missing_core_values'], 0)
+        self.assertEqual(audit['infinite_core_values'], 0)
+        self.assertEqual(audit['variation']['rmssd_ms'], {'session': 1., 'label': 0.})
+        self.assertEqual(audit['low_active_windows'], 2)
+        self.assertEqual(audit['low_windows'], 2)
+
     def test_baseline_hrv_ratio_not_required_and_negative_iris_delta_valid(self):
         mod = self.module()
         frame = self.frame(baseline_usable=False, rmssd_baseline_ratio=np.nan, iris_size_delta_mean=-.03)

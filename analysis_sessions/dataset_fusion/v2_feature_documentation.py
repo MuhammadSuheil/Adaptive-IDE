@@ -31,7 +31,9 @@ def output_index(archive_csv, counts):
               '| Gaze | Pengukuran historis | Kosong di curated bila tidak lolos validasi dan kualitas window |', '',
               ('V2 memakai kebijakan feature_aware_quality_v1. good_only berisi core good; good_acceptable berisi core good/acceptable. '
               'all_data menyimpan pengukuran berlabel untuk audit, termasuk core poor dan gaze yang tidak layak. '
-              'quality_tier sekarang menyatakan kualitas inti, bukan akurasi gaze.'), '',
+              'quality_tier sekarang menyatakan kualitas inti, bukan akurasi gaze. Window dengan lonjakan RR lokal '
+              'dikeluarkan dari curated tanpa mengganti nilai sensor; bukti dan aturan exclude_local_rr_jump_v1 '
+              'tersimpan pada manifest dan laporan v2.'), '',
               ('Baca [QUALITY_REPORT v2](v2_session_phase/QUALITY_REPORT.md) dan '
               '[kondisi dataset](v2_session_phase/DATASET_CONDITION_REPORT.md) untuk aturan, profil, serta jumlah yang dapat dipakai.'), '',
               '## Pemodelan', '',
@@ -44,7 +46,8 @@ def output_index(archive_csv, counts):
     return '\n'.join(lines)
 
 
-def write_reports(destination, results, counts, profile_counts, checks, update, config, previous_policy, operator_guide):
+def write_reports(destination, results, counts, profile_counts, checks, update, config, previous_policy, operator_guide,
+                  rr_registry=None, pre_model_audit=None):
     lines = ['# Dataset fusion v2 berdasarkan kelayakan fitur', '',
              f'Kebijakan aktif: `{features.POLICY}`. Kebijakan sebelum build ini: `{previous_policy}`.', '',
              '## Data dan target', '',
@@ -103,6 +106,10 @@ def write_reports(destination, results, counts, profile_counts, checks, update, 
               ('Baca features/profiles pada feature_columns.json, bukan semua kolom numerik. Metadata identitas, fase, difficulty, waktu, '
               'dan kualitas tidak menjadi predictor. Normalisasi antarsesi, pembagian Train/validation/test, seleksi model, '
               'dan regularisasi tetap pekerjaan pemodelan. Notebook dan hasil historis tidak diperbarui otomatis oleh perubahan CSV.'), '']
+    if rr_registry:
+        lines += rr_quality_section(rr_registry)
+    if pre_model_audit:
+        lines += pre_model_section(pre_model_audit)
     lines += update_sections(update)
     (destination/'QUALITY_REPORT.md').write_text('\n'.join(lines).rstrip()+'\n', encoding='utf-8')
     condition = ['# Kondisi dataset berdasarkan kelayakan fitur', '',
@@ -139,4 +146,70 @@ def write_reports(destination, results, counts, profile_counts, checks, update, 
                   'Periksa jumlah kelas, kontribusi sumber, dan profil spasial setelah build sebelum memulai eksperimen.'), '']
     if operator_guide:
         condition += [operator_guide]
+    if rr_registry:
+        condition += rr_quality_section(rr_registry)
+    if pre_model_audit:
+        condition += pre_model_section(pre_model_audit)
     (destination/'DATASET_CONDITION_REPORT.md').write_text('\n'.join(condition).rstrip()+'\n', encoding='utf-8')
+
+
+def rr_quality_section(registry):
+    lines = ['', '## Pemeriksaan lonjakan RR sebelum pemodelan', '',
+             ('Kebijakan exclude_local_rr_jump_v1 mengeluarkan window curated yang memuat RR diterima '
+              'dengan deviasi lebih dari 250 ms terhadap median referensi RRPreprocessor. Riwayat normal memakai '
+              'maksimum 11 RR dan minimum 5; setelah gap, referensi mengikuti kelompok recovery pada waktu rilis. '
+              'Hanya beat dalam (start, end] yang sudah tersedia pada endpoint yang diperhitungkan.'), '',
+             ('Aturan ini menandai ketidakpastian lokal, bukan diagnosis bahwa setiap kandidat pasti artefak. '
+              'Seluruh rekaman diperiksa dengan aturan yang sama tanpa membaca label atau skor model. '
+              'Nilai RR, RMSSD, SDNN, fitur eye, dan label tidak diganti. Window terdampak tetap di all_data, '
+              'dengan quality_tier poor dan alasan rr_local_median_jump pada metadata yang sudah ada. '
+              'Tidak ada kolom flag baru, interpolasi, winsorization, atau aktivasi filter live.'), '',
+             '| Window | Window terdampak di all_data | Core layak yang dikeluarkan | Low | Medium | High |',
+             '|---|---:|---:|---:|---:|---:|']
+    for key, value in registry['windows'].items():
+        c = value['excluded_by_class']
+        lines.append(f'| {key} | {value["all_data_affected"]} | {value["core_eligible_excluded"]} | '
+                     f'{c["Low"]} | {c["Medium"]} | {c["High"]} |')
+    lines += ['', '| Rekaman | RR task | RR diterima pemeriksaan dasar | Kandidat lonjakan |',
+              '|---|---:|---:|---:|']
+    for audit in registry['sessions'].values():
+        lines.append(f'| {audit["session_folder"]} | {audit["task_rr_count"]} | {audit["accepted_rr_count"]} | '
+                     f'{len(audit["candidates"])} |')
+    lines += ['', ('manifest.json menyimpan konfigurasi, raw_id, waktu beat/ketersediaan, median referensi, '
+              'serta hash rr_raw.csv untuk audit. Pemeriksaan independen saat publikasi mencocokkan penanda '
+              'window, alasan kualitas, jumlah yang dikeluarkan, dan proyeksi CSV tersaring. '
+              'Rasio baseline historis tetap informasi audit dan bukan input core. '
+              'Normalisasi antarsesi serta pembagian Train/validation/test tidak dilakukan di CSV.'), '']
+    return lines
+
+
+def pre_model_section(audits):
+    lines = ['', '## Pemeriksaan dataset sebelum pemodelan', '',
+             '| Window | Missing core | Infinity core | ID window duplikat | Vektor core duplikat | Fitur core konstan | Rasio baseline tidak tersedia |',
+             '|---|---:|---:|---:|---:|---|---:|']
+    for key, audit in audits.items():
+        constant = ', '.join(audit['constant_core_features']) or 'tidak ada'
+        lines.append(f'| {key} | {audit["missing_core_values"]} | {audit["infinite_core_values"]} | '
+                     f'{audit["duplicate_window_ids"]} | {audit["duplicate_core_vectors"]} | {constant} | '
+                     f'{audit["missing_optional_baseline_ratio"]} |')
+    lines += ['', ('Fitur inti tidak diimputasi. Ketidaktersediaan rasio baseline tidak diganti dengan nol dan '
+              'tidak menggugurkan core; rasio itu bukan predictor default. Vektor sama atau korelasi tinggi tidak otomatis '
+              'membuktikan duplikasi akuisisi. Duplikasi sumber dan ID interval diperiksa terpisah.'), '',
+              '| Window | Low active_task | Seluruh Low | Persentase Low active_task |', '|---|---:|---:|---:|']
+    for key, audit in audits.items():
+        percent = 100*audit['low_active_windows']/audit['low_windows'] if audit['low_windows'] else 0
+        lines.append(f'| {key} | {audit["low_active_windows"]} | {audit["low_windows"]} | {percent:.2f}% |')
+    lines += ['', ('Label fase tetap mengikuti protokol v2. Komposisi ini perlu dipertimbangkan saat menyusun '
+              'development dan evaluasi; dataset tidak diseimbangkan dengan mengganti label atau membuang fase yang sah.'), '',
+              '| Window | Fitur | Variasi antar-rerata sesi / total | Variasi antar-rerata kelas / total |',
+              '|---|---|---:|---:|']
+    for key, audit in audits.items():
+        for name, variation in audit['variation'].items():
+            session = f'{100*variation["session"]:.2f}%' if variation['session'] is not None else 'tidak terdefinisi'
+            label = f'{100*variation["label"]:.2f}%' if variation['label'] is not None else 'tidak terdefinisi'
+            lines.append(f'| {key} | {name} | {session} | {label} |')
+    lines += ['', ('Rasio variasi adalah eta-squared deskriptif satu faktor. Kedua kolom tidak dijumlahkan dan '
+              'tidak membuktikan penyebab biologis, kerusakan sensor, atau ketiadaan informasi nonlinear. '
+              'Level dasar antarsesi tidak dikoreksi menggunakan seluruh CSV. Statistik preprocessing harus '
+              'berasal dari Train atau baseline yang tersedia sebelum prediksi. Identitas tetap metadata, bukan predictor.'), '']
+    return lines

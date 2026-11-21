@@ -20,6 +20,7 @@ from . import build_dataset as shared
 from . import v2_features as sensor_features
 from . import v2_history as history
 from . import v2_replacement as replacement
+from . import v2_rr_quality as rr_quality
 from . import v2_timestamps as timing
 
 WINDOWS = (15, 25, 45)
@@ -175,6 +176,9 @@ def verify_bundle(directory):
             for audit in validation_checks.values():
                 _require(audit == sensor_features.audit_validation(audit['source']), 'Source validation audit mismatch.')
             _require(manifest['feature_columns'] == sensor_features.CORE, 'Manifest feature contract mismatch.')
+            if 'rr_quality_control' in manifest:
+                _require(set(manifest['rr_quality_control']['sessions']) == set(manifest['selected_session_ids']),
+                         'Missing RR quality source audit.')
         context, pairs = None, []
         if policy in history.POLICIES:
             context = json.loads((directory/'replacement_selection.json').read_text(encoding='utf-8'))
@@ -183,6 +187,14 @@ def verify_bundle(directory):
             root = directory/f'window_{length}s_step_5s'
             frame = pd.read_csv(root/'all_data.csv')
             validate_frame(frame, manifest['quality_configuration'], length, policy=policy)
+            if 'rr_quality_control' in manifest:
+                rr_quality.verify_frame(frame, manifest['rr_quality_control'], manifest['source_sha256'])
+                declared = manifest['rr_quality_control']['windows'][root.name]
+                expected_rr = rr_quality.window_summary(frame, manifest['quality_configuration'])
+                _require(declared == expected_rr, 'RR quality exclusion count mismatch.')
+            if 'pre_model_audit' in manifest:
+                _require(manifest['pre_model_audit'][root.name] == sensor_features.pre_model_audit(frame),
+                         'Pre-model audit mismatch.')
             if policy == sensor_features.POLICY:
                 for session, timestamp_policy in manifest.get('timestamp_policies', {}).items():
                     timing.validate_policy(timestamp_policy)
