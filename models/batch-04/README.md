@@ -103,6 +103,14 @@ Output dibuat otomatis di `models/batch-04/outputs/<exp>/<run_id>/` pada Drive.
 
 `progress.json` diperbarui pada batas pekerjaan, bukan setiap epoch. Neural mencetak epoch 1 dan setiap 20 epoch. Waktu tanpa perubahan status selama satu fitting bukan otomatis proses macet.
 
+### Pemantauan exp02
+
+Exp02 mencetak awal/akhir fold, keluarga model, kernel/C SVM, repeat, trial, dan jumlah baris fitting. Pesan `elapsed` muncul setiap 30 detik selama fitting; ini penanda proses masih menunggu hasil, bukan persentase penyelesaian solver. `runtime_summary.csv` merangkum durasi preprocessing, fitting, prediksi, dan checkpoint serta status konvergensi. File diperbarui setelah pencarian satu window dan sebelum eksperimen dinyatakan selesai; rincian fold tersedia lebih awal pada checkpoint.
+
+Riwayat dan matriks fitur yang tidak bergantung fitting disimpan dalam cache RAM terbatas 128 MiB per DataFrame. Scaler, acuan sesi, MI, dan PCA tetap dihitung dari fitting fold masing-masing. Checkpoint lengkap yang sudah tersinkron dibaca dari disk lokal; Drive tetap menerima hasil setiap fold/trial dan diverifikasi kembali sebelum status akhir `complete`. Jangan mengedit checkpoint dari luar selama run berjalan.
+
+Untuk exp02 versi optimasi ini, mulai dengan `RESUME_DIR = None`. Run versi sebelumnya tetap disimpan, tetapi tidak kompatibel untuk resume. Setelah run baru dimulai, mekanisme resume di bawah tetap berlaku. Exp01, exp03, dan exp04 tidak perlu dijalankan ulang. Jumlah trial/fold, model, seed, dan ruang parameter exp02 tidak dikurangi. SVM tetap tanpa batas iterasi otomatis sehingga kandidat tertentu masih dapat memerlukan waktu lama.
+
 ## Resume setelah runtime terputus
 
 Salin path `Run:` dari eksekusi sebelumnya, misalnya:
