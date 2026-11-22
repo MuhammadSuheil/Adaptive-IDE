@@ -1,0 +1,11 @@
+{
+  "pages": 13,
+  "tables": 11,
+  "figures": 2,
+  "finalist_rows_verified": 21,
+  "source_files_unchanged": 30,
+  "visual_review": "all 13 native Microsoft Word page images inspected",
+  "docx_sha256": "1e7aa9331fd64a47ae583ac8c39bdc87f7ee5c3fe54e8d1fe6256566f1e9577e",
+  "renderer": "Microsoft Word page EMF rasterization; LibreOffice unavailable; direct PDF export blocked",
+  "dataset_or_model_changes": false
+}

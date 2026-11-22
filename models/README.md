@@ -1,5 +1,9 @@
 # Model Cognitive Load
 
+## Batch-05: persiapan evaluasi
+
+[Panduan batch-05](batch-05/README.md) dan [rencana tiga tahap](batch-05/PLAN.md) mencakup persiapan, kontrol tabular, dan neural terarah. Notebook tahap 3 memakai snapshot split/monitor, membandingkan aturan checkpoint dan kontrol fitting pada window 25 detik, lalu mengevaluasi satu model terkunci pada Test referensi. Run all tidak mengulang training tahap 2. [Ringkasan hasil](batch-05/SUMMARY.md) memuat hasil yang sudah selesai.
+
 ## Mulai batch-04 di Google Colab
 
 [Panduan batch-04](batch-04/README.md) menyiapkan empat notebook mandiri: exp01 untuk tabular/representasi fitur, exp02 untuk acuan dan riwayat statistik, exp03 untuk deep learning tabular, serta exp04 untuk GRU/TCN kausal. Masing-masing membaca tiga CSV good_acceptable v2 terbaru setelah audit RR, memakai evaluasi internal Train–validation–test, dan menyimpan model yang identik dengan model terpilih pada validation. Tidak menggunakan LOPO.

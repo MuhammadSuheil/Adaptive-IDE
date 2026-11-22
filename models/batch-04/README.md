@@ -1,11 +1,17 @@
 # Batch 4: Optimasi Model Cognitive Load
 
+## Hasil yang tersedia
+
+[SUMMARY.md](SUMMARY.md) merangkum hasil lengkap exp01, exp03, dan exp04. [DIAGNOSIS.md](DIAGNOSIS.md) membahas penyebab hasil rendah dan pemeriksaan berikutnya, dengan [audit numerik](diagnostic_checks.json) sebagai pendamping. Exp02 tidak mempunyai hasil lengkap dan tidak masuk kesimpulan performa. Folder notebook exp02 tidak tersedia dalam snapshot lokal saat rekap 22 November 2026.
+
+## Rancangan dan panduan pelaksanaan
+
 Empat notebook membandingkan representasi sensor, acuan relatif, deep learning tabular, dan model temporal. Semua menggunakan tiga dataset `good_acceptable` terbaru serta pembagian data yang sama. Setiap notebook mencakup training sampai evaluasi test dan penyimpanan model.
 
 | Notebook | Fokus | Runtime disarankan |
 |---|---|---|
 | [exp01](exp01/EyeHeartCognitiveLoad.ipynb) | Model tabular, fitur turunan, seleksi fitur, balancing, ordinal/hierarchy, dan ensemble | CPU |
-| [exp02](exp02/EyeHeartCognitiveLoad.ipynb) | Normalisasi, acuan sensor, dan ringkasan riwayat | CPU |
+| Exp02, belum selesai dan tidak direkap | Normalisasi, acuan sensor, dan ringkasan riwayat | CPU |
 | [exp03](exp03/EyeHeartCognitiveLoad.ipynb) | MLP, residual MLP, TabM, dan Transformer tabular | GPU T4 atau lebih tinggi |
 | [exp04](exp04/EyeHeartCognitiveLoad.ipynb) | GRU dan TCN kausal, dengan pembanding satu-window dan ringkasan riwayat | GPU T4 atau lebih tinggi |
 
