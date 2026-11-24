@@ -1,0 +1,26 @@
+{
+  "target_per_class": 1149,
+  "classes": {
+    "Low": {
+      "base_available": 241,
+      "optional_available": 1047,
+      "base_selected": 241,
+      "optional_selected": 908,
+      "quality_eligible_not_selected": 139
+    },
+    "Medium": {
+      "base_available": 966,
+      "optional_available": 1528,
+      "base_selected": 966,
+      "optional_selected": 183,
+      "quality_eligible_not_selected": 1345
+    },
+    "High": {
+      "base_available": 1149,
+      "optional_available": 1354,
+      "base_selected": 1149,
+      "optional_selected": 0,
+      "quality_eligible_not_selected": 1354
+    }
+  }
+}

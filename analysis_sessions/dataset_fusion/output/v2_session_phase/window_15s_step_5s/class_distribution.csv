@@ -1,10 +1,10 @@
 dataset,label,windows,participants,unique_seconds
-good_only,Low,974,19,6400.0
+good_only,Low,820,18,5130.0
 good_only,Medium,1207,19,8365.0
 good_only,High,1180,17,8080.0
-good_acceptable,Low,1687,21,10255.0
-good_acceptable,Medium,1763,22,10950.0
-good_acceptable,High,1803,18,10945.0
-all_data,Low,2389,22,13175.0
-all_data,Medium,2153,22,12895.0
-all_data,High,2138,18,12340.0
+good_acceptable,Low,1433,20,8195.0
+good_acceptable,Medium,1433,22,9960.0
+good_acceptable,High,1433,18,10075.0
+all_data,Low,1897,21,9825.0
+all_data,Medium,3199,22,16235.0
+all_data,High,3136,18,15870.0

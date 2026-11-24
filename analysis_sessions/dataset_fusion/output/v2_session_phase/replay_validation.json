@@ -92,15 +92,15 @@
         "windows": {
           "15": {
             "affected": 7,
-            "additional_excluded": 2
+            "additional_excluded": 7
           },
           "25": {
             "affected": 11,
-            "additional_excluded": 1
+            "additional_excluded": 11
           },
           "45": {
             "affected": 19,
-            "additional_excluded": 0
+            "additional_excluded": 19
           }
         }
       },

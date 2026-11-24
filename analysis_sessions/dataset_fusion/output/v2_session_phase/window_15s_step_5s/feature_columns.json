@@ -28,7 +28,7 @@
         "iris_size_estimate_std",
         "iris_size_delta_mean"
       ],
-      "row_rule": "all_core_eligible_rows"
+      "row_rule": "curation_selected_and_all_core_eligible_rows"
     },
     "core_head": {
       "features": [
@@ -47,7 +47,7 @@
         "head_yaw_mean",
         "head_yaw_std"
       ],
-      "row_rule": "complete_finite_head_pose"
+      "row_rule": "curation_selected_and_complete_finite_head_pose"
     },
     "validated_fusion": {
       "features": [
@@ -74,7 +74,7 @@
         "eye_state_transition_ratio",
         "eye_state_unclassified_ratio"
       ],
-      "row_rule": "complete_features_and_source_verified_validation_and_gaze_window_quality"
+      "row_rule": "curation_selected_and_complete_features_and_source_verified_validation_and_gaze_window_quality"
     }
   },
   "validated_fusion_filter": {
@@ -111,5 +111,6 @@
     "iris_size_delta_std",
     "eye_state_other_ratio"
   ],
-  "missing_value_policy": "No imputation; curated spatial columns are missing unless spatial validation and window quality pass."
+  "missing_value_policy": "No imputation; curated spatial columns are missing unless spatial validation and window quality pass.",
+  "curation_policy": "balanced_primary_v1"
 }

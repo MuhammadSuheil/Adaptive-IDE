@@ -4,9 +4,9 @@ Dataset utama sudah disaring untuk 10 fitur core. Kualitas posisi gaze diperiksa
 
 | Window | Low | Medium | High | Rasio terbesar/terkecil | Gaze tidak layak pada curated |
 |---|---:|---:|---:|---:|---:|
-| 15s | 1687 | 1763 | 1803 | 1.069 | 4205 |
-| 25s | 1549 | 1487 | 1572 | 1.057 | 3699 |
-| 45s | 1394 | 966 | 1149 | 1.443 | 2797 |
+| 15s | 1433 | 1433 | 1433 | 1.000 | 3411 |
+| 25s | 1386 | 1386 | 1386 | 1.000 | 3300 |
+| 45s | 1149 | 1149 | 1149 | 1.000 | 2823 |
 
 ## Kelayakan kelompok fitur
 
@@ -42,7 +42,7 @@ Kegagalan gaze masih ada pada rekaman asal. Nilainya tidak dianggap telah diperb
 
 ## Distribusi sumber dan fase
 
-class_distribution.csv memuat jumlah dan durasi unik per kelas. counts_by_session_label_phase_tier.csv memuat distribusi setiap rekaman/fase. Rating, feedback, dan rest yang diberi Low tetap mengikuti protokol v2; fase tidak dimasukkan sebagai predictor. Window overlap tidak dihitung sebagai pengamatan independen.
+class_distribution.csv memuat jumlah dan durasi unik per kelas. counts_by_session_label_phase_tier.csv memuat distribusi setiap rekaman/fase. Feedback, rating, rest, dan post-task mengikuti difficulty tugas yang ditelusuri dari event; fase tidak dimasukkan sebagai predictor. Window overlap tidak dihitung sebagai pengamatan independen.
 
 ## Pembaruan berikutnya
 
@@ -135,6 +135,8 @@ Pantauan live tersebut memakai window default 25 detik. Setelah sesi selesai, bu
 Sesi `bangsur_easy_only` tidak mempunyai ledger karena operator belum menghubungkan CodeArrange. Tim mempertahankan sumbernya tetapi mengecualikannya dari dataset supervised; tidak ada label Low pengganti.
 
 
+
+
 ## Pemeriksaan lonjakan RR sebelum pemodelan
 
 Kebijakan exclude_local_rr_jump_v1 mengeluarkan window curated yang memuat RR diterima dengan deviasi lebih dari 250 ms terhadap median referensi RRPreprocessor. Riwayat normal memakai maksimum 11 RR dan minimum 5; setelah gap, referensi mengikuti kelompok recovery pada waktu rilis. Hanya beat dalam (start, end] yang sudah tersedia pada endpoint yang diperhitungkan.
@@ -143,9 +145,9 @@ Aturan ini menandai ketidakpastian lokal, bukan diagnosis bahwa setiap kandidat 
 
 | Window | Window terdampak di all_data | Core layak yang dikeluarkan | Low | Medium | High |
 |---|---:|---:|---:|---:|---:|
-| window_15s_step_5s | 52 | 27 | 13 | 5 | 9 |
-| window_25s_step_5s | 65 | 40 | 22 | 9 | 9 |
-| window_45s_step_5s | 79 | 64 | 41 | 14 | 9 |
+| window_15s_step_5s | 69 | 43 | 11 | 9 | 23 |
+| window_25s_step_5s | 113 | 75 | 16 | 23 | 36 |
+| window_45s_step_5s | 184 | 147 | 30 | 43 | 74 |
 
 | Rekaman | RR task | RR diterima pemeriksaan dasar | Kandidat lonjakan |
 |---|---:|---:|---:|
@@ -180,30 +182,120 @@ manifest.json menyimpan konfigurasi, raw_id, waktu beat/ketersediaan, median ref
 
 | Window | Missing core | Infinity core | ID window duplikat | Vektor core duplikat | Fitur core konstan | Rasio baseline tidak tersedia |
 |---|---:|---:|---:|---:|---|---:|
-| window_15s_step_5s | 0 | 0 | 0 | 0 | tidak ada | 468 |
-| window_25s_step_5s | 0 | 0 | 0 | 0 | tidak ada | 410 |
-| window_45s_step_5s | 0 | 0 | 0 | 0 | tidak ada | 304 |
+| window_15s_step_5s | 0 | 0 | 0 | 0 | tidak ada | 412 |
+| window_25s_step_5s | 0 | 0 | 0 | 0 | tidak ada | 405 |
+| window_45s_step_5s | 0 | 0 | 0 | 0 | tidak ada | 253 |
 
 Fitur inti tidak diimputasi. Ketidaktersediaan rasio baseline tidak diganti dengan nol dan tidak menggugurkan core; rasio itu bukan predictor default. Vektor sama atau korelasi tinggi tidak otomatis membuktikan duplikasi akuisisi. Duplikasi sumber dan ID interval diperiksa terpisah.
 
 | Window | Low active_task | Seluruh Low | Persentase Low active_task |
 |---|---:|---:|---:|
-| window_15s_step_5s | 707 | 1687 | 41.91% |
-| window_25s_step_5s | 470 | 1549 | 30.34% |
-| window_45s_step_5s | 229 | 1394 | 16.43% |
+| window_15s_step_5s | 707 | 1433 | 49.34% |
+| window_25s_step_5s | 470 | 1386 | 33.91% |
+| window_45s_step_5s | 229 | 1149 | 19.93% |
 
-Label fase tetap mengikuti protokol v2. Komposisi ini perlu dipertimbangkan saat menyusun development dan evaluasi; dataset tidak diseimbangkan dengan mengganti label atau membuang fase yang sah.
+Label fase tetap mengikuti protokol v2. Komposisi ini perlu dipertimbangkan saat menyusun development dan evaluasi; penyeimbangan memilih baris layak tanpa mengganti labelnya; kandidat tidak terpilih tetap ada di all_data.
 
 | Window | Fitur | Variasi antar-rerata sesi / total | Variasi antar-rerata kelas / total |
 |---|---|---:|---:|
-| window_15s_step_5s | rmssd_ms | 67.89% | 0.07% |
-| window_15s_step_5s | ear_left_mean | 81.91% | 2.30% |
-| window_15s_step_5s | iris_size_estimate_mean | 86.66% | 0.38% |
-| window_25s_step_5s | rmssd_ms | 73.94% | 0.01% |
-| window_25s_step_5s | ear_left_mean | 85.71% | 2.41% |
-| window_25s_step_5s | iris_size_estimate_mean | 89.00% | 0.55% |
-| window_45s_step_5s | rmssd_ms | 78.99% | 0.12% |
-| window_45s_step_5s | ear_left_mean | 88.31% | 2.56% |
-| window_45s_step_5s | iris_size_estimate_mean | 91.56% | 1.27% |
+| window_15s_step_5s | rmssd_ms | 69.75% | 0.09% |
+| window_15s_step_5s | ear_left_mean | 85.39% | 2.71% |
+| window_15s_step_5s | iris_size_estimate_mean | 87.06% | 0.17% |
+| window_25s_step_5s | rmssd_ms | 76.05% | 0.05% |
+| window_25s_step_5s | ear_left_mean | 87.39% | 2.57% |
+| window_25s_step_5s | iris_size_estimate_mean | 89.24% | 0.53% |
+| window_45s_step_5s | rmssd_ms | 79.11% | 0.31% |
+| window_45s_step_5s | ear_left_mean | 89.32% | 1.68% |
+| window_45s_step_5s | iris_size_estimate_mean | 91.97% | 1.43% |
 
 Rasio variasi adalah eta-squared deskriptif satu faktor. Kedua kolom tidak dijumlahkan dan tidak membuktikan penyebab biologis, kerusakan sensor, atau ketiadaan informasi nonlinear. Level dasar antarsesi tidak dikoreksi menggunakan seluruh CSV. Statistik preprocessing harus berasal dari Train atau baseline yang tersedia sebelum prediksi. Identitas tetap metadata, bukan predictor.
+
+
+## Batas fase nonpengerjaan
+
+Rest/post-task hanya menjadi kandidat dalam 45 detik sejak active-task terakhir berhenti. Batas tidak dimulai ulang ketika feedback berubah menjadi rating, rest, atau post-task. Feedback/rating mengikuti durasi fase yang tercatat dan tidak dikenai batas khusus ini. Nilai 45 detik adalah batas operasional, bukan hasil pengukuran waktu pemulihan fisiologis. Window yang melewati batas dikeluarkan seluruhnya.
+
+window_phase_mix menyimpan konteks sumber, waktu awal set/soal, akhir pengerjaan, dan batas grace dalam label_context. manifest.json menyimpan ledger dan readiness yang dipakai untuk merekonstruksi ulang segmen. Tidak ada timestamp, event, atau nilai sensor mentah yang diubah.
+
+
+## Seleksi dataset utama
+
+Basis adalah window yang hanya memuat active-task dan/atau pre-task. Setiap window yang memuat feedback/rating/rest/post-task dihitung sebagai opsional, termasuk campurannya dengan pengerjaan. T = min(jumlah basis terbesar antarkelas, jumlah total kandidat layak terkecil antarkelas). Setiap kelas memilih basis dahulu, kemudian opsional hanya untuk mencapai T. Basis mayoritas dapat diseleksi sebagian. Jika suatu kelas tidak tersedia, build dihentikan, bukan melonggarkan kualitas.
+
+Seleksi mendahulukan tier good kemudian acceptable. Dalam setiap tier, kuota dibagi merata sesuai kapasitas antarpeserta lalu antarsesi, dengan sisa kuota berurutan leksikografis. Tiap rekaman diambil pada indeks tengah dari interval timestamp yang dibagi merata. Tidak ada pemilihan menurut skor model atau perubahan label.
+
+| Window | Kelas | Basis layak | Opsional layak | Basis dipilih | Opsional dipilih | Layak tidak dipilih |
+|---|---|---:|---:|---:|---:|---:|
+| 15s | Low | 747 | 686 | 747 | 686 | 0 |
+| 15s | Medium | 1763 | 774 | 1433 | 0 | 1104 |
+| 15s | High | 1803 | 744 | 1433 | 0 | 1114 |
+| 25s | Low | 498 | 888 | 498 | 888 | 0 |
+| 25s | Medium | 1487 | 1080 | 1386 | 0 | 1181 |
+| 25s | High | 1572 | 988 | 1386 | 0 | 1174 |
+| 45s | Low | 241 | 1047 | 241 | 908 | 139 |
+| 45s | Medium | 966 | 1528 | 966 | 183 | 1345 |
+| 45s | High | 1149 | 1354 | 1149 | 0 | 1354 |
+
+## Durasi unik dan fase terpilih
+
+| Window | Kelas | Baris | Durasi unik (menit) |
+|---|---|---:|---:|
+| 15s | Low | 1433 | 136.58 |
+| 15s | Medium | 1433 | 166.00 |
+| 15s | High | 1433 | 167.92 |
+| 25s | Low | 1386 | 138.92 |
+| 25s | Medium | 1386 | 179.33 |
+| 25s | High | 1386 | 175.25 |
+| 45s | Low | 1149 | 135.42 |
+| 45s | Medium | 1149 | 203.58 |
+| 45s | High | 1149 | 159.83 |
+
+Jumlah row yang sama bukan jumlah pengamatan independen atau durasi unik yang harus sama. Window tetap overlap. Rincian jumlah/durasi unik setiap versi ada di class_distribution.csv.
+
+| Window | Kelas | Fase window | Baris terpilih |
+|---|---|---|---:|
+| 15s | High | active_task | 1433 |
+| 15s | Low | active_task | 707 |
+| 15s | Low | feedback | 12 |
+| 15s | Low | mixed | 671 |
+| 15s | Low | pre_task | 40 |
+| 15s | Low | rest | 3 |
+| 15s | Medium | active_task | 1433 |
+| 25s | High | active_task | 1386 |
+| 25s | Low | active_task | 470 |
+| 25s | Low | feedback | 8 |
+| 25s | Low | mixed | 880 |
+| 25s | Low | pre_task | 28 |
+| 25s | Medium | active_task | 1386 |
+| 45s | High | active_task | 1149 |
+| 45s | Low | active_task | 229 |
+| 45s | Low | feedback | 2 |
+| 45s | Low | mixed | 906 |
+| 45s | Low | pre_task | 12 |
+| 45s | Medium | active_task | 966 |
+| 45s | Medium | mixed | 183 |
+
+## Window yang dikeluarkan
+
+| Window | Alasan utama | Baris |
+|---|---|---:|
+| 15s | ambiguous_eye_timestamp | 7 |
+| 15s | interrupted | 73 |
+| 15s | missing_task_context | 158 |
+| 15s | outside_optional_grace | 104 |
+| 25s | ambiguous_eye_timestamp | 11 |
+| 25s | interrupted | 73 |
+| 25s | missing_task_context | 247 |
+| 25s | outside_optional_grace | 118 |
+| 45s | ambiguous_eye_timestamp | 19 |
+| 45s | interrupted | 73 |
+| 45s | missing_task_context | 405 |
+| 45s | outside_optional_grace | 146 |
+
+excluded_windows.csv mencatat penolakan label/waktu dan timestamp ambigu. all_data menyimpan baris berlabel yang gagal kualitas atau tidak dipilih; curation_reason membedakan keduanya. curation_summary.json dan manifest menyimpan ringkasan seleksi. Riwayat label/seleksi sebelum migrasi disimpan ringkas di history. Hasil eksperimen lama tetap merujuk dataset lama dan tidak berubah.
+
+## Rebuild
+
+`python -m analysis_sessions.dataset_fusion.build_dataset_v2 --replace`
+
+Manifest aktif mewariskan kebijakan label dan seleksi ini. Rebuild menghitung ulang dari rekaman mentah, bukan concat CSV atau hanya mengganti label lama. Hash sumber dan bundle diperiksa sebelum publikasi; penggantian memakai staging dan rollback.

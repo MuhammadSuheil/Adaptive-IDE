@@ -51,8 +51,8 @@ cognitive_load_label,target,,Target Low/Medium/High according to phase/difficult
 window_label_mix,metadata,,"JSON target-duration map in seconds, including unresolved duration when present."
 baseline_recorder_ready,metadata,,"Baseline recorder reported ready, independently of builder coverage eligibility."
 baseline_rejection_reason,metadata,,Why the baseline ratio is unavailable; empty when eligible.
-curation_selected,metadata,,Selected by core quality; never a predictor.
-curation_reason,metadata,,Core selection or rejection reason; never a predictor.
+curation_selected,metadata,,Selected by core quality and balanced phase curation; never a predictor.
+curation_reason,metadata,,"Basis/optional selection, balance non-selection, or sensor-quality reason."
 rmssd_ms,feature,ms,Recomputed time-domain HRV; unavailable unless status is ready and both HRV measures are finite and nonnegative.
 sdnn_ms,feature,ms,Recomputed time-domain HRV; not a cognitive-state label.
 rmssd_baseline_ratio,optional_or_audit,ratio,Window RMSSD / positive ready baseline RMSSD with sufficient baseline coverage.
