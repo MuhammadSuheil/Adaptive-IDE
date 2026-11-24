@@ -1,0 +1,16 @@
+{
+  "experiment": "batch-06/exp01_v3_behavioral_proxy",
+  "generated_at_utc": "2026-11-24T10:27:44.447051+00:00",
+  "python": "3.10.11",
+  "device": "cpu",
+  "seed": 42,
+  "dataset_sha256": {
+    "window_15s_step_5s/good_acceptable.csv": "a00c6ca6a8767d44b9d69bee703fe3c1a420d8b45b73cad2771cf34405896840",
+    "participant_splits.csv": "fa2084be829d13045f9d7296a115fed8a92186e8fc8341e3a2a337b6389e7606",
+    "episode_labels.csv": "3eb6a872785429081ada463723875725a3c04d96972ae8d1a26a04520bb49358",
+    "window_15s_step_5s/window_assignments.csv": "42e5973f23dd63095abe316a47afadc8219dc0c5fef3fc5f21ccd2be198a57b1",
+    "window_15s_step_5s/train_sample_weights.csv": "719760b789c96fb0f8067bf8865e23f4a69110fea8af8b354eb4cadfa38e1b76"
+  },
+  "n_candidates": 60,
+  "locked_winner_id": "window|LogisticRegression|core9|causal_session_robust|class_balanced"
+}

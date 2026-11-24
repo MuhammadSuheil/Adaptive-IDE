@@ -1,0 +1,33 @@
+{
+  "experiment": "batch-06/exp02_v4_self_reported_rating",
+  "generated_at_utc": "2026-11-24T10:31:11.638912+00:00",
+  "python": "3.10.11",
+  "device": "cpu",
+  "seed": 42,
+  "dataset_sha256": {
+    "window_15s_step_5s/good_acceptable.csv": "6c2febb856e5986e2d9f76b64c0757b3476547bdcf42ccfcff1f02a3b69c2c79",
+    "window_15s_step_5s/window_assignments.csv": "aeb41a5a730548039fd40caf1bd040ecbd11099cffe209bb7d27e01159ad96be",
+    "episode_ratings.csv": "9f7ab8997fe84549e222c82f4ae0c968b07e13d53464da48444d383138aef686"
+  },
+  "dev_participants": [
+    "Andrean",
+    "Andreas",
+    "Fabian",
+    "Rafi",
+    "Ramadhan",
+    "Savitri",
+    "Siti",
+    "faqih",
+    "ikhsan",
+    "irfan",
+    "kaka",
+    "raina",
+    "sam"
+  ],
+  "test_participants": [
+    "Athaya",
+    "Baithar",
+    "Sullivan",
+    "Tio"
+  ]
+}
