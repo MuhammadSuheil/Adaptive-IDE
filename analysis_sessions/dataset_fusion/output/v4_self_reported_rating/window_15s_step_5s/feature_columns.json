@@ -1,0 +1,134 @@
+{
+  "policy": "feature_aware_quality_v1",
+  "target": "difficulty_rating",
+  "group": "participant_id",
+  "features": [
+    "rmssd_ms",
+    "sdnn_ms",
+    "blink_rate_per_minute",
+    "ear_left_mean",
+    "ear_left_std",
+    "ear_right_mean",
+    "ear_right_std",
+    "iris_size_estimate_mean",
+    "iris_size_estimate_std",
+    "iris_size_delta_mean"
+  ],
+  "profiles": {
+    "core": {
+      "features": [
+        "rmssd_ms",
+        "sdnn_ms",
+        "blink_rate_per_minute",
+        "ear_left_mean",
+        "ear_left_std",
+        "ear_right_mean",
+        "ear_right_std",
+        "iris_size_estimate_mean",
+        "iris_size_estimate_std",
+        "iris_size_delta_mean"
+      ],
+      "row_rule": "all_core_eligible_rows"
+    },
+    "core_head": {
+      "features": [
+        "rmssd_ms",
+        "sdnn_ms",
+        "blink_rate_per_minute",
+        "ear_left_mean",
+        "ear_left_std",
+        "ear_right_mean",
+        "ear_right_std",
+        "iris_size_estimate_mean",
+        "iris_size_estimate_std",
+        "iris_size_delta_mean",
+        "head_pitch_mean",
+        "head_pitch_std",
+        "head_yaw_mean",
+        "head_yaw_std"
+      ],
+      "row_rule": "complete_finite_head_pose"
+    },
+    "validated_fusion": {
+      "features": [
+        "rmssd_ms",
+        "sdnn_ms",
+        "blink_rate_per_minute",
+        "ear_left_mean",
+        "ear_left_std",
+        "ear_right_mean",
+        "ear_right_std",
+        "iris_size_estimate_mean",
+        "iris_size_estimate_std",
+        "iris_size_delta_mean",
+        "head_pitch_mean",
+        "head_pitch_std",
+        "head_yaw_mean",
+        "head_yaw_std",
+        "gaze_x_norm_mean",
+        "gaze_x_norm_std",
+        "gaze_y_norm_mean",
+        "gaze_y_norm_std",
+        "eye_state_fixation_ratio",
+        "eye_state_saccade_ratio",
+        "eye_state_transition_ratio",
+        "eye_state_unclassified_ratio"
+      ],
+      "row_rule": "complete_features_and_source_verified_validation_and_gaze_window_quality"
+    }
+  },
+  "validated_fusion_filter": {
+    "verified_session_ids": [
+      "20261030_141412_P01_coding_task",
+      "20261030_151950_P01_coding_task",
+      "20261117_143302_P01_coding_task",
+      "20261117_153818_P01_coding_task"
+    ],
+    "gaze_validation_passed": true,
+    "min_valid_gaze_ratio": 0.7,
+    "max_clipping_ratio_valid": 0.2
+  },
+  "core_quality_rules": {
+    "good": {
+      "min_eye_temporal_coverage": 0.95,
+      "min_face_ear_ratio": 0.95,
+      "min_iris_available_ratio": 0.9
+    },
+    "acceptable": {
+      "min_eye_temporal_coverage": 0.8,
+      "min_face_ear_ratio": 0.8,
+      "min_iris_available_ratio": 0.7
+    }
+  },
+  "hrv_rules": {
+    "min_coverage": 0.8,
+    "min_rr_pairs": 10,
+    "max_data_age_seconds": 3
+  },
+  "audit_only_features": [
+    "rmssd_baseline_ratio",
+    "blink_count",
+    "iris_size_delta_std",
+    "eye_state_other_ratio"
+  ],
+  "missing_value_policy": "No imputation; curated spatial columns are missing unless spatial validation and window quality pass.",
+  "dataset_version": 4,
+  "target_values": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "label_kind": "observed_participant_perceived_task_difficulty",
+  "label_policy": "observed_participant_difficulty_rating_v1",
+  "episode_mapping": "window_assignments.csv",
+  "episode_evidence": "../episode_ratings.csv",
+  "requires_fixed_participant_splits": false,
+  "evaluation_note": "Select splits in the modeling pipeline; keep participant and episode provenance and purge overlapping intervals."
+}

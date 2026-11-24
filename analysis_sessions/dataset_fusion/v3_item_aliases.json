@@ -1,0 +1,566 @@
+{
+  "version": "verified_easy_migration_v1",
+  "hash_format": "sha256_utf8_canonical_json_sorted_keys_compact",
+  "runtime_equivalence_verified": false,
+  "items": [
+    {
+      "puzzle_id": "simple_ifelse",
+      "title_key": "percabangan if-else sederhana",
+      "canonical_key": "sha256:ce1e177e5d346f48b670707e96d64c9a0180fc27d0976d596137a8dcc1655f33",
+      "content": {
+        "id": "simple_ifelse",
+        "title": "Percabangan If-Else Sederhana",
+        "type": "basics",
+        "mode": "arrange",
+        "description": "Periksa apakah nilai lebih besar dari atau sama dengan 50.",
+        "lines": [
+          {
+            "id": 1,
+            "code": "public class SimpleIfElse {"
+          },
+          {
+            "id": 2,
+            "code": "    public static void main(String[] args) {"
+          },
+          {
+            "id": 3,
+            "code": "        int score = 85;"
+          },
+          {
+            "id": 4,
+            "code": "        if (score >= 50) {"
+          },
+          {
+            "id": 5,
+            "code": "            System.out.println(\"Pass\");"
+          },
+          {
+            "id": 6,
+            "code": "        } else {"
+          },
+          {
+            "id": 7,
+            "code": "            System.out.println(\"Fail\");"
+          },
+          {
+            "id": 8,
+            "code": "        }"
+          },
+          {
+            "id": 9,
+            "code": "    }"
+          },
+          {
+            "id": 10,
+            "code": "}"
+          }
+        ],
+        "solutions": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        ]
+      },
+      "evidence": [
+        {
+          "commit": "03c11618e027cc6a4a241d31431f46aec2c50555",
+          "path": "codearrange-web/puzzles/easy-2/1_simple_ifelse.json",
+          "content_sha256": "ce1e177e5d346f48b670707e96d64c9a0180fc27d0976d596137a8dcc1655f33"
+        },
+        {
+          "commit": "c53ba3bcc2b145e68b968af4d9839fa331597579",
+          "path": "codearrange-web/puzzles/easy-1/08_simple_ifelse.json",
+          "content_sha256": "ce1e177e5d346f48b670707e96d64c9a0180fc27d0976d596137a8dcc1655f33"
+        }
+      ]
+    },
+    {
+      "puzzle_id": "string_concat",
+      "title_key": "penggabungan string",
+      "canonical_key": "sha256:dbdba753f7805b5fe70362e557dde184bb63d5809a8cd76f8e3cb8d64b1f5942",
+      "content": {
+        "id": "string_concat",
+        "title": "Penggabungan String",
+        "type": "basics",
+        "mode": "arrange",
+        "description": "Gabungkan beberapa String menjadi satu.",
+        "lines": [
+          {
+            "id": 1,
+            "code": "public class StringConcat {"
+          },
+          {
+            "id": 2,
+            "code": "    public static void main(String[] args) {"
+          },
+          {
+            "id": 3,
+            "code": "        String first = \"Java\";"
+          },
+          {
+            "id": 4,
+            "code": "        String second = \"Programming\";"
+          },
+          {
+            "id": 5,
+            "code": "        String result = first + \" \" + second;"
+          },
+          {
+            "id": 6,
+            "code": "        System.out.println(result);"
+          },
+          {
+            "id": 7,
+            "code": "    }"
+          },
+          {
+            "id": 8,
+            "code": "}"
+          }
+        ],
+        "solutions": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+          ],
+          [
+            1,
+            2,
+            4,
+            3,
+            5,
+            6,
+            7,
+            8
+          ]
+        ]
+      },
+      "evidence": [
+        {
+          "commit": "03c11618e027cc6a4a241d31431f46aec2c50555",
+          "path": "codearrange-web/puzzles/easy-2/2_string_concat.json",
+          "content_sha256": "dbdba753f7805b5fe70362e557dde184bb63d5809a8cd76f8e3cb8d64b1f5942"
+        },
+        {
+          "commit": "c53ba3bcc2b145e68b968af4d9839fa331597579",
+          "path": "codearrange-web/puzzles/easy-1/09_string_concat.json",
+          "content_sha256": "dbdba753f7805b5fe70362e557dde184bb63d5809a8cd76f8e3cb8d64b1f5942"
+        }
+      ]
+    },
+    {
+      "puzzle_id": "basic_while_loop",
+      "title_key": "mencetak bilangan terbalik",
+      "canonical_key": "sha256:19dc74d769013d7eedfbb77c53506350356b3a1eaa81d85febe96ffc75857f4b",
+      "content": {
+        "id": "basic_while_loop",
+        "title": "Mencetak Bilangan Terbalik",
+        "type": "loops",
+        "mode": "arrange",
+        "description": "Cetak bilangan 5 sampai 1.",
+        "lines": [
+          {
+            "id": 1,
+            "code": "public class BasicWhileLoop {"
+          },
+          {
+            "id": 2,
+            "code": "    public static void main(String[] args) {"
+          },
+          {
+            "id": 3,
+            "code": "        int count = 5;"
+          },
+          {
+            "id": 4,
+            "code": "        while (count > 0) {"
+          },
+          {
+            "id": 5,
+            "code": "            System.out.println(count);"
+          },
+          {
+            "id": 6,
+            "code": "            count--;"
+          },
+          {
+            "id": 7,
+            "code": "        }"
+          },
+          {
+            "id": 8,
+            "code": "    }"
+          },
+          {
+            "id": 9,
+            "code": "}"
+          }
+        ],
+        "solutions": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        ]
+      },
+      "evidence": [
+        {
+          "commit": "03c11618e027cc6a4a241d31431f46aec2c50555",
+          "path": "codearrange-web/puzzles/easy-2/3_basic_while_loop.json",
+          "content_sha256": "19dc74d769013d7eedfbb77c53506350356b3a1eaa81d85febe96ffc75857f4b"
+        },
+        {
+          "commit": "c53ba3bcc2b145e68b968af4d9839fa331597579",
+          "path": "codearrange-web/puzzles/easy-1/10_basic_while_loop.json",
+          "content_sha256": "19dc74d769013d7eedfbb77c53506350356b3a1eaa81d85febe96ffc75857f4b"
+        }
+      ]
+    },
+    {
+      "puzzle_id": "basic_for_loop",
+      "title_key": "mencetak bilangan",
+      "canonical_key": "sha256:45309a70ae650157c3becbe67f3ebf74e6b17879a995c8a896888c92e319bf7f",
+      "content": {
+        "id": "basic_for_loop",
+        "title": "Mencetak Bilangan",
+        "type": "basics",
+        "mode": "arrange",
+        "description": "Cetak bilangan 1 sampai 5.",
+        "lines": [
+          {
+            "id": 1,
+            "code": "public class BasicForLoop {"
+          },
+          {
+            "id": 2,
+            "code": "    public static void main(String[] args) {"
+          },
+          {
+            "id": 3,
+            "code": "        for (int i = 1; i <= 5; i++) {"
+          },
+          {
+            "id": 4,
+            "code": "            System.out.println(\"Count: \" + i);"
+          },
+          {
+            "id": 5,
+            "code": "        }"
+          },
+          {
+            "id": 6,
+            "code": "    }"
+          },
+          {
+            "id": 7,
+            "code": "}"
+          }
+        ],
+        "solutions": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        ]
+      },
+      "evidence": [
+        {
+          "commit": "03c11618e027cc6a4a241d31431f46aec2c50555",
+          "path": "codearrange-web/puzzles/easy-2/4_basic_for_loop.json",
+          "content_sha256": "45309a70ae650157c3becbe67f3ebf74e6b17879a995c8a896888c92e319bf7f"
+        },
+        {
+          "commit": "c53ba3bcc2b145e68b968af4d9839fa331597579",
+          "path": "codearrange-web/puzzles/easy-1/11_basic_for_loop.json",
+          "content_sha256": "45309a70ae650157c3becbe67f3ebf74e6b17879a995c8a896888c92e319bf7f"
+        }
+      ]
+    },
+    {
+      "puzzle_id": "array_sum",
+      "title_key": "penjumlahan array",
+      "canonical_key": "sha256:49c4fca3ec8e0121bba9bb07f17c548c47ea4003bf5124cbf611dc90f4781318",
+      "content": {
+        "id": "array_sum",
+        "title": "Penjumlahan Array",
+        "type": "loops",
+        "mode": "arrange",
+        "description": "Jumlahkan semua nilai dalam sebuah array.",
+        "lines": [
+          {
+            "id": 1,
+            "code": "public class ArraySum {"
+          },
+          {
+            "id": 2,
+            "code": "    public static void main(String[] args) {"
+          },
+          {
+            "id": 3,
+            "code": "        int[] nums = {2, 4, 6, 8};"
+          },
+          {
+            "id": 4,
+            "code": "        int sum = 0;"
+          },
+          {
+            "id": 5,
+            "code": "        for (int i = 0; i < nums.length; i++) {"
+          },
+          {
+            "id": 6,
+            "code": "            sum += nums[i];"
+          },
+          {
+            "id": 7,
+            "code": "        }"
+          },
+          {
+            "id": 8,
+            "code": "        System.out.println(\"Sum: \" + sum);"
+          },
+          {
+            "id": 9,
+            "code": "    }"
+          },
+          {
+            "id": 10,
+            "code": "}"
+          }
+        ],
+        "solutions": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          [
+            1,
+            2,
+            4,
+            3,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        ]
+      },
+      "evidence": [
+        {
+          "commit": "03c11618e027cc6a4a241d31431f46aec2c50555",
+          "path": "codearrange-web/puzzles/easy-2/5_array_sum.json",
+          "content_sha256": "49c4fca3ec8e0121bba9bb07f17c548c47ea4003bf5124cbf611dc90f4781318"
+        },
+        {
+          "commit": "c53ba3bcc2b145e68b968af4d9839fa331597579",
+          "path": "codearrange-web/puzzles/easy-1/12_array_sum.json",
+          "content_sha256": "49c4fca3ec8e0121bba9bb07f17c548c47ea4003bf5124cbf611dc90f4781318"
+        }
+      ]
+    },
+    {
+      "puzzle_id": "factorial_iterative",
+      "title_key": "faktorial iteratif",
+      "canonical_key": "sha256:eb23159707441534f9ca31cbbe1b26902c0b1fab9e4d2918756bc6c970ab7779",
+      "content": {
+        "id": "factorial_iterative",
+        "title": "Faktorial Iteratif",
+        "type": "loops",
+        "mode": "arrange",
+        "description": "Hitung nilai faktorial dari n menggunakan loop (tanpa rekursi).",
+        "lines": [
+          {
+            "id": 1,
+            "code": "public class FactorialIterative {"
+          },
+          {
+            "id": 2,
+            "code": "    public static void main(String[] args) {"
+          },
+          {
+            "id": 3,
+            "code": "        int n = 5;"
+          },
+          {
+            "id": 4,
+            "code": "        long fact = 1;"
+          },
+          {
+            "id": 5,
+            "code": "        for (int i = 1; i <= n; i++) {"
+          },
+          {
+            "id": 6,
+            "code": "            fact = fact * i;"
+          },
+          {
+            "id": 7,
+            "code": "        }"
+          },
+          {
+            "id": 8,
+            "code": "        System.out.println(\"Factorial: \" + fact);"
+          },
+          {
+            "id": 9,
+            "code": "    }"
+          },
+          {
+            "id": 10,
+            "code": "}"
+          }
+        ],
+        "solutions": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          [
+            1,
+            2,
+            4,
+            3,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ]
+        ]
+      },
+      "evidence": [
+        {
+          "commit": "03c11618e027cc6a4a241d31431f46aec2c50555",
+          "path": "codearrange-web/puzzles/easy-2/6_factorial_iterative.json",
+          "content_sha256": "eb23159707441534f9ca31cbbe1b26902c0b1fab9e4d2918756bc6c970ab7779"
+        },
+        {
+          "commit": "c53ba3bcc2b145e68b968af4d9839fa331597579",
+          "path": "codearrange-web/puzzles/easy-1/13_factorial_iterative.json",
+          "content_sha256": "eb23159707441534f9ca31cbbe1b26902c0b1fab9e4d2918756bc6c970ab7779"
+        }
+      ]
+    },
+    {
+      "puzzle_id": "array_copy_manual",
+      "title_key": "menyalin array secara manual",
+      "canonical_key": "sha256:c3f7b1fabe16ff588147a0383ae6820586f19b2308a0498e50fdb0ff36ac79a5",
+      "content": {
+        "id": "array_copy_manual",
+        "title": "Menyalin Array Secara Manual",
+        "type": "loops",
+        "mode": "arrange",
+        "description": "Salin elemen array ke array lain.",
+        "lines": [
+          {
+            "id": 1,
+            "code": "public class ArrayCopyManual {"
+          },
+          {
+            "id": 2,
+            "code": "    public static void main(String[] args) {"
+          },
+          {
+            "id": 3,
+            "code": "        int[] source = {1, 2, 3, 4, 5};"
+          },
+          {
+            "id": 4,
+            "code": "        int[] dest = new int[source.length];"
+          },
+          {
+            "id": 5,
+            "code": "        for (int i = 0; i < source.length; i++) {"
+          },
+          {
+            "id": 6,
+            "code": "            dest[i] = source[i];"
+          },
+          {
+            "id": 7,
+            "code": "        }"
+          },
+          {
+            "id": 8,
+            "code": "    }"
+          },
+          {
+            "id": 9,
+            "code": "}"
+          }
+        ],
+        "solutions": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]
+        ]
+      },
+      "evidence": [
+        {
+          "commit": "03c11618e027cc6a4a241d31431f46aec2c50555",
+          "path": "codearrange-web/puzzles/easy-2/7_array_copy_manual.json",
+          "content_sha256": "c3f7b1fabe16ff588147a0383ae6820586f19b2308a0498e50fdb0ff36ac79a5"
+        },
+        {
+          "commit": "c53ba3bcc2b145e68b968af4d9839fa331597579",
+          "path": "codearrange-web/puzzles/easy-1/07_array_copy_manual.json",
+          "content_sha256": "c3f7b1fabe16ff588147a0383ae6820586f19b2308a0498e50fdb0ff36ac79a5"
+        }
+      ]
+    }
+  ]
+}

@@ -6,7 +6,7 @@ from . import v2_features as features
 from .v2_documentation import update_sections
 
 
-def output_index(archive_csv, counts):
+def output_index(archive_csv, counts, *, label_policy=None):
     old = pd.read_csv(archive_csv)
     target = old.difficulty_level.map({'easy': 'Low', 'medium': 'Medium', 'hard': 'High'})
     lines = ['# Pilihan Dataset Cognitive Load', '',
@@ -43,11 +43,27 @@ def output_index(archive_csv, counts):
               ('Statistik normalisasi, seleksi fitur yang dipelajari, imputasi bila diperlukan pada eksperimen lain, dan resampling '
               'dikerjakan pada Train, bukan pada seluruh CSV. Window overlap bukan observasi independen. '
               'Model, notebook, dan laporan historis tetap merujuk hash dataset saat eksperimen tersebut dijalankan.'), '']
+    if label_policy:
+        lines = [line.replace('Easy/practice/demo serta fase sesi Low yang terlacak',
+                    'Active easy/practice/demo dan pre-task; fase opsional mengikuti tugas easy')
+                 .replace('Tetap active medium dan hard', 'Active medium/hard serta fase opsional dengan konteks difficulty yang sama')
+                 .replace('good_only berisi core good; good_acceptable berisi core good/acceptable.',
+                    'good_acceptable diseleksi seimbang menurut balanced_primary_v1; good_only adalah subset good dari baris terpilih.')
+                 for line in lines]
+        lines += ['', '## Kebijakan fase dan seleksi', '',
+                  'Label memakai session_phase_context_v3. Feedback/rating mengikuti tugas terkait; rest/post-task mengikuti '
+                  'tugas terakhir dan hanya menjadi kandidat hingga 45 detik sejak pengerjaan berhenti. Peralihan fase tidak '
+                  'mengulang batas tersebut. Interrupted, kalibrasi, konteks tidak terlacak, dan window lintas label dikeluarkan.', '',
+                  'Active-task/pre-task didahulukan; fase opsional dipakai hanya untuk melengkapi kelas yang kurang. '
+                  'Seleksi dilakukan terpisah per panjang window. Baris mayoritas yang tidak dipilih tetap tersimpan di all_data. '
+                  'all_data tidak dipaksa seimbang; good_only tidak diseimbangkan ulang. Jangan menumpuk ketiga panjang window.', '',
+                  'Rebuild: `python -m analysis_sessions.dataset_fusion.build_dataset_v2 --replace`. '
+                  'Kebijakan label, kualitas, dan seleksi diwarisi dari manifest aktif.', '']
     return '\n'.join(lines)
 
 
 def write_reports(destination, results, counts, profile_counts, checks, update, config, previous_policy, operator_guide,
-                  rr_registry=None, pre_model_audit=None):
+                  rr_registry=None, pre_model_audit=None, label_policy=None, curation_summary=None):
     lines = ['# Dataset fusion v2 berdasarkan kelayakan fitur', '',
              f'Kebijakan aktif: `{features.POLICY}`. Kebijakan sebelum build ini: `{previous_policy}`.', '',
              '## Data dan target', '',
@@ -111,6 +127,9 @@ def write_reports(destination, results, counts, profile_counts, checks, update, 
     if pre_model_audit:
         lines += pre_model_section(pre_model_audit)
     lines += update_sections(update)
+    if label_policy:
+        lines = phase_report_text(lines)
+        lines += selection_section(results, curation_summary, counts)
     (destination/'QUALITY_REPORT.md').write_text('\n'.join(lines).rstrip()+'\n', encoding='utf-8')
     condition = ['# Kondisi dataset berdasarkan kelayakan fitur', '',
                  ('Dataset utama sudah disaring untuk 10 fitur core. Kualitas posisi gaze diperiksa terpisah; '
@@ -150,7 +169,92 @@ def write_reports(destination, results, counts, profile_counts, checks, update, 
         condition += rr_quality_section(rr_registry)
     if pre_model_audit:
         condition += pre_model_section(pre_model_audit)
+    if label_policy:
+        condition = phase_report_text(condition)
+        condition += selection_section(results, curation_summary, counts)
     (destination/'DATASET_CONDITION_REPORT.md').write_text('\n'.join(condition).rstrip()+'\n', encoding='utf-8')
+
+
+def phase_report_text(lines):
+    """Keep historical report generation intact; replace the active protocol prose."""
+    result = []
+    for line in lines:
+        if line.startswith('Target tetap cognitive_load_label.'):
+            line = ('Target adalah cognitive_load_label menurut session_phase_context_v3. Active easy/practice/demo dan pre-task '
+                    'setelah kalibrasi diberi Low; active medium diberi Medium dan active hard diberi High. Feedback/rating '
+                    'mengikuti difficulty tugas terkait. Rest dan post-task mengikuti difficulty tugas terakhir, bukan otomatis Low '
+                    'atau otomatis High. Fase-fase tersebut menjadi kandidat opsional, bukan otomatis masuk dataset utama. '
+                    'Interrupted, baseline/kalibrasi, dan konteks yang tidak dapat ditelusuri dikeluarkan. Seluruh bagian window '
+                    'harus mempunyai satu target; medium + rating medium boleh masuk, tetapi easy + rating medium tidak.')
+        elif line.startswith('Semua window yang lolos aturan inti dipertahankan.'):
+            line = ('Kelayakan sensor tetap feature_aware_quality_v1. Seleksi dataset utama memakai balanced_primary_v1: '
+                    'all_data menyimpan seluruh kandidat berlabel termasuk poor dan kandidat tidak terpilih; good_acceptable '
+                    'menyimpan good/acceptable yang terpilih dengan jumlah kelas sama; good_only merupakan subset good '
+                    'dari good_acceptable dan tidak diseimbangkan ulang. Tidak ada pembatasan berdasarkan daftar nama.')
+        line = line.replace('Nilai sensor dan target interval lama diperbandingkan saat migrasi.',
+                            'Nilai sensor interval yang sama diperbandingkan saat migrasi; perubahan label dicatat terpisah.')
+        line = line.replace('Rating, feedback, dan rest yang diberi Low tetap mengikuti protokol v2;',
+                            'Feedback, rating, rest, dan post-task mengikuti difficulty tugas yang ditelusuri dari event;')
+        line = line.replace('dataset tidak diseimbangkan dengan mengganti label atau membuang fase yang sah.',
+                            'penyeimbangan memilih baris layak tanpa mengganti labelnya; kandidat tidak terpilih tetap ada di all_data.')
+        result.append(line)
+    result += ['', '## Batas fase nonpengerjaan', '',
+               'Rest/post-task hanya menjadi kandidat dalam 45 detik sejak active-task terakhir berhenti. Batas tidak dimulai '
+               'ulang ketika feedback berubah menjadi rating, rest, atau post-task. Feedback/rating mengikuti durasi fase '
+               'yang tercatat dan tidak dikenai batas khusus ini. Nilai 45 detik adalah batas operasional, bukan hasil '
+               'pengukuran waktu pemulihan fisiologis. Window yang melewati batas dikeluarkan seluruhnya.', '',
+               'window_phase_mix menyimpan konteks sumber, waktu awal set/soal, akhir pengerjaan, dan batas grace dalam '
+               'label_context. manifest.json menyimpan ledger dan readiness yang dipakai untuk merekonstruksi ulang '
+               'segmen. Tidak ada timestamp, event, atau nilai sensor mentah yang diubah.', '']
+    return result
+
+
+def selection_section(results, summary, counts):
+    from .build_dataset_v2 import unique_duration
+
+    lines = ['', '## Seleksi dataset utama', '',
+             'Basis adalah window yang hanya memuat active-task dan/atau pre-task. Setiap window yang memuat '
+             'feedback/rating/rest/post-task dihitung sebagai opsional, termasuk campurannya dengan pengerjaan. '
+             'T = min(jumlah basis terbesar antarkelas, jumlah total kandidat layak terkecil antarkelas). '
+             'Setiap kelas memilih basis dahulu, kemudian opsional hanya untuk mencapai T. Basis mayoritas dapat '
+             'diseleksi sebagian. Jika suatu kelas tidak tersedia, build dihentikan, bukan melonggarkan kualitas.', '',
+             'Seleksi mendahulukan tier good kemudian acceptable. Dalam setiap tier, kuota dibagi merata sesuai kapasitas '
+             'antarpeserta lalu antarsesi, dengan sisa kuota berurutan leksikografis. Tiap rekaman diambil pada indeks '
+             'tengah dari interval timestamp yang dibagi merata. Tidak ada pemilihan menurut skor model atau perubahan label.', '',
+             '| Window | Kelas | Basis layak | Opsional layak | Basis dipilih | Opsional dipilih | Layak tidak dipilih |',
+             '|---|---|---:|---:|---:|---:|---:|']
+    for seconds in (15, 25, 45):
+        for label, entry in summary[f'window_{seconds}s_step_5s']['classes'].items():
+            lines.append(f'| {seconds}s | {label} | {entry["base_available"]} | {entry["optional_available"]} | '
+                         f'{entry["base_selected"]} | {entry["optional_selected"]} | {entry["quality_eligible_not_selected"]} |')
+    lines += ['', '## Durasi unik dan fase terpilih', '',
+              '| Window | Kelas | Baris | Durasi unik (menit) |', '|---|---|---:|---:|']
+    for seconds, (rows, _, _) in results.items():
+        selected = pd.DataFrame(rows).loc[lambda f: f.curation_selected]
+        for label, part in selected.groupby('cognitive_load_label', sort=False):
+            lines.append(f'| {seconds}s | {label} | {len(part)} | {unique_duration(part)/60:.2f} |')
+    lines += ['', 'Jumlah row yang sama bukan jumlah pengamatan independen atau durasi unik yang harus sama. '
+              'Window tetap overlap. Rincian jumlah/durasi unik setiap versi ada di class_distribution.csv.', '',
+              '| Window | Kelas | Fase window | Baris terpilih |', '|---|---|---|---:|']
+    for seconds, (rows, excluded, _) in results.items():
+        selected = pd.DataFrame(rows).loc[lambda f: f.curation_selected]
+        for (label, phase), n in selected.groupby(['cognitive_load_label', 'study_phase']).size().items():
+            lines.append(f'| {seconds}s | {label} | {phase} | {n} |')
+    lines += ['', '## Window yang dikeluarkan', '', '| Window | Alasan utama | Baris |', '|---|---|---:|']
+    for seconds, (_, excluded, _) in results.items():
+        failures = pd.DataFrame(excluded)
+        if not failures.empty:
+            for reason, n in failures.groupby('exclusion_reason').size().items():
+                lines.append(f'| {seconds}s | {reason} | {n} |')
+    lines += ['', 'excluded_windows.csv mencatat penolakan label/waktu dan timestamp ambigu. all_data menyimpan '
+              'baris berlabel yang gagal kualitas atau tidak dipilih; curation_reason membedakan keduanya. '
+              'curation_summary.json dan manifest menyimpan ringkasan seleksi. Riwayat label/seleksi sebelum migrasi '
+              'disimpan ringkas di history. Hasil eksperimen lama tetap merujuk dataset lama dan tidak berubah.', '',
+              '## Rebuild', '', '`python -m analysis_sessions.dataset_fusion.build_dataset_v2 --replace`', '',
+              'Manifest aktif mewariskan kebijakan label dan seleksi ini. Rebuild menghitung ulang dari rekaman mentah, '
+              'bukan concat CSV atau hanya mengganti label lama. Hash sumber dan bundle diperiksa sebelum publikasi; '
+              'penggantian memakai staging dan rollback.', '']
+    return lines
 
 
 def rr_quality_section(registry):

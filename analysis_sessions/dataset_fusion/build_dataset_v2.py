@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from analysis_sessions.dataset_fusion import build_dataset as shared
 from analysis_sessions.dataset_fusion import v2_features as sensor_features
+from analysis_sessions.dataset_fusion import v2_phase_policy as phases
 from analysis_sessions.dataset_fusion import v2_history as history
 from analysis_sessions.dataset_fusion import v2_replacement as replacement
 from analysis_sessions.dataset_fusion import v2_timestamps as timing
@@ -78,7 +79,9 @@ META_INFO = {
 DATA_COLUMNS = list(META_INFO) + shared.FEATURE_COLUMNS
 
 
-def segment_label(segment):
+def segment_label(segment, policy=None):
+    if policy == phases.LABEL_POLICY:
+        return phases.segment_label(segment)
     phase = segment.get('study_phase')
     if phase in LOW_PHASES:
         return 'Low'
@@ -87,7 +90,9 @@ def segment_label(segment):
     return None
 
 
-def label_window(segments):
+def label_window(segments, policy=None):
+    if policy == phases.LABEL_POLICY:
+        return phases.label_window(segments)
     totals = {}
     for segment in segments:
         label = segment_label(segment) or 'unresolved'
@@ -280,16 +285,19 @@ def load_session(directory, config, timestamp_policy=None):
     return eye, replay, events, ready, metadata, audit
 
 
-def build_session(directory, config, timestamp_policy=None):
+def build_session(directory, config, timestamp_policy=None, *, label_policy=None):
     eye, replay, events, ready, metadata, audit = load_session(directory, config, timestamp_policy)
+    if label_policy not in (None, phases.LABEL_POLICY):
+        raise ValueError('Unsupported label policy.')
+    timeline = phases.PhaseTimeline(events, ready) if label_policy else None
     result = {}
     for seconds, windows in replay.items():
         rows, excluded = [], []
         for source in windows:
             start, end = (shared.epoch_ms(source[key]) for key in ('window_start', 'window_end'))
-            segments = segments_for_window(start, end, events, ready)
+            segments = timeline.segments(start, end) if timeline else segments_for_window(start, end, events, ready)
             context = summarize_segments(segments)
-            target = label_window(segments)
+            target = label_window(segments, label_policy)
             reason = target.pop('exclusion_reason')
             identity = {'window_id': f"{metadata['session_id']}|{source['window_start']}|{source['window_end']}",
                         'window_start': source['window_start'], 'window_end': source['window_end'], 'window_seconds': seconds}
@@ -326,6 +334,9 @@ def build_session(directory, config, timestamp_policy=None):
         audit['eye_timestamp_audit']['windows'] = {
             str(s): {'affected': result[s][2]['timestamp_affected_windows'],
                      'additional_excluded': result[s][2]['timestamp_only_excluded_windows']} for s in WINDOWS}
+    if timeline:
+        audit['phase_context_source'] = {'events': events, 'ready_ms': ready,
+            'task_events_sha256': shared.digest(directory/'task_events.csv')}
     return result, audit
 
 
@@ -341,7 +352,7 @@ def unique_duration(frame):
 
 
 def export_window(destination, rows, excluded, reports, inventory, seconds, *, config=None, policy=ADMISSION_POLICY,
-                  validation_checks=None):
+                  validation_checks=None, label_policy=None, curation_policy=None):
     destination.mkdir()
     config = config if config is not None else shared.load_config()
     metadata = {**META_INFO, **(replacement.CURATION_META if policy in (*history.POLICIES, sensor_features.POLICY) else {})}
@@ -354,8 +365,15 @@ def export_window(destination, rows, excluded, reports, inventory, seconds, *, c
     frame = pd.DataFrame(rows, columns=[*metadata, *shared.FEATURE_COLUMNS]).replace([np.inf, -np.inf], np.nan)
     if policy == sensor_features.POLICY:
         frame = sensor_features.apply_policy(frame, config)
-    validate_frame(frame, config=config, seconds=seconds, policy=policy)
-    views = quality_views(frame, policy, config=config, validation_checks=validation_checks)
+    if curation_policy == phases.CURATION_POLICY:
+        metadata.update(curation_selected='Selected by core quality and balanced phase curation; never a predictor.',
+                        curation_reason='Basis/optional selection, balance non-selection, or sensor-quality reason.')
+        frame, selection_summary = phases.curate(frame)
+        (destination/'curation_summary.json').write_text(json.dumps(selection_summary, indent=2)+'\n', encoding='utf-8')
+    validate_frame(frame, config=config, seconds=seconds, policy=policy,
+                   label_policy=label_policy, curation_policy=curation_policy)
+    views = quality_views(frame, policy, config=config, validation_checks=validation_checks,
+                          curation_policy=curation_policy)
     counts, distribution = {}, []
     for name, view in views.items():
         view.to_csv(destination/f'{name}.csv', index=False)
@@ -379,7 +397,7 @@ def export_window(destination, rows, excluded, reports, inventory, seconds, *, c
                     'description': description.replace('Recorded time-domain HRV', 'Recomputed time-domain HRV')}
                    for key, (unit, description) in shared.FEATURE_INFO.items()]
     pd.DataFrame(dictionary).to_csv(destination/'data_dictionary.csv', index=False)
-    feature_contract = (sensor_features.contract(config, validation_checks) if policy == sensor_features.POLICY else
+    feature_contract = (sensor_features.contract(config, validation_checks, curation_policy=curation_policy) if policy == sensor_features.POLICY else
                         {'target': 'cognitive_load_label', 'group': 'participant_id', 'features': shared.FEATURE_COLUMNS})
     (destination/'feature_columns.json').write_text(json.dumps(feature_contract, indent=2)+'\n', encoding='utf-8')
     lines = [f'# Window {seconds} detik, step 5 detik', '',
@@ -393,20 +411,27 @@ def export_window(destination, rows, excluded, reports, inventory, seconds, *, c
 
 def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subjects=None, *, replace=False,
                   replacement_session=None, exclude_tied_eye_windows=False, expected_replacement_counts=None,
-                  admission_policy=None):
+                  admission_policy=None, label_policy=None):
     input_dir = Path(input_dir).resolve()
     output_dir = guard_output(input_dir, output_dir, replace=replace)
     previous_manifest = verify_bundle(output_dir) if output_dir.exists() else None
     if admission_policy not in (None, ADMISSION_POLICY, sensor_features.POLICY):
         raise ValueError('Unsupported explicit admission policy.')
     requested = admission_policy or (previous_manifest or {}).get('admission_policy', ADMISSION_POLICY)
+    inherited_label = (previous_manifest or {}).get('label_policy', {}).get('version')
+    label_policy = label_policy or inherited_label
+    if label_policy not in (None, phases.LABEL_POLICY):
+        raise ValueError('Unsupported label policy.')
+    if label_policy and requested != sensor_features.POLICY:
+        raise ValueError('Context phase labels require feature-aware admission.')
     if requested == sensor_features.POLICY:
         if replacement_session or exclude_tied_eye_windows or expected_replacement_counts is not None:
             raise ValueError('Feature-aware admission cannot use count-preserving replacement options.')
         from analysis_sessions.dataset_fusion.v2_feature_build import (
             build_feature_dataset,
         )
-        return build_feature_dataset(input_dir, output_dir, config_path, subjects, previous_manifest, replace=replace)
+        return build_feature_dataset(input_dir, output_dir, config_path, subjects, previous_manifest,
+                                     replace=replace, label_policy=label_policy)
     if previous_manifest and previous_manifest['admission_policy'] == sensor_features.POLICY:
         raise ValueError('Do not silently downgrade a feature-aware bundle to a legacy policy.')
     selection = history.selection_context(output_dir, previous_manifest, replacement_session)
@@ -525,8 +550,8 @@ def build_dataset(input_dir, output_dir, config_path=shared.DEFAULT_CONFIG, subj
             if selection:
                 frame = selected_frames[seconds]
             view = quality_views(frame, policy)['good_acceptable']
-            phases = view.loc[view.cognitive_load_label.eq('Low')].groupby('study_phase').size()
-            report_lines += [f'| {seconds}s | {phase} | {count} |' for phase, count in phases.items()]
+            phase_counts = view.loc[view.cognitive_load_label.eq('Low')].groupby('study_phase').size()
+            report_lines += [f'| {seconds}s | {phase} | {count} |' for phase, count in phase_counts.items()]
         report_lines += ['', 'mixed berarti beberapa fase dengan target Low yang sama. Detail per segmen ada pada window_phase_mix; jumlah window bukan durasi unik dan tidak menyatakan semua Low berasal dari pengerjaan easy.', '',
             '## Pemodelan berikutnya', '',
             'Gunakan 26 predictor sensor pada feature_columns.json, bukan semua kolom numerik. Target/difficulty/fase, nama peserta, ID soal, waktu, dan kualitas adalah metadata atau label, bukan X. Identitas tetap dipakai untuk grouping/deduplikasi. Imputasi, scaling, seleksi fitur, class weight dan oversampling dilakukan pada training fold, tidak pada CSV sumber. Builder tidak melatih model; sumber tambahan yang diterima dijelaskan pada ringkasan pembaruan. Batch-01 tetap arsip; batch-02 memakai evaluasinya sendiri.', '',
@@ -608,12 +633,14 @@ def main():
     parser.add_argument('--admission-policy', choices=(ADMISSION_POLICY, sensor_features.POLICY),
                         help='Explicit feature-policy migration; omitted rebuilds inherit the active bundle policy.')
     parser.add_argument('--replacement-session', help='Replace weaker curated reference windows using this new session ID.')
+    parser.add_argument('--phase-policy', choices=(phases.LABEL_POLICY,),
+                        help='Explicit migration to task-context phase labels and balanced primary datasets.')
     parser.add_argument('--exclude-tied-eye-windows', action='store_true',
                         help='Audit ties in the explicit replacement session and exclude all touched windows.')
     args = parser.parse_args()
     build_dataset(args.input, args.output, args.config, args.subjects, replace=args.replace,
                   replacement_session=args.replacement_session, exclude_tied_eye_windows=args.exclude_tied_eye_windows,
-                  admission_policy=args.admission_policy)
+                  admission_policy=args.admission_policy, label_policy=args.phase_policy)
 
 
 if __name__ == '__main__':

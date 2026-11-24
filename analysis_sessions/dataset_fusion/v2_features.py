@@ -134,9 +134,9 @@ def pre_model_audit(frame):
             'variation': variation}
 
 
-def contract(config, validation_checks=None):
+def contract(config, validation_checks=None, *, curation_policy=None):
     checks = validation_checks or {}
-    return {
+    result = {
         'policy': POLICY, 'target': 'cognitive_load_label', 'group': 'participant_id',
         'features': list(CORE),
         'profiles': {name: {'features': list(columns),
@@ -157,6 +157,11 @@ def contract(config, validation_checks=None):
         'audit_only_features': [c for c in shared.FEATURE_COLUMNS if c not in PROFILES['validated_fusion']],
         'missing_value_policy': 'No imputation; curated spatial columns are missing unless spatial validation and window quality pass.',
     }
+    if curation_policy:
+        result['curation_policy'] = curation_policy
+        for profile in result['profiles'].values():
+            profile['row_rule'] = 'curation_selected_and_'+profile['row_rule']
+    return result
 
 
 def audit_validation(calibration):

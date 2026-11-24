@@ -15,16 +15,25 @@ from analysis_sessions.session_inventory import select_session_directories
 
 from . import build_dataset as shared
 from . import v2_features as features
+from . import v2_phase_policy as phases
 from . import v2_integrity as integrity
 from . import v2_rr_quality as rr_quality
 from .v2_documentation import build_update_summary
 from .v2_feature_documentation import write_reports
 
 
-def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous, *, replace=False, reuse_verified=False):
+def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous, *, replace=False,
+                          reuse_verified=False, label_policy=None):
     from . import build_dataset_v2 as builder
 
     config = shared.load_config(config_path)
+    previous_label = (previous or {}).get('label_policy', {}).get('version')
+    label_policy = label_policy or previous_label
+    if label_policy not in (None, phases.LABEL_POLICY):
+        raise ValueError('Unsupported label policy.')
+    curation_policy = phases.CURATION_POLICY if label_policy else None
+    if reuse_verified and label_policy != previous_label:
+        raise ValueError('Label migration requires reconstruction from raw sources, not cached aggregates.')
     sources_before = shared.snapshot(input_dir)
     cached = {}
     cached_audits = {}
@@ -36,13 +45,14 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
         if sources_before != previous['source_sha256'] or shared.digest(config_path) != previous['quality_configuration_sha256']:
             raise ValueError('Raw sources or quality settings changed; run the full builder instead.')
         cache_code = ('build_dataset.py', 'build_dataset_v2.py', 'v2_timestamps.py', 'v2_sensor_checks.py',
-                      'session_inventory.py', 'calculate_hrv.py', 'preprocess_rr.py', 'config.py', 'fuse_and_analyze.py')
+                      'v2_phase_policy.py', 'session_inventory.py', 'calculate_hrv.py',
+                      'preprocess_rr.py', 'config.py', 'fuse_and_analyze.py')
         for name, digest in previous['code_sha256'].items():
             if Path(name).name in cache_code and shared.digest(builder.ROOT/name) != digest:
                 raise ValueError(f'Sensor calculation code changed: {name}; run the full builder instead.')
         for seconds in builder.WINDOWS:
             directory = output_dir/f'window_{seconds}s_step_5s'
-            cached[seconds] = (pd.read_csv(directory/'all_data.csv', float_precision='round_trip'),
+            cached[seconds] = (pd.read_csv(directory/'all_data.csv', float_precision='round_trip', low_memory=False),
                                pd.read_csv(directory/'excluded_windows.csv', keep_default_na=False, float_precision='round_trip'),
                                pd.read_csv(directory/'session_quality_summary.csv', keep_default_na=False, float_precision='round_trip'))
         cached_audits = {audit['session_folder']: audit for audit in
@@ -78,9 +88,11 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
                 session[seconds] = (rows.loc[rows.session_id.eq(session_id)].to_dict('records'),
                                     excluded.loc[excluded.session_id.eq(session_id)].to_dict('records'),
                                     report.iloc[0].to_dict())
-            audit = cached_audits[directory.name]
+            audit = dict(cached_audits[directory.name])
+            if label_policy:
+                audit['phase_context_source'] = previous['phase_context_sources'][session_id]
         else:
-            session, audit = builder.build_session(directory, config, timestamps.get(session_id))
+            session, audit = builder.build_session(directory, config, timestamps.get(session_id), label_policy=label_policy)
         audits.append(audit)
         eligible_counts = {}
         for seconds, (rows, excluded, report) in session.items():
@@ -95,16 +107,24 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
             f'{s}s={eligible_counts[s]}' for s in builder.WINDOWS), flush=True)
     if not set(timestamps).issubset(validation_checks):
         raise ValueError('Pinned timestamp source missing from the selected source cohort.')
-    # On unchanged intervals the migration must not silently alter sensor values or targets.
+    # Label migration may change targets, never sensor measurements on common intervals.
     if previous:
         for seconds, (rows, _, _) in results.items():
-            old = pd.read_csv(output_dir/f'window_{seconds}s_step_5s/all_data.csv').set_index('window_id')
+            old = pd.read_csv(output_dir/f'window_{seconds}s_step_5s/all_data.csv', low_memory=False).set_index('window_id')
             new = pd.DataFrame(rows).set_index('window_id')
             common = old.index.intersection(new.index)
             cols = [*shared.FEATURE_COLUMNS, 'session_id', 'participant_id', 'window_start', 'window_end',
-                    'cognitive_load_label', 'gaze_validation_passed']
+                    'gaze_validation_passed']
+            if label_policy == previous_label:
+                cols.append('cognitive_load_label')
             pd.testing.assert_frame_equal(old.loc[common, cols], new.loc[common, cols],
                                           check_dtype=False, rtol=1e-10, atol=1e-10)
+    curation_summary = {}
+    if curation_policy:
+        for seconds, (rows, excluded, reports) in results.items():
+            frame, selection = phases.curate(pd.DataFrame(rows))
+            curation_summary[f'window_{seconds}s_step_5s'] = selection
+            results[seconds] = frame.to_dict('records'), excluded, reports
     output_dir.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.fusion-v2-', dir=output_dir.parent) as temporary:
         destination = Path(temporary)/'bundle'
@@ -120,20 +140,36 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
                 for name in ('replacement_selection.json', 'replacement_pairs.csv'):
                     if (output_dir/name).is_file():
                         shutil.copy2(output_dir/name, history_dir/name)
+            if label_policy and label_policy != previous_label:
+                shutil.copy2(output_dir/'manifest.json', history_dir/'pre_session_phase_context_v3_manifest.json')
+                for seconds in builder.WINDOWS:
+                    prior = pd.read_csv(output_dir/f'window_{seconds}s_step_5s/all_data.csv')
+                    prior[['window_id', 'cognitive_load_label', 'curation_selected', 'curation_reason']].to_csv(
+                        history_dir/f'pre_session_phase_context_v3_{seconds}s_labels.csv', index=False)
         counts = {f'window_{s}s_step_5s': builder.export_window(
             destination/f'window_{s}s_step_5s', *results[s], inventory, s, config=config,
-            policy=features.POLICY, validation_checks=validation_checks) for s in builder.WINDOWS}
+            policy=features.POLICY, validation_checks=validation_checks,
+            label_policy=label_policy, curation_policy=curation_policy) for s in builder.WINDOWS}
         update = build_update_summary(results, counts, inventory, previous, policy=features.POLICY)
         update['feature_policy'] = features.POLICY
+        if curation_policy:
+            update['curation_policy'] = curation_policy
         profile_counts = {
-            f'window_{s}s_step_5s': {name: len(features.profile_frame(pd.DataFrame(rows), name, config, validation_checks))
+            f'window_{s}s_step_5s': {name: len(features.profile_frame(
+                pd.DataFrame(rows).loc[lambda f: f.curation_selected] if curation_policy else pd.DataFrame(rows),
+                name, config, validation_checks))
                                     for name in features.PROFILES}
             for s, (rows, _, _) in results.items()}
         rr_registry['windows'] = {}
         for seconds, (rows, _, _) in results.items():
             rr_registry['windows'][f'window_{seconds}s_step_5s'] = rr_quality.window_summary(pd.DataFrame(rows), config)
         pre_model_audit = {f'window_{seconds}s_step_5s': features.pre_model_audit(pd.read_csv(
-            destination/f'window_{seconds}s_step_5s/all_data.csv')) for seconds in results}
+            destination/f'window_{seconds}s_step_5s'/('good_acceptable.csv' if curation_policy else 'all_data.csv')))
+            for seconds in results}
+        phase_sources = {}
+        if label_policy:
+            by_folder = {r['session_folder']: r['session_id'] for r in results[25][2]}
+            phase_sources = {by_folder[a['session_folder']]: a.pop('phase_context_source') for a in audits}
         replay = {'sessions': audits, 'unexplained_windows': sum(a['unexplained_windows'] for a in audits)}
         (destination/'replay_validation.json').write_text(json.dumps(replay, indent=2, allow_nan=False)+'\n', encoding='utf-8')
         operator_guide = ''
@@ -145,7 +181,8 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
                 stop = text.find('\n## ', start+4)
                 operator_guide = text[start:stop if stop >= 0 else len(text)]
         write_reports(destination, results, counts, profile_counts, validation_checks, update, config,
-                      previous_policy, operator_guide, rr_registry=rr_registry, pre_model_audit=pre_model_audit)
+                      previous_policy, operator_guide, rr_registry=rr_registry, pre_model_audit=pre_model_audit,
+                      label_policy=label_policy, curation_summary=curation_summary)
         if shared.snapshot(input_dir) != sources_before:
             raise RuntimeError('Raw sources changed during build; no bundle published.')
         code_paths = [Path(builder.__file__), Path(shared.__file__), Path(__file__),
@@ -155,6 +192,8 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
                       Path(builder.timing.__file__), builder.ROOT/'analysis_sessions/session_inventory.py',
                       builder.ROOT/'fuse_and_analyze.py', builder.ROOT/'hrv_monitor_prototype/calculate_hrv.py',
                       builder.ROOT/'hrv_monitor_prototype/preprocess_rr.py', builder.ROOT/'hrv_monitor_prototype/config.py']
+        if label_policy:
+            code_paths.append(Path(phases.__file__))
         manifest = {
             'schema_version': 2, 'generated_at_utc': datetime.now(UTC).isoformat(),
             'input_directory': str(input_dir), 'selected_folders': [p.name for p in directories],
@@ -179,12 +218,15 @@ def build_feature_dataset(input_dir, output_dir, config_path, subjects, previous
             'versions': {'python': platform.python_version(), 'numpy': np.__version__, 'pandas': pd.__version__},
             'datasets': counts, 'output_sha256': shared.snapshot(destination),
         }
+        if label_policy:
+            manifest.update(label_policy=phases.label_contract(), curation_policy=curation_policy,
+                            phase_context_sources=phase_sources, curation_summary=curation_summary)
         (destination/'manifest.json').write_text(json.dumps(manifest, indent=2, allow_nan=False)+'\n', encoding='utf-8')
         index = Path(temporary)/'README.md'
         archive_csv = output_dir.parent/'v1_active_task/good_acceptable.csv'
         if output_dir.name == 'v2_session_phase' and archive_csv.exists():
             from .v2_feature_documentation import output_index
-            index.write_text(output_index(archive_csv, counts), encoding='utf-8')
+            index.write_text(output_index(archive_csv, counts, label_policy=label_policy), encoding='utf-8')
         integrity.publish_bundle(destination, output_dir, replace=replace)
         if index.exists():
             shared.publish_artifact(index, output_dir.parent/'README.md')

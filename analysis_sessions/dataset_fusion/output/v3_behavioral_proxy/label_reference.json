@@ -1,0 +1,786 @@
+{
+  "policy": "behavioral_concordance_v2",
+  "minimum_other_people": 5,
+  "quantiles": [
+    0.3333333333333333,
+    0.6666666666666666
+  ],
+  "quantile_method": "linear",
+  "source_split": "Train",
+  "self_reference": false,
+  "items": {
+    "[\"demo\",\"hello_world\",\"hello, world!\"]": [
+      {
+        "participant_id": "Andreas",
+        "episode_id": "7cb644dc94e24de8af590214",
+        "active_seconds": 17.278
+      },
+      {
+        "participant_id": "kaka",
+        "episode_id": "26a4e001a2532b8b496c8a0d",
+        "active_seconds": 19.935000000000002
+      }
+    ],
+    "[\"easy-1\",\"even_odd\",\"bilangan genap atau ganjil\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "d67162ba0f396c81bccd7c7b",
+        "active_seconds": 20.497
+      },
+      {
+        "participant_id": "Andreas",
+        "episode_id": "61031b17ea54338794108e13",
+        "active_seconds": 21.102
+      },
+      {
+        "participant_id": "Fabian",
+        "episode_id": "2011fae2606dbef33b3be797",
+        "active_seconds": 74.844
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "0357aa9701df9679c7ca1430",
+        "active_seconds": 37.746
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "ce8c3180c2264ecc5d8379d3",
+        "active_seconds": 36.188
+      },
+      {
+        "participant_id": "Siti",
+        "episode_id": "a70f79191ff1d9fd5b459821",
+        "active_seconds": 69.336
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "7c093f38b9238cce95ba2a3e",
+        "active_seconds": 26.409
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "e2a7f746687070f589af87de",
+        "active_seconds": 89.45299999999999
+      },
+      {
+        "participant_id": "irfan",
+        "episode_id": "b6b6331413729e95b210c474",
+        "active_seconds": 119.654
+      },
+      {
+        "participant_id": "kaka",
+        "episode_id": "5aefbe4157fa4eb23c3c4865",
+        "active_seconds": 65.247
+      },
+      {
+        "participant_id": "raina",
+        "episode_id": "0fd669752ad5dd657d89e173",
+        "active_seconds": 74.511
+      }
+    ],
+    "[\"easy-1\",\"find_max\",\"mencari nilai maksimum\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "d6c62ce427035ce9aa899159",
+        "active_seconds": 87.20400000000001
+      },
+      {
+        "participant_id": "Fabian",
+        "episode_id": "67be0af6452cbe03fd7e8a7a",
+        "active_seconds": 95.493
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "9bde183985075be21498f468",
+        "active_seconds": 74.631
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "9eb0037941b8da88d0a917de",
+        "active_seconds": 52.617
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "ca4994ce3d7bc82dcf24a52f",
+        "active_seconds": 34.148
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "42c8de2229cab0edb883749c",
+        "active_seconds": 413.905
+      }
+    ],
+    "[\"easy-1\",\"fix_even_sum\",\"perbaiki penjumlahan bilangan genap\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "c72de7e2493b8a8815a37ce0",
+        "active_seconds": 73.943
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "86142d0a6064ba1ef01e3b14",
+        "active_seconds": 89.51899999999999
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "8fa5b14f5073a8433a6920dc",
+        "active_seconds": 97.003
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "dd7e7e9dfe35d084d5aa7470",
+        "active_seconds": 54.505
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "4dd84a2ac238aed3fd43ad25",
+        "active_seconds": 282.592
+      }
+    ],
+    "[\"easy-1\",\"fixed_discount\",\"harga setelah potongan nominal\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "3f9a4be9301348c99696badf",
+        "active_seconds": 20.808
+      }
+    ],
+    "[\"easy-1\",\"for_loop_sum\",\"penjumlahan 1 sampai 10 dengan loop\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "200da683e91c42cd6fab16a7",
+        "active_seconds": 52.542
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "9c3ce273b7c027111f095281",
+        "active_seconds": 50.867000000000004
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "8066286852f2bfacae9ffca5",
+        "active_seconds": 23.14
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "b00d74d7ce7de85613b8e46b",
+        "active_seconds": 88.44399999999999
+      }
+    ],
+    "[\"easy-1\",\"minutes_to_hours\",\"konversi menit ke jam\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "989b8afa2f87e9e695fdd87e",
+        "active_seconds": 22.516
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "269814a66cb8e0312504ade4",
+        "active_seconds": 42.21
+      }
+    ],
+    "[\"easy-1\",\"print_2d_array\",\"cetak array 2d\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "a55fe0cd549d350c83b8a6fc",
+        "active_seconds": 109.15599999999999
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "d23ad2fd31ed5cfc28e04431",
+        "active_seconds": 75.08
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "9725e236546e61ca97c1190c",
+        "active_seconds": 55.002
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "29139c060486cd730469021d",
+        "active_seconds": 42.718
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "9ca6c0ed2b29a57a66585db2",
+        "active_seconds": 62.949999999999996
+      }
+    ],
+    "[\"easy-1\",\"purchase_change\",\"total harga dan uang kembalian\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "29f3361980bf5af674d98fc4",
+        "active_seconds": 69.203
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "83c103580acdb21d7664c87c",
+        "active_seconds": 67.954
+      }
+    ],
+    "[\"easy-1\",\"rectangle_measurements\",\"luas dan keliling persegi panjang\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "3243e7b9cbce3215576b865a",
+        "active_seconds": 18.774
+      }
+    ],
+    "[\"easy-1\",\"stock_availability\",\"kecukupan stok pesanan\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "847137aa3295e62b2a4cffb2",
+        "active_seconds": 32.015
+      }
+    ],
+    "[\"easy-1\",\"three_scores_average\",\"rata-rata tiga nilai\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "d1cc43b5f38aa865f6b84529",
+        "active_seconds": 22.55
+      }
+    ],
+    "[\"easy-1\",\"trace_variable_updates\",\"output pembaruan variabel\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "efd9853c2585737ba7996a22",
+        "active_seconds": 31.490000000000002
+      }
+    ],
+    "[\"easy-1\",\"variables\",\"variabel\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "ff9af6ea834d746d5e508ccc",
+        "active_seconds": 20.516
+      },
+      {
+        "participant_id": "Andreas",
+        "episode_id": "2dd322153f856176d9ab8cf0",
+        "active_seconds": 33.216
+      },
+      {
+        "participant_id": "Fabian",
+        "episode_id": "f49715820a80265abbdf2bd4",
+        "active_seconds": 40.089999999999996
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "c61b73cbec2719f3830c5761",
+        "active_seconds": 18.799
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "0bd156cdec828e072beefaf8",
+        "active_seconds": 40.929
+      },
+      {
+        "participant_id": "Siti",
+        "episode_id": "8802aa03eb953fe3c6cc0428",
+        "active_seconds": 22.979
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "2352815a26b616be2029fe6e",
+        "active_seconds": 24.432
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "1f2de4bf65bf7fb3b742d1f4",
+        "active_seconds": 75.57
+      },
+      {
+        "participant_id": "irfan",
+        "episode_id": "66bda23161c4c60c758f4cc4",
+        "active_seconds": 48.954
+      },
+      {
+        "participant_id": "kaka",
+        "episode_id": "9f3ec5a663cb6b3cf18a1065",
+        "active_seconds": 27.347
+      },
+      {
+        "participant_id": "raina",
+        "episode_id": "84ed2d6eaf83501ab4601191",
+        "active_seconds": 73.94800000000001
+      }
+    ],
+    "[\"hard\",\"anagram_check\",\"pemeriksaan anagram\"]": [
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "25de6c1103e6c8302bb18a87",
+        "active_seconds": 120.587
+      }
+    ],
+    "[\"hard\",\"fibonacci_iterative\",\"fibonacci iteratif\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "54d9e043948a7ba166e01488",
+        "active_seconds": 133.89
+      },
+      {
+        "participant_id": "Andreas",
+        "episode_id": "e205c6d6a229fa331101438d",
+        "active_seconds": 358.436
+      },
+      {
+        "participant_id": "Fabian",
+        "episode_id": "681ee63e4d3593bdec7845b9",
+        "active_seconds": 253.481
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "040c84f9beefc950f763eed5",
+        "active_seconds": 384.311
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "37f4c046af3fead83d96dc9a",
+        "active_seconds": 172.726
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "899a5f1ea732557d0c07620b",
+        "active_seconds": 99.24000000000001
+      }
+    ],
+    "[\"hard\",\"merge_sorted_arrays\",\"menggabungkan array terurut\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "b6fa23e2beba2ba3dd63561a",
+        "active_seconds": 220.996
+      },
+      {
+        "participant_id": "Fabian",
+        "episode_id": "a743e67dd5460a4a21fccd44",
+        "active_seconds": 143.27
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "45d95d3664471d646017646a",
+        "active_seconds": 61.952
+      },
+      {
+        "participant_id": "raina",
+        "episode_id": "b6aa45c1245057f6cc2555fe",
+        "active_seconds": 139.44299999999998
+      }
+    ],
+    "[\"medium\",\"binary_search\",\"binary search\"]": [
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "405ef9cdec76ad57cdb34ae1",
+        "active_seconds": 44.1
+      }
+    ],
+    "[\"medium\",\"bubble_sort\",\"bubble sort\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "37d9bc20a215b737f41a6e8e",
+        "active_seconds": 67.27600000000001
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "1ea2fae2942f3034eec457de",
+        "active_seconds": 37.404
+      },
+      {
+        "participant_id": "raina",
+        "episode_id": "2e83d124d434bd276cd38d43",
+        "active_seconds": 55.563
+      }
+    ],
+    "[\"medium\",\"count_vowels\",\"menghitung huruf vokal\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "a65206c16952af84baac9624",
+        "active_seconds": 106.56500000000001
+      },
+      {
+        "participant_id": "Andreas",
+        "episode_id": "d95f0ac40d8c99474dae6f30",
+        "active_seconds": 223.119
+      },
+      {
+        "participant_id": "Fabian",
+        "episode_id": "57c45a20304c27e2eb285773",
+        "active_seconds": 149.007
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "db52090fdce86b444d78cb04",
+        "active_seconds": 110.402
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "b3a8dc1d0e3fc347b6821a26",
+        "active_seconds": 97.175
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "1df4ad719bb190f0d55e73b2",
+        "active_seconds": 36.059
+      },
+      {
+        "participant_id": "irfan",
+        "episode_id": "bf061511f61ef599d458a56e",
+        "active_seconds": 248.072
+      }
+    ],
+    "[\"medium\",\"linear_search\",\"linear search\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "18b6c11d5eef7c43a7ca71e7",
+        "active_seconds": 71.9
+      },
+      {
+        "participant_id": "Andreas",
+        "episode_id": "53bb750351d79669ccd51712",
+        "active_seconds": 166.42299999999997
+      },
+      {
+        "participant_id": "Athaya",
+        "episode_id": "46afce68bbada99b5e9d34d0",
+        "active_seconds": 200.721
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "774a77e3c73019e36d7807ae",
+        "active_seconds": 146.399
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "758868688908c72529c27692",
+        "active_seconds": 92.667
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "ef9659db2a837374d7781a91",
+        "active_seconds": 37.468
+      },
+      {
+        "participant_id": "irfan",
+        "episode_id": "5e7c36a128f640a5cb2c4941",
+        "active_seconds": 215.416
+      },
+      {
+        "participant_id": "raina",
+        "episode_id": "b3ac1f008f4f73139b2f7375",
+        "active_seconds": 108.163
+      },
+      {
+        "participant_id": "sam",
+        "episode_id": "9ae02516a4685ab572c282de",
+        "active_seconds": 134.419
+      }
+    ],
+    "[\"medium\",\"matrix_addition\",\"penjumlahan matriks\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "93b21f4448b926352dd6490e",
+        "active_seconds": 18.079
+      },
+      {
+        "participant_id": "Athaya",
+        "episode_id": "6faaa0759ecdcb727a6e550b",
+        "active_seconds": 49.018
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "285c78168243a36f311b67e1",
+        "active_seconds": 85.66399999999999
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "f4542f2703ae24e91bf26f7c",
+        "active_seconds": 46.082
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "4d17c3ffd2757bdf4e22e3e2",
+        "active_seconds": 35.671
+      },
+      {
+        "participant_id": "Tio",
+        "episode_id": "88277b23cd01c5a74378c79a",
+        "active_seconds": 73.146
+      },
+      {
+        "participant_id": "raina",
+        "episode_id": "562cc2524b86cd32c0dc791f",
+        "active_seconds": 59.669
+      }
+    ],
+    "[\"medium\",\"matrix_transpose\",\"transpose matriks\"]": [
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "d171f64ad68e3c63a5f8e253",
+        "active_seconds": 39.332
+      },
+      {
+        "participant_id": "raina",
+        "episode_id": "33ce4aa805a91555a6b9875e",
+        "active_seconds": 104.899
+      }
+    ],
+    "[\"medium\",\"palindrome_check\",\"pemeriksaan palindrom\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "0e6568e6fac9610d6f78433a",
+        "active_seconds": 141.803
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "b211d2099a4d1794e2f72d7f",
+        "active_seconds": 66.891
+      }
+    ],
+    "[\"medium\",\"remove_duplicates\",\"manipulasi array 2\"]": [
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "1030e8d4121ce43046f86a83",
+        "active_seconds": 161.223
+      }
+    ],
+    "[\"medium\",\"reverse_array\",\"membalik array di tempat\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "e0da3aa5b12ef983a770f65c",
+        "active_seconds": 89.417
+      },
+      {
+        "participant_id": "Andreas",
+        "episode_id": "63618215fd7f11bc9a6d54b6",
+        "active_seconds": 169.388
+      },
+      {
+        "participant_id": "Fabian",
+        "episode_id": "48111eeb169e1754a3f8d0d2",
+        "active_seconds": 165.138
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "0072258e86891b2685c0b06b",
+        "active_seconds": 189.6
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "50f214a7d07d27c3ad562866",
+        "active_seconds": 235.544
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "82d9eacba09e4b1859149390",
+        "active_seconds": 50.437
+      },
+      {
+        "participant_id": "irfan",
+        "episode_id": "a02eb25b993ea2caa85e2b95",
+        "active_seconds": 96.268
+      }
+    ],
+    "[\"medium\",\"string_reverse\",\"membalik string\"]": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "2af1879d0377ec875685799b",
+        "active_seconds": 25.09
+      },
+      {
+        "participant_id": "Andreas",
+        "episode_id": "7a54688e6dc405648ac88e76",
+        "active_seconds": 53.262
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "e92e7dc71746f3b7877da536",
+        "active_seconds": 64.57900000000001
+      },
+      {
+        "participant_id": "Rafi",
+        "episode_id": "548a7bae76778fb6fa5e9a67",
+        "active_seconds": 37.087
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "3c8deb544f0fbbcea4e59041",
+        "active_seconds": 28.68
+      },
+      {
+        "participant_id": "Tio",
+        "episode_id": "a620c4f10dd77382a1396213",
+        "active_seconds": 48.971
+      },
+      {
+        "participant_id": "irfan",
+        "episode_id": "1b00646d7f5cfda661bdfbb6",
+        "active_seconds": 74.077
+      },
+      {
+        "participant_id": "kaka",
+        "episode_id": "bfd9f9b0a74ba1f4155f9423",
+        "active_seconds": 31.749
+      },
+      {
+        "participant_id": "raina",
+        "episode_id": "70d73a75cb4055c648372056",
+        "active_seconds": 33.835
+      }
+    ],
+    "sha256:19dc74d769013d7eedfbb77c53506350356b3a1eaa81d85febe96ffc75857f4b": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "3d1ac0593b11cae16eb942e8",
+        "active_seconds": 32.198
+      },
+      {
+        "participant_id": "Athaya",
+        "episode_id": "87da37896f007060df3defbb",
+        "active_seconds": 57.958
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "90c69b6ef09f84f508460ccd",
+        "active_seconds": 90.785
+      },
+      {
+        "participant_id": "Tio",
+        "episode_id": "f3aa13fd9b7c6f93442fad8f",
+        "active_seconds": 93.242
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "d3b385782b58072822ff521c",
+        "active_seconds": 144.43
+      }
+    ],
+    "sha256:45309a70ae650157c3becbe67f3ebf74e6b17879a995c8a896888c92e319bf7f": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "264ba8b9c9adaffd9b029568",
+        "active_seconds": 5.728
+      },
+      {
+        "participant_id": "Athaya",
+        "episode_id": "9dc4920e333824f5bb36f730",
+        "active_seconds": 19.03
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "22422748e36def1d2c468752",
+        "active_seconds": 8.583
+      },
+      {
+        "participant_id": "Tio",
+        "episode_id": "2b70ef6399ad92b255d8757e",
+        "active_seconds": 22.942999999999998
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "66e9a8703e24bc89a3f2ce14",
+        "active_seconds": 30.078000000000003
+      }
+    ],
+    "sha256:49c4fca3ec8e0121bba9bb07f17c548c47ea4003bf5124cbf611dc90f4781318": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "4f0c61fc76a981e3eaab09c2",
+        "active_seconds": 67.965
+      },
+      {
+        "participant_id": "Athaya",
+        "episode_id": "eae9a5946a5237e719ef22fc",
+        "active_seconds": 63.36800000000001
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "d3de797f5aa1fdf8c509e95f",
+        "active_seconds": 23.985
+      },
+      {
+        "participant_id": "Tio",
+        "episode_id": "a0bdbffeac584532e5158ece",
+        "active_seconds": 42.812
+      }
+    ],
+    "sha256:c3f7b1fabe16ff588147a0383ae6820586f19b2308a0498e50fdb0ff36ac79a5": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "1775ab59f3d2da421a3d7728",
+        "active_seconds": 36.156
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "dfee935c5bf3291a62ec6425",
+        "active_seconds": 129.95499999999998
+      },
+      {
+        "participant_id": "Sullivan",
+        "episode_id": "0607b390826ad53910ef4195",
+        "active_seconds": 20.057
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "dc006695b50690f294f35b07",
+        "active_seconds": 61.059
+      }
+    ],
+    "sha256:ce1e177e5d346f48b670707e96d64c9a0180fc27d0976d596137a8dcc1655f33": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "3a5f71b88ebb1518ba3c6efe",
+        "active_seconds": 72.491
+      },
+      {
+        "participant_id": "Athaya",
+        "episode_id": "6d7c0205d5c27eb83a8bbbba",
+        "active_seconds": 70.641
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "9bae6cd85fbf730fb233e37f",
+        "active_seconds": 32.475
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "cf999a1c3beeaad9a7d40062",
+        "active_seconds": 202.37199999999999
+      }
+    ],
+    "sha256:dbdba753f7805b5fe70362e557dde184bb63d5809a8cd76f8e3cb8d64b1f5942": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "0352dd8711a69c9726bd3f3a",
+        "active_seconds": 24.328
+      },
+      {
+        "participant_id": "Athaya",
+        "episode_id": "750898d129e2aac348bd51de",
+        "active_seconds": 38.052
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "6477b1d1e80680e38d08d66e",
+        "active_seconds": 34.194
+      },
+      {
+        "participant_id": "Tio",
+        "episode_id": "82490431f7d37be615fcdc88",
+        "active_seconds": 26.886
+      },
+      {
+        "participant_id": "ihsan",
+        "episode_id": "cb7725102118a4cab3993ef4",
+        "active_seconds": 22.439
+      }
+    ],
+    "sha256:eb23159707441534f9ca31cbbe1b26902c0b1fab9e4d2918756bc6c970ab7779": [
+      {
+        "participant_id": "Alif",
+        "episode_id": "d9350d471a48413f6c65ec09",
+        "active_seconds": 20.439
+      },
+      {
+        "participant_id": "Mon",
+        "episode_id": "f0b270081eac24ef63ab60c2",
+        "active_seconds": 17.963
+      }
+    ]
+  }
+}

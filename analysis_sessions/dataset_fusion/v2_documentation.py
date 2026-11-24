@@ -73,7 +73,10 @@ def update_sections(summary):
                   + ('Delta adalah perubahan bersih; penggantian satu-banding-satu tidak menambah jumlah kelas. '
                      'Lihat bagian penggantian selektif untuk kontribusi setiap sumber tambahan dan row lama yang diganti.'
                      if summary.get('replacement_policy') else
-                     'Builder mempertahankan semua window yang lolos, tanpa kuota kelas atau pemotongan manual.')), '']
+                     ('Delta adalah perubahan bersih setelah koreksi label, batas fase, dan seleksi kelas; bukan jumlah rekaman baru. '
+                      'Kandidat layak yang tidak dipilih tetap berada di all_data.'
+                      if summary.get('curation_policy') else
+                      'Builder mempertahankan semua window yang lolos, tanpa kuota kelas atau pemotongan manual.'))), '']
     if summary['introduced_recordings']:
         lines += ['### Kontribusi rekaman yang belum ada pada build sebelumnya', '',
                   '| Window | Rekaman | Low | Medium | High | Durasi unik Low (menit) | Durasi unik Medium (menit) |',

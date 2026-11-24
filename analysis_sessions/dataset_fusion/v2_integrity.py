@@ -18,6 +18,7 @@ from hrv_monitor_prototype.config import (
 
 from . import build_dataset as shared
 from . import v2_features as sensor_features
+from . import v2_phase_policy as phases
 from . import v2_history as history
 from . import v2_replacement as replacement
 from . import v2_rr_quality as rr_quality
@@ -28,13 +29,14 @@ LABELS = ('Low', 'Medium', 'High')
 ADMISSION_POLICY = 'window_quality_only'
 
 
-def quality_views(frame, policy=ADMISSION_POLICY, *, config=None, validation_checks=None):
+def quality_views(frame, policy=ADMISSION_POLICY, *, config=None, validation_checks=None, curation_policy=None):
     if frame.window_id.duplicated().any():
         raise ValueError('Duplicate v2 window IDs.')
     if policy == sensor_features.POLICY:
         config = config if config is not None else shared.load_config()
+        selected = _bool(frame.curation_selected) if curation_policy else pd.Series(True, index=frame.index)
         return {name: (frame.copy() if name == 'all_data' else sensor_features.curated_projection(
-                    frame.loc[frame.quality_tier.isin(tiers)], config, validation_checks))
+                    frame.loc[frame.quality_tier.isin(tiers) & selected], config, validation_checks))
                 for name, tiers in shared.DATASETS.items()}
     selected = (replacement.boolean(frame.curation_selected) if policy in history.POLICIES
                 else pd.Series(True, index=frame.index))
@@ -55,7 +57,7 @@ def _bool(series):
     return text.isin(('true', '1'))
 
 
-def validate_frame(frame, config, seconds, *, policy=ADMISSION_POLICY):
+def validate_frame(frame, config, seconds, *, policy=ADMISSION_POLICY, label_policy=None, curation_policy=None):
     """Fail rather than publish inconsistent measurements or invented values."""
     from .build_dataset_v2 import segment_label
 
@@ -125,7 +127,7 @@ def validate_frame(frame, config, seconds, *, policy=ADMISSION_POLICY):
         durations = [float(s['duration_seconds']) for s in segments]
         _require(np.isfinite(durations) & (np.asarray(durations) >= 0), 'Invalid phase duration.')
         _require(np.isclose(sum(durations), seconds, rtol=0, atol=1e-5), 'Phase duration mismatch.')
-        targets = {segment_label(s) for s in segments if s['duration_seconds'] > 0}
+        targets = {segment_label(s, label_policy) for s in segments if s['duration_seconds'] > 0}
         _require(targets == {row['cognitive_load_label']}, 'Phase/target mismatch.')
         mix = json.loads(row['window_label_mix'])
         _require(set(mix) == {row['cognitive_load_label']}
@@ -137,9 +139,9 @@ def validate_frame(frame, config, seconds, *, policy=ADMISSION_POLICY):
             for field in ('good_failed_criteria', 'acceptable_failed_criteria'):
                 _require(('' if pd.isna(row[field]) else row[field]) == expected[field], 'Quality reason mismatch.')
     if policy == sensor_features.POLICY:
-        _require(_bool(frame.curation_selected).eq(frame.quality_tier.isin(('good', 'acceptable'))),
-                 'Core selection mismatch.')
-        expected = sensor_features.apply_policy(frame, config)
+        expected = (phases.curate(frame)[0] if curation_policy == phases.CURATION_POLICY
+                    else sensor_features.apply_policy(frame, config))
+        _require(_bool(frame.curation_selected).eq(expected.curation_selected), 'Core selection mismatch.')
         _require(frame.curation_reason.eq(expected.curation_reason), 'Core selection reason mismatch.')
         forbidden = {'core_quality_tier', 'core_usable', 'head_pose_usable', 'spatial_usable'}
         _require(not forbidden.intersection(frame.columns), 'Unexpected extra quality flags.')
@@ -168,6 +170,21 @@ def verify_bundle(directory):
         del actual['manifest.json']
         _require(actual == manifest['output_sha256'], 'Bundle checksum mismatch.')
         policy = manifest.get('admission_policy', 'legacy_review_groups')
+        label_policy = manifest.get('label_policy', {}).get('version')
+        curation_policy = manifest.get('curation_policy')
+        _require(label_policy in (None, phases.LABEL_POLICY), 'Unknown label policy.')
+        _require(curation_policy in (None, phases.CURATION_POLICY), 'Unknown curation policy.')
+        _require(bool(label_policy) == bool(curation_policy), 'Phase and curation policies must migrate together.')
+        timelines = {}
+        if label_policy:
+            _require(manifest['label_policy'] == phases.label_contract(), 'Phase policy contract mismatch.')
+            _require(set(manifest['phase_context_sources']) == set(manifest['selected_session_ids']), 'Missing phase ledger.')
+            folders = dict(zip(manifest['selected_session_ids'], manifest['selected_folders']))
+            for session_id, source in manifest['phase_context_sources'].items():
+                _require(source['task_events_sha256'] == manifest['source_sha256'][f'{folders[session_id]}/task_events.csv'],
+                         'Phase ledger source hash mismatch.')
+                _require(source['ready_ms'] is not None and np.isfinite(source['ready_ms']), 'Missing phase readiness.')
+                timelines[session_id] = phases.PhaseTimeline(source['events'], source['ready_ms'])
         _require(policy in (ADMISSION_POLICY, *history.POLICIES, 'legacy_review_groups', sensor_features.POLICY),
                  'Unknown admission policy.')
         validation_checks = manifest.get('spatial_validation', {})
@@ -185,15 +202,33 @@ def verify_bundle(directory):
             history.verify_context(context)
         for length in WINDOWS:
             root = directory/f'window_{length}s_step_5s'
-            frame = pd.read_csv(root/'all_data.csv')
-            validate_frame(frame, manifest['quality_configuration'], length, policy=policy)
+            frame = pd.read_csv(root/'all_data.csv', low_memory=False)
+            validate_frame(frame, manifest['quality_configuration'], length, policy=policy,
+                           label_policy=label_policy, curation_policy=curation_policy)
+            selected_frame = frame.loc[_bool(frame.curation_selected)] if curation_policy else frame
+            if label_policy:
+                recomputed, selection = phases.curate(frame)
+                _require(json.loads((root/'curation_summary.json').read_text()) == selection, 'Curation summary mismatch.')
+                _require(manifest['curation_summary'][root.name] == selection, 'Manifest curation mismatch.')
+                for row in frame.itertuples():
+                    segments = timelines[row.session_id].segments(shared.epoch_ms(row.window_start), shared.epoch_ms(row.window_end))
+                    _require(segments == json.loads(row.window_phase_mix), 'Phase ledger reconstruction mismatch.')
+                    _require(phases.label_window(segments)['cognitive_load_label'] == row.cognitive_load_label,
+                             'Reconstructed target mismatch.')
+                exclusions = pd.read_csv(root/'excluded_windows.csv', keep_default_na=False)
+                for row in exclusions.itertuples():
+                    segments = timelines[row.session_id].segments(shared.epoch_ms(row.window_start), shared.epoch_ms(row.window_end))
+                    reason = phases.label_window(segments)['exclusion_reason']
+                    _require(segments == json.loads(row.window_phase_mix), 'Excluded phase reconstruction mismatch.')
+                    _require((not reason and row.exclusion_reason == 'ambiguous_eye_timestamp')
+                             or reason == row.exclusion_reason, 'Excluded target reason mismatch.')
             if 'rr_quality_control' in manifest:
                 rr_quality.verify_frame(frame, manifest['rr_quality_control'], manifest['source_sha256'])
                 declared = manifest['rr_quality_control']['windows'][root.name]
                 expected_rr = rr_quality.window_summary(frame, manifest['quality_configuration'])
                 _require(declared == expected_rr, 'RR quality exclusion count mismatch.')
             if 'pre_model_audit' in manifest:
-                _require(manifest['pre_model_audit'][root.name] == sensor_features.pre_model_audit(frame),
+                _require(manifest['pre_model_audit'][root.name] == sensor_features.pre_model_audit(selected_frame),
                          'Pre-model audit mismatch.')
             if policy == sensor_features.POLICY:
                 for session, timestamp_policy in manifest.get('timestamp_policies', {}).items():
@@ -223,9 +258,9 @@ def verify_bundle(directory):
                 pairs.extend(matches)
             expected = (shared.dataset_views(frame) if policy == 'legacy_review_groups'
                         else quality_views(frame, policy, config=manifest['quality_configuration'],
-                                           validation_checks=validation_checks))
+                                           validation_checks=validation_checks, curation_policy=curation_policy))
             for name, view in expected.items():
-                published = pd.read_csv(root/f'{name}.csv')
+                published = pd.read_csv(root/f'{name}.csv', low_memory=False)
                 pd.testing.assert_frame_equal(published, view.reset_index(drop=True),
                                               check_dtype=False, rtol=1e-10, atol=1e-10)
                 counts = manifest['datasets'][root.name][name]
@@ -235,9 +270,10 @@ def verify_bundle(directory):
                     _require(counts[label] == published.cognitive_load_label.eq(label).sum(), 'Class count mismatch.')
             allowlist = json.loads((root/'feature_columns.json').read_text())
             if policy == sensor_features.POLICY:
-                _require(allowlist == sensor_features.contract(manifest['quality_configuration'], validation_checks),
+                _require(allowlist == sensor_features.contract(manifest['quality_configuration'], validation_checks,
+                                                              curation_policy=curation_policy),
                          'Feature contract mismatch.')
-                profiles = {name: len(sensor_features.profile_frame(frame, name, manifest['quality_configuration'],
+                profiles = {name: len(sensor_features.profile_frame(selected_frame, name, manifest['quality_configuration'],
                                                                    validation_checks)) for name in sensor_features.PROFILES}
                 _require(profiles == manifest['feature_profile_counts'][root.name], 'Profile count mismatch.')
             else:

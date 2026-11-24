@@ -14,13 +14,15 @@ Kebijakan feature_aware_quality_v1 menilai input inti tanpa menggugurkan EAR/HRV
 
 | View | Isi |
 |---|---|
-| good_only.csv | Window inti good |
-| good_acceptable.csv | Window inti good atau acceptable |
+| good_only.csv | Subset tier good dari baris good_acceptable terpilih; tidak diseimbangkan ulang |
+| good_acceptable.csv | Window inti good/acceptable terpilih dengan jumlah Low, Medium, High sama |
 | all_data.csv | Seluruh window berlabel dengan waktu tidak ambigu, termasuk inti poor; pengukuran spasial asal tetap tersedia |
 
 Kolom quality_tier, good_failed_criteria, dan acceptable_failed_criteria yang sudah ada kini menilai fitur inti. curation_selected dan curation_reason mencatat admission. Tidak ada kolom core_quality_tier, core_usable, head_pose_usable, atau spatial_usable.
 
-Semua window yang memenuhi aturan diterima tanpa kuota kelas, penilaian berdasarkan nama, atau skor model. Window yang dahulu ditolak hanya karena gaze dapat diterima setelah syarat inti dipenuhi. Riwayat Mon/Alif tetap tersimpan pada history tetapi tidak lagi mengunci jumlah kelas.
+Kelayakan sensor dan seleksi kelas adalah langkah terpisah. Seluruh kandidat berlabel dengan waktu tidak ambigu disimpan dalam all_data, termasuk poor dan kandidat layak yang tidak terpilih. Dataset utama diseleksi menurut balanced_primary_v1 tanpa membaca skor model atau daftar penilaian nama. Riwayat Mon/Alif tetap tersimpan pada history tetapi tidak mengunci jumlah kelas.
+
+Basis terdiri dari window yang hanya memuat active-task dan/atau pre-task. Window dengan bagian feedback/rating/rest/post-task adalah opsional. Target per kelas adalah `T = min(jumlah basis terbesar antarkelas, jumlah total kandidat layak terkecil antarkelas)`. Basis didahulukan; opsional hanya melengkapi kekurangan. Basis mayoritas yang tidak dipilih tetap tersedia di all_data. Seleksi mendahulukan good lalu acceptable, dengan kuota merata sesuai kapasitas antarpeserta/rekaman dan timestamp tersebar. Ketiga panjang window diseleksi secara independen.
 
 Aturan tambahan `exclude_local_rr_jump_v1` memeriksa RR task secara kausal dengan timing, kontak, rentang, dan recovery yang sama. Window curated dikeluarkan bila memuat RR diterima dengan selisih lebih dari 250 ms terhadap median referensi lokal (maksimum 11 RR; minimum 5 pada riwayat normal). Beat harus berada dalam `(start, end]` dan sudah tersedia pada endpoint. Kandidat adalah ketidakpastian lokal, bukan diagnosis artefak.
 
@@ -64,9 +66,13 @@ Identitas, waktu, fase, soal, difficulty, dan kualitas bukan predictor. Normalis
 ## Target dan rekonstruksi sensor
 
 - Active easy/practice/demo diberi Low; active medium diberi Medium; active hard diberi High.
-- Pre-task setelah kedua kalibrasi, feedback, rating, rest, serta post-task/interrupted yang terlacak diberi Low sesuai protokol v2.
-- Baseline/kalibrasi dan waktu yang tidak terlacak tidak diberi Low.
-- Seluruh bagian window harus mempunyai satu target. Easy + rating dapat tetap Low; medium + rating dikeluarkan. Target bukan majority vote dan tidak dibentuk ulang dari difficulty.
+- Pre-task setelah kedua kalibrasi diberi Low.
+- Feedback/rating mengikuti difficulty tugas yang menghasilkan fase tersebut, bukan otomatis Low.
+- Rest/post-task mengikuti difficulty tugas terakhir. Keduanya hanya menjadi kandidat hingga 45 detik sejak pengerjaan terakhir berhenti; pergantian fase tidak mengulang batas tersebut. Feedback/rating tidak dikenai batas khusus ini.
+- Interrupted, baseline/kalibrasi, dan konteks yang tidak terlacak dikeluarkan.
+- Seluruh bagian window harus mempunyai satu target dan memenuhi batas waktunya. Medium + rating medium dapat masuk; easy + rating medium dikeluarkan. Window yang melewati batas grace juga dikeluarkan seluruhnya, bukan majority vote.
+
+Aturan label memakai session_phase_context_v3. Batas 45 detik adalah batas operasional, bukan hasil pengukuran waktu pemulihan fisiologis. Konteks set/soal dan referensi waktunya disimpan dalam label_context pada JSON window_phase_mix, tanpa menambah kolom classifier. Manifest memuat ledger sumber untuk rekonstruksi dan verifikasi.
 
 HRV dihitung dari RR mentah pada masing-masing panjang window, bukan rata-rata RMSSD cache. Endpoint (start, end] memakai paket yang sudah tersedia pada endpoint. Pasangan RMSSD tidak menyeberangi RR ditolak atau segmen terputus. Baseline dan RR sebelum task tidak masuk task replay.
 
@@ -74,9 +80,9 @@ Inventory memilih satu salinan acquisition dan menggabungkan grup orang pada rek
 
 ## Menjalankan builder
 
-Migrasi eksplisit atau build baru dengan kebijakan fitur inti:
+Migrasi eksplisit atau build baru dengan kebijakan fitur inti, label konteks, dan seleksi seimbang:
 
-    python analysis_sessions/dataset_fusion/build_dataset_v2.py --admission-policy feature_aware_quality_v1 --replace
+    python -m analysis_sessions.dataset_fusion.build_dataset_v2 --admission-policy feature_aware_quality_v1 --phase-policy session_phase_context_v3 --replace
 
 Jika output belum ada, hilangkan --replace. Rebuild berikutnya mewarisi kebijakan manifest aktif:
 
@@ -100,3 +106,22 @@ Manifest mencatat kebijakan, sumber, kontrak fitur, audit validasi gaze, pengecu
 `pre_model_audit` pada manifest dan laporan dataset memuat kelengkapan core, ID/vektor duplikat, fitur konstan, baseline opsional yang hilang, komposisi fase Low, dan variasi antarsesi/kelas. Nilai nol kedipan yang sah tidak dihapus. Pergeseran nilai dasar antarsesi serta pemisahan Train/validation/test tidak diselesaikan dengan normalisasi global pada CSV.
 
 Tambahkan rekaman lengkap ke sessions/saved_session, lalu rebuild. Jangan menggabungkan CSV dengan concat manual. Baca QUALITY_REPORT.md dan DATASET_CONDITION_REPORT.md setelah build untuk jumlah kelas, kontribusi rekaman, durasi unik, dan cakupan profil tambahan.
+
+## Dataset v3: proxy perilaku
+
+`output/v3_behavioral_proxy` merupakan eksperimen label terpisah. V3 tidak mengganti v2 dan tidak memakai easy/medium/hard atau fitur sensor sebagai penentu target. Low/Medium/High mengikuti kesesuaian waktu aktif relatif terhadap referensi soal yang sama dan pola kesalahan manual. Label ini bukan pengukuran beban mental yang sudah tervalidasi.
+
+    python -m analysis_sessions.dataset_fusion.build_dataset_v3
+    python -m analysis_sessions.dataset_fusion.build_dataset_v3 --verify analysis_sessions/dataset_fusion/output/v3_behavioral_proxy
+
+Rebuild eksplisit setelah sumber v2 diperbarui:
+
+    python -m analysis_sessions.dataset_fusion.build_dataset_v3 --replace
+
+Keluaran memuat sembilan CSV (tiga panjang window dan tiga tingkat kualitas), tabel episode, referensi waktu, pembagian peserta tetap, pemetaan window, dan laporan. Sumber v2 serta rekaman mentah tidak diubah. Rubrik, batas referensi, dan pembagian peserta tidak dituning menurut skor model atau keseimbangan kelas.
+
+Baca `output/v3_behavioral_proxy/QUALITY_REPORT.md` sebelum memakai CSV. Referensi hanya berasal dari Train; `participant_splits.csv` dan `window_assignments.csv` harus dipakai ketika memodelkan v3. Mengubah pembagian peserta memerlukan pelabelan ulang. Status `readiness` pada manifest membedakan keberadaan tiga kelas secara gabungan dari ketersediaan kelas pada masing-masing bagian evaluasi. Jangan langsung mengganti path notebook lama yang membuat split sendiri.
+
+Kebijakan `behavioral_concordance_v2` mempertahankan rubrik label dan menambahkan alias soal identik berbukti hash, pengecualian paparan ulang dari referensi, serta pencarian pembagian peserta berbasis cakupan. Varian utama adalah 15 detik; dukungan peserta window 25/45 detik dilaporkan terpisah. Bukti alias dibekukan pada `v3_item_aliases.json` dan disalin ke bundle, bukan membaca versi HEAD saat rebuild.
+
+Setiap folder window menyediakan `train_sample_weights.csv` untuk full Train dari good_acceptable atau `train_balanced.csv` sebagai alternatif Train seimbang. Bobot menyetarakan kelas, peserta dalam kelas, dan episode dalam peserta. Keduanya bukan fitur classifier dan tidak diterapkan sekaligus. Validation/Test tetap utuh. Dalam inner cross-validation, referensi, label, bobot, dan sampling dihitung ulang dari inner-Train. `reference_sensitivity.csv`, `partition_search.json`, dan riwayat perubahan mendokumentasikan hasil audit; builder tidak menjalankan training.
