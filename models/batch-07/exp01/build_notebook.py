@@ -24,10 +24,25 @@ def build():
     fold_code = (v3 / "exp09/experiment.py").read_text(encoding="utf-8")
     source = (here / "experiment.py").read_text(encoding="utf-8")
     cells[0]["source"] = ["# Batch 07 · Exp01 · Perbandingan model v3\n",
-                          "Jalankan semua sel pada CPU. Siapkan paket v3 dan CSV v2 all_data.csv 15 detik "
-                          "di bawah Dataset. Lihat README Batch 07 untuk struktur folder."]
-    cells[1]["source"] = "".join(cells[1]["source"]).replace(
-        "batch-06/v3/exp13/outputs", "batch-07/exp01/outputs").splitlines(True)
+                          "Jalankan semua sel pada CPU (lokal maupun Colab). Secara lokal notebook otomatis "
+                          "membaca `analysis_sessions/dataset_fusion/output`."]
+    cells[1]["source"] = [
+        "import sys\n",
+        "from pathlib import Path\n",
+        "\n",
+        "if 'google.colab' in sys.modules:\n",
+        "    from google.colab import drive\n",
+        "    drive.mount('/content/drive')\n",
+        "    PROJECT_ROOT = Path('/content/drive/MyDrive/Penelitian-Adaptive-IDE')\n",
+        "    DATASET_ROOT = PROJECT_ROOT / 'Dataset'\n",
+        "else:\n",
+        "    cwd = Path.cwd().resolve()\n",
+        "    PROJECT_ROOT = next((p for p in [cwd, *cwd.parents] if (p / 'analysis_sessions/dataset_fusion/output').exists()), cwd)\n",
+        "    DATASET_ROOT = PROJECT_ROOT / 'analysis_sessions/dataset_fusion/output'\n",
+        "OUTPUT_ROOT = PROJECT_ROOT / 'models/batch-07/exp01/outputs'\n",
+        "print('PROJECT_ROOT:', PROJECT_ROOT)\n",
+        "print('DATASET_ROOT:', DATASET_ROOT)\n",
+    ]
     cells[2]["source"] = ["## Reader dataset resmi dan fitur sensor"]
     cells[4]["source"] = ["## Riwayat sebelum soal dan fitting per peserta"]
     cells[5]["source"] = "\n\n".join([label_and_window_code, pool_code,
