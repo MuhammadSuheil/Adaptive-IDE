@@ -1,0 +1,58 @@
+{
+  "experiment": "batch-07/exp03",
+  "target": "v4_self_reported_rating: 1-6 (Non-Overload, 0) vs 7-10 (Overload, 1)",
+  "inputs": {
+    "v4/window_15s_step_5s/good_acceptable.csv": "6c2febb856e5986e2d9f76b64c0757b3476547bdcf42ccfcff1f02a3b69c2c79",
+    "v4/window_15s_step_5s/window_assignments.csv": "aeb41a5a730548039fd40caf1bd040ecbd11099cffe209bb7d27e01159ad96be",
+    "v4/episode_ratings.csv": "9f7ab8997fe84549e222c82f4ae0c968b07e13d53464da48444d383138aef686",
+    "v2_all": "3480d6c1d091af14a9f27651e8ed8fae65954fa1374eea7385678fd3abff8791"
+  },
+  "candidates": [
+    "win_logreg_core9_global",
+    "win_logreg_full14_global",
+    "win_logreg_full14_causal",
+    "win_et_full14_global",
+    "ep_svm_rbf_prior14",
+    "ep_et_prior14"
+  ],
+  "policies": [
+    "fixed_050",
+    "nested_youden",
+    "nested_recall75_min_fa",
+    "nested_fa_cap25_max_rec",
+    "nested_macro_f1"
+  ],
+  "threshold_grid": [
+    0.2,
+    0.225,
+    0.25,
+    0.275,
+    0.3,
+    0.325,
+    0.35,
+    0.375,
+    0.4,
+    0.425,
+    0.45,
+    0.475,
+    0.5,
+    0.525,
+    0.55,
+    0.575,
+    0.6,
+    0.625,
+    0.65,
+    0.675,
+    0.7,
+    0.725,
+    0.75,
+    0.775,
+    0.8
+  ],
+  "locked_dev_winner": "win_logreg_core9_global",
+  "historical_test_note": "4 Test participants were previously evaluated in Batch 06; reported here as historical reference under locked Dev thresholds.",
+  "python": "3.10.11",
+  "numpy": "2.2.6",
+  "pandas": "2.3.3",
+  "sklearn": "1.7.2"
+}
