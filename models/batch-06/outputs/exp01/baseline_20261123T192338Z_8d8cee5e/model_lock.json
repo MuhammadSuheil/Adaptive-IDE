@@ -1,0 +1,27 @@
+{
+  "selected": {
+    "hrv_eye": {
+      "baseline_relative": {
+        "family": "extra_trees",
+        "oof_macro_f1": 0.39853104826933344
+      },
+      "raw": {
+        "family": "extra_trees",
+        "oof_macro_f1": 0.33955009878830245
+      }
+    },
+    "hrv_rmssd": {
+      "baseline_relative": {
+        "family": "logistic_regression",
+        "oof_macro_f1": 0.38152716274362836
+      },
+      "raw": {
+        "family": "logistic_regression",
+        "oof_macro_f1": 0.35589857727226737
+      }
+    }
+  },
+  "plan_sha256": "af1debd6949568aa9bda731ee8470f5e6ff8c26a00e8ddf67d1d69bcb401f71c",
+  "validation_evaluated": false,
+  "test_evaluated": false
+}

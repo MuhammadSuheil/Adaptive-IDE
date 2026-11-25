@@ -1,0 +1,22 @@
+{
+  "stage": "complete",
+  "complete": true,
+  "cohorts": {
+    "hrv_rmssd": {
+      "status": "complete",
+      "cv_fits": 120,
+      "train_rows": 2454,
+      "train_participants": 19
+    },
+    "hrv_eye": {
+      "status": "complete",
+      "cv_fits": 45,
+      "train_rows": 671,
+      "train_participants": 4
+    }
+  },
+  "validation_fits": 4,
+  "test_evaluated": false,
+  "dataset_unchanged": true,
+  "plan_sha256": "af1debd6949568aa9bda731ee8470f5e6ff8c26a00e8ddf67d1d69bcb401f71c"
+}

@@ -1,0 +1,21 @@
+folder,session_id,participant_group,canonical_folder,is_variant,selected,reason
+Andrean,20261030_101138_P01_coding_task,Andrean,Andrean,False,True,rekaman utama
+Andreas,20261030_105505_P01_coding_task,Andreas,Andreas,False,True,rekaman utama
+Athaya,20261028_100710_P01_coding_task,Athaya,Athaya,False,True,rekaman utama
+Baithar,20261030_151950_P01_coding_task,Baithar,Baithar,False,True,rekaman utama
+Baithar - Copy,20261030_151950_P01_coding_task,Baithar,Baithar,True,False,eye_tracking.csv: 48803 vs 49559 baris; tambahan hanya post_task; hrv.csv: 427 vs 434 baris; tambahan hanya post_task
+Fabian,20261030_141412_P01_coding_task,Fabian,Fabian,False,True,rekaman utama
+faqih,20261028_084341_P01_coding_task,faqih,faqih,False,True,rekaman utama
+ikhsan,20261028_145744_P01_coding_task,ikhsan,ikhsan,False,True,rekaman utama
+irfan,20261028_133037_P01_coding_task,irfan,irfan,False,True,rekaman utama
+kaka,20261027_151755_P01_coding_task,kaka,kaka,False,True,rekaman utama
+Rafi,20261028_141228_P01_coding_task,Rafi,Rafi,False,True,rekaman utama
+raina,20261028_153314_P01_coding_task,raina,raina,False,True,rekaman utama
+Ramadhan,20261028_113120_P01_coding_task,Ramadhan,Ramadhan,False,True,rekaman utama
+Ramadhan-2,20261028_114156_P01_coding_task,Ramadhan,Ramadhan-2,False,True,rekaman utama
+sam,20261026_143707_P01_coding_task,sam,sam,False,True,rekaman utama
+Savitri,20261030_132625_P01_coding_task,Savitri,Savitri,False,True,rekaman utama
+Shakilla,20261028_094956_P01_coding_task,Shakilla,Shakilla,False,True,rekaman utama
+Siti,20261028_104726_P01_coding_task,Siti,Siti,False,True,rekaman utama
+Sullivan,20261028_122016_P01_coding_task,Sullivan,Sullivan,False,True,rekaman utama
+Tio,20261027_142523_P01_coding_task,Tio,Tio,False,True,rekaman utama

@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_rmssd",
+  "protocol": "participant_held_out",
+  "family": "extra_trees",
+  "representation": "raw",
+  "fold": 11,
+  "held_participants": "Siti",
+  "rows": 76,
+  "fit_rows": 2378,
+  "accuracy": 0.2894736842105263,
+  "macro_f1": 0.2693452380952381,
+  "train_accuracy": 0.9613120269133726,
+  "train_macro_f1": 0.9611139714950271,
+  "metrics": {
+    "rows": 76,
+    "accuracy": 0.2894736842105263,
+    "macro_f1": 0.2693452380952381,
+    "recall": [
+      0.5,
+      0.13953488372093023,
+      0.48148148148148145
+    ],
+    "confusion_matrix": [
+      [
+        3,
+        1,
+        2
+      ],
+      [
+        15,
+        6,
+        22
+      ],
+      [
+        8,
+        6,
+        13
+      ]
+    ]
+  }
+}

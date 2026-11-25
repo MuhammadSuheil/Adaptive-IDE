@@ -1,0 +1,15 @@
+protocol,representation,family,rows,correct_total,support_low,correct_low,support_medium,correct_medium,support_high,correct_high
+historical_block_cv,raw,extra_trees,671,238,264,97,180,38,227,103
+historical_block_cv,rmssd_only,extra_trees,671,267,264,89,180,59,227,119
+historical_block_cv,eye_only,extra_trees,671,226,264,78,180,39,227,109
+historical_block_cv,combined,extra_trees,671,264,264,83,180,57,227,124
+historical_block_cv,dummy,dummy,671,211,264,187,180,0,227,24
+participant_held_out,raw,extra_trees,671,240,264,132,180,73,227,35
+participant_held_out,rmssd_only,extra_trees,671,256,264,133,180,90,227,33
+participant_held_out,eye_only,extra_trees,671,213,264,102,180,69,227,42
+participant_held_out,combined,extra_trees,671,278,264,132,180,99,227,47
+participant_held_out,dummy,dummy,671,264,264,264,180,0,227,0
+validation,raw,extra_trees,99,52,43,9,0,0,56,43
+validation,rmssd_only,extra_trees,99,66,43,24,0,0,56,42
+validation,eye_only,extra_trees,99,59,43,16,0,0,56,43
+validation,combined,extra_trees,99,65,43,23,0,0,56,42

@@ -1,0 +1,19 @@
+{
+  "subject_session": "Siti",
+  "participant_group": "Siti",
+  "original_session_id": "20261028_104726_P01_coding_task",
+  "origin_wib": "2026-10-28T10:51:15.696615967+07:00",
+  "origin_definition": "both_calibrated_at_utc",
+  "eye_bin_seconds": 5.0,
+  "screen": {
+    "width": 2880,
+    "height": 1800
+  },
+  "notes": [
+    "Validasi gaze tidak lulus aturan program; lokasi/heatmap/Eye_State adalah keluaran estimasi.",
+    "Gambar potongan mata tidak tersedia dalam arsip."
+  ],
+  "eye_frames": 50341,
+  "hrv_task_windows": 397,
+  "baseline_rmssd_ms": 33.5222942439674
+}

@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_eye",
+  "protocol": "participant_held_out",
+  "family": "dummy",
+  "representation": "raw",
+  "fold": 0,
+  "held_participants": "Baithar",
+  "rows": 195,
+  "fit_rows": 476,
+  "accuracy": 0.3487179487179487,
+  "macro_f1": 0.1723700887198986,
+  "train_accuracy": 0.4117647058823529,
+  "train_macro_f1": 0.19444444444444445,
+  "metrics": {
+    "rows": 195,
+    "accuracy": 0.3487179487179487,
+    "macro_f1": 0.1723700887198986,
+    "recall": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "confusion_matrix": [
+      [
+        68,
+        0,
+        0
+      ],
+      [
+        77,
+        0,
+        0
+      ],
+      [
+        50,
+        0,
+        0
+      ]
+    ]
+  }
+}

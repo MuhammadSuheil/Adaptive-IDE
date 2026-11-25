@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_eye",
+  "protocol": "participant_held_out",
+  "family": "logistic_regression",
+  "representation": "baseline_relative",
+  "fold": 0,
+  "held_participants": "Baithar",
+  "rows": 195,
+  "fit_rows": 476,
+  "accuracy": 0.29743589743589743,
+  "macro_f1": 0.17642179667496125,
+  "train_accuracy": 0.6470588235294118,
+  "train_macro_f1": 0.6050981004423627,
+  "metrics": {
+    "rows": 195,
+    "accuracy": 0.29743589743589743,
+    "macro_f1": 0.17642179667496125,
+    "recall": [
+      0.8235294117647058,
+      0.0,
+      0.04
+    ],
+    "confusion_matrix": [
+      [
+        56,
+        0,
+        12
+      ],
+      [
+        62,
+        0,
+        15
+      ],
+      [
+        48,
+        0,
+        2
+      ]
+    ]
+  }
+}

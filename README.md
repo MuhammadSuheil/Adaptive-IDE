@@ -36,7 +36,7 @@ This repository contains the software components and research context for develo
      python eye_tracking_prototype/eye_tracking_prototype.py
      ```
    - **Heart Rate Variability (HRV):** Records RR intervals from a PPG sensor (BLE) to extract RMSSD/SDNN features.
-     ```powershell
+     ```powershell 
      python -m hrv_monitor_prototype.calibrate
      ```
    - **Multimodal Fusion:** Runs both Eye Tracking and HRV synchronously. Once completed, the data from both sensors is automatically fused into a single timeline.

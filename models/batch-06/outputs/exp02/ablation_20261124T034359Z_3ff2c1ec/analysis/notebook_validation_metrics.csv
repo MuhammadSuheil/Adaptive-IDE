@@ -1,0 +1,5 @@
+display_index,protocol,representation,family,rows,accuracy,macro_f1,three_class_evaluable,support_low,recall_low,support_medium,recall_medium,support_high,recall_high,participants,mean_participant_accuracy,mean_participant_macro_f1,train_accuracy,model_sha256,warnings
+0,validation,raw,extra_trees,99,0.525253,0.334631,False,43,0.209302,0,,56,0.767857,3,0.472385,0.187511,0.946349,a8bce72d2a8ce19fc8d20e8742114c5eac1d28550fc867...,[]
+1,validation,rmssd_only,extra_trees,99,0.666667,0.45265,False,43,0.55814,0,,56,0.75,3,0.598974,0.230022,0.95231,309cf0b7873fc7b5d16465562b93b0fa920881443b5ebb...,[]
+2,validation,eye_only,extra_trees,99,0.59596,0.396119,False,43,0.372093,0,,56,0.767857,3,0.535448,0.211119,0.938897,634b176033fbc2b127ce4d747c4c97fdaf687e43d9eb79...,[]
+3,validation,combined,extra_trees,99,0.656566,0.445824,False,43,0.534884,0,,56,0.75,3,0.589965,0.227775,0.944858,50ea3a7de0136324e9faab893bd66147fe227ac5937346...,[]

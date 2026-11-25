@@ -1,0 +1,5 @@
+protocol,model,eligible,matched,participants,rating_7_10,spearman,auc_rating_7_10
+Train_LOPO,exp11_center,37,21,10,7,0.5250001401744955,0.8265306122448979
+Train_LOPO,personal_iqr,37,21,10,7,0.3929246332123582,0.7857142857142857
+validation,exp11_center,11,10,3,1,0.3243745600673012,0.7777777777777778
+validation,personal_iqr,11,10,3,1,0.4411494016915296,0.7777777777777778

@@ -1,0 +1,11 @@
+display_index,protocol,representation,family,rows,accuracy,macro_f1,three_class_evaluable,support_low,recall_low,support_medium,recall_medium,support_high,recall_high,participants,mean_participant_accuracy,mean_participant_macro_f1
+0,historical_block_cv,raw,extra_trees,671,0.354694,0.342614,True,264,0.367424,180,0.211111,227,0.453744,4,0.343073,0.31305
+1,historical_block_cv,rmssd_only,extra_trees,671,0.397914,0.390257,True,264,0.337121,180,0.327778,227,0.524229,4,0.378885,0.340698
+2,historical_block_cv,eye_only,extra_trees,671,0.336811,0.324809,True,264,0.295455,180,0.216667,227,0.480176,4,0.319172,0.291594
+3,historical_block_cv,combined,extra_trees,671,0.393443,0.383809,True,264,0.314394,180,0.316667,227,0.546256,4,0.371326,0.33545
+4,historical_block_cv,dummy,dummy,671,0.314456,0.20349,True,264,0.708333,180,0.0,227,0.105727,4,0.318859,0.187792
+5,participant_held_out,raw,extra_trees,671,0.357675,0.33955,True,264,0.5,180,0.405556,227,0.154185,4,0.371413,0.204547
+6,participant_held_out,rmssd_only,extra_trees,671,0.38152,0.359542,True,264,0.503788,180,0.5,227,0.145374,4,0.393455,0.224725
+7,participant_held_out,eye_only,extra_trees,671,0.317437,0.311845,True,264,0.386364,180,0.383333,227,0.185022,4,0.314469,0.218702
+8,participant_held_out,combined,extra_trees,671,0.414307,0.398531,True,264,0.5,180,0.55,227,0.207048,4,0.419339,0.310618
+9,participant_held_out,dummy,dummy,671,0.393443,0.188235,True,264,1.0,180,0.0,227,0.0,4,0.403278,0.190525

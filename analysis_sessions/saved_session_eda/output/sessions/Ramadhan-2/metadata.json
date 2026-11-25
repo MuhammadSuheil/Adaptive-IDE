@@ -1,0 +1,20 @@
+{
+  "subject_session": "Ramadhan-2",
+  "participant_group": "Ramadhan",
+  "original_session_id": "20261028_114156_P01_coding_task",
+  "origin_wib": "2026-10-28T11:44:33.072813965+07:00",
+  "origin_definition": "both_calibrated_at_utc",
+  "eye_bin_seconds": 5.0,
+  "screen": {
+    "width": 2880,
+    "height": 1800
+  },
+  "notes": [
+    "Validasi gaze tidak lulus aturan program; lokasi/heatmap/Eye_State adalah keluaran estimasi.",
+    "Gambar potongan mata tidak tersedia dalam arsip.",
+    "Satu peserta dengan dua rekaman; referensi dan interupsi dipertahankan terpisah."
+  ],
+  "eye_frames": 46113,
+  "hrv_task_windows": 348,
+  "baseline_rmssd_ms": 32.80170650148886
+}

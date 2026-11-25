@@ -1,0 +1,47 @@
+{
+  "checked_at_client_date": "2026-11-24",
+  "scope": "local_read_only_preflight_not_drive_training",
+  "training_executed": false,
+  "drive_verified": false,
+  "dataset_sha256": {
+    "15": "d7ec0c1c59ad2af6fc66ad97ae7adf59471a95e04181fb3162dd5b342fa143db",
+    "25": "dc85bbc402e54792748f91652b0575734deeed4b3364b039ad399bc5389fe9b3",
+    "45": "506ee0c3f70e3998ef7fdd80058dfa75690936f4fedc041c5852558722612410"
+  },
+  "split_protocol": "batch05_train_only_historical_reference",
+  "source_timing_audit_sha256": "f630674697a53b0a9e05a70805df194c4ef43f00b4753723e6e1b3da4ac47b12",
+  "cohorts": {
+    "hrv_rmssd": {
+      "counts_by_split": {
+        "train": 2454,
+        "validation": 721,
+        "test": 592,
+        "purged": 280
+      },
+      "train_participants": 19,
+      "eligible_sessions": 19,
+      "fold_counts": {
+        "participant_held_out": 19,
+        "historical_block_cv": 5
+      },
+      "gate_failure": "",
+      "cv_fit_budget": 120
+    },
+    "hrv_eye": {
+      "counts_by_split": {
+        "train": 671,
+        "test": 164,
+        "validation": 99,
+        "purged": 76
+      },
+      "train_participants": 4,
+      "eligible_sessions": 4,
+      "fold_counts": {
+        "participant_held_out": 4,
+        "historical_block_cv": 5
+      },
+      "gate_failure": "",
+      "cv_fit_budget": 45
+    }
+  }
+}

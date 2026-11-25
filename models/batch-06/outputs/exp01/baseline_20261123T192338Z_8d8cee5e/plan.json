@@ -1,0 +1,60 @@
+{
+  "version": "batch06-baseline-v1",
+  "created_at_utc": "2026-11-23T19:23:38.348672+00:00",
+  "dataset_sha256": {
+    "15": "d7ec0c1c59ad2af6fc66ad97ae7adf59471a95e04181fb3162dd5b342fa143db",
+    "25": "dc85bbc402e54792748f91652b0575734deeed4b3364b039ad399bc5389fe9b3",
+    "45": "506ee0c3f70e3998ef7fdd80058dfa75690936f4fedc041c5852558722612410"
+  },
+  "implementation_sha256": "13c087d6a1a16ccd06117547f1ccf253be174ba5dcea4f34a162dc60b8f00f16",
+  "reference_sha256": "553ecfa1fb2ba1f8908d4734dac4cff08025b773aa73a9184713a7bed30844f9",
+  "source_evidence_sha256": "4d1feb8a31d59c3085cc2ef89fef82056f00471ae00fe5fe9e0fe131e374d432",
+  "split_protocol": "batch05_train_only_historical_reference",
+  "window_seconds": 25,
+  "features": [
+    "rmssd_ms",
+    "sdnn_ms",
+    "blink_rate_per_minute",
+    "ear_left_mean",
+    "ear_left_std",
+    "ear_right_mean",
+    "ear_right_std",
+    "iris_size_estimate_mean",
+    "iris_size_estimate_std",
+    "iris_size_delta_mean"
+  ],
+  "cohorts": [
+    "hrv_rmssd",
+    "hrv_eye"
+  ],
+  "models": {
+    "logistic_regression": {
+      "C": 1.0,
+      "max_iter": 3000
+    },
+    "extra_trees": {
+      "n_estimators": 200,
+      "min_samples_leaf": 5,
+      "max_features": 0.8,
+      "random_state": 42,
+      "n_jobs": 2
+    },
+    "dummy": {
+      "strategy": "most_frequent"
+    }
+  },
+  "selection": "participant_held_out_oof_macro_f1_then_accuracy_positive_recall_all_classes",
+  "test_evaluation": false,
+  "search": false,
+  "source_root_required": false,
+  "minimum_train_participants": 4,
+  "reference_margin_seconds": 1,
+  "versions": {
+    "numpy": "2.4.6",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.6.1",
+    "joblib": "1.6.0",
+    "matplotlib": "3.10.0"
+  },
+  "python": "3.13.18"
+}

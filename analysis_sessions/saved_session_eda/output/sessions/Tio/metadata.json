@@ -1,0 +1,19 @@
+{
+  "subject_session": "Tio",
+  "participant_group": "Tio",
+  "original_session_id": "20261027_142523_P01_coding_task",
+  "origin_wib": "2026-10-27T14:28:51.149967041+07:00",
+  "origin_definition": "both_calibrated_at_utc",
+  "eye_bin_seconds": 5.0,
+  "screen": {
+    "width": 2880,
+    "height": 1800
+  },
+  "notes": [
+    "Validasi gaze tidak lulus aturan program; lokasi/heatmap/Eye_State adalah keluaran estimasi.",
+    "Gambar potongan mata tidak tersedia dalam arsip."
+  ],
+  "eye_frames": 58480,
+  "hrv_task_windows": 431,
+  "baseline_rmssd_ms": 39.17144155471048
+}

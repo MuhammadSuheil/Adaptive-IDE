@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_rmssd",
+  "protocol": "participant_held_out",
+  "family": "logistic_regression",
+  "representation": "raw",
+  "fold": 11,
+  "held_participants": "Siti",
+  "rows": 76,
+  "fit_rows": 2378,
+  "accuracy": 0.5394736842105263,
+  "macro_f1": 0.5193367266621189,
+  "train_accuracy": 0.5260723296888141,
+  "train_macro_f1": 0.5184204132557281,
+  "metrics": {
+    "rows": 76,
+    "accuracy": 0.5394736842105263,
+    "macro_f1": 0.5193367266621189,
+    "recall": [
+      0.6666666666666666,
+      0.5116279069767442,
+      0.5555555555555556
+    ],
+    "confusion_matrix": [
+      [
+        4,
+        1,
+        1
+      ],
+      [
+        5,
+        22,
+        16
+      ],
+      [
+        2,
+        10,
+        15
+      ]
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "subject_session": "Sullivan",
+  "participant_group": "Sullivan",
+  "original_session_id": "20261028_122016_P01_coding_task",
+  "origin_wib": "2026-10-28T12:25:26.422410889+07:00",
+  "origin_definition": "both_calibrated_at_utc",
+  "eye_bin_seconds": 5.0,
+  "screen": {
+    "width": 2880,
+    "height": 1800
+  },
+  "notes": [
+    "Validasi gaze tidak lulus aturan program; lokasi/heatmap/Eye_State adalah keluaran estimasi.",
+    "Tidak ada HRV tugas berstatus ready. Grafik/analisis HRV siap sengaja kosong.",
+    "Gambar potongan mata tidak tersedia dalam arsip."
+  ],
+  "eye_frames": 32852,
+  "hrv_task_windows": 233,
+  "baseline_rmssd_ms": 12.458593268426789
+}

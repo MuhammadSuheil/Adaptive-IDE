@@ -1,0 +1,4 @@
+difficulty_level,eye_frames,active_seconds_in_eye_range,ear_mean_median,iris_delta_median,on_screen_pct,clipping_pct_valid,blink_rate_per_active_minute,ready_active_hrv_windows,rmssd_median_ms,rmssd_ratio_median
+easy,0,0.0,,,,,,0,,
+medium,17769,595.705,0.5344146062561803,0.00214094471241585,85.75609207045979,4.174250697730858,6.345422650472969,88,45.372113598378775,1.0197703183371507
+hard,0,0.0,,,,,,0,,

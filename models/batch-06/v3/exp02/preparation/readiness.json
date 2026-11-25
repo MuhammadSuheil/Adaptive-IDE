@@ -1,0 +1,37 @@
+{
+  "checked_at_client_date": "2026-11-24",
+  "scope": "local_preflight_not_drive_training",
+  "training_executed": false,
+  "source_exp01_run": "baseline_20261123T192338Z_8d8cee5e",
+  "snapshot_sha256": "e58208c30f69a1463883282fff2040e3b537c53889167e77839c6a77fca3b2af",
+  "dataset_sha256": {
+    "15": "d7ec0c1c59ad2af6fc66ad97ae7adf59471a95e04181fb3162dd5b342fa143db",
+    "25": "dc85bbc402e54792748f91652b0575734deeed4b3364b039ad399bc5389fe9b3",
+    "45": "506ee0c3f70e3998ef7fdd80058dfa75690936f4fedc041c5852558722612410"
+  },
+  "train_rows": 671,
+  "validation_rows": 99,
+  "participants": [
+    "Baithar",
+    "Fabian",
+    "Mon",
+    "kaka"
+  ],
+  "train_support": {
+    "Low": 264,
+    "Medium": 180,
+    "High": 227
+  },
+  "validation_support": {
+    "Low": 43,
+    "Medium": 0,
+    "High": 56
+  },
+  "fold_counts": {
+    "participant_held_out": 4,
+    "historical_block_cv": 5
+  },
+  "cv_fit_budget": 45,
+  "validation_fit_budget": 4,
+  "test_evaluated": false
+}

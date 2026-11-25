@@ -1,0 +1,19 @@
+{
+  "subject_session": "faqih",
+  "participant_group": "faqih",
+  "original_session_id": "20261028_084341_P01_coding_task",
+  "origin_wib": "2026-10-28T08:47:01.048894043+07:00",
+  "origin_definition": "both_calibrated_at_utc",
+  "eye_bin_seconds": 5.0,
+  "screen": {
+    "width": 2880,
+    "height": 1800
+  },
+  "notes": [
+    "Validasi gaze tidak lulus aturan program; lokasi/heatmap/Eye_State adalah keluaran estimasi.",
+    "Gambar potongan mata tidak tersedia dalam arsip."
+  ],
+  "eye_frames": 51244,
+  "hrv_task_windows": 409,
+  "baseline_rmssd_ms": 41.85232004694748
+}

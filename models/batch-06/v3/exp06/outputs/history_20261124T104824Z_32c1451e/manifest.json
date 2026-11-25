@@ -1,0 +1,45 @@
+{
+  "inputs": {
+    "v2_history_sha256": "40937f1399dcc358494b864c21c9b1a50d453d4e49033bec6c0afa6e67611f2d",
+    "v3": {
+      "window_15s_step_5s/good_acceptable.csv": "a00c6ca6a8767d44b9d69bee703fe3c1a420d8b45b73cad2771cf34405896840",
+      "window_15s_step_5s/window_assignments.csv": "42e5973f23dd63095abe316a47afadc8219dc0c5fef3fc5f21ccd2be198a57b1",
+      "episode_labels.csv": "3eb6a872785429081ada463723875725a3c04d96972ae8d1a26a04520bb49358",
+      "participant_splits.csv": "fa2084be829d13045f9d7296a115fed8a92186e8fc8341e3a2a337b6389e7606",
+      "window_15s_step_5s/train_sample_weights.csv": "719760b789c96fb0f8067bf8865e23f4a69110fea8af8b354eb4cadfa38e1b76"
+    },
+    "v4": {
+      "window_15s_step_5s/good_acceptable.csv": "6c2febb856e5986e2d9f76b64c0757b3476547bdcf42ccfcff1f02a3b69c2c79",
+      "window_15s_step_5s/window_assignments.csv": "aeb41a5a730548039fd40caf1bd040ecbd11099cffe209bb7d27e01159ad96be",
+      "episode_ratings.csv": "9f7ab8997fe84549e222c82f4ae0c968b07e13d53464da48444d383138aef686"
+    }
+  },
+  "features": [
+    "rmssd_ms",
+    "sdnn_ms",
+    "blink_rate_per_minute",
+    "ear_left_mean",
+    "ear_left_std",
+    "ear_right_mean",
+    "ear_right_std",
+    "iris_size_estimate_mean",
+    "iris_size_estimate_std",
+    "iris_size_delta_mean",
+    "head_pitch_mean",
+    "head_pitch_std",
+    "head_yaw_mean",
+    "head_yaw_std"
+  ],
+  "sklearn": "1.8.0",
+  "pandas": "3.0.2",
+  "numpy": "2.4.4",
+  "primary_exact": "svc_relative_core_head",
+  "primary_distance": "svr_relative_core_head",
+  "max_reference_windows": 12,
+  "min_reference_windows": 3,
+  "svc_C": 1,
+  "svr_C": 2,
+  "svr_epsilon": 0.5,
+  "kernel": "rbf",
+  "gamma": "scale"
+}

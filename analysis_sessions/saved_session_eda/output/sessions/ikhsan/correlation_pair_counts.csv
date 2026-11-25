@@ -1,0 +1,11 @@
+,rmssd_ratio,sdnn_ms,ear_left_mean,ear_right_mean,iris_delta_mean,blink_count,clipping_ratio_valid,on_screen_mean,pitch_mean,yaw_mean
+rmssd_ratio,272,272,272,272,272,272,272,272,272,272
+sdnn_ms,272,272,272,272,272,272,272,272,272,272
+ear_left_mean,272,272,272,272,272,272,272,272,272,272
+ear_right_mean,272,272,272,272,272,272,272,272,272,272
+iris_delta_mean,272,272,272,272,272,272,272,272,272,272
+blink_count,272,272,272,272,272,272,272,272,272,272
+clipping_ratio_valid,272,272,272,272,272,272,272,272,272,272
+on_screen_mean,272,272,272,272,272,272,272,272,272,272
+pitch_mean,272,272,272,272,272,272,272,272,272,272
+yaw_mean,272,272,272,272,272,272,272,272,272,272

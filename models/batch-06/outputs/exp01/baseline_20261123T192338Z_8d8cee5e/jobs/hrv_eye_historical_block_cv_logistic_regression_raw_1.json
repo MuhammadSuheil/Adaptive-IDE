@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_eye",
+  "protocol": "historical_block_cv",
+  "family": "logistic_regression",
+  "representation": "raw",
+  "fold": 1,
+  "held_participants": "Fabian;Mon;kaka",
+  "rows": 149,
+  "fit_rows": 498,
+  "accuracy": 0.3422818791946309,
+  "macro_f1": 0.33722987651996217,
+  "train_accuracy": 0.7088353413654619,
+  "train_macro_f1": 0.7008547008547009,
+  "metrics": {
+    "rows": 149,
+    "accuracy": 0.3422818791946309,
+    "macro_f1": 0.33722987651996217,
+    "recall": [
+      0.2638888888888889,
+      0.2857142857142857,
+      0.4642857142857143
+    ],
+    "confusion_matrix": [
+      [
+        19,
+        40,
+        13
+      ],
+      [
+        15,
+        6,
+        0
+      ],
+      [
+        11,
+        19,
+        26
+      ]
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_rmssd",
+  "protocol": "participant_held_out",
+  "family": "logistic_regression",
+  "representation": "baseline_relative",
+  "fold": 17,
+  "held_participants": "raina",
+  "rows": 113,
+  "fit_rows": 2341,
+  "accuracy": 0.36283185840707965,
+  "macro_f1": 0.26537216828478966,
+  "train_accuracy": 0.5369500213583939,
+  "train_macro_f1": 0.5332275634799059,
+  "metrics": {
+    "rows": 113,
+    "accuracy": 0.36283185840707965,
+    "macro_f1": 0.26537216828478966,
+    "recall": [
+      0.4444444444444444,
+      0.0,
+      0.4358974358974359
+    ],
+    "confusion_matrix": [
+      [
+        24,
+        0,
+        30
+      ],
+      [
+        3,
+        0,
+        17
+      ],
+      [
+        22,
+        0,
+        17
+      ]
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_rmssd",
+  "protocol": "participant_held_out",
+  "family": "logistic_regression",
+  "representation": "raw",
+  "fold": 7,
+  "held_participants": "Rafi",
+  "rows": 178,
+  "fit_rows": 2276,
+  "accuracy": 0.4943820224719101,
+  "macro_f1": 0.44956154956154953,
+  "train_accuracy": 0.5171353251318102,
+  "train_macro_f1": 0.5093874370704169,
+  "metrics": {
+    "rows": 178,
+    "accuracy": 0.4943820224719101,
+    "macro_f1": 0.44956154956154953,
+    "recall": [
+      1.0,
+      0.18461538461538463,
+      0.3392857142857143
+    ],
+    "confusion_matrix": [
+      [
+        57,
+        0,
+        0
+      ],
+      [
+        44,
+        12,
+        9
+      ],
+      [
+        37,
+        0,
+        19
+      ]
+    ]
+  }
+}

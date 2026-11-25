@@ -1,0 +1,7 @@
+display_index,protocol,representation,exp01_accuracy,exp02_accuracy,exp01_macro_f1,exp02_macro_f1,same_metrics
+0,participant_held_out,raw,0.357675,0.357675,0.33955,0.33955,True
+1,participant_held_out,combined,0.414307,0.414307,0.398531,0.398531,True
+2,historical_block_cv,raw,0.354694,0.354694,0.342614,0.342614,True
+3,historical_block_cv,combined,0.393443,0.393443,0.383809,0.383809,True
+4,validation,combined,0.656566,0.656566,0.445824,0.445824,True
+5,validation,raw,0.525253,0.525253,0.334631,0.334631,True

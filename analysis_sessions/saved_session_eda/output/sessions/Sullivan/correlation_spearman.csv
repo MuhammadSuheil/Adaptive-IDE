@@ -1,0 +1,11 @@
+,rmssd_ratio,sdnn_ms,ear_left_mean,ear_right_mean,iris_delta_mean,blink_count,clipping_ratio_valid,on_screen_mean,pitch_mean,yaw_mean
+rmssd_ratio,,,,,,,,,,
+sdnn_ms,,,,,,,,,,
+ear_left_mean,,,,,,,,,,
+ear_right_mean,,,,,,,,,,
+iris_delta_mean,,,,,,,,,,
+blink_count,,,,,,,,,,
+clipping_ratio_valid,,,,,,,,,,
+on_screen_mean,,,,,,,,,,
+pitch_mean,,,,,,,,,,
+yaw_mean,,,,,,,,,,

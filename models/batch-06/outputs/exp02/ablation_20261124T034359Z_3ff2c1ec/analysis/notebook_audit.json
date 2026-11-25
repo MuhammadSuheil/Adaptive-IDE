@@ -1,0 +1,23 @@
+{
+  "checked_at_client_date": "2026-11-24",
+  "run_id": "ablation_20261124T034359Z_3ff2c1ec",
+  "evidence": "Executed notebook outputs only; supplied ZIP is Exp01, not this Exp02 run.",
+  "notebook_sha256": "f308d6fb1377fe605034dd658828b44eccc0c5a5df23ec91c478c274f530aaf7",
+  "checks": {
+    "notebook_source_matches": true,
+    "cell_errors": 0,
+    "cv_jobs_logged": 45,
+    "validation_jobs_logged": 4,
+    "displayed_control_rows": 6,
+    "all_displayed_control_checks_true": true,
+    "contrasts_checked": 15,
+    "accuracy_recall_consistency_tables": 14,
+    "original_control_comparisons": 6
+  },
+  "precision": "Displayed HTML metric tables are rounded to six decimals; two-decimal report text is preserved.",
+  "per_window_prediction_audit": false,
+  "model_checksum_audit": false,
+  "raw_exp02_artifacts_available": false,
+  "training_executed_during_analysis": false,
+  "warning": "Two pandas FutureWarnings about concatenating all-NA columns; run reached final report."
+}

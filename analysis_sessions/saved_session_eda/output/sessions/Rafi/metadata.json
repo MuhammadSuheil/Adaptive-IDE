@@ -1,0 +1,20 @@
+{
+  "subject_session": "Rafi",
+  "participant_group": "Rafi",
+  "original_session_id": "20261028_141228_P01_coding_task",
+  "origin_wib": "2026-10-28T14:15:46.877171143+07:00",
+  "origin_definition": "both_calibrated_at_utc",
+  "eye_bin_seconds": 5.0,
+  "screen": {
+    "width": 2880,
+    "height": 1800
+  },
+  "notes": [
+    "Validasi gaze tidak lulus aturan program; lokasi/heatmap/Eye_State adalah keluaran estimasi.",
+    "Timeline gabungan tidak tersedia; EDA ini menyelaraskan sumber secara read-only.",
+    "Gambar potongan mata tidak tersedia dalam arsip."
+  ],
+  "eye_frames": 51928,
+  "hrv_task_windows": 411,
+  "baseline_rmssd_ms": 45.51601638657952
+}

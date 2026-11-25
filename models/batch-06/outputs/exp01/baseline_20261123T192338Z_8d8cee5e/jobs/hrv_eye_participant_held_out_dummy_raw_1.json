@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_eye",
+  "protocol": "participant_held_out",
+  "family": "dummy",
+  "representation": "raw",
+  "fold": 1,
+  "held_participants": "Fabian",
+  "rows": 193,
+  "fit_rows": 478,
+  "accuracy": 0.32642487046632124,
+  "macro_f1": 0.1640625,
+  "train_accuracy": 0.4205020920502092,
+  "train_macro_f1": 0.19734904270986744,
+  "metrics": {
+    "rows": 193,
+    "accuracy": 0.32642487046632124,
+    "macro_f1": 0.1640625,
+    "recall": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "confusion_matrix": [
+      [
+        63,
+        0,
+        0
+      ],
+      [
+        52,
+        0,
+        0
+      ],
+      [
+        78,
+        0,
+        0
+      ]
+    ]
+  }
+}

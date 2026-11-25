@@ -1,5 +1,11 @@
 # Model Cognitive Load
 
+## Batch-06: model umum dengan baseline awal sensor
+
+[Panduan batch-06](batch-06/README.md) menyediakan notebook mandiri Colab dengan mount dan root dataset seperti batch sebelumnya. [Hasil run pertama](batch-06/SUMMARY.md) menunjukkan manfaat baseline terbatas: OOF Logistic Regression RMSSD 39,41% dan Extra Trees pada subset eye empat orang 41,43%. [Diagnosis](batch-06/DIAGNOSIS.md) menjelaskan bahwa validation eye 65,66% tidak mempunyai contoh Medium. Test tidak dievaluasi. [Rencana eksperimen](batch-06/PLAN.md) mencatat aturan perbandingannya.
+
+[Hasil Exp02](batch-06/exp02/SUMMARY.md) memisahkan kontribusi normalisasi pada peserta/baris/fold yang sama: gabungan tertinggi pada OOF peserta (41,43%), sementara eye-only menurunkan accuracy dan Macro-F1 dua CV. [Notebook dan panduan](batch-06/exp02/README.md) tetap mandiri untuk mount Drive.
+
 ## Batch-05: persiapan evaluasi
 
 [Panduan batch-05](batch-05/README.md) dan [rencana tiga tahap](batch-05/PLAN.md) mencakup persiapan, kontrol tabular, dan neural terarah. Notebook tahap 3 memakai snapshot split/monitor, membandingkan aturan checkpoint dan kontrol fitting pada window 25 detik, lalu mengevaluasi satu model terkunci pada Test referensi. Run all tidak mengulang training tahap 2. [Ringkasan hasil](batch-05/SUMMARY.md) memuat hasil yang sudah selesai.

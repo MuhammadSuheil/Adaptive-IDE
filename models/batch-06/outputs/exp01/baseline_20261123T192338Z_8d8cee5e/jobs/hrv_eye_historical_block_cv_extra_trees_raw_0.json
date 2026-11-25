@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_eye",
+  "protocol": "historical_block_cv",
+  "family": "extra_trees",
+  "representation": "raw",
+  "fold": 0,
+  "held_participants": "Baithar;Fabian;kaka",
+  "rows": 172,
+  "fit_rows": 469,
+  "accuracy": 0.4941860465116279,
+  "macro_f1": 0.4690431665887487,
+  "train_accuracy": 0.9381663113006397,
+  "train_macro_f1": 0.9315870916442819,
+  "metrics": {
+    "rows": 172,
+    "accuracy": 0.4941860465116279,
+    "macro_f1": 0.4690431665887487,
+    "recall": [
+      0.6623376623376623,
+      0.22535211267605634,
+      0.75
+    ],
+    "confusion_matrix": [
+      [
+        51,
+        0,
+        26
+      ],
+      [
+        8,
+        16,
+        47
+      ],
+      [
+        0,
+        6,
+        18
+      ]
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+display_index,protocol,treatment,control,rows,accuracy_delta_pp,macro_f1_delta_pp,mean_participant_accuracy_delta_pp,mean_participant_macro_f1_delta_pp
+0,historical_block_cv,rmssd_only,raw,671,4.321908,4.76426,3.581189,2.764797
+1,historical_block_cv,eye_only,raw,671,-1.788376,-1.780498,-2.390164,-2.145569
+2,historical_block_cv,combined,raw,671,3.874814,4.119488,2.825231,2.239989
+3,historical_block_cv,combined,rmssd_only,671,-0.447094,-0.644772,-0.755958,-0.524808
+4,historical_block_cv,combined,eye_only,671,5.663189,5.899986,5.215395,4.385558
+5,participant_held_out,rmssd_only,raw,671,2.384501,1.999182,2.204258,2.017791
+6,participant_held_out,eye_only,raw,671,-4.023845,-2.77052,-5.69442,1.415479
+7,participant_held_out,combined,raw,671,5.663189,5.898095,4.792611,10.607132
+8,participant_held_out,combined,rmssd_only,671,3.278689,3.898913,2.588353,8.589341
+9,participant_held_out,combined,eye_only,671,9.687034,8.668615,10.48703,9.191653
+10,validation,rmssd_only,raw,99,14.141414,11.80185,12.658813,4.251043
+11,validation,eye_only,raw,99,7.070707,6.148751,6.306306,2.360769
+12,validation,combined,raw,99,13.131313,11.119268,11.757912,4.026392
+13,validation,combined,rmssd_only,99,-1.010101,-0.682582,-0.900901,-0.224651
+14,validation,combined,eye_only,99,6.060606,4.970517,5.451605,1.665623

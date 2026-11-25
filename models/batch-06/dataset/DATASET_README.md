@@ -9,6 +9,8 @@ Batch 06 memiliki dua paket, masing-masing dengan window 15 detik dan step 5 det
 
 Kedua paket memakai sepuluh fitur inti yang sama: RMSSD, SDNN, laju kedipan, rata-rata dan simpangan baku EAR kiri/kanan, rata-rata dan simpangan baku estimasi ukuran iris, serta rata-rata perubahan ukuran iris. Daftar nama kolom tersedia di README masing-masing paket. Jalankan v3 dan v4 sebagai eksperimen terpisah. V4 tidak memakai pembagian atau bobot v3.
 
+Notebook Colab tersedia untuk [v3 pada exp03](../exp03/EyeHeartCognitiveLoad.ipynb) dan [v4 pada exp04](../exp04/EyeHeartCognitiveLoad.ipynb). [Panduan eksperimen](../relabeling/README.md) menjelaskan kandidat, unit evaluasi, serta lokasi ZIP yang dikembalikan ke repo.
+
 ## Sebaran label
 
 Persentase memakai jumlah baris `good_acceptable.csv` pada masing-masing paket sebagai penyebut. Kolom episode dan peserta menghitung ID unik yang terwakili pada setiap label. Seorang peserta dapat muncul pada lebih dari satu label, sehingga jumlah peserta antarlabel tidak dijumlahkan. Persentase bisa sedikit berbeda dari 100% setelah pembulatan.

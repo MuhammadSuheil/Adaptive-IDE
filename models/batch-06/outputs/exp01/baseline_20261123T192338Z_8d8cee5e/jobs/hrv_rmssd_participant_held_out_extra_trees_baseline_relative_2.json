@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_rmssd",
+  "protocol": "participant_held_out",
+  "family": "extra_trees",
+  "representation": "baseline_relative",
+  "fold": 2,
+  "held_participants": "Andreas",
+  "rows": 71,
+  "fit_rows": 2383,
+  "accuracy": 0.39436619718309857,
+  "macro_f1": 0.2246376811594203,
+  "train_accuracy": 0.9618128409567772,
+  "train_macro_f1": 0.9617187252395801,
+  "metrics": {
+    "rows": 71,
+    "accuracy": 0.39436619718309857,
+    "macro_f1": 0.2246376811594203,
+    "recall": [
+      0.0,
+      0.13636363636363635,
+      0.5555555555555556
+    ],
+    "confusion_matrix": [
+      [
+        0,
+        1,
+        3
+      ],
+      [
+        0,
+        3,
+        19
+      ],
+      [
+        0,
+        20,
+        25
+      ]
+    ]
+  }
+}

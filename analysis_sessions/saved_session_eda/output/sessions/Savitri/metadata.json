@@ -1,0 +1,19 @@
+{
+  "subject_session": "Savitri",
+  "participant_group": "Savitri",
+  "original_session_id": "20261030_132625_P01_coding_task",
+  "origin_wib": "2026-10-30T13:29:09.306487061+07:00",
+  "origin_definition": "both_calibrated_at_utc",
+  "eye_bin_seconds": 5.0,
+  "screen": {
+    "width": 2880,
+    "height": 1800
+  },
+  "notes": [
+    "Validasi gaze tidak lulus aturan program; lokasi/heatmap/Eye_State adalah keluaran estimasi.",
+    "Gambar potongan mata tidak tersedia dalam arsip."
+  ],
+  "eye_frames": 43716,
+  "hrv_task_windows": 408,
+  "baseline_rmssd_ms": 38.157459245719465
+}

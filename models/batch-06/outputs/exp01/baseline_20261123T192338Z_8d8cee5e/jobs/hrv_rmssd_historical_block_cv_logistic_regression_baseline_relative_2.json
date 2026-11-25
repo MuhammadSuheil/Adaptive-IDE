@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_rmssd",
+  "protocol": "historical_block_cv",
+  "family": "logistic_regression",
+  "representation": "baseline_relative",
+  "fold": 2,
+  "held_participants": "Alif;Andrean;Andreas;Athaya;Fabian;Rafi;Savitri;Siti;ikhsan;irfan;kaka;raina",
+  "rows": 520,
+  "fit_rows": 1832,
+  "accuracy": 0.3326923076923077,
+  "macro_f1": 0.3052116700260809,
+  "train_accuracy": 0.5567685589519651,
+  "train_macro_f1": 0.5525276224892961,
+  "metrics": {
+    "rows": 520,
+    "accuracy": 0.3326923076923077,
+    "macro_f1": 0.3052116700260809,
+    "recall": [
+      0.5824742268041238,
+      0.22485207100591717,
+      0.14012738853503184
+    ],
+    "confusion_matrix": [
+      [
+        113,
+        67,
+        14
+      ],
+      [
+        54,
+        38,
+        77
+      ],
+      [
+        63,
+        72,
+        22
+      ]
+    ]
+  }
+}

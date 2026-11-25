@@ -1,0 +1,15 @@
+protocol,recipe,participant_id,pairs,concordance
+Train_LOPO,A_episode,Andreas,9,0.6666666666666667
+Train_LOPO,A_episode,Fabian,1,1.0
+Train_LOPO,A_episode,Mon,2,1.0
+Train_LOPO,A_episode,irfan,2,1.0
+Train_LOPO,A_episode,kaka,2,0.5
+Train_LOPO,B_window,Andreas,9,0.22222222222222224
+Train_LOPO,B_window,Fabian,1,1.0
+Train_LOPO,B_window,Mon,2,0.0
+Train_LOPO,B_window,irfan,2,1.0
+Train_LOPO,B_window,kaka,2,0.5
+validation,A_episode,Baithar,6,1.0
+validation,A_episode,Ramadhan,1,1.0
+validation,B_window,Baithar,6,0.8333333333333333
+validation,B_window,Ramadhan,1,0.0

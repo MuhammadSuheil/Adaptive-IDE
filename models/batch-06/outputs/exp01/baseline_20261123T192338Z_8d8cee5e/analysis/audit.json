@@ -1,0 +1,24 @@
+{
+  "checked_at_client_date": "2026-11-24",
+  "checks": {
+    "oof_tables": 20,
+    "validation_tables": 4,
+    "fold_jobs": 165,
+    "model_hashes": 4,
+    "dataset_hashes": 3,
+    "fold_manifests": 33,
+    "paired_rows": 8,
+    "baseline_references": 19
+  },
+  "all_checks_passed": true,
+  "test_ids_absent_from_predictions": true,
+  "notebook_sources_match_prepared_notebook": true,
+  "notebook_cell_errors": 0,
+  "models_loaded": false,
+  "training_executed": false,
+  "run_complete": true,
+  "cv_fits": 165,
+  "validation_fits": 4,
+  "oof_prediction_rows": 31250,
+  "scope": "Recomputed saved prediction metrics and audited manifests/hashes; no model inference or training."
+}

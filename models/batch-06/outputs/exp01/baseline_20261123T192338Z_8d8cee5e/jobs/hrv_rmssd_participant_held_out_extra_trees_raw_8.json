@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_rmssd",
+  "protocol": "participant_held_out",
+  "family": "extra_trees",
+  "representation": "raw",
+  "fold": 8,
+  "held_participants": "Ramadhan",
+  "rows": 52,
+  "fit_rows": 2402,
+  "accuracy": 0.15384615384615385,
+  "macro_f1": 0.09523809523809523,
+  "train_accuracy": 0.9612822647793505,
+  "train_macro_f1": 0.9611446290282063,
+  "metrics": {
+    "rows": 52,
+    "accuracy": 0.15384615384615385,
+    "macro_f1": 0.09523809523809523,
+    "recall": [
+      0.16666666666666666,
+      0.0,
+      0.0
+    ],
+    "confusion_matrix": [
+      [
+        8,
+        0,
+        40
+      ],
+      [
+        0,
+        0,
+        4
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_eye",
+  "protocol": "participant_held_out",
+  "family": "logistic_regression",
+  "representation": "baseline_relative",
+  "fold": 2,
+  "held_participants": "Mon",
+  "rows": 171,
+  "fit_rows": 500,
+  "accuracy": 0.47368421052631576,
+  "macro_f1": 0.2142857142857143,
+  "train_accuracy": 0.692,
+  "train_macro_f1": 0.6817815111726989,
+  "metrics": {
+    "rows": 171,
+    "accuracy": 0.47368421052631576,
+    "macro_f1": 0.2142857142857143,
+    "recall": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "confusion_matrix": [
+      [
+        81,
+        0,
+        0
+      ],
+      [
+        31,
+        0,
+        0
+      ],
+      [
+        59,
+        0,
+        0
+      ]
+    ]
+  }
+}

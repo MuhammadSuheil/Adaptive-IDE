@@ -1,0 +1,19 @@
+{
+  "subject_session": "irfan",
+  "participant_group": "irfan",
+  "original_session_id": "20261028_133037_P01_coding_task",
+  "origin_wib": "2026-10-28T13:33:18.505518066+07:00",
+  "origin_definition": "both_calibrated_at_utc",
+  "eye_bin_seconds": 5.0,
+  "screen": {
+    "width": 2880,
+    "height": 1800
+  },
+  "notes": [
+    "Validasi gaze tidak lulus aturan program; lokasi/heatmap/Eye_State adalah keluaran estimasi.",
+    "Gambar potongan mata tidak tersedia dalam arsip."
+  ],
+  "eye_frames": 55656,
+  "hrv_task_windows": 407,
+  "baseline_rmssd_ms": 30.28726855921759
+}

@@ -1,0 +1,41 @@
+{
+  "cohort": "hrv_rmssd",
+  "protocol": "participant_held_out",
+  "family": "extra_trees",
+  "representation": "baseline_relative",
+  "fold": 3,
+  "held_participants": "Athaya",
+  "rows": 176,
+  "fit_rows": 2278,
+  "accuracy": 0.36363636363636365,
+  "macro_f1": 0.3149208947081288,
+  "train_accuracy": 0.9626865671641791,
+  "train_macro_f1": 0.9626710085904687,
+  "metrics": {
+    "rows": 176,
+    "accuracy": 0.36363636363636365,
+    "macro_f1": 0.3149208947081288,
+    "recall": [
+      0.5,
+      0.8307692307692308,
+      0.0
+    ],
+    "confusion_matrix": [
+      [
+        10,
+        9,
+        1
+      ],
+      [
+        6,
+        54,
+        5
+      ],
+      [
+        11,
+        80,
+        0
+      ]
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "subject_session": "kaka",
+  "participant_group": "kaka",
+  "original_session_id": "20261027_151755_P01_coding_task",
+  "origin_wib": "2026-10-27T15:20:33.524267822+07:00",
+  "origin_definition": "both_calibrated_at_utc",
+  "eye_bin_seconds": 5.0,
+  "screen": {
+    "width": 2880,
+    "height": 1800
+  },
+  "notes": [
+    "Validasi gaze tidak lulus aturan program; lokasi/heatmap/Eye_State adalah keluaran estimasi.",
+    "Gambar potongan mata tidak tersedia dalam arsip."
+  ],
+  "eye_frames": 64053,
+  "hrv_task_windows": 452,
+  "baseline_rmssd_ms": 24.24457325585708
+}

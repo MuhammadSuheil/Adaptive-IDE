@@ -4,6 +4,8 @@ Batch 06 menjalankan dua rangkaian eksperimen terpisah dan bebas kebocoran pada 
 
 ## Ringkasan Dokumen & Notebook
 
+[Laporan hasil v3 dan perbandingan v4 (PDF)](v3/report/Laporan_v3.pdf) memuat sebaran data, kurva training, dan hasil LOPO, validasi serta Test resmi. Di Test v3, exp11 benar 11/18 episode dan exp13 benar 9/18. Keduanya mendeteksi 1/2 High.
+
 | Berkas | Isi |
 |---|---|
 | [PLAN.md](PLAN.md) | Rancangan protokol eksperimen, aturan anti-kebocoran, profil fitur, normalisasi, dan seleksi model |
