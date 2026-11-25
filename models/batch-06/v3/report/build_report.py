@@ -277,18 +277,19 @@ def write_pages(doc, metrics, curves, windows):
     v4 = json.loads((BATCH / "outputs/exp03_v4_binary_overload/binary_deepdive_summary.json").read_bytes())
     target = "full_1_6_vs_7_10"
     locked = v4["dev_to_heldout_test_summary"][target]
-    v4_results = [(v4["best_lopo_operational_per_task"][target], 23),
-                  (locked["dev_lopo"], 18), (locked["held_out_test"], 5)]
+    v4_results = {"Train_LOPO": ("LOPO penuh", v4["best_lopo_operational_per_task"][target], 23),
+                  "validation": ("Dev LOPO*", locked["dev_lopo"], 18),
+                  "Test": ("Test", locked["held_out_test"], 5)}
     comparison = []
-    for (protocol, title), (v, positives) in zip(PROTOCOLS.items(), v4_results, strict=True):
+    for protocol, title in PROTOCOLS.items():
+        v4_title, v, positives = v4_results[protocol]
         for r in metrics[metrics.protocol.eq(protocol)].itertuples():
             comparison.append([title, "V3 " + MODELS[r.recipe], f"{r.tp+r.tn}/{r.episodes} · {dec(100*r.accuracy)}%",
                                dec(100*r.balanced_accuracy,2)+"%", dec(r.auc_pooled,3),
                                f"{r.tp}/{r.tp+r.fn}", f"{r.fp}/{r.fp+r.tn}"])
         n = v["n_episodes"]
         negatives = n - positives
-        comparison.append([{"Train_LOPO":"LOPO penuh","validation":"Dev LOPO*","Test":"Test"}[protocol],
-                           "V4 Exp03", f"{round(n*v['ep_acc'])}/{n} · {dec(100*v['ep_acc'])}%",
+        comparison.append([v4_title, "V4 Exp03", f"{round(n*v['ep_acc'])}/{n} · {dec(100*v['ep_acc'])}%",
                            dec(100*v["ep_bal_acc"],2)+"%", dec(v["ep_auc"],3),
                            f"{round(positives*v['ep_sens'])}/{positives}",
                            f"{round(negatives*(1-v['ep_spec']))}/{negatives}"])
@@ -298,19 +299,16 @@ def write_pages(doc, metrics, curves, windows):
         table(["Evaluasi","Model","Benar · akurasi","Bal. acc.","AUC","High benar","Alarm palsu"], comparison),
         "<p><b>* Validasi v4.</b> Tim memakai validasi silang LOPO pada 13 peserta pengembangan (99 episode) untuk memilih model yang kemudian diuji pada empat peserta Test. "
         "V4 tidak memiliki split validasi terpisah seperti tiga peserta validasi v3. Baris LOPO penuh v4 merangkum 17 peserta (126 episode), sedangkan LOPO Train v3 mencakup 15 peserta dengan episode layak.</p>",
-        "<p>AUC mengukur seberapa sering skor episode positif lebih tinggi daripada episode negatif yang dipasangkan, dengan setengah kredit untuk seri. "
-        "V4 memberi bukti pengurutan pada LOPO (interval bootstrap peserta 95% 0,647–0,894) dan pada empat peserta Test. "
-        "Pada LOPO v4, ambang 0,50 memberikan akurasi 69,8%. Ambang 0,65 menaikkan akurasi menjadi 80,2% dan menurunkan deteksi overload ke 11/23. "
-        "Tebakan semua non-overload memberi 103/126 benar (81,7%) dengan nol overload terdeteksi.</p>",
+        "<p>AUC menilai urutan skor pasangan positif–negatif. Pada LOPO penuh v4, AUC 0,781 (interval 95% 0,647–0,894). "
+        "Menaikkan ambang dari 0,50 ke 0,65 meningkatkan akurasi dari 69,8% ke 80,2%, sementara overload terdeteksi turun dari 16/23 ke 11/23. "
+        "Selalu memprediksi non-overload memberi 103/126 benar dan melewatkan semua overload.</p>",
         "<p>Test v3 memuat dua High perilaku dari 18 episode. Test v4 memuat lima overload dari 27 episode. "
         "Model Test v4 memakai sembilan fitur inti, sedangkan kandidat terbaik LOPO penuh v4 juga memakai posisi kepala dan baseline.</p>",
         "<h2>Skor v3 terhadap rating peserta yang sama</h2><p>Di antara 21 episode LOPO v3 dengan rating, tujuh berating ≥7. "
         "Exp11 mencapai AUC rating 0,827 (Spearman 0,525) dan exp13 0,786 (Spearman 0,393). "
         "Pada validasi, keduanya mencapai AUC rating 0,778, dengan hanya satu rating ≥7 dari sepuluh episode. "
         "Pencocokan ini dilakukan setelah prediksi dan memberi bukti terbatas tentang kesesuaian skor perilaku dengan pengalaman peserta.</p>",
-        "<p><b>Sumber repo.</b> models/batch-06/dataset/DATASET_README.md, laporan v3/exp05 serta exp07–exp13, "
-        "outputs/exp01_v3_behavioral_proxy/RESULTS.md, dan outputs/exp03_v4_binary_overload/RESULTS.md. "
-        "Prediksi pengembangan berasal dari run exp13 iqr_20261125T091155Z_5a63ee6f. Prediksi Test dan metrik tersimpan di v3/report/test_episode_predictions.csv dan test_metrics.csv.</p>"])
+        "<p><b>Sumber Batch 06.</b> Metrik exp13, v3/report/test_metrics.csv, dan ringkasan biner tim di outputs/exp03_v4_binary_overload/binary_deepdive_summary.json.</p>"])
 
 
 if __name__ == "__main__":
