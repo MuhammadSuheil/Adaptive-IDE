@@ -27,3 +27,7 @@ AGENTS.md
 codearrange-web/logs/**
 !codearrange-web/logs/saved_log
 !codearrange-web/logs/saved_log/**
+
+# Video
+video/
+video/**
