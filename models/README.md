@@ -1,5 +1,16 @@
 # Model Cognitive Load
 
+## Batch-08: model final deteksi overload (batch terakhir)
+
+[Panduan batch-08](batch-08/README.md) · [Hasil](batch-08/SUMMARY.md) · [Diagnosis](batch-08/DIAGNOSIS.md) · [Riwayat ronde](batch-08/ROUNDS.md)
+
+- **Target:** overload = rating kesulitan peserta ≥ 7 (V4, 126 episode, 17 peserta).
+- **Evaluasi:** nested LOPO penuh, dijalankan lokal (venv `models/batch-08/.venv`, scikit-learn 1.7.2).
+- **Model sensor-only A-ens:** AUC 0,826, balanced accuracy 0,768.
+- **Model deploy B3** (sensor + waktu aktif berjalan): AUC 0,890, balanced accuracy 0,840, akurasi 84,9% (tebakan mayoritas 81,7%).
+- **Pembanding Batch 07:** AUC 0,778, balanced accuracy 0,741.
+- **Model final untuk IDE:** [batch-08/final_model/b8_overload_model.json](batch-08/final_model/b8_overload_model.json).
+
 ## Batch-06: model umum dengan baseline awal sensor
 
 [Panduan batch-06](batch-06/README.md) menyediakan notebook mandiri Colab dengan mount dan root dataset seperti batch sebelumnya. [Hasil run pertama](batch-06/SUMMARY.md) menunjukkan manfaat baseline terbatas: OOF Logistic Regression RMSSD 39,41% dan Extra Trees pada subset eye empat orang 41,43%. [Diagnosis](batch-06/DIAGNOSIS.md) menjelaskan bahwa validation eye 65,66% tidak mempunyai contoh Medium. Test tidak dievaluasi. [Rencana eksperimen](batch-06/PLAN.md) mencatat aturan perbandingannya.
