@@ -1,0 +1,16 @@
+{
+  "round": "round2",
+  "trackA_auc": 0.8016040523427607,
+  "trackA_balanced_accuracy": 0.7602363866610384,
+  "batch07": {
+    "auc": 0.77797,
+    "balanced_accuracy": 0.74061
+  },
+  "beats_batch07": true,
+  "deploy_track": "B2",
+  "deploy_auc": 0.8868720979316168,
+  "deploy_balanced_accuracy": 0.8547910510764036,
+  "context_auc": 0.8184888138455044,
+  "context_balanced_accuracy": 0.811101730688054,
+  "deploy_beats_context": true
+}

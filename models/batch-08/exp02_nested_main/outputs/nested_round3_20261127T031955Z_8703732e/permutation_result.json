@@ -1,0 +1,13 @@
+{
+  "n": 200,
+  "track": "A_ens",
+  "auc_observed": 0.8256648374841705,
+  "p_value_auc": 0.004975124378109453,
+  "balanced_accuracy_observed": 0.7676234698184887,
+  "p_value_balanced_accuracy": 0.004975124378109453,
+  "null_auc_mean": 0.46549493457154917,
+  "null_auc_p95": 0.637526382439848,
+  "trackA_selected_auc_observed": 0.8016040523427607,
+  "trackA_selected_p_value_auc": 0.004975124378109453,
+  "note": "Label rating diacak antar-episode; seluruh pipeline nested (seleksi/ensemble/kalibrasi/ambang) diulang."
+}

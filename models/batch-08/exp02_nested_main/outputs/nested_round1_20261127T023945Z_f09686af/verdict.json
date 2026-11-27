@@ -1,0 +1,10 @@
+{
+  "round": "round1",
+  "trackA_auc": 0.7994934571549176,
+  "trackA_balanced_accuracy": 0.7602363866610384,
+  "batch07": {
+    "auc": 0.77797,
+    "balanced_accuracy": 0.74061
+  },
+  "beats_batch07": true
+}

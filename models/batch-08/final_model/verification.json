@@ -1,0 +1,5 @@
+{
+  "max_abs_diff_config_scores_json_vs_sklearn": 3.552713678800501e-15,
+  "in_sample_auc_not_an_evaluation": 0.9409033347403968,
+  "threshold": 0.525
+}

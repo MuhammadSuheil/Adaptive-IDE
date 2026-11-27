@@ -1,0 +1,14 @@
+config,folds,track
+features=core9|norm=hybrid|target=bin|aux=True|C=0.1|agg=top50,6,A
+features=core9|norm=hybrid|target=bin|aux=True|C=0.5|agg=top50,4,A
+features=core9_head4_base|norm=hybrid|target=bin|aux=True|C=0.1|agg=top50,4,A
+features=core9|norm=hybrid|target=bin|aux=False|C=0.5|agg=top50,1,A
+features=core9|norm=hybrid|target=rating|aux=False|C=0.1|agg=top50,1,A
+features=core9|norm=hybrid|target=rating|aux=False|C=0.5|agg=top50,1,A
+features=core9|norm=hybrid|target=rating|aux=False|C=0.1|agg=top50,6,B
+features=core9|norm=hybrid|target=rating|aux=True|C=0.1|agg=top50,4,B
+features=core9|norm=hybrid|target=rating|aux=False|C=0.5|agg=top50,2,B
+features=core9_head4_base|norm=hybrid|target=bin|aux=True|C=0.1|agg=top50,2,B
+features=core9_head4_base|norm=hybrid|target=bin|aux=True|C=0.5|agg=top50,1,B
+features=core9|norm=hybrid|target=rating|aux=True|C=0.5|agg=top50,1,B
+features=core9|norm=hybrid|target=bin|aux=False|C=0.1|agg=top50,1,B

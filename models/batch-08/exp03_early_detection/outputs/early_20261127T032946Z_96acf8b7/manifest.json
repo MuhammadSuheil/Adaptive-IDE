@@ -1,0 +1,33 @@
+{
+  "inputs": {
+    "v4/window_15s_step_5s/good_acceptable.csv": "6c2febb856e5986e2d9f76b64c0757b3476547bdcf42ccfcff1f02a3b69c2c79",
+    "v4/window_15s_step_5s/window_assignments.csv": "aeb41a5a730548039fd40caf1bd040ecbd11099cffe209bb7d27e01159ad96be",
+    "v4/episode_ratings.csv": "9f7ab8997fe84549e222c82f4ae0c968b07e13d53464da48444d383138aef686",
+    "v2/window_15s_step_5s/all_data.csv": "3480d6c1d091af14a9f27651e8ed8fae65954fa1374eea7385678fd3abff8791"
+  },
+  "exp02_run": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-08\\exp02_nested_main\\outputs\\nested_round3_20261127T031955Z_8703732e",
+  "T_grid": [
+    30,
+    60,
+    90,
+    120,
+    180,
+    300
+  ],
+  "min_windows_for_alarm": 2,
+  "tracks": [
+    "A",
+    "A_ens",
+    "B",
+    "B2",
+    "B3"
+  ],
+  "environment": {
+    "python": "3.14.6",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "numpy": "2.5.5",
+    "pandas": "3.1.1",
+    "scipy": "1.18.1",
+    "sklearn": "1.7.2"
+  }
+}

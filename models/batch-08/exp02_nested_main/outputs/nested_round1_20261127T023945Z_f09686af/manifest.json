@@ -1,0 +1,41 @@
+{
+  "round": "round1",
+  "inputs": {
+    "v4/window_15s_step_5s/good_acceptable.csv": "6c2febb856e5986e2d9f76b64c0757b3476547bdcf42ccfcff1f02a3b69c2c79",
+    "v4/window_15s_step_5s/window_assignments.csv": "aeb41a5a730548039fd40caf1bd040ecbd11099cffe209bb7d27e01159ad96be",
+    "v4/episode_ratings.csv": "9f7ab8997fe84549e222c82f4ae0c968b07e13d53464da48444d383138aef686",
+    "v2/window_15s_step_5s/all_data.csv": "3480d6c1d091af14a9f27651e8ed8fae65954fa1374eea7385678fd3abff8791"
+  },
+  "label_policy": "v4_overload_rating_ge7_v1",
+  "n_configs": 648,
+  "pool": "all_configs()",
+  "selection_rule": "inner-LOPO pooled OOF AUC → BalAcc(youden, Platt balanced) → kompleksitas",
+  "primary_policy": "youden",
+  "reference_run": "D:\\Penelitian Pak Hadi\\Adaptive-IDE\\models\\batch-08\\exp01_reference\\outputs\\reference_20261127T023815Z_356d8138",
+  "aux_extra_people": [
+    "Alif",
+    "Mon",
+    "Shakilla",
+    "bangsur",
+    "ihsan"
+  ],
+  "history_windows_ge3": 108,
+  "environment": {
+    "python": "3.14.6",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "numpy": "2.5.5",
+    "pandas": "3.1.1",
+    "scipy": "1.18.1",
+    "sklearn": "1.7.2"
+  },
+  "verdict": {
+    "round": "round1",
+    "trackA_auc": 0.7994934571549176,
+    "trackA_balanced_accuracy": 0.7602363866610384,
+    "batch07": {
+      "auc": 0.77797,
+      "balanced_accuracy": 0.74061
+    },
+    "beats_batch07": true
+  }
+}
