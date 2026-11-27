@@ -1,6 +1,8 @@
 # Batch 07 · Exp02 · Riwayat Bersih pada IQR Personal, Ensemble SVM+ExtraTrees, dan Kalibrasi Ambang V3
 
-**Pada sumber riwayat kualitas murni (`all_data.csv`), seluruh enam kombinasi model meningkatkan AUC LOPO dibanding sumber terkurasi global (`+0,033` s.d. `+0,092` AUC), sekaligus membuktikan bahwa lonjakan akurasi validasi `81,8%` pada `exp13` sebelumnya berasal dari kurasi global `good_acceptable.csv`.** Ketika kurasi global dihapus, akurasi validasi `SVM RBF + personal_iqr` kembali ke `6/11 (54,5%)`, sementara AUC LOPO-nya justru naik dari `0,690` menjadi **`0,783`** dan AUC Test historisnya naik dari `0,406` ke **`0,594`**.
+**Riwayat kualitas murni (`all_data.csv`) dipertahankan karena menghilangkan seleksi global, dan audit ini membuktikan bahwa akurasi validasi `81,8%` pada `exp13` batch 06 berasal dari kurasi global `good_acceptable.csv`.** Dengan riwayat bersih, validasi `SVM RBF + personal_iqr` kembali ke `6/11 (54,5%)`. AUC LOPO keenam kombinasi naik `+0,033` s.d. `+0,092` (37 episode, 16 High), tetapi kenaikan ini lebih kecil daripada galat baku AUC pada ukuran sampel tersebut (~0,08).
+
+> **Catatan revisi (27 November 2026, lihat [DIAGNOSIS.md](../DIAGNOSIS.md)).** Skor V3 berkorelasi ρ = 0,63 dengan durasi episode bahkan di antara episode Non-High, dan tidak menambah informasi di atas durasi (p = 0,79). Pada Test historis (3 peserta, 18 episode, 2 High), AUC `svm_rbf · center_only` adalah **0,500** dan hanya **1/8** pasangan dalam-peserta terurut benar. Tebakan selalu Non-High memberi 16/18 (88,9%). Angka Test pada README ini telah dievaluasi pada 18 kombinasi dan bersifat eksploratif.
 
 ## 1. Perbandingan Representasi & Model pada Riwayat Bersih (`fixed_default`)
 
@@ -34,8 +36,8 @@ Eksperimen ini menuntaskan Prioritas #2 pada [EVALUASI_V3_V4.md](../../batch-06/
 
 ## 3. Kalibrasi Ambang Dalam-Fold (`Inner-LOPO`) & Keselarasan Rating V4
 
-- **Pengurangan alarm palsu tanpa melihat data uji:** Pada `svm_rbf | center_only`, pemilihan ambang `nested_bal_acc` di dalam fold fitting mempertahankan akurasi LOPO `25/37 (67,6%)` sambil memangkas alarm palsu dari `9/21` menjadi **`8/21`**, menaikkan akurasi validasi dari `6/11 (54,5%)` menjadi **`7/11 (63,6%, BalAcc 66,07%, 3/4 High, 3/7 FA)`**, dan pada `nested_recall75` memangkas alarm palsu Test historis dari `7/16` menjadi **`4/16` (`13/18` benar, `72,2%`)**.
-- **Keunggulan `blend_svm_et` pada urutan dalam-peserta & rating subjektif:** Pada 16 pasangan High/Non-High dalam peserta yang sama di LOPO, `blend_svm_et | center_only` mengurutkan **14/16 (`87,5%`)** pasangan dengan benar (dibanding `13/16` pada SVM dan `11/16` pada Extra Trees). Pada 21 episode LOPO yang memiliki rating V4, `blend_svm_et` mencapai **AUC `0,847`** untuk memprediksi rating $\ge 7$ ($\rho = +0{,}600$), sementara `extra_trees` mencapai korelasi peringkat tertinggi ($\rho = +0{,}692$).
+- **Ambang dalam-fold:** Pada `svm_rbf | center_only`, `nested_bal_acc` mempertahankan akurasi LOPO `25/37 (67,6%; mayoritas 56,8%)` dan mengurangi alarm palsu dari `9/21` menjadi `8/21`. Akurasi validasi naik dari `6/11` menjadi `7/11 (63,6%; mayoritas 63,6%; BalAcc 66,07%)`. Pada Test historis, `nested_recall75` memberi `13/18 (72,2%)`, **di bawah tebakan selalu Non-High `16/18 (88,9%)`**, dengan 1/2 High terdeteksi dan AUC 0,500. Kombinasi ini dipilih dari 18 kombinasi yang dinilai pada Test; akurasi Test kombinasi lain 50–72%.
+- **Urutan dalam-peserta dan rating subjektif:** Pada LOPO, `blend_svm_et | center_only` mengurutkan 14/16 pasangan High/Non-High dalam peserta yang sama dengan benar. Pasangan ini hanya berasal dari 5 peserta, dan pada Test historis turun menjadi 1/8. Pada 21 episode LOPO yang memiliki rating V4, `blend_svm_et` mencapai AUC 0,847 untuk rating $\ge 7$ ($\rho = +0{,}600$). Hasil ini searah dengan exp04, tetapi skor V3 juga mengikuti durasi dan rating berkorelasi dengan durasi, sehingga belum menjadi bukti pengukuran beban kognitif yang independen.
 
 ## 4. Reproduksi Lokal & Artefak
 

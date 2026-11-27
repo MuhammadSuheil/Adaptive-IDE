@@ -1,6 +1,12 @@
 # Batch 07 · Exp03 · Kalibrasi Ambang Keputusan OOF & Perbandingan Representasi pada V4 (`1–6` vs `7–10`)
 
-**Pemilihan ambang dengan batas anggaran alarm palsu $\le 25\%$ di dalam fold peserta (`nested_fa_cap25_max_rec`) menaikkan akurasi LOPO 17 peserta dari `65,9%` menjadi `77,8%` (`98/126`, Balanced Accuracy `76,28%`) pada `win_logreg_core9_global`, serta memangkas alarm palsu hampir separuh dari `40/103` menjadi `22/103` sambil tetap menangkap `17/23` episode overload.** Pada `win_logreg_full14_global`, kebijakan yang sama mempertahankan recall overload penuh (`16/23`, identik dengan ambang `0,50`) sambil menurunkan alarm palsu dari `31/103` menjadi `22/103` (akurasi `77,0%`, Balanced Accuracy `74,10%`), dan pada 4 peserta Test historis menaikkan akurasi dari `51,9%` menjadi **`81,5%` (`22/27`, Balanced Accuracy `73,18%`, alarm palsu turun dari `12/22` ke `3/22`)**.
+**`win_logreg_core9_global` adalah pemenang Dev (13 peserta, 99 episode): AUC episode 0,739 dan balanced accuracy 0,753 pada ambang 0,50. Pada LOPO 17 peserta (126 episode, 23 overload), AUC-nya 0,778 (CI 95% bootstrap peserta 0,63–0,89).** Kebijakan `nested_fa_cap25_max_rec` mengurangi alarm palsu Full LOPO dari `40/103` menjadi `22/103` dengan recall `17/23` (balanced accuracy 0,763). Namun kebijakan ini hanya peringkat ke-8 di Dev (balanced accuracy 0,636), dan akurasinya (`77,8%`) masih di bawah tebakan selalu Non-Overload (`81,7%`).
+
+> **Catatan revisi (27 November 2026, lihat [DIAGNOSIS.md](../DIAGNOSIS.md)).**
+> - Versi awal README menonjolkan akurasi `77,8%` (Full LOPO) dan `81,5%` (Test historis, `full14`). Keduanya tidak melampaui tebakan mayoritas pada data yang sama (`81,7%` dan `81,5%`).
+> - Kebijakan dan kandidat untuk angka tersebut dipilih setelah Full LOPO dan Test terlihat. Full LOPO memuat peserta Test, dan pemenang Dev adalah `core9` · `fixed_050`/`nested_youden`. Dengan `core9` · `nested_fa_cap25`, Test historis hanya mencapai akurasi `59,3%` (balanced accuracy 0,673).
+> - Test historis (4 peserta, 5 overload) sudah dievaluasi sejak batch 06; CI 95% AUC-nya 0,25–0,92. Gunakan balanced accuracy/AUC dan pembanding mayoritas saat mengutip tabel di bawah.
+> - Skor sensor setara dengan konteks tanpa sensor (durasi episode saja AUC 0,816), tetapi menambah informasi di atas tingkat soal, durasi, dan waktu dalam sesi (p ≈ 0,0001).
 
 ## 1. Perbandingan 6 Kandidat Model & Representasi (`fixed_050`)
 
@@ -19,7 +25,7 @@ Eksperimen ini membandingkan model per-window rata-rata episode (gaya Batch 06 V
 
 ## 2. Hasil 5 Kebijakan Kalibrasi Ambang Dalam-Fold (`Nested Inner-LOPO`)
 
-Seluruh ambang di bawah dipilih **murni dari inner-LOPO peserta fitting** tanpa melihat peserta yang dievaluasi (menjawab Prioritas #1 [EVALUASI_V3_V4.md](../../batch-06/EVALUASI_V3_V4.md)):
+Seluruh ambang di bawah dipilih **murni dari inner-LOPO peserta fitting** tanpa melihat peserta yang dievaluasi (menjawab Prioritas #1 [EVALUASI_V3_V4.md](../../batch-06/EVALUASI_V3_V4.md)). Pemilihan **kebijakan** mana yang ditonjolkan, sebaliknya, dilakukan setelah melihat Full LOPO dan Test. Akurasi tebakan selalu Non-Overload adalah **81,8%** (Dev), **81,7%** (Full LOPO), dan **81,5%** (Test historis); bandingkan kolom akurasi dengan angka ini, dan utamakan balanced accuracy.
 
 | Evaluasi | Kandidat | Kebijakan Ambang | Rerata Ambang | Presisi Overload | Recall Overload | Alarm Palsu | Balanced Acc | Akurasi | Macro-F1 |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|

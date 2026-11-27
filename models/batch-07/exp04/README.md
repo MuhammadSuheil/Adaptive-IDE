@@ -1,6 +1,11 @@
 # Batch 07 · Exp04 · Evaluasi Silang & Penyetaraan Pertanyaan Beban Kognitif V3 vs V4
 
-**Pada 40 episode irisan yang memiliki label perilaku V3 sekaligus rating peserta V4 (15 peserta), kedua indikator bersepakat pada 34/40 episode (`85,0%`).** Saat dinilai pada peserta *held-out* yang persis sama, **`V3_SVM_RBF` mencapai AUC tertinggi pada target perilaku (`0,727`)**, sedangkan **`V4_LogReg_Core9` mencapai AUC tertinggi pada target rating subjektif $\ge 7$ (`0,774`) dan konkordan keduanya (`0,788`)**, serta menjadi satu-satunya model yang seluruh interval kepercayaan bootstrap peserta 95%-nya berada di atas peluang acak (`> 0,50`) pada keempat definisi target.
+**Pada 40 episode irisan yang memiliki label perilaku V3 sekaligus rating peserta V4 (15 peserta), kedua indikator bersepakat pada 34/40 episode (`85,0%`).** Pada peserta *held-out* yang sama, `V4_LogReg_Core9` adalah satu-satunya model yang batas bawah CI 95% AUC-nya berada di atas 0,50 pada keempat definisi target (rating $\ge 7$: AUC `0,774`, CI 0,56–0,95). `V3_SVM_RBF` mencapai AUC `0,727` pada target perilaku V3, tetapi CI-nya (0,47–0,88) mencakup 0,50.
+
+> **Catatan revisi (27 November 2026, lihat [DIAGNOSIS.md](../DIAGNOSIS.md)).**
+> - Kesepakatan 85% wajar karena kedua label mengikuti durasi dan kegagalan pengerjaan: rating berkorelasi ρ = 0,63 dengan durasi dan 0,64 dengan jumlah kesalahan, dan rating ditanyakan tepat setelah peserta selesai atau timeout. Ini bukan validasi konstruk beban kognitif yang independen.
+> - Dengan 7–13 episode positif, CI AUC sebagian besar model sangat lebar. Ensemble `Dual_V3SVM_V4LR` (0,814 pada target konkordan) mempunyai CI 0,43–1,00 sehingga belum didukung statistik.
+> - Akurasi model pada tabel `metrics.csv` (45–65%) berada di bawah tebakan selalu negatif (67,5–82,5%, tergantung target). Gunakan AUC dan balanced accuracy.
 
 ## 1. Konkordansi Label Perilaku V3 dan Rating V4 pada 40 Episode Irisan
 
@@ -30,10 +35,11 @@ Setiap peserta $p$ dari 15 peserta disisihkan sepenuhnya dari kedua cabang pelat
 
 Pada rezim kontrol peserta identik (`Matched_Participants_LOPO`, di mana kedua cabang sama-sama dilatih pada seluruh `all_people - {p}`), ensemble lintas-konstruk **`Dual_V3SVM_V4LR` mencapai AUC `0,814`** pada target konkordan (`concordant_both_high`).
 
-## 3. Interpretasi Ilmiah untuk Adaptive-IDE
+## 3. Interpretasi untuk Adaptive-IDE
 
-1. **Kedua model menangkap sinyal fisiologis yang saling melengkapi, bukan bertentangan:** Skor sensor `V3_SVM_RBF` lebih kuat mengikuti hambatan pengerjaan aktual ($\rho = +0{,}428$ terhadap durasi aktif; AUC `0,727` pada V3 High), sedangkan `V4_LogReg_Core9` lebih tajam menangkap persepsi overload subjektif (AUC `0,774` pada V4 $\ge 7$, menangkap `9/9` overload pada ambang `0,50`) sekaligus tetap kompetitif pada target perilaku (AUC `0,712`).
-2. **Episode konkordan (`V3 High` $\cap$ `V4 Rating 7–10`) paling konsisten terpisahkan:** Ketika perilaku objektif dan laporan subjektif sama-sama menunjukkan beban tinggi (`7/40` episode), baik model V3 (`0,766–0,775`), model V4 (`0,788`), maupun gabungan keduanya (`0,784–0,814`) mencapai pemisahan paling tinggi.
+1. **Skor V4 adalah sinyal sensor yang paling tangguh lintas definisi target.** `V4_LogReg_Core9` tetap di atas peluang acak pada target perilaku V3 (AUC `0,712`, CI 0,52–0,91), rating subjektif (`0,774`), konkordan (`0,788`), dan gabungan (`0,721`). Skor ini kurang terikat pada durasi (Spearman `+0,200`) dibanding skor V3 (`+0,428`).
+2. **Skor V3 lebih banyak mengikuti durasi pengerjaan daripada rating.** Spearman terhadap durasi (`+0,428`) lebih tinggi daripada terhadap rating (`+0,372`). Ini konsisten dengan temuan bahwa model V3 belum dapat dibedakan dari detektor durasi.
+3. **Episode konkordan (V3 High ∩ rating 7–10) memang paling mudah dipisahkan**, tetapi hanya berjumlah 7 episode. Skema *dual-trigger* yang memadukan V3 dan V4 belum layak dipakai sebelum diuji pada protokol terkunci dengan sampel lebih besar.
 
 ## 4. Reproduksi Lokal & Artefak
 

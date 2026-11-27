@@ -1,0 +1,399 @@
+{
+  "v4_exp03": {
+    "protocols": {
+      "Dev_LOPO_13p|win_logreg_core9_global": {
+        "episodes": 99,
+        "positives": 18,
+        "majority_accuracy": 0.818,
+        "pooled_auc": 0.739,
+        "pooled_auc_ci95": [
+          0.583,
+          0.91
+        ],
+        "people_with_both_classes": 7,
+        "mean_within_auc": 0.609,
+        "pair_concordance": 0.643,
+        "pairs": 70
+      },
+      "Dev_LOPO_13p|win_logreg_full14_global": {
+        "episodes": 99,
+        "positives": 18,
+        "majority_accuracy": 0.818,
+        "pooled_auc": 0.729,
+        "pooled_auc_ci95": [
+          0.544,
+          0.894
+        ],
+        "people_with_both_classes": 7,
+        "mean_within_auc": 0.603,
+        "pair_concordance": 0.643,
+        "pairs": 70
+      },
+      "Full_LOPO_17p|win_logreg_core9_global": {
+        "episodes": 126,
+        "positives": 23,
+        "majority_accuracy": 0.817,
+        "pooled_auc": 0.778,
+        "pooled_auc_ci95": [
+          0.634,
+          0.894
+        ],
+        "people_with_both_classes": 10,
+        "mean_within_auc": 0.645,
+        "pair_concordance": 0.692,
+        "pairs": 104
+      },
+      "Full_LOPO_17p|win_logreg_full14_global": {
+        "episodes": 126,
+        "positives": 23,
+        "majority_accuracy": 0.817,
+        "pooled_auc": 0.781,
+        "pooled_auc_ci95": [
+          0.633,
+          0.892
+        ],
+        "people_with_both_classes": 10,
+        "mean_within_auc": 0.631,
+        "pair_concordance": 0.683,
+        "pairs": 104
+      },
+      "Test_historical_4p|win_logreg_core9_global": {
+        "episodes": 27,
+        "positives": 5,
+        "majority_accuracy": 0.815,
+        "pooled_auc": 0.773,
+        "pooled_auc_ci95": [
+          0.375,
+          0.923
+        ],
+        "people_with_both_classes": 3,
+        "mean_within_auc": 0.738,
+        "pair_concordance": 0.794,
+        "pairs": 34
+      },
+      "Test_historical_4p|win_logreg_full14_global": {
+        "episodes": 27,
+        "positives": 5,
+        "majority_accuracy": 0.815,
+        "pooled_auc": 0.745,
+        "pooled_auc_ci95": [
+          0.25,
+          0.923
+        ],
+        "people_with_both_classes": 3,
+        "mean_within_auc": 0.683,
+        "pair_concordance": 0.765,
+        "pairs": 34
+      }
+    },
+    "selected_policies": {
+      "Dev_LOPO_13p|win_logreg_core9_global|fixed_050": {
+        "accuracy": 0.667,
+        "majority_accuracy": 0.818,
+        "balanced_accuracy": 0.753,
+        "balanced_accuracy_ci95": [
+          0.62,
+          0.881
+        ]
+      },
+      "Dev_LOPO_13p|win_logreg_core9_global|nested_fa_cap25_max_rec": {
+        "accuracy": 0.687,
+        "majority_accuracy": 0.818,
+        "balanced_accuracy": 0.636,
+        "balanced_accuracy_ci95": [
+          0.511,
+          0.818
+        ]
+      },
+      "Full_LOPO_17p|win_logreg_core9_global|nested_fa_cap25_max_rec": {
+        "accuracy": 0.778,
+        "majority_accuracy": 0.817,
+        "balanced_accuracy": 0.763,
+        "balanced_accuracy_ci95": [
+          0.631,
+          0.874
+        ]
+      },
+      "Test_historical_4p|win_logreg_full14_global|nested_fa_cap25_max_rec": {
+        "accuracy": 0.815,
+        "majority_accuracy": 0.815,
+        "balanced_accuracy": 0.732,
+        "balanced_accuracy_ci95": [
+          0.5,
+          0.833
+        ]
+      },
+      "Test_historical_4p|win_logreg_core9_global|nested_fa_cap25_max_rec": {
+        "accuracy": 0.593,
+        "majority_accuracy": 0.815,
+        "balanced_accuracy": 0.673,
+        "balanced_accuracy_ci95": [
+          0.5,
+          0.778
+        ]
+      }
+    },
+    "context_baselines_full_lopo": {
+      "auc_active_seconds": 0.816,
+      "auc_n_windows": 0.808,
+      "auc_difficulty_set": 0.776,
+      "auc_minutes_into_session": 0.819,
+      "auc_timeout": 0.736,
+      "sensor_over_difficulty": {
+        "chi2": 14.61,
+        "p": 0.0001319313989877185,
+        "auc_base": 0.776,
+        "auc_base_plus_sensor": 0.866
+      },
+      "sensor_over_difficulty_time_session": {
+        "chi2": 14.93,
+        "p": 0.0001117870875702663,
+        "auc_base": 0.884,
+        "auc_base_plus_sensor": 0.927
+      },
+      "within_label_spearman_prob_vs_time": {
+        "0": 0.064,
+        "1": 0.024
+      },
+      "within_difficulty_auc": {
+        "easy": 0.936,
+        "hard": 0.766,
+        "medium": 0.71
+      },
+      "person_mean_prob_vs_overload_rate_spearman": 0.544,
+      "positives_per_person": {
+        "Andrean": 1,
+        "Andreas": 5,
+        "Athaya": 2,
+        "Baithar": 2,
+        "Fabian": 3,
+        "Rafi": 1,
+        "Ramadhan": 0,
+        "Savitri": 0,
+        "Siti": 1,
+        "Sullivan": 0,
+        "Tio": 1,
+        "faqih": 1,
+        "ikhsan": 2,
+        "irfan": 0,
+        "kaka": 1,
+        "raina": 0,
+        "sam": 3
+      }
+    },
+    "dev_balanced_accuracy_rank_top8": {
+      "win_logreg_core9_global|nested_youden": 0.753,
+      "win_logreg_core9_global|fixed_050": 0.753,
+      "win_logreg_core9_global|nested_recall75_min_fa": 0.738,
+      "ep_et_prior14|nested_recall75_min_fa": 0.685,
+      "ep_et_prior14|nested_youden": 0.679,
+      "win_logreg_full14_global|fixed_050": 0.664,
+      "win_logreg_full14_causal|fixed_050": 0.651,
+      "win_logreg_core9_global|nested_fa_cap25_max_rec": 0.636
+    }
+  },
+  "v3_exp02": {
+    "protocols": {
+      "Test_historical|center_only|blend_svm_et": {
+        "episodes": 18,
+        "positives": 2,
+        "majority_accuracy": 0.889,
+        "pooled_auc": 0.5,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 0.083,
+        "pair_concordance": 0.125,
+        "pairs": 8
+      },
+      "Test_historical|center_only|extra_trees": {
+        "episodes": 18,
+        "positives": 2,
+        "majority_accuracy": 0.889,
+        "pooled_auc": 0.438,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 0.083,
+        "pair_concordance": 0.125,
+        "pairs": 8
+      },
+      "Test_historical|center_only|svm_rbf": {
+        "episodes": 18,
+        "positives": 2,
+        "majority_accuracy": 0.889,
+        "pooled_auc": 0.5,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 0.083,
+        "pair_concordance": 0.125,
+        "pairs": 8
+      },
+      "Test_historical|personal_iqr|blend_svm_et": {
+        "episodes": 18,
+        "positives": 2,
+        "majority_accuracy": 0.889,
+        "pooled_auc": 0.562,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 0.167,
+        "pair_concordance": 0.25,
+        "pairs": 8
+      },
+      "Test_historical|personal_iqr|extra_trees": {
+        "episodes": 18,
+        "positives": 2,
+        "majority_accuracy": 0.889,
+        "pooled_auc": 0.406,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 0.083,
+        "pair_concordance": 0.125,
+        "pairs": 8
+      },
+      "Test_historical|personal_iqr|svm_rbf": {
+        "episodes": 18,
+        "positives": 2,
+        "majority_accuracy": 0.889,
+        "pooled_auc": 0.594,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 0.167,
+        "pair_concordance": 0.25,
+        "pairs": 8
+      },
+      "Train_LOPO|center_only|blend_svm_et": {
+        "episodes": 37,
+        "positives": 16,
+        "majority_accuracy": 0.568,
+        "pooled_auc": 0.777,
+        "people_with_both_classes": 5,
+        "mean_within_auc": 0.8,
+        "pair_concordance": 0.875,
+        "pairs": 16
+      },
+      "Train_LOPO|center_only|extra_trees": {
+        "episodes": 37,
+        "positives": 16,
+        "majority_accuracy": 0.568,
+        "pooled_auc": 0.786,
+        "people_with_both_classes": 5,
+        "mean_within_auc": 0.656,
+        "pair_concordance": 0.688,
+        "pairs": 16
+      },
+      "Train_LOPO|center_only|svm_rbf": {
+        "episodes": 37,
+        "positives": 16,
+        "majority_accuracy": 0.568,
+        "pooled_auc": 0.768,
+        "people_with_both_classes": 5,
+        "mean_within_auc": 0.778,
+        "pair_concordance": 0.812,
+        "pairs": 16
+      },
+      "Train_LOPO|personal_iqr|blend_svm_et": {
+        "episodes": 37,
+        "positives": 16,
+        "majority_accuracy": 0.568,
+        "pooled_auc": 0.765,
+        "people_with_both_classes": 5,
+        "mean_within_auc": 0.778,
+        "pair_concordance": 0.812,
+        "pairs": 16
+      },
+      "Train_LOPO|personal_iqr|extra_trees": {
+        "episodes": 37,
+        "positives": 16,
+        "majority_accuracy": 0.568,
+        "pooled_auc": 0.744,
+        "people_with_both_classes": 5,
+        "mean_within_auc": 0.733,
+        "pair_concordance": 0.688,
+        "pairs": 16
+      },
+      "Train_LOPO|personal_iqr|svm_rbf": {
+        "episodes": 37,
+        "positives": 16,
+        "majority_accuracy": 0.568,
+        "pooled_auc": 0.783,
+        "people_with_both_classes": 5,
+        "mean_within_auc": 0.778,
+        "pair_concordance": 0.812,
+        "pairs": 16
+      },
+      "validation|center_only|blend_svm_et": {
+        "episodes": 11,
+        "positives": 4,
+        "majority_accuracy": 0.636,
+        "pooled_auc": 0.714,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 1.0,
+        "pair_concordance": 1.0,
+        "pairs": 7
+      },
+      "validation|center_only|extra_trees": {
+        "episodes": 11,
+        "positives": 4,
+        "majority_accuracy": 0.636,
+        "pooled_auc": 0.643,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 1.0,
+        "pair_concordance": 1.0,
+        "pairs": 7
+      },
+      "validation|center_only|svm_rbf": {
+        "episodes": 11,
+        "positives": 4,
+        "majority_accuracy": 0.636,
+        "pooled_auc": 0.75,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 1.0,
+        "pair_concordance": 1.0,
+        "pairs": 7
+      },
+      "validation|personal_iqr|blend_svm_et": {
+        "episodes": 11,
+        "positives": 4,
+        "majority_accuracy": 0.636,
+        "pooled_auc": 0.643,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 1.0,
+        "pair_concordance": 1.0,
+        "pairs": 7
+      },
+      "validation|personal_iqr|extra_trees": {
+        "episodes": 11,
+        "positives": 4,
+        "majority_accuracy": 0.636,
+        "pooled_auc": 0.571,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 0.917,
+        "pair_concordance": 0.857,
+        "pairs": 7
+      },
+      "validation|personal_iqr|svm_rbf": {
+        "episodes": 11,
+        "positives": 4,
+        "majority_accuracy": 0.636,
+        "pooled_auc": 0.714,
+        "people_with_both_classes": 2,
+        "mean_within_auc": 1.0,
+        "pair_concordance": 1.0,
+        "pairs": 7
+      }
+    },
+    "duration_leakage_train_lopo_svm": {
+      "auc_active_seconds_alone": 0.976,
+      "spearman_score_vs_active_seconds": 0.598,
+      "within_label_spearman_score_vs_time": {
+        "High": 0.306,
+        "Non-High": 0.627
+      },
+      "sensor_over_log_time": {
+        "chi2": 0.07,
+        "p": 0.7883524706995658,
+        "auc_base": 0.976,
+        "auc_base_plus_sensor": 0.976
+      },
+      "sensor_over_difficulty": {
+        "chi2": 4.43,
+        "p": 0.035415100917432114,
+        "auc_base": 0.69,
+        "auc_base_plus_sensor": 0.786
+      }
+    }
+  }
+}
